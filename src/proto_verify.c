@@ -160,6 +160,7 @@ static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 
 static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 {
+	IrmoClient *client = packet->client;
 	guint16 i16;
 
 	// start position
@@ -187,11 +188,27 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 			//printf("invalid atom type (%i)\n", atomtype);
 			return FALSE;
 		}
+
+		// if this atom is about a change to the remote universe,
+		// check we have a remote universe we are expecting changes
+		// about
+		
+		if ((atomtype == ATOM_NEW || atomtype == ATOM_CHANGE
+		    || atomtype == ATOM_DESTROY)
+		    && !client->universe) {
+			return FALSE;
+		}
+
+		// same with remote method calls to local universe
+
+		if (atomtype == ATOM_METHOD && !client->server->universe)
+			return FALSE;
+		
 		//printf("%i atoms, %i\n", natoms, atomtype);
 
 		for (i=0; i<natoms; ++i) {
 			//printf("\tverify atom %i (%i)\n", i, atomtype);
-			if (!proto_verify_atom(packet->client, packet,
+			if (!proto_verify_atom(client, packet,
 					       atomtype)) {
 				//printf("\t\tfailed\n");
 				return FALSE;
@@ -232,6 +249,9 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/03/16 01:54:24  sdh300
+// Method calls over network protocol
+//
 // Revision 1.2  2003/03/14 18:30:24  sdh300
 // Fix verification
 //
