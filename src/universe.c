@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "if_spec.h"
 #include "universe.h"
@@ -35,10 +36,10 @@ static void object_destroy(irmo_objid_t id, IrmoObject *object,
 	
 	// destroy member variables
 
-	for (i=0; i<object->spec->nvariables; ++i) {
-		if (object->spec->variables[i]->type == TYPE_STRING
-		    && object->variables[i])
-			free(object->variables[i]);
+	for (i=0; i<object->objclass->nvariables; ++i) {
+		if (object->objclass->variables[i]->type == TYPE_STRING
+		    && object->variables[i].s)
+			free(object->variables[i].s);
 	}
 
 	free(object->variables);
@@ -144,6 +145,9 @@ IrmoObject *universe_object_new(IrmoUniverse *universe, char *typename)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/21 14:43:26  sdh300
+// variables code
+//
 // Revision 1.2  2002/10/21 10:55:14  sdh300
 // reference checking and object deletion
 //

@@ -21,7 +21,7 @@ union _IrmoVariable {
 	guint8 i8;
 	guint16 i16;
 	guint32 i32;
-	gchar *string;
+	gchar *s;
 };
 
 struct _IrmoObject {
@@ -48,6 +48,9 @@ void universe_unref(IrmoUniverse *universe);
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/21 14:43:27  sdh300
+// variables code
+//
 // Revision 1.2  2002/10/21 10:55:14  sdh300
 // reference checking and object deletion
 //
