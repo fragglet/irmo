@@ -5,12 +5,12 @@
 #ifndef IRMO_INTERNAL_OBJECT_H
 #define IRMO_INTERNAL_OBJECT_H
 
+typedef union _IrmoVariable IrmoVariable;
+
 #include "public/object.h"
 
 #include "callback.h"
 #include "if_spec.h"
-
-typedef union _IrmoVariable IrmoVariable;
 
 // internal stuff:
 
@@ -72,6 +72,9 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/03/07 12:17:17  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.15  2003/03/06 20:58:50  sdh300
 // Add documentation for IrmoObject data
 //
