@@ -1,7 +1,7 @@
 PKGS=glib-2.0
 CFLAGS=-Wall `pkg-config --cflags $(PKGS)` -DUSE_IPV6
 LDFLAGS = `pkg-config --libs $(PKGS)` -lfl
-OBJS=if_spec.o main.o universe.o object.o callback.o socket.o server.o netlib.o packet.o client.o connection.o sendatom.o proto_build.o proto_parse.o
+OBJS=if_spec.o main.o universe.o object.o callback.o socket.o server.o netlib.o packet.o client.o connection.o sendatom.o proto_build.o proto_parse.o client_run.o
 
 irmo: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
@@ -13,6 +13,9 @@ irmo: $(OBJS)
 	flex -o$@ $<
 
 # $Log: not supported by cvs2svn $
+# Revision 1.15  2003/03/05 17:37:52  sdh300
+# Add initial packet parsing code
+#
 # Revision 1.14  2003/03/03 22:13:49  sdh300
 # Add proto_build.c
 #

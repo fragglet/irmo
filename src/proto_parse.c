@@ -232,7 +232,10 @@ void proto_parse_packet(IrmoPacket *packet)
 
 	proto_parse_packet_cluster(client, packet);
 
-	
+	client_run_recvwindow(client);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/06 18:08:14  sdh300
+// Add missing cvs log tag
+//
