@@ -215,8 +215,8 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	
 	for (backstart=start; 
 	     backstart > 0 
-		&& client->recvwindow[backstart-1]
-		&& client->recvwindow[backstart-1]->type==ATOM_NULL;
+		&& client->sendwindow[backstart-1]
+		&& client->sendwindow[backstart-1]->type==ATOM_NULL;
 	     --backstart);
 	
 	// start position in stream
@@ -458,8 +458,11 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:32:34  fraggle
+// Fix segfault in back-including past sendatoms
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.18  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices
