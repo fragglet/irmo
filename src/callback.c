@@ -332,9 +332,9 @@ void universe_unwatch_class(IrmoUniverse *universe,
 				"class '%s' ",
 				classname);
 			if (variable)
-				printf("(variable '%s')\n", variable);
+				fprintf(stderr, "(variable '%s')\n", variable);
 			else
-				printf("\n");
+				fprintf(stderr, "\n");
 		}
 	}
 }
@@ -438,6 +438,9 @@ void object_unwatch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2002/11/12 23:25:47  sdh300
+// more clarity (missed this in previous commit)
+//
 // Revision 1.13  2002/11/12 23:13:04  sdh300
 // add some clarity
 //
