@@ -299,7 +299,7 @@ void proto_run_client(IrmoClient *client)
 	if (client->need_ack) {
 		IrmoPacket *packet;
 
-		printf("send ack to client\n");
+		//printf("send ack to client\n");
 
 		packet = packet_new(4);
 
@@ -320,6 +320,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/07 12:31:51  sdh300
+// Add protocol.h
+//
 // Revision 1.6  2003/03/07 12:17:17  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //
