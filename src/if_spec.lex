@@ -193,7 +193,7 @@ static ClassSpec *eat_class()
 			     "multiple definitions of '%s'", yytext);
 		
 		var->name = strdup(yytext);
-		var->n = i;
+		var->index = i;
 		
 		// ending semicolon
 
@@ -360,20 +360,27 @@ static InterfaceSpec *eat_interface()
 	
 	while ((token = yylex())) {
 		if (token == TOKEN_CLASS) {
-			ClassSpec *class;
+			ClassSpec *class_spec;
 			
 			parse_assert(spec->nclasses < MAX_CLASSES,
 				     "maximum of %i classes", MAX_CLASSES);
 
-			class = eat_class();
+			class_spec = eat_class();
 
-			if (g_hash_table_lookup(spec->class_hash, class->name))
-				parse_assert(0, "multiple definitions of '%s'",
-					     class->name);
+			if (g_hash_table_lookup(spec->class_hash,
+						class_spec->name))
+				parse_assert(0,
+					     "multiple definitions of '%s'",
+					     class_spec->name);
 			
-			spec->classes[spec->nclasses++] = class;
-			g_hash_table_insert(spec->class_hash, class->name,
-					    class);
+			class_spec->index = spec->nclasses;
+			spec->classes[spec->nclasses] = class_spec;
+
+			++spec->nclasses;
+			
+			g_hash_table_insert(spec->class_hash,
+					    class_spec->name,
+					    class_spec);
 
 		} else if (token == TOKEN_FUNC) {
 			MethodSpec *method;
@@ -443,6 +450,9 @@ void interface_spec_unref(InterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/10/21 15:32:34  sdh300
+// variable value setting
+//
 // Revision 1.3  2002/10/21 10:00:43  sdh300
 // fix up some formatting
 //

@@ -136,13 +136,13 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 
 	switch (spec->type) {
 	case TYPE_INT8:
-		object->variables[spec->n].i8 = value;
+		object->variables[spec->index].i8 = value;
 		break;
 	case TYPE_INT16:
-		object->variables[spec->n].i16 = value;
+		object->variables[spec->index].i16 = value;
 		break;
 	case TYPE_INT32:
-		object->variables[spec->n].i32 = value;
+		object->variables[spec->index].i32 = value;
 		break;
 	default:
 		fprintf(stderr,
@@ -180,10 +180,10 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 		return;
 	}
 
-	if (object->variables[spec->n].s)
-		free(object->variables[spec->n].s);
+	if (object->variables[spec->index].s)
+		free(object->variables[spec->index].s);
 
-	object->variables[spec->n].s = strdup(value);
+	object->variables[spec->index].s = strdup(value);
 
 	// TODO: value change callbacks
 }
@@ -209,11 +209,11 @@ gint object_get_int(IrmoObject *object, gchar *variable)
 
 	switch (spec->type) {
 	case TYPE_INT8:
-		return object->variables[spec->n].i8;
+		return object->variables[spec->index].i8;
 	case TYPE_INT16:
-		return object->variables[spec->n].i16;
+		return object->variables[spec->index].i16;
 	case TYPE_INT32:
-		return object->variables[spec->n].i32;
+		return object->variables[spec->index].i32;
 	default:
 		fprintf(stderr,
 			"object_get_int: variable '%s' in class '%s' "
@@ -250,10 +250,13 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 		return NULL;
 	}
 
-	return object->variables[spec->n].s;
+	return object->variables[spec->index].s;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/10/29 14:48:16  sdh300
+// variable value retrieval
+//
 // Revision 1.4  2002/10/21 15:39:35  sdh300
 // setting string values
 //
