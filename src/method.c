@@ -41,8 +41,7 @@ IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe,
 	g_return_if_fail(method_name != NULL);
 	g_return_if_fail(method != NULL);
 	
-	spec = g_hash_table_lookup(universe->spec->method_hash,
-				   method_name);
+	spec = irmo_interface_spec_get_method(universe->spec, method_name);
 
 	if (!spec) {
 		irmo_error_report("irmo_universe_method_watch",
@@ -89,7 +88,7 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 	g_return_if_fail(universe != NULL);
 	g_return_if_fail(method != NULL);
 	
-	spec = g_hash_table_lookup(universe->spec->method_hash, method);
+	spec = irmo_interface_spec_get_method(universe->spec, method);
 
 	if (!spec) {
 		irmo_error_report("irmo_universe_method_call",
@@ -145,7 +144,7 @@ gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
 	g_return_val_if_fail(data != NULL, NULL);
 	g_return_val_if_fail(argname != NULL, NULL);
 	
-	spec = g_hash_table_lookup(data->spec->argument_hash, argname);
+	spec = irmo_method_get_argument(data->spec, argname);
 
 	if (!spec) {
 		irmo_error_report("irmo_method_arg_string",
@@ -171,7 +170,7 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 	g_return_val_if_fail(data != NULL, -1);
 	g_return_val_if_fail(argname != NULL, -1);
 	
-	spec = g_hash_table_lookup(data->spec->argument_hash, argname);
+	spec = irmo_method_get_argument(data->spec, argname);
 
 	if (!spec) {
 		irmo_error_report("irmo_method_arg_int",
@@ -196,6 +195,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.6  2003/08/28 16:43:45  fraggle
+// Use the reflection API internally to improve readability in places
+//
 // Revision 1.5  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

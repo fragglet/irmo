@@ -200,8 +200,8 @@ static GSList **find_variable(IrmoCallbackData *data, gchar *variable)
 		if (data->objclass)
 			return NULL;
 
-		varspec = g_hash_table_lookup(data->objclass->variable_hash,
-					      variable);
+		varspec = irmo_class_get_variable(data->objclass, variable);
+
 		if (varspec)
 			return &data->variable_callbacks[varspec->index];
 		else 
@@ -233,7 +233,7 @@ static IrmoCallbackData *find_callback_class(IrmoUniverse *universe, gchar *clas
 	if (classname == NULL) 
 		return universe->callbacks_all;
 
-	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
+	spec = irmo_interface_spec_get_class(universe->spec, classname);
 
 	if (!spec)
 		return NULL;
@@ -355,6 +355,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.6  2003/08/28 16:43:45  fraggle
+// Use the reflection API internally to improve readability in places
+//
 // Revision 1.5  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

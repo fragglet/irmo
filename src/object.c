@@ -162,7 +162,7 @@ IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename)
 	g_return_val_if_fail(typename != NULL, NULL);
 	g_return_val_if_fail(universe->remote == FALSE, NULL);
 	
-	spec = g_hash_table_lookup(universe->spec->class_hash, typename);
+	spec = irmo_interface_spec_get_class(universe->spec, typename);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_new", 
@@ -307,8 +307,7 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 	g_return_if_fail(variable != NULL);
 	g_return_if_fail(object->universe->remote == FALSE);
 	
-	spec = g_hash_table_lookup(object->objclass->variable_hash,
-				   variable);
+	spec = irmo_class_get_variable(object->objclass, variable);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_set_int",
@@ -347,8 +346,7 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 	g_return_if_fail(value != NULL);
 	g_return_if_fail(object->universe->remote == FALSE);
 	
-	spec = g_hash_table_lookup(object->objclass->variable_hash,
-				   variable);
+	spec = irmo_class_get_variable(object->objclass, variable);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_set_string",
@@ -382,8 +380,7 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 	g_return_val_if_fail(object != NULL, -1);
 	g_return_val_if_fail(variable != NULL, -1);
 	
-	spec = g_hash_table_lookup(object->objclass->variable_hash,
-				   variable);
+	spec = irmo_class_get_variable(object->objclass, variable);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_get_int",
@@ -418,8 +415,7 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 	g_return_val_if_fail(object != NULL, NULL);
 	g_return_val_if_fail(variable != NULL, NULL);
 
-	spec = g_hash_table_lookup(object->objclass->variable_hash,
-				   variable);
+	spec = irmo_class_get_variable(object->objclass, variable);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_get_string",
@@ -448,6 +444,9 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
 }
 
 // $Log$
+// Revision 1.7  2003/08/28 16:43:45  fraggle
+// Use the reflection API internally to improve readability in places
+//
 // Revision 1.6  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

@@ -227,8 +227,7 @@ static IrmoClass *eat_class()
 		token = yylex();
 		parse_assert(token == TOKEN_ID, "variable name expected");
 
-		parse_assert(g_hash_table_lookup(spec->variable_hash, yytext)
-			     == NULL,
+		parse_assert(irmo_class_get_variable(spec, yytext) == NULL,
 			     "multiple definitions of '%s'", yytext);
 		
 		var->name = strdup(yytext);
@@ -327,8 +326,7 @@ static IrmoMethod *eat_method()
 
 		parse_assert(yylex() == TOKEN_ID, "expecting argument name");
 
-		parse_assert(g_hash_table_lookup(spec->argument_hash, yytext)
-			     == NULL,
+		parse_assert(irmo_method_get_argument(spec, yytext) == NULL,
 			     "multiple definitions of '%s'", yytext);
 		
 		arg->name = strdup(yytext);
@@ -410,11 +408,9 @@ static IrmoInterfaceSpec *eat_interface()
 
 			class_spec = eat_class();
 
-			if (g_hash_table_lookup(spec->class_hash,
-						class_spec->name))
-				parse_assert(0,
-					     "multiple definitions of '%s'",
-					     class_spec->name);
+			parse_assert(irmo_interface_spec_get_class(spec, class_spec->name) == NULL,
+				     "multiple definitions of '%s'",
+				     class_spec->name);
 			
 			class_spec->index = spec->nclasses;
 			spec->classes[spec->nclasses] = class_spec;
@@ -432,10 +428,9 @@ static IrmoInterfaceSpec *eat_interface()
 
 			method = eat_method();
 			
-			if (g_hash_table_lookup(spec->method_hash,
-						method->name))
-				parse_assert(0, "multiple definitions of '%s'",
-					     method->name);
+			parse_assert(irmo_interface_spec_get_method(spec, method->name) == NULL,
+				     "multiple definitions of '%s'",
+					method->name);
 			
 			method->index = spec->nmethods;
 			spec->methods[spec->nmethods++] = method;
@@ -500,6 +495,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.7  2003/08/28 16:43:45  fraggle
+// Use the reflection API internally to improve readability in places
+//
 // Revision 1.6  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

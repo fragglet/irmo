@@ -168,8 +168,7 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 	g_return_if_fail(func != NULL);
 	
 	if (classname) {
-		spec = g_hash_table_lookup(universe->spec->class_hash,
-					   classname);
+		spec = irmo_interface_spec_get_class(universe->spec, classname);
 
 		if (!spec) {
 			irmo_error_report("irmo_universe_foreach_object",
@@ -195,6 +194,9 @@ IrmoInterfaceSpec *irmo_universe_get_spec(IrmoUniverse *universe)
 }
 
 // $Log$
+// Revision 1.6  2003/08/28 16:43:45  fraggle
+// Use the reflection API internally to improve readability in places
+//
 // Revision 1.5  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.
