@@ -37,8 +37,12 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 	server->universe = universe;
 	server->client_spec = spec;
 
-	universe_ref(universe);
 	socket_ref(sock);
+
+	// we can have a server which does not serve a universe
+	
+	if (universe)
+		universe_ref(universe);
 	
 	if (hostname) {
 		server->hostname = strdup(hostname);
@@ -59,6 +63,9 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/12/02 21:32:50  sdh300
+// reference counting for IrmoSockets
+//
 // Revision 1.3  2002/11/26 16:27:00  sdh300
 // server needs a hash of connected clients as well as the parent socket
 //
