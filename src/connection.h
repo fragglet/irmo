@@ -38,3 +38,5 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 
 
 #endif /* #ifndef IRMO_CONNECTION_H */
+
+// $Log: not supported by cvs2svn $
