@@ -90,7 +90,20 @@ gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 	return 0;
 }
 
+struct sockaddr *sockaddr_copy(struct sockaddr *addr)
+{
+	int len = sockaddr_len(addr->sa_family);
+	struct sockaddr *cp = malloc(len);
+
+	memcpy(cp, addr, len);
+
+	return cp;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/03 20:44:20  sdh300
+// move sockaddr_len into netlib
+//
 // Revision 1.2  2002/11/26 16:31:27  sdh300
 // oops! need to hash by port number as well as address
 //

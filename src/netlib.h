@@ -19,9 +19,14 @@ gint sockaddr_in6_cmp(struct sockaddr_in6 *a, struct sockaddr_in6 *b);
 guint sockaddr_hash(struct sockaddr *addr);
 gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
 
+struct sockaddr *sockaddr_copy(struct sockaddr *addr);
+
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/03 20:44:20  sdh300
+// move sockaddr_len into netlib
+//
 // Revision 1.3  2002/11/26 16:30:44  sdh300
 // need ipv6 check around ipv6 sockaddr functions
 //
