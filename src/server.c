@@ -95,7 +95,7 @@ void irmo_server_unref(IrmoServer *server)
 
 		// destroy callbacks
 
-		client_callback_destroy(server->connect_callbacks);
+		irmo_callbacklist_free(server->connect_callbacks);
 
 		// remove clients
 
@@ -166,6 +166,10 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/14 18:31:36  sdh300
+// Generalise callback functions to irmo_callbacklist type,
+// remove redundant client_callback code
+//
 // Revision 1.12  2003/03/07 14:31:19  sdh300
 // Callback functions for watching new client connects
 //

@@ -45,6 +45,7 @@ struct _IrmoCallbackData {
 void irmo_callbacklist_add(GSList **list, gpointer func, gpointer user_data);
 gboolean irmo_callbacklist_remove(GSList **list,
 				  gpointer func, gpointer user_data);
+void irmo_callbacklist_free(GSList *list);
 
 IrmoCallbackData *callbackdata_new(ClassSpec *objclass);
 void callbackdata_free(IrmoCallbackData *data);
@@ -56,6 +57,10 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/03/14 18:31:36  sdh300
+// Generalise callback functions to irmo_callbacklist type,
+// remove redundant client_callback code
+//
 // Revision 1.14  2003/03/07 14:31:18  sdh300
 // Callback functions for watching new client connects
 //

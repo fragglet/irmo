@@ -64,6 +64,18 @@ gboolean irmo_callbacklist_remove(GSList **list,
 	return FALSE;
 }
 
+static void callbacklist_free_foreach(IrmoCallbackFuncData *callback,
+				      gpointer user_data)
+{
+	free(callback);
+}
+
+void irmo_callbacklist_free(GSList *list)
+{
+	g_slist_foreach(list, (GFunc) callbacklist_free_foreach, NULL);
+	g_slist_free(list);
+}
+
 // create a new callbackdata object for watching an object or class
 
 IrmoCallbackData *callbackdata_new(ClassSpec *objclass)
@@ -82,38 +94,26 @@ IrmoCallbackData *callbackdata_new(ClassSpec *objclass)
 	return data;
 }
 
-static void callbackdata_free_foreach(IrmoCallbackFuncData *callback,
-				       gpointer user_data)
-{
-	free(callback);
-}
-
 void callbackdata_free(IrmoCallbackData *data)
 {
 	int i;
 	
 	// free all class callbacks
 
-	g_slist_foreach(data->class_callbacks,
-			(GFunc) callbackdata_free_foreach, NULL);
-	g_slist_free(data->class_callbacks);
+	irmo_callbacklist_free(data->class_callbacks);
 
 	// free destroy callbacks
 
-	g_slist_foreach(data->destroy_callbacks,
-			(GFunc) callbackdata_free_foreach, NULL);
-	g_slist_free(data->destroy_callbacks);
+	irmo_callbacklist_free(data->destroy_callbacks);
 	
 	// free all variable callbacks
 
 	for (i=0; i<data->objclass->nvariables; ++i) {
-		g_slist_foreach(data->variable_callbacks[i],
-				(GFunc) callbackdata_free_foreach, NULL);
-		g_slist_free(data->variable_callbacks[i]);
+		irmo_callbacklist_free(data->variable_callbacks[i]);
 	}
 
 	free(data->variable_callbacks);
-	
+
 	free(data);
 }
 
@@ -436,6 +436,10 @@ void irmo_object_unwatch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.20  2003/03/14 18:31:36  sdh300
+// Generalise callback functions to irmo_callbacklist type,
+// remove redundant client_callback code
+//
 // Revision 1.19  2003/03/07 14:31:18  sdh300
 // Callback functions for watching new client connects
 //
