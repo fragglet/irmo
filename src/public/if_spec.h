@@ -190,6 +190,18 @@ gint irmo_class_num_variables(IrmoClass *klass);
 IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name);
 
 /*!
+ * \brief Add a reference to a \ref IrmoClass object
+ */
+
+void irmo_class_ref(IrmoClass *klass);
+
+/*!
+ * \brief Remove a reference to a \ref IrmoClass object
+ */
+
+void irmo_class_unref(IrmoClass *klass);
+
+/*!
  * \brief Iterate over all variables in a class
  * 
  * \param klass		The class object
@@ -212,6 +224,18 @@ gchar *irmo_class_var_get_name(IrmoClassVar *var);
  */
 
 IrmoVarType irmo_class_var_get_type(IrmoClassVar *var);
+
+/*!
+ * \brief Add a reference to an \ref IrmoClassVar object
+ */
+
+void irmo_class_var_ref(IrmoClassVar *var);
+
+/*!
+ * \brief Remove a reference to an \ref IrmoClassVar object
+ */
+
+void irmo_class_var_unref(IrmoClassVar *var);
 
 /*!
  * \brief Get the name of a \ref IrmoMethod
@@ -249,6 +273,18 @@ void irmo_method_foreach_argument(IrmoMethod *method,
 				  IrmoMethodArgCallback func, 
 				  gpointer user_data);
 
+/*!
+ * \brief Add a reference to an \ref IrmoMethod object
+ */
+
+void irmo_method_ref(IrmoMethod *method);
+
+/*!
+ * \brief Remove a reference to an \ref IrmoMethod object
+ */
+
+void irmo_method_unref(IrmoMethod *method);
+
 /*! 
  * \brief Get the name of a method argument
  */
@@ -261,11 +297,26 @@ gchar *irmo_method_arg_get_name(IrmoMethodArg *arg);
 
 IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg);
 
+/*!
+ * \brief Add a reference to an \ref IrmoMethodArg object
+ */
+
+void irmo_method_arg_ref(IrmoMethodArg *arg);
+
+/*!
+ * \brief Remove a reference to an \ref IrmoMethodArg object
+ */
+
+void irmo_method_arg_unref(IrmoMethodArg *arg);
+
 //! \}
 
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.8  2003/08/31 22:24:26  fraggle
+// Add missing prototypes to headers
+//
 // Revision 1.7  2003/08/29 17:25:24  fraggle
 // IRMO_NUM_TYPES
 //
