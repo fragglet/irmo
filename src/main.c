@@ -220,6 +220,9 @@ int main(int argc, char *argv[])
 			universe_watch_new(universe, "my_class",
 					   my_destroy_callback,
 					   "new object callback");
+			universe_watch_destroy(universe, "my_class",
+					       my_destroy_callback,
+					       "object destroyed");
 			for (;;)
 				connection_run(conn);
 		} else {
@@ -231,6 +234,7 @@ int main(int argc, char *argv[])
 		IrmoUniverse *universe;
 		IrmoSocket *socket;
 		IrmoServer *server;
+		IrmoObject *obj;
 		time_t t;
 		
 		socket = socket_new(AF_INET, TEST_PORT);
@@ -247,25 +251,36 @@ int main(int argc, char *argv[])
 		server = server_new(socket, NULL, universe, NULL);
 
 		t = time(NULL);
-		
+
+		obj = object_new(universe, "my_class");
+
 		while (1) {
 			socket_run(socket);
 			usleep(100);
 
+			// every 4 seconds create a new object
+			
 			if (time(NULL) > t + 4) {
-				IrmoObject *obj;
+				// destroy the previously created object
+				
+				object_destroy(obj);
+				
 				printf("create new object\n");
 				obj = object_new(universe, "my_class");
 				object_set_int(obj, "my_int", 3);
 				object_set_string(obj, "my_string", "hi");
+				
 				t = time(NULL);
-				object_destroy(obj);
 			}
 		}
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.22  2003/03/06 19:35:24  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec
+// Improve client test harness to add callbacks for new object creation
+//
 // Revision 1.21  2003/03/05 17:38:05  sdh300
 // Test harness for network code
 //
