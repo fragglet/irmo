@@ -39,6 +39,10 @@ struct _IrmoServer {
 	GSList *connect_callbacks;
 };
 
+// invoke IrmoClientCallback callback functions in a list
+
+void irmo_client_callback_raise(GSList **list, IrmoClient *client);
+
 // raise callback functions on new client connect
 
 void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
@@ -46,6 +50,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/07 14:31:19  sdh300
+// Callback functions for watching new client connects
+//
 // Revision 1.6  2003/03/06 19:33:51  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //

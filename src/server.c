@@ -150,7 +150,7 @@ void irmo_server_unwatch_connect(IrmoServer *server, IrmoClientCallback func,
 	}
 }
 
-static void server_raise_connect_foreach(IrmoCallbackFuncData *data,
+static void client_callback_raise_foreach(IrmoCallbackFuncData *data,
 					 IrmoClient *client)
 {
 	IrmoClientCallback func = (IrmoClientCallback) data->func;
@@ -158,14 +158,22 @@ static void server_raise_connect_foreach(IrmoCallbackFuncData *data,
 	func(client, data->user_data);
 }
 
-void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
+void irmo_client_callback_raise(GSList **list, IrmoClient *client)
 {
-	g_slist_foreach(server->connect_callbacks,
-			(GFunc) server_raise_connect_foreach,
+	g_slist_foreach(list,
+			(GFunc) client_callback_raise_foreach,
 			client);
 }
 
+void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
+{
+	irmo_client_callback_raise(server->connect_callbacks, client);
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/03/16 00:44:04  sdh300
+// Add irmo_callbacklist_free function
+//
 // Revision 1.13  2003/03/14 18:31:36  sdh300
 // Generalise callback functions to irmo_callbacklist type,
 // remove redundant client_callback code
