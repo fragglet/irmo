@@ -296,31 +296,15 @@ void irmo_client_disconnect(IrmoClient *client)
 	client->connect_attempts = CLIENT_CONNECT_ATTEMPTS;
 }
 
-void irmo_client_watch_disconnect(IrmoClient *client,
-				  IrmoClientCallback func,
-				  gpointer user_data)
+IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
+					   IrmoClientCallback func,
+					   gpointer user_data)
 {
 	g_return_if_fail(client != NULL);
 	g_return_if_fail(func != NULL);
 	
-	irmo_callbacklist_add(&client->disconnect_callbacks,
-			      func, user_data);
-}
-
-void irmo_client_unwatch_disconnect(IrmoClient *client,
-				    IrmoClientCallback func,
-				    gpointer user_data)
-{
-	g_return_if_fail(client != NULL);
-	g_return_if_fail(func != NULL);
-	
-	if (!irmo_callbacklist_remove(&client->disconnect_callbacks,
-				      func, user_data)) {
-		fprintf(stderr,
-			"irmo_client_unwatch_disconnect: "
-			"disconnect watch not found!\n");
-		return;
-	}
+	return irmo_callbacklist_add(&client->disconnect_callbacks,
+				     func, user_data);
 }
 
 int irmo_client_timeout_time(IrmoClient *client)
@@ -354,8 +338,11 @@ struct sockaddr *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:23  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:39  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:23  fraggle
+// Initial sourceforge import
 //
 // Revision 1.26  2003/06/09 21:06:50  sdh300
 // Add CVS Id tag and copyright/license notices

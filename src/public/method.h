@@ -67,22 +67,13 @@ typedef void (*IrmoMethodCallback)(IrmoMethodData *data, gpointer user_data);
  * \param method      A callback function to call when the method is invoked.
  * \param user_data   User data to be passed to the callback function
  *
- * \sa irmo_universe_method_unwatch
+ * \return            A \ref IrmoCallback object representing the watch.
  */
 
-void irmo_universe_method_watch(IrmoUniverse *universe, gchar *method_name,
-				IrmoMethodCallback method, gpointer user_data);
-
-/*!
- * \brief Unset a method watch
- *
- * Unset a watch set with \ref irmo_universe_method_watch. All parameters
- * must be identical to those used to set the watch.
- */
-
-void irmo_universe_method_unwatch(IrmoUniverse *universe, gchar *method_name,
-				  IrmoMethodCallback method,
-				  gpointer user_data);
+IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe, 
+					 gchar *method_name,
+					 IrmoMethodCallback method, 
+					 gpointer user_data);
 
 /*!
  * \brief Retrieve a method argument
@@ -143,8 +134,11 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...);
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:26  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:40  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:26  fraggle
+// Initial sourceforge import
 //
 // Revision 1.3  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices

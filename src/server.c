@@ -163,30 +163,18 @@ void irmo_server_unref(IrmoServer *server)
 	}
 }
 
-void irmo_server_watch_connect(IrmoServer *server, IrmoClientCallback func,
-			       gpointer user_data)
+IrmoCallback *irmo_server_watch_connect(IrmoServer *server, 
+					IrmoClientCallback func,
+					gpointer user_data)
 {
 	g_return_if_fail(server != NULL);
 	g_return_if_fail(func != NULL);
 	
-	irmo_callbacklist_add(&server->connect_callbacks, func, user_data);
+	return irmo_callbacklist_add(&server->connect_callbacks, 
+				     func, user_data);
 }
 
-void irmo_server_unwatch_connect(IrmoServer *server, IrmoClientCallback func,
-				 gpointer user_data)
-{
-	g_return_if_fail(server != NULL);
-	g_return_if_fail(func != NULL);
-	
-	if (!irmo_callbacklist_remove(&server->connect_callbacks, 
-				      func, user_data)) {
-		fprintf(stderr,
-			"irmo_server_unwatch_connect: "
-			"watch not found on server\n");
-	}
-}
-
-static void client_callback_raise_foreach(IrmoCallbackFuncData *data,
+static void client_callback_raise_foreach(IrmoCallback *data,
 					 IrmoClient *client)
 {
 	IrmoClientCallback func = (IrmoClientCallback) data->func;
@@ -207,8 +195,11 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:39  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.18  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

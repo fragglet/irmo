@@ -72,22 +72,12 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
  * \param func       The function to call
  * \param user_data  Some extra data to pass to the callback function
  *
- * \sa irmo_server_unwatch_connect
+ * \return           A \ref IrmoCallback object representing the watch
  */
 
-void irmo_server_watch_connect(IrmoServer *server, IrmoClientCallback func,
-			       gpointer user_data);
-
-/*!
- * \brief Remove a watch on a server
- *
- * This removes a watch set on a server with \ref irmo_serv_watch_connect.
- * All parameters must be the same as those used to set the watch initially.
- *
- */
-
-void irmo_server_unwatch_connect(IrmoServer *server, IrmoClientCallback func,
-				 gpointer user_data);
+IrmoCallback *irmo_server_watch_connect(IrmoServer *server, 
+					IrmoClientCallback func,
+					gpointer user_data);
 
 /*!
  * \brief Reference a server object
@@ -120,8 +110,11 @@ void irmo_server_unref(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:26  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:40  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:26  fraggle
+// Initial sourceforge import
 //
 // Revision 1.8  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices

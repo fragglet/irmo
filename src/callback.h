@@ -31,14 +31,15 @@
 #define IRMO_INTERNAL_CALLBACK_H
 
 typedef struct _IrmoCallbackData IrmoCallbackData;
-typedef struct _IrmoCallbackFuncData IrmoCallbackFuncData;
+
 #include "public/callback.h"
 
 #include "client.h"
 #include "if_spec.h"
 #include "object.h"
 
-struct _IrmoCallbackFuncData {
+struct _IrmoCallback {
+	GSList **list;                 // callback list this belongs to
 	gpointer func;
         gpointer user_data;
 };
@@ -67,9 +68,8 @@ struct _IrmoCallbackData {
 
 // generalised callback list functions
 
-void irmo_callbacklist_add(GSList **list, gpointer func, gpointer user_data);
-gboolean irmo_callbacklist_remove(GSList **list,
-				  gpointer func, gpointer user_data);
+IrmoCallback *irmo_callbacklist_add(GSList **list, gpointer func, 
+				    gpointer user_data);
 void irmo_callbacklist_free(GSList *list);
 
 IrmoCallbackData *callbackdata_new(ClassSpec *objclass);
@@ -82,8 +82,11 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:23  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:39  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:23  fraggle
+// Initial sourceforge import
 //
 // Revision 1.17  2003/06/09 21:06:50  sdh300
 // Add CVS Id tag and copyright/license notices

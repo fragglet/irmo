@@ -30,8 +30,10 @@
 #include "method.h"
 #include "universe.h"
 
-void irmo_universe_method_watch(IrmoUniverse *universe, gchar *method_name,
-				IrmoMethodCallback method, gpointer user_data)
+IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe, 
+					 gchar *method_name,
+					 IrmoMethodCallback method, 
+					 gpointer user_data)
 {
 	MethodSpec *spec;
 
@@ -49,40 +51,11 @@ void irmo_universe_method_watch(IrmoUniverse *universe, gchar *method_name,
 		return;
 	}
 
-	irmo_callbacklist_add(&universe->method_callbacks[spec->index],
-			      method, user_data);
+	return irmo_callbacklist_add(&universe->method_callbacks[spec->index],
+				     method, user_data);
 }
 
-void irmo_universe_method_unwatch(IrmoUniverse *universe, gchar *method_name,
-				  IrmoMethodCallback method,
-				  gpointer user_data)
-{
-	MethodSpec *spec;
-
-	g_return_if_fail(universe != NULL);
-	g_return_if_fail(method_name != NULL);
-	g_return_if_fail(method != NULL);
-	
-	spec = g_hash_table_lookup(universe->spec->method_hash,
-				   method_name);
-	
-	if (!spec) {
-		fprintf(stderr,
-			"irmo_universe_method_unwatch: Unknown method '%s'\n",
-			method_name);
-		return;
-	}
-
-	if (!irmo_callbacklist_remove(&universe->method_callbacks[spec->index],
-				      method, user_data)) {
-		fprintf(stderr,
-			"irmo_universe_method_unwatch: watch not found for "
-			"'%s' method\n", method_name);
-		return;
-	}
-}
-
-static void method_invoke_foreach(IrmoCallbackFuncData *data,
+static void method_invoke_foreach(IrmoCallback *data,
 				  IrmoMethodData *method_data)
 {
 	IrmoMethodCallback func = (IrmoMethodCallback) data->func;
@@ -229,8 +202,11 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:39  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.5  2003/06/09 21:06:51  sdh300
 // Add CVS Id tag and copyright/license notices

@@ -47,6 +47,15 @@
  */
 
 /*!
+ * \defgroup callback Irmo Callback
+ *
+ * Various parts of the library allow callback watches to be placed 
+ * on particular events. When the event occurs, the callback function
+ * will be invoked. These watches are represented by a 
+ * \ref IrmoCallback object.
+ */
+
+/*!
  * \defgroup universe Irmo Universe
  *
  * An IrmoUniverse defines a data structure which implements an Interface
@@ -139,8 +148,11 @@
  */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:23  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:39  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:23  fraggle
+// Initial sourceforge import
 //
 // Revision 1.10  2003/06/09 21:06:48  sdh300
 // Add CVS Id tag and copyright/license notices

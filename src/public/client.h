@@ -41,6 +41,12 @@
 
 typedef struct _IrmoClient IrmoClient;
 
+/*! 
+ * \brief Callback function for client actions.
+ *
+ * Functions of this type are used for client disconnect callbacks.
+ */
+
 typedef void (*IrmoClientCallback) (IrmoClient *client, gpointer user_data);
 
 #include "server.h"
@@ -105,22 +111,13 @@ IrmoUniverse *irmo_client_get_universe(IrmoClient *client);
  * \param client    The client to watch
  * \param func      The callback function to invoke
  * \param user_data Extra data to pass to the callback function
- * \sa irmo_client_unwatch_disconnect
- */
-
-void irmo_client_watch_disconnect(IrmoClient *client,
-				  IrmoClientCallback func, gpointer user_data);
-
-/*!
- * \brief Unset a watch set with \ref irmo_client_watch_disconnect
  *
- * Unset a disconnect watch. All parameters must be the same as those
- * used to initially set the watch.
+ * \return          A \ref IrmoCallback object representing the watch.
  */
 
-void irmo_client_unwatch_disconnect(IrmoClient *client,
-				    IrmoClientCallback func,
-				    gpointer user_data);
+IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
+					   IrmoClientCallback func, 
+					   gpointer user_data);
 
 /*!
  * \brief Get the ping time for a client
@@ -168,8 +165,11 @@ struct sockaddr *irmo_client_get_addr(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:40  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.10  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices

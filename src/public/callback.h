@@ -34,6 +34,35 @@
 #include "object.h"
 
 /*!
+ * \addtogroup callback
+ * \{
+ */
+
+/*!
+ * \brief Callback object
+ * 
+ * When a new callback watch is created, an IrmoCallback object is
+ * returned representing the watch. The watch can be unset with
+ * \ref irmo_callback_unset
+ */
+
+typedef struct _IrmoCallback IrmoCallback;
+
+/*!
+ * \brief Unset a callback watch
+ *
+ * Unsets a watch on a callback object.
+ *
+ * \param callback   The callback to destroy.
+ *
+ */
+
+void irmo_callback_unset(IrmoCallback *callback);
+
+//! \}
+
+
+/*!
  * \addtogroup universe
  * \{
  */
@@ -51,22 +80,14 @@
  * 			created.
  * \param user_data	Some extra data to pass to the callback function.
  *
- * \sa irmo_universe_unwatch_new
  *
+ * \return an \ref IrmoCallback object representing the watch
  */
 
-void irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
-			     IrmoObjCallback func, gpointer user_data);
-
-/*!
- * \brief Stop watching for new object creation
- *
- * Turns off a watch set with \ref irmo_universe_watch_new. All parameters
- * should be the same as those used to set the watch.
- */
-
-void irmo_universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
-			       IrmoObjCallback func, gpointer user_data);
+IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe, 
+				      gchar *classname,
+				      IrmoObjCallback func, 
+				      gpointer user_data);
 
 /*!
  * \brief Watch for modification of objects of a particular class.
@@ -84,24 +105,13 @@ void irmo_universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
  * \param func		A function to call.
  * \param user_data	Some extra data to pass to the callback function.
  *
- * \sa irmo_universe_unwatch_class
+ * \return an \ref IrmoCallback object representing the watch
  */
 
-void irmo_universe_watch_class(IrmoUniverse *universe,
-			       gchar *classname, gchar *variable,
-			       IrmoVarCallback func, gpointer user_data);
-
-/*!
- * \brief Stop watching for object modification.
- *
- * Turn off a watch set with \ref irmo_universe_watch_class. All arguments
- * should be the same as those used to set the watch.
- *
- */
-
-void irmo_universe_unwatch_class(IrmoUniverse *universe,
-				 gchar *classname, gchar *variable,
-				 IrmoVarCallback func, gpointer user_data);
+IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
+					gchar *classname, gchar *variable,
+					IrmoVarCallback func, 
+					gpointer user_data);
 
 /*!
  * \brief Watch for object destruction.
@@ -114,21 +124,13 @@ void irmo_universe_unwatch_class(IrmoUniverse *universe,
  * \param func		The function to call.
  * \param user_data	Some extra data to pass to the callback function.
  *
- * \sa irmo_universe_unwatch_destroy
+ * \return an \ref IrmoCallback object representing the watch
  */
 
-void irmo_universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
-				 IrmoObjCallback func, gpointer user_data);
-
-/*!
- * \brief Stop watching for object destruction.
- *
- * Turn off a watch set with \ref irmo_universe_watch_destroy. All arguments
- * should be the same as those originally used to set the watch.
- */
-
-void irmo_universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
-				   IrmoObjCallback func, gpointer user_data);
+IrmoCallback *irmo_universe_watch_destroy(IrmoUniverse *universe, 
+					  gchar *classname,
+					  IrmoObjCallback func, 
+					  gpointer user_data);
 
 //! \}
 
@@ -151,21 +153,11 @@ void irmo_universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
  * \param func		The function to call.
  * \param user_data	Extra data to pass to the function when it is called.
  *
- * \sa irmo_object_unwatch
+ * \return an \ref IrmoCallback object representing the watch
  */
 
-void irmo_object_watch(IrmoObject *object, gchar *variable,
-		       IrmoVarCallback func, gpointer user_data);
-
-/*!
- * \brief Stop watching for object modification
- *
- * Turn off a watch set with \ref irmo_object_watch. All parameters should be
- * the same as those used to initially set the watch.
- */
-
-void irmo_object_unwatch(IrmoObject *object, gchar *variable,
-			 IrmoVarCallback func, gpointer user_data);
+IrmoCallback *irmo_object_watch(IrmoObject *object, gchar *variable,
+				IrmoVarCallback func, gpointer user_data);
 
 /*!
  * \brief Watch for object destruction
@@ -177,28 +169,24 @@ void irmo_object_unwatch(IrmoObject *object, gchar *variable,
  * \param func		Callback function to call
  * \param user_data	Extra data to pass to the function when called.
  * \sa irmo_object_unwatch_destroy
- */
-
-void irmo_object_watch_destroy(IrmoObject *object,
-			       IrmoObjCallback func, gpointer user_data);
-
-/*!
- * \brief Stop watching for object destruction
  *
- * Turn off a watch set with \ref irmo_object_watch_destroy. All parameters
- * should be the same as those used to initially set the watch.
+ * \return an \ref IrmoCallback object representing the watch
  */
 
-void irmo_object_unwatch_destroy(IrmoObject *object,
-			    IrmoObjCallback func, gpointer user_data);
+IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
+					IrmoObjCallback func, 
+					gpointer user_data);
 
 //! \}
 
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/07/22 02:05:39  fraggle
+// Move callbacks to use a more object-oriented API.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.3  2003/06/09 21:06:54  sdh300
 // Add CVS Id tag and copyright/license notices
