@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "public/connection.h"
 #include "public/if_spec.h"
@@ -209,29 +210,57 @@ int main(int argc, char *argv[])
 		conn = irmo_connect(AF_INET, "localhost", TEST_PORT,
 				    spec, NULL);
 
-		printf("connected to server!\n");
+		if (conn)
+			printf("connected to server!\n");
+		else
+			printf("connection failed.\n");
+
+		for (;;)
+			connection_run(conn);
+		
 	} else if (!strcmp(argv[1], "server")) {
 		InterfaceSpec *spec;
 		IrmoUniverse *universe;
 		IrmoSocket *socket;
 		IrmoServer *server;
+		time_t t;
+		
+		socket = socket_new(AF_INET, TEST_PORT);
+
+		if (!socket) {
+			printf("couldnt bind to test port\n");
+			return;
+		}
 
 		spec = interface_spec_new("test.if");
 
 		universe = universe_new(spec);
 
-		socket = socket_new(AF_INET, TEST_PORT);
-
 		server = server_new(socket, NULL, universe, NULL);
 
+		t = time(NULL);
+		
 		while (1) {
 			socket_run(socket);
 			usleep(100);
+
+			if (time(NULL) > t + 4) {
+				IrmoObject *obj;
+				printf("create new object\n");
+				obj = object_new(universe, "my_class");
+				object_set_int(obj, "my_int", 3);
+				object_set_string(obj, "my_string", "hi");
+				t = time(NULL);
+				object_destroy(obj);
+			}
 		}
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.20  2003/02/23 00:05:02  sdh300
+// Fix compile after header changes
+//
 // Revision 1.19  2003/02/11 19:19:02  sdh300
 // Test code for connection
 //
