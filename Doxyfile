@@ -301,7 +301,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = doc/sections.doxygen src/
+INPUT                  = doc/sections.doxygen src/public/
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -921,4 +921,7 @@ BIN_ABSPATH            = /usr/local/bin/
 EXT_DOC_PATHS          = 
 
 # $Log: not supported by cvs2svn $
+# Revision 1.2  2002/11/17 20:38:27  sdh300
+# add cvs tags
+#
 
