@@ -157,9 +157,8 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 			// with a NULL
 
 			if (atom->data.change.nchanged <= 0) {
-				printf("nullifying atom\n");
 				sendatom_nullify(atom);
-			} else printf("%i vars left..\n", atom->data.change.nchanged);
+			}
 			
 			// there can only be one change atom for a
 			// variable in the send window. stop searching
@@ -365,6 +364,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/04/25 00:40:50  sdh300
+// Nullifying of change atoms for out-of-date data in the send window
+//
 // Revision 1.13  2003/03/16 01:54:24  sdh300
 // Method calls over network protocol
 //
