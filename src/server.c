@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "netlib.h"
 #include "server.h"
 
 IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
@@ -44,6 +45,9 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 		sock->default_server = server;
 	}
 
+	server->clients = g_hash_table_new((GHashFunc) sockaddr_hash,
+					   (GCompareFunc) sockaddr_cmp);
+	
 	// TODO: add hooks for universe, store a list of servers connected
 	// to each universe
 	
@@ -52,6 +56,9 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/11/26 15:46:41  sdh300
+// Fix compile and possible namespace conflicts with the "socket" function
+//
 // Revision 1.1  2002/11/26 15:43:05  sdh300
 // Initial IrmoServer code
 //
