@@ -18,6 +18,8 @@
 
 #define RTT_ALPHA 0.9
 
+gboolean irmo_proto_use_preexec = TRUE;
+
 // only the low 16 bits of the stream position is sent
 // therefore we must expand positions we get based on the
 // current position
@@ -286,9 +288,10 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 
 	// try to preexec the new data
 
-	irmo_client_run_preexec(client,
-				start - client->recvwindow_start,
-				seq - client->recvwindow_start);
+	if (irmo_proto_use_preexec)
+		irmo_client_run_preexec(client,
+					start - client->recvwindow_start,
+					seq - client->recvwindow_start);
 }
 
 static void proto_parse_ack(IrmoClient *client, int ack)
@@ -410,6 +413,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/05/20 02:06:06  sdh300
+// Add out-of-order execution of stream
+//
 // Revision 1.15  2003/05/07 15:48:05  sdh300
 // Fix backoff timeout bug
 //
