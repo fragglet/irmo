@@ -64,6 +64,7 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	connection->local_client = client;
 	connection->local_server = server;
 	connection->local_universe = local_universe;
+	connection->universe = client->universe;
 
 	if (local_universe)
 		universe_ref(local_universe);
@@ -87,6 +88,11 @@ IrmoUniverse *connection_get_universe(IrmoConnection *conn)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.7  2003/02/23 00:45:39  sdh300
 // Add universe access functions for client, connection
 //
