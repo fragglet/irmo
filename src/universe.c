@@ -183,7 +183,17 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 			     &data);			     
 }
 
+IrmoInterfaceSpec *irmo_universe_get_spec(IrmoUniverse *universe)
+{
+	g_return_val_if_fail(universe != NULL, NULL);
+
+	return universe->spec;
+}
+
 // $Log$
+// Revision 1.3  2003/08/15 17:53:55  fraggle
+// irmo_object_get_universe, irmo_universe_get_spec functions
+//
 // Revision 1.2  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

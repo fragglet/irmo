@@ -105,6 +105,18 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 				  IrmoObjCallback func, gpointer user_data);
 
 /*!
+ * \brief	Get the specification for a Universe
+ *
+ * Returns the \ref IrmoInterfaceSpec specification object for a
+ * given universe.
+ *
+ * \param universe	The universe to query
+ * \return		The interface object
+ */
+
+IrmoInterfaceSpec *irmo_universe_get_spec(IrmoUniverse *universe);
+
+/*!
  * \brief	Add a reference to a Universe.
  *
  * Universes implement reference counting. Each time you store a 
@@ -133,8 +145,11 @@ void irmo_universe_unref(IrmoUniverse *universe);
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:26  fraggle
-// Initial revision
+// Revision 1.2  2003/08/15 17:53:56  fraggle
+// irmo_object_get_universe, irmo_universe_get_spec functions
+//
+// Revision 1.1.1.1  2003/06/09 21:33:26  fraggle
+// Initial sourceforge import
 //
 // Revision 1.4  2003/06/09 21:06:56  sdh300
 // Add CVS Id tag and copyright/license notices

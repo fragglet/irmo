@@ -435,7 +435,17 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 	return object->variables[spec->index].s;
 }
 
+IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
+{
+	g_return_val_if_fail(obj != NULL, NULL);
+
+	return obj->universe;
+}
+
 // $Log$
+// Revision 1.3  2003/08/15 17:53:55  fraggle
+// irmo_object_get_universe, irmo_universe_get_spec functions
+//
 // Revision 1.2  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

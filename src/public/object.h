@@ -152,13 +152,28 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable);
 
 gchar *irmo_object_get_string(IrmoObject *object, gchar *variable);
 
+/*!
+ * \brief Get the universe an object belongs to
+ *
+ * Returns a reference to the \ref IrmoUniverse universe object
+ * the object belongs to.
+ *
+ * \param object    The object to query
+ * \return	    The universe object the object belongs to
+ */
+
+IrmoUniverse *irmo_object_get_universe(IrmoObject *object);
+
 //! \}
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:26  fraggle
-// Initial revision
+// Revision 1.2  2003/08/15 17:53:56  fraggle
+// irmo_object_get_universe, irmo_universe_get_spec functions
+//
+// Revision 1.1.1.1  2003/06/09 21:33:26  fraggle
+// Initial sourceforge import
 //
 // Revision 1.4  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices
