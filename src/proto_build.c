@@ -122,6 +122,34 @@ static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	}
 }
 
+static inline void proto_atom_resent(IrmoClient *client, int i)
+{
+	// set resent flag
+	
+	client->sendwindow[i]->resent = TRUE;
+	
+	// if we are resending the first atom,
+	// use exponential backoff and double the
+	// resend time every time we resend
+	
+	if (i == 0) {
+
+		// if this is the first time we have missed a packet, its
+		// possible we're experiencing congestion.
+		// reset the send window size back to one packet and save the 
+		// slow-start threshold
+		
+		if (client->backoff == 1) {
+			client->ssthresh = client->cwnd / 2;
+			client->cwnd = PACKET_THRESHOLD;
+		}
+		
+		client->backoff *= 2;
+		//printf("backoff now %i\n", client->backoff);
+	}
+	
+}
+
 IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 {
 	struct timeval nowtime;
@@ -181,21 +209,8 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 		for (; n>0; --n, ++i) {
 			proto_add_atom(packet, client->sendwindow[i]);
 
-			if (client->sendwindow[i]->sendtime.tv_sec) {
-
-				// set resent flag
-
-				client->sendwindow[i]->resent = TRUE;
-
-				// if we are resending the first atom,
-				// use exponential backoff and double the
-				// resend time every time we resend
-				
-				if (i == 0) {
-					client->backoff *= 2;
-					//printf("backoff now %i\n", client->backoff);
-				}
-			}
+			if (client->sendwindow[i]->sendtime.tv_sec)
+				proto_atom_resent(client, i);
 			
 			// store send time in atoms
 
@@ -229,7 +244,7 @@ static void proto_pump_client(IrmoClient *client)
 
 	// adding things in until we run out of space or atoms to add
 	
-	while (current_size < SENDWINDOW_THRESHOLD
+	while (current_size < client->cwnd
 	       && !g_queue_is_empty(client->sendq)
 	       && client->sendwindow_size < MAX_SENDWINDOW) {
 		IrmoSendAtom *atom;
@@ -246,11 +261,6 @@ static void proto_pump_client(IrmoClient *client)
 		current_size += atom->len;
 	}
 }
-
-// size of each packet; when size of atoms passes this threshold
-// no more atoms are added to it
-
-#define PACKET_THRESHOLD 1024
 
 // maximum timeout length (ms)
 // beyond this length, the backoff has got too high and the client is
@@ -379,6 +389,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/26 16:15:34  sdh300
+// Disconnect clients after too long a timeout
+//
 // Revision 1.12  2003/03/21 17:21:45  sdh300
 // Round Trip Time estimatation and adaptive timeout times
 //

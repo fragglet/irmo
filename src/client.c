@@ -60,8 +60,16 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 	// backoff
 
 	client->backoff = 1;
+
+	// congestion/sendwindow size stuff
+
+	// start cwnd with one packet, ssthresh as large
+
+	client->cwnd = PACKET_THRESHOLD;
+	client->ssthresh = 65535;
 	
 	// insert into server hashtable and socket hashtable
+	
 	g_hash_table_insert(server->clients,
 			    client->addr,
 			    client);
@@ -284,6 +292,9 @@ int irmo_client_timeout_time(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2003/03/21 17:21:45  sdh300
+// Round Trip Time estimatation and adaptive timeout times
+//
 // Revision 1.18  2003/03/17 17:34:27  sdh300
 // Add disconnect callbacks for clients
 //

@@ -14,6 +14,11 @@
 
 #define MAX_SENDWINDOW 1024
 
+// size of each packet; when size of atoms passes this threshold
+// no more atoms are added to it
+
+#define PACKET_THRESHOLD 128
+
 typedef enum {
 	CLIENT_CONNECTING,          // received first syn, sent syn ack
 	CLIENT_CONNECTED,           // received syn ack reply, normal op
@@ -97,6 +102,16 @@ struct _IrmoClient {
 	// backoff multiply
 
 	int backoff;
+
+	// maximum send window size in bytes. once the amount of data
+	// in the send window exceeds this amount, no more is added.
+
+	float cwnd;
+
+	// slow start threshold. when cwnd is above this threshold we
+	// do congestion avoidance.
+
+	int ssthresh;
 };
 
 // create a new client, attached to a particular server
@@ -122,6 +137,9 @@ int irmo_client_timeout_time(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2003/03/21 17:21:45  sdh300
+// Round Trip Time estimatation and adaptive timeout times
+//
 // Revision 1.17  2003/03/17 17:34:27  sdh300
 // Add disconnect callbacks for clients
 //

@@ -253,6 +253,17 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 
 			atom = proto_parse_atom(client, packet, atomtype);
 
+			// set the need_ack flag if this is at the start
+			// or before the start of the recvwindow. We only
+			// send an ack when the atom is at the start of
+			// the recvwindow (seq == client->recvwindow_start)
+			// as this allows us to advance the window
+			// or if it is too old (as this could be resend
+			// because our previous ack was lost
+
+			if (seq <= client->recvwindow_start)
+				client->need_ack = TRUE;
+			
 			// too old?
 			
 			if (seq < client->recvwindow_start) {
@@ -299,6 +310,16 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 		return;
 	}
 
+	// we got a valid ack. open up the send window a bit more
+	// if we are above the slow start congestion threshold, open
+	// slowly
+	
+	if (client->cwnd < client->ssthresh)
+		client->cwnd += PACKET_THRESHOLD;
+	else
+		client->cwnd +=
+			(PACKET_THRESHOLD * PACKET_THRESHOLD) / client->cwnd;
+	
 	// We are acking something valid and advancing the window
 	// Assume this is because the first atom in the window has
 	// been cleared. Therefore we can estimate the round-trip time
@@ -377,17 +398,13 @@ void proto_parse_packet(IrmoPacket *packet)
 		proto_parse_packet_cluster(client, packet);
 
 		irmo_client_run_recvwindow(client);
-
-		// need to send an ack
-		// do this even if we already got the data received, incase
-		// the ack was lost and this is why the client is
-		// retransmitting
-		
-		client->need_ack = TRUE;
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/21 17:21:45  sdh300
+// Round Trip Time estimatation and adaptive timeout times
+//
 // Revision 1.11  2003/03/18 20:55:46  sdh300
 // Initial round trip time measurement
 //
