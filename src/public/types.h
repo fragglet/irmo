@@ -216,7 +216,7 @@ typedef void (*IrmoObjCallback) (IrmoObject *object, void *user_data);
  */
 
 /*!
- * \brief an IrmoSocket object.
+ * \brief An IrmoSocket object.
  */
 
 typedef struct _IrmoSocket IrmoSocket;
@@ -348,6 +348,9 @@ typedef void (*IrmoCallbackCallback)(IrmoCallback *callback,
 #endif /* #ifndef IRMO_TYPES_H */
 
 // $Log$
+// Revision 1.4  2003/12/30 05:58:27  fraggle
+// Clear up documentation in a few places
+//
 // Revision 1.3  2003/12/27 19:01:49  fraggle
 // irmo_callback_watch_destroy
 //

@@ -50,7 +50,7 @@ extern "C" {
 /*!
  * \brief Unset a callback watch
  *
- * Unsets a watch on a callback object.
+ * This cancels a watch which has been set.
  *
  * \param callback   The callback to destroy.
  *
@@ -61,9 +61,9 @@ void irmo_callback_unset(IrmoCallback *callback);
 /*!
  * \brief Set a callback for when a \ref IrmoCallback is destroyed.
  *
- * This invokes a callback when a callback object is destroyed, either
- * from being explicitely unset or if the object it is watching is
- * destroyed. 
+ * This sets a watch which invokes a callback when a callback object 
+ * is destroyed, either from being explicitely unset or if the object 
+ * it is watching is destroyed. 
  *
  * This is mostly useful when writing language bindings so that the
  * language can know when to free a callback context.
@@ -88,6 +88,9 @@ IrmoCallback *irmo_callback_watch_destroy(IrmoCallback *callback,
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
+// Revision 1.9  2003/12/30 05:58:27  fraggle
+// Clear up documentation in a few places
+//
 // Revision 1.8  2003/12/27 19:01:49  fraggle
 // irmo_callback_watch_destroy
 //

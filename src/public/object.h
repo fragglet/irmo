@@ -51,7 +51,7 @@ extern "C" {
  */
 
 /*!
- * \brief create a new object of a particular class
+ * \brief Create a new object of a particular class
  *
  * \param world World to create the object within
  * \param type_name The name of the class of object to create
@@ -248,6 +248,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.12  2003/12/30 05:58:27  fraggle
+// Clear up documentation in a few places
+//
 // Revision 1.11  2003/11/21 18:10:18  fraggle
 // Fix up doxygen documentation; move section documentation into headers
 // from 'sections.doxygen'
