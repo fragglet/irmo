@@ -56,6 +56,13 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 				    local_world);
 	}
 	
+	// try to resolve the name
+
+	addr = irmo_sockaddr_for_name(domain, location, port);
+
+	if (!addr)
+		return NULL;
+	
 	// create a socket
 	
 	sock = irmo_socket_new_unbound(domain);
@@ -63,10 +70,6 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 	if (!sock)
 		return NULL;
 
-	// try to resolve the name
-
-	addr = irmo_sockaddr_for_name(domain, location, port);
-	
 	// create a server for our local world. for accessing the
 	// local world the server is seen as a client connecting
 	// to our own local server (symmetrical)
@@ -173,6 +176,9 @@ void irmo_connection_unref(IrmoConnection *conn)
 }
 
 // $Log$
+// Revision 1.9  2003/09/13 15:21:31  fraggle
+// Make sure we resolve a name properly before trying to connect
+//
 // Revision 1.8  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //
