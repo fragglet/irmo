@@ -64,17 +64,14 @@ static IrmoSendAtom *irmo_sendwindow_atom_read(IrmoPacket *packet)
 	return IRMO_SENDATOM(atom);
 }
 
-static void irmo_sendwindow_atom_write(IrmoSendAtom *_atom, 
+static void irmo_sendwindow_atom_write(IrmoSendWindowAtom *atom,
 				       IrmoPacket *packet)
 {
-	IrmoSendWindowAtom *atom = (IrmoSendWindowAtom *) _atom;
-
 	irmo_packet_writei16(packet, atom->max);
 }
 
-static void irmo_sendwindow_atom_run(IrmoSendAtom *_atom)
+static void irmo_sendwindow_atom_run(IrmoSendWindowAtom *atom)
 {
-	IrmoSendWindowAtom *atom = (IrmoSendWindowAtom *) _atom;
 	IrmoClient *client = atom->sendatom.client;
 
 	client->remote_sendwindow_max = atom->max;
@@ -89,15 +86,18 @@ IrmoSendAtomClass irmo_sendwindow_atom = {
 	ATOM_SENDWINDOW,
 	irmo_sendwindow_atom_verify,
 	irmo_sendwindow_atom_read,
-	irmo_sendwindow_atom_write,
-	irmo_sendwindow_atom_run,
-	irmo_sendwindow_atom_length,
+	(IrmoSendAtomWriteFunc) irmo_sendwindow_atom_write,
+	(IrmoSendAtomRunFunc) irmo_sendwindow_atom_run,
+	(IrmoSendAtomLengthFunc) irmo_sendwindow_atom_length,
 	NULL,
 };
 
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.2  2003/11/05 04:05:44  fraggle
+// Cast functions rather than casting arguments to functions
+//
 // Revision 1.1  2003/10/22 16:13:10  fraggle
 // Split off sendatom classes into separate files
 //

@@ -83,18 +83,15 @@ static IrmoSendAtom *irmo_newobject_atom_read(IrmoPacket *packet)
 	return IRMO_SENDATOM(atom);
 }
 
-static void irmo_newobject_atom_write(IrmoSendAtom *_atom, 
+static void irmo_newobject_atom_write(IrmoNewObjectAtom *atom,
 				      IrmoPacket *packet)
 {
-	IrmoNewObjectAtom *atom = (IrmoNewObjectAtom *) _atom;
-
 	irmo_packet_writei16(packet, atom->id);
 	irmo_packet_writei8(packet, atom->classnum);
 }
 
-static void irmo_newobject_atom_run(IrmoSendAtom *_atom)
+static void irmo_newobject_atom_run(IrmoNewObjectAtom *atom)
 {
-	IrmoNewObjectAtom *atom = (IrmoNewObjectAtom *) _atom;
 	IrmoClient *client = atom->sendatom.client;
 	IrmoInterfaceSpec *spec = client->world->spec;
 	IrmoClass *objclass = spec->classes[atom->classnum];
@@ -127,15 +124,18 @@ IrmoSendAtomClass irmo_newobject_atom = {
 	ATOM_NEW,
 	irmo_newobject_atom_verify,
 	irmo_newobject_atom_read,
-	irmo_newobject_atom_write,
-	irmo_newobject_atom_run,
-	irmo_newobject_atom_length,
+	(IrmoSendAtomWriteFunc) irmo_newobject_atom_write,
+	(IrmoSendAtomRunFunc) irmo_newobject_atom_run,
+	(IrmoSendAtomLengthFunc) irmo_newobject_atom_length,
 	NULL,
 };
 
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.2  2003/11/05 04:05:44  fraggle
+// Cast functions rather than casting arguments to functions
+//
 // Revision 1.1  2003/10/22 16:13:10  fraggle
 // Split off sendatom classes into separate files
 //

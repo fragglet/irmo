@@ -69,16 +69,13 @@ static IrmoSendAtom *irmo_destroy_atom_read(IrmoPacket *packet)
 	return IRMO_SENDATOM(atom);
 }
 
-static void irmo_destroy_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
+static void irmo_destroy_atom_write(IrmoDestroyAtom *atom, IrmoPacket *packet)
 {
-	IrmoDestroyAtom *atom = (IrmoDestroyAtom *) _atom;
-
 	irmo_packet_writei16(packet, atom->id);
 }
 
-static void irmo_destroy_atom_run(IrmoSendAtom *_atom)
+static void irmo_destroy_atom_run(IrmoDestroyAtom *atom)
 {
-	IrmoDestroyAtom *atom = (IrmoDestroyAtom *) _atom;
 	IrmoClient *client = atom->sendatom.client;
 	IrmoObject *obj;
 
@@ -107,15 +104,18 @@ IrmoSendAtomClass irmo_destroy_atom = {
 	ATOM_DESTROY,
 	irmo_destroy_atom_verify,
 	irmo_destroy_atom_read,
-	irmo_destroy_atom_write,
-	irmo_destroy_atom_run,
-	irmo_destroy_atom_length,
+	(IrmoSendAtomWriteFunc) irmo_destroy_atom_write,
+	(IrmoSendAtomRunFunc) irmo_destroy_atom_run,
+	(IrmoSendAtomLengthFunc) irmo_destroy_atom_length,
 	NULL,
 };
 
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.2  2003/11/05 04:05:44  fraggle
+// Cast functions rather than casting arguments to functions
+//
 // Revision 1.1  2003/10/22 16:13:10  fraggle
 // Split off sendatom classes into separate files
 //

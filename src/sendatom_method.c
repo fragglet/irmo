@@ -100,9 +100,8 @@ static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 	return IRMO_SENDATOM(atom);
 }
 
-static void irmo_method_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
+static void irmo_method_atom_write(IrmoMethodAtom *atom, IrmoPacket *packet)
 {
-	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
 	IrmoMethod *method = atom->method.spec;
 	IrmoValue *args = atom->method.args;
 	int i;
@@ -118,9 +117,8 @@ static void irmo_method_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
 					method->arguments[i]->type);
 }
 
-static void irmo_method_atom_run(IrmoSendAtom *_atom)
+static void irmo_method_atom_run(IrmoMethodAtom *atom)
 {
-	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
 	IrmoClient *client = atom->sendatom.client;
 
 	atom->method.src = client;
@@ -128,9 +126,8 @@ static void irmo_method_atom_run(IrmoSendAtom *_atom)
 	irmo_method_invoke(client->server->world, &atom->method);
 }
 
-static void irmo_method_atom_destroy(IrmoSendAtom *_atom)
+static void irmo_method_atom_destroy(IrmoMethodAtom *atom)
 {
-	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
         IrmoMethod *method = atom->method.spec;
         int i;
  
@@ -142,9 +139,8 @@ static void irmo_method_atom_destroy(IrmoSendAtom *_atom)
         free(atom->method.args);
 }
 
-static gsize irmo_method_atom_length(IrmoSendAtom *_atom)
+static gsize irmo_method_atom_length(IrmoMethodAtom *atom)
 {
-	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
 	IrmoMethod *method = atom->method.spec;
 	int i;
 	gsize len;
@@ -184,15 +180,18 @@ IrmoSendAtomClass irmo_method_atom = {
 	ATOM_METHOD,
 	irmo_method_atom_verify,
 	irmo_method_atom_read,
-	irmo_method_atom_write,
-	irmo_method_atom_run,
-	irmo_method_atom_length,
-	irmo_method_atom_destroy,
+	(IrmoSendAtomWriteFunc) irmo_method_atom_write,
+	(IrmoSendAtomRunFunc) irmo_method_atom_run,
+	(IrmoSendAtomLengthFunc) irmo_method_atom_length,
+	(IrmoSendAtomDestroyFunc) irmo_method_atom_destroy,
 };
 
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.2  2003/11/05 04:05:44  fraggle
+// Cast functions rather than casting arguments to functions
+//
 // Revision 1.1  2003/10/22 16:13:10  fraggle
 // Split off sendatom classes into separate files
 //

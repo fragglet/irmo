@@ -57,32 +57,40 @@ typedef enum {
 #include "object.h"
 #include "packet.h"
 
+typedef gboolean (*IrmoSendAtomVerifyFunc)(IrmoPacket *packet);
+typedef IrmoSendAtom *(*IrmoSendAtomReadFunc)(IrmoPacket *packet);
+typedef void (*IrmoSendAtomWriteFunc)(IrmoSendAtom *atom, IrmoPacket *packet);
+typedef void (*IrmoSendAtomRunFunc)(IrmoSendAtom *atom);
+typedef gsize (*IrmoSendAtomLengthFunc)(IrmoSendAtom *atom);
+typedef void (*IrmoSendAtomDestroyFunc)(IrmoSendAtom *atom);
+
+
 struct _IrmoSendAtomClass {
 	IrmoSendAtomType type;
 
 	// verify an atom of this type can be read from a packet
 	
-	gboolean (*verify)(IrmoPacket *packet);
+	IrmoSendAtomVerifyFunc verify;
 
 	// read a new atom of this type from a packet
 
-	IrmoSendAtom *(*read)(IrmoPacket *packet);
+	IrmoSendAtomReadFunc read;
 
 	// write an atom of this type to a packet
 
-	void (*write)(IrmoSendAtom *atom, IrmoPacket *packet);
+	IrmoSendAtomWriteFunc write;
 
 	// run an atom to apply its effects
 	
-	void (*run)(IrmoSendAtom *atom);
+	IrmoSendAtomRunFunc run;
 
 	// calculate the length of an atom
 	
-	gsize (*length)(IrmoSendAtom *atom);
-
+	IrmoSendAtomLengthFunc length;
+	
 	// destroy an atom of this type
 
-	void (*destructor)(IrmoSendAtom *atom);
+	IrmoSendAtomDestroyFunc destructor;
 };
 
 // queue object
@@ -193,6 +201,9 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.7  2003/11/05 04:05:44  fraggle
+// Cast functions rather than casting arguments to functions
+//
 // Revision 1.6  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
