@@ -15,7 +15,13 @@
 #include <glib.h>
 
 #include "netlib.h"
+#include "packet.h"
 #include "socket.h"
+
+// size of packet buffer (maximum packet size
+// 64KiB default
+
+#define PACKET_BUFFER_LEN 0x10000
 
 static int get_sockaddr_len(int domain)
 {
@@ -144,7 +150,54 @@ void socket_unref(IrmoSocket *sock)
 	}
 }
 
+void socket_run(IrmoSocket *sock)
+{
+	guchar buf[PACKET_BUFFER_LEN];
+	struct sockaddr *addr;
+	int addr_len;
+
+	addr_len = get_sockaddr_len(sock->domain);
+	addr = malloc(addr_len);
+	
+	while (1) {
+		IrmoPacket packet;
+		int result;
+		int tmp_addr_len = addr_len;
+		
+		result = recvfrom(sock->sock,
+				  buf,
+				  PACKET_BUFFER_LEN,
+				  0,
+				  addr,
+				  &tmp_addr_len);
+
+		if (result < 0) {
+			if (errno != EWOULDBLOCK)
+				fprintf(stderr,
+					"socket_run: error on receive (%s)\n",
+					strerror(errno));
+			
+			break;
+		}
+
+		// stick it in a packet
+
+		packet.sock = sock;
+		packet.src = addr;
+		packet.data = buf;
+		packet.len = result;
+		packet.pos = 0;
+      	}
+
+	free(addr);
+
+	// send stuff too eventually
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2002/12/02 22:04:04  sdh300
+// Make created sockets nonblocking
+//
 // Revision 1.7  2002/12/02 21:56:46  sdh300
 // Fix build (compile errors)
 //
