@@ -14,7 +14,8 @@ SRC= \
   method.h	error.c	      error.h    if_spec_reflect.c	        \
   client_sendq.c							\
   sendatom_change.c   sendatom_method.c     sendatom_null.c		\
-  sendatom_destroy.c  sendatom_newobject.c  sendatom_sendwindow.c
+  sendatom_destroy.c  sendatom_newobject.c  sendatom_sendwindow.c	\
+  sysheaders.h
 
 libirmo_la_SOURCES= $(SRC)
 libirmo_la_LIBADD=$(MODULES_LIBS) @LEXLIB@
