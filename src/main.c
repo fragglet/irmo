@@ -13,6 +13,11 @@ void my_callback(IrmoObject *object, gchar *variable, gpointer user_data)
 	printf("message: '%s'\n", message);
 }
 
+void my_destroy_callback(IrmoObject *object, gpointer user_data)
+{
+	printf("destroy callback invoked! message: %s\n", (char *) user_data);
+}
+
 int main(int argc, char *argv[])
 {
 	InterfaceSpec *spec;
@@ -62,6 +67,16 @@ int main(int argc, char *argv[])
 	universe_watch_class(universe,
 			     "my_class", "my_int",
 			     my_callback, "class variable watch callback");
+
+	printf("trying to set destroy callback on class\n");
+
+	universe_watch_destroy(universe, "my_class",
+			       my_destroy_callback, "class destroy callback");
+
+	printf("trying to set destroy callback on object\n");
+
+	object_watch_destroy(object,
+			     my_destroy_callback, "object destroy callback");
 	
 	printf("looking for object in universe\n");
 
@@ -107,6 +122,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2002/11/05 15:04:12  sdh300
+// more warnings!
+//
 // Revision 1.11  2002/11/05 15:01:06  sdh300
 // change callback function names
 // initial destroy callback variables

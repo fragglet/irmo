@@ -90,6 +90,13 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 void __object_destroy(IrmoObject *object)
 {
 	int i;
+
+	// raise destroy callbacks
+
+	_callbackdata_raise_destroy(object->callbacks, object);
+	_callbackdata_raise_destroy(object->universe->callbacks
+				    [object->objclass->index],
+				    object);
 	
 	// destroy member variables
 
@@ -265,6 +272,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2002/10/29 16:28:50  sdh300
+// functioning callbacks
+//
 // Revision 1.7  2002/10/29 16:09:10  sdh300
 // initial callback code
 //

@@ -35,6 +35,12 @@ void _callbackdata_free(IrmoCallbackData *data)
 	g_slist_foreach(data->class_callbacks,
 			(GFunc) _callbackdata_free_foreach, NULL);
 	g_slist_free(data->class_callbacks);
+
+	// free destroy callbacks
+
+	g_slist_foreach(data->destroy_callbacks,
+			(GFunc) _callbackdata_free_foreach, NULL);
+	g_slist_free(data->destroy_callbacks);
 	
 	// free all variable callbacks
 
@@ -57,8 +63,8 @@ struct raise_data {
 void _callbackdata_raise_foreach(IrmoVarCallbackData *callback, 
 				 struct raise_data *raise_data)
 {
-	callback->func(raise_data->object, raise_data->variable,
-		       callback->user_data);
+	callback->func.var(raise_data->object, raise_data->variable,
+			   callback->user_data);
 }
 
 void _callbackdata_raise(IrmoCallbackData *data,
@@ -79,6 +85,24 @@ void _callbackdata_raise(IrmoCallbackData *data,
 
 	g_slist_foreach(data->variable_callbacks[variable_index],
 			(GFunc) _callbackdata_raise_foreach,
+			&raise_data);
+}
+
+static void _callbackdata_raise_destroy_foreach(IrmoVarCallbackData *callback,
+						struct raise_data *raise_data)
+{
+	callback->func.destroy(raise_data->object, callback->user_data);
+}
+
+void _callbackdata_raise_destroy(IrmoCallbackData *data,
+				 IrmoObject *object)
+{
+	struct raise_data raise_data = {
+		object: object,
+	};
+
+	g_slist_foreach(data->destroy_callbacks,
+			(GFunc) _callbackdata_raise_destroy_foreach,
 			&raise_data);
 }
 
@@ -108,10 +132,24 @@ static void callbackdata_watch(IrmoCallbackData *data,
 	}
 
 	callback = g_new0(IrmoVarCallbackData, 1);
-	callback->func = func;
+	callback->func.var = func;
 	callback->user_data = user_data;
 
 	*list = g_slist_append(*list, callback);
+}
+
+static void callbackdata_watch_destroy(IrmoCallbackData *data,
+				       IrmoDestroyCallback func,
+				       gpointer user_data)
+{
+	IrmoVarCallbackData *callback;
+	
+	callback = g_new0(IrmoVarCallbackData, 1);
+	callback->func.destroy = func;
+	callback->user_data = user_data;
+
+	data->destroy_callbacks = g_slist_append(data->destroy_callbacks,
+						 callback);
 }
 
 void universe_watch_class(IrmoUniverse *universe,
@@ -135,6 +173,24 @@ void universe_watch_class(IrmoUniverse *universe,
 			   func, user_data);
 }
 
+void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
+			    IrmoDestroyCallback func, gpointer user_data)
+{
+	ClassSpec *spec;
+
+	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
+
+	if (!spec) {
+		fprintf(stderr,
+			"universe_watch_destroy: unknown class '%s'\n",
+			classname);
+		return;
+	}
+
+	callbackdata_watch_destroy(universe->callbacks[spec->index],
+				   func, user_data);
+}
+
 void object_watch(IrmoObject *object, gchar *variable,
 		  IrmoCallback func, gpointer user_data)
 {
@@ -142,7 +198,17 @@ void object_watch(IrmoObject *object, gchar *variable,
 			   func, user_data);
 }
 
+void object_watch_destroy(IrmoObject *object,
+			  IrmoDestroyCallback func, gpointer user_data)
+{
+	callbackdata_watch_destroy(object->callbacks,
+				   func, user_data);
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/11/05 15:17:17  sdh300
+// more consistent naming for callback types
+//
 // Revision 1.5  2002/11/05 15:04:11  sdh300
 // more warnings!
 //
