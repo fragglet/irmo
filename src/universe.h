@@ -18,17 +18,44 @@
 #define MAX_OBJECTS 65536 
 
 struct _IrmoUniverse {
+
+	// specification this universe implements
+	
 	IrmoInterfaceSpec *spec;
+
+	// universe-global callback objects, 1 per class
+	
 	IrmoCallbackData **callbacks;
+
+	// objects in the universe, hashed by their object id
+	
 	GHashTable *objects;
+
+	// the id of the last object created. objects are created
+	// with sequential ids
+	
 	irmo_objid_t lastid;
+
+	// servers attached to this universe who are serving it.
+	
 	GPtrArray *servers;
+
+	// number of references to this universe
+	
 	int refcount;
+
+	// if true, this is a local copy of a remote universe and
+	// cannot be changed
+	
+	gboolean remote;
 };
 
 #endif /* #ifndef IRMO_INTERNAL_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/06 19:33:51  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.11  2003/02/23 00:00:04  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)
