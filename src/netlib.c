@@ -145,15 +145,46 @@ static struct sockaddr_in *sockaddr_in_for_name(gchar *name, int port)
 	return addr;
 }
 
+#ifdef USE_IPV6
+
+static struct sockaddr_in6 *sockaddr_in6_for_name(gchar *name, int port)
+{
+	struct hostent *hp;
+	struct addrinfo *info;
+	struct addrinfo hints;
+	struct sockaddr_in6 *addr;
+
+	hints.ai_family = PF_INET6;
+	hints.ai_flags = 0;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = 0;
+        
+	if (getaddrinfo(name, "0", &hints, &info) == 0 && info) {
+		addr = g_new0(struct sockaddr_in6, 1);
+
+		memcpy(addr, info->ai_addr, sizeof(struct sockaddr_in6));
+
+		freeaddrinfo(info);
+
+		addr->sin6_port = htons(port);
+
+		return addr;
+	}
+
+	return NULL;
+}
+
+#endif
+
 struct sockaddr *sockaddr_for_name(int domain, gchar *name, int port)
 {
 	switch (domain) {
 	case AF_UNSPEC:
 	case AF_INET:
 		return (struct sockaddr *) sockaddr_in_for_name(name, port);
-		break;
 #ifdef USE_IPV6
 	case AF_INET6:
+		return (struct sockaddr *) sockaddr_in6_for_name(name, port);
 #endif
 	}
 
@@ -210,8 +241,11 @@ void irmo_timeval_from_ms(int ms, struct timeval *time)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/08/06 16:15:18  fraggle
+// IPv6 support
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.7  2003/06/09 21:06:51  sdh300
 // Add CVS Id tag and copyright/license notices

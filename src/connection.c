@@ -37,6 +37,24 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	IrmoClient *client;
 
 	g_return_val_if_fail(location != NULL, NULL);
+
+	if (domain == AF_UNSPEC) {
+		IrmoConnection *conn;
+
+#ifdef USE_IPV6
+		// try IPv6
+		
+		conn = irmo_connect(AF_INET6, location, port, spec,
+				    local_universe);
+
+		if (conn)
+			return conn;
+#endif
+		// fall back to v4
+
+		return irmo_connect(AF_INET, location, port, spec,
+				    local_universe);
+	}
 	
 	// create a socket
 	
@@ -138,8 +156,11 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:23  fraggle
-// Initial revision
+// Revision 1.2  2003/08/06 16:15:18  fraggle
+// IPv6 support
+//
+// Revision 1.1.1.1  2003/06/09 21:33:23  fraggle
+// Initial sourceforge import
 //
 // Revision 1.15  2003/06/09 21:06:50  sdh300
 // Add CVS Id tag and copyright/license notices
