@@ -122,6 +122,11 @@ void object_destroy(IrmoObject *object)
 	__object_destroy(object);
 }
 
+irmo_objid_t object_get_id(IrmoObject *object)
+{
+	return object->id;
+}
+
 gchar *object_get_class(IrmoObject *object)
 {
 	return object->objclass->name;
@@ -272,6 +277,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2002/11/13 13:57:41  sdh300
+// object_get_class to get the class of an object
+//
 // Revision 1.12  2002/11/12 23:26:38  sdh300
 // this is simpler and clearer
 //

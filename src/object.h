@@ -37,6 +37,10 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename);
 
 void object_destroy(IrmoObject *object);
 
+// get object id
+
+irmo_objid_t object_get_id(IrmoObject *object);
+
 // get the class of an object
 
 gchar *object_get_class(IrmoObject *object);
@@ -65,6 +69,9 @@ void __object_destroy(IrmoObject *object);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2002/11/13 14:14:46  sdh300
+// object iterator function
+//
 // Revision 1.8  2002/11/13 13:57:42  sdh300
 // object_get_class to get the class of an object
 //
