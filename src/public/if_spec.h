@@ -26,6 +26,8 @@
 #ifndef IRMO_IF_SPEC_H
 #define IRMO_IF_SPEC_H
 
+#include <glib.h>
+
 /*!
  * \addtogroup if_spec
  * \{
@@ -36,6 +38,7 @@
  */
 
 typedef enum {
+	IRMO_TYPE_UNKNOWN,
 	IRMO_TYPE_INT8,
 	IRMO_TYPE_INT16,
 	IRMO_TYPE_INT32,
@@ -85,11 +88,28 @@ void irmo_interface_spec_ref(IrmoInterfaceSpec *spec);
 
 void irmo_interface_spec_unref(IrmoInterfaceSpec *spec);
 
+/*! 
+ * \brief Find the type of a variable
+ *
+ * \param spec    	The interface specification object
+ * \param classname	The name of the class the variable is part of
+ * \param variable	The name of the variable
+ * \return 		IrmoVarType indicating the type, or 
+ *                      IRMO_TYPE_UNKNOWN if an error occurred.
+ */
+
+IrmoVarType irmo_interface_spec_get_var_type(IrmoInterfaceSpec *spec,
+                                             gchar *classname,
+                                             gchar *variable);
+
 //! \}
 
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.3  2003/08/21 14:32:29  fraggle
+// Initial reflection API
+//
 // Revision 1.2  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

@@ -11,7 +11,7 @@ SRC= \
   client.h      if_spec.l     object.h   sendatom.c     socket.h	\
   client_run.c  packet.c      sendatom.h universe.c			\
   universe.h    protocol.h    proto_verify.c            method.c	\
-  method.h	error.c	      error.h
+  method.h	error.c	      error.h    if_spec_reflect.c
 
 libirmo_la_SOURCES= $(SRC)
 libirmo_la_LIBADD=$(MODULES_LIBS) -lfl
