@@ -13,6 +13,7 @@ IrmoCallbackData *_callbackdata_new(ClassSpec *objclass)
 
 	data->objclass = objclass;
 
+	data->new_callbacks = NULL;
 	data->class_callbacks = NULL;
 	data->destroy_callbacks = NULL;
 	data->variable_callbacks = g_new0(GSList *, objclass->nvariables);
@@ -106,6 +107,17 @@ void _callbackdata_raise_destroy(IrmoCallbackData *data,
 			&raise_data);
 }
 
+void _callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
+{
+	struct raise_data raise_data = {
+		object: object,
+	};
+
+	g_slist_foreach(data->new_callbacks,
+			(GFunc) _callbackdata_raise_destroy_foreach,
+			&raise_data);
+}
+
 static void callbackdata_watch(IrmoCallbackData *data,
 			       gchar *variable,
 			       IrmoCallback func, gpointer user_data)
@@ -150,6 +162,32 @@ static void callbackdata_watch_destroy(IrmoCallbackData *data,
 
 	data->destroy_callbacks = g_slist_append(data->destroy_callbacks,
 						 callback);
+}
+
+void universe_watch_new(IrmoUniverse *universe, gchar *classname,
+			IrmoDestroyCallback func, gpointer user_data)
+{
+	IrmoCallbackData *data;
+	IrmoVarCallbackData *callback;
+	ClassSpec *spec;
+	
+	// find the class
+
+	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
+
+	if (!spec) {
+		fprintf(stderr,
+			"universe_watch_new: unknown class '%s'\n", classname);
+		return;
+	}
+	
+	callback = g_new0(IrmoVarCallbackData, 1);
+	callback->func.destroy = func;
+	callback->user_data = user_data;
+
+	data = universe->callbacks[spec->index];
+	
+	data->new_callbacks = g_slist_append(data->new_callbacks, callback);
 }
 
 void universe_watch_class(IrmoUniverse *universe,
@@ -206,6 +244,9 @@ void object_watch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2002/11/05 16:00:36  sdh300
+// various "oops"'es
+//
 // Revision 1.7  2002/11/05 15:55:12  sdh300
 // object destroy callbacks
 //

@@ -80,7 +80,10 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 
 	g_hash_table_insert(universe->objects, (gpointer) id, object);
 
-	// TODO: hooks for new object callbacks...
+	// raise callback functions for new object creation
+
+	_callbackdata_raise_new(universe->callbacks[spec->index],
+				object);
 	
 	return object;
 }
@@ -270,6 +273,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2002/11/05 16:00:37  sdh300
+// various "oops"'es
+//
 // Revision 1.9  2002/11/05 15:55:13  sdh300
 // object destroy callbacks
 //

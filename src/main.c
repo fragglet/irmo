@@ -36,6 +36,11 @@ int main(int argc, char *argv[])
 		printf("failed.\n");
 		exit(-1);
 	}
+
+	printf("trying to set callback on creation of new objects\n");
+
+	universe_watch_new(universe, "my_class",
+			   my_destroy_callback, "new object callback");
 	
 	printf("creating object\n");
 
@@ -122,6 +127,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2002/11/05 15:55:13  sdh300
+// object destroy callbacks
+//
 // Revision 1.12  2002/11/05 15:04:12  sdh300
 // more warnings!
 //

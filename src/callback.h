@@ -26,6 +26,12 @@ struct _IrmoVarCallbackData {
 struct _IrmoCallbackData {
 	ClassSpec *objclass;
 
+	// callbacks for watching for creations of new objects
+	// this is only for the class callbackdata - redundant
+	// in object callbacks
+
+	GSList *new_callbacks;
+	
 	// callbacks for if any variable is changed
 
 	GSList *class_callbacks;
@@ -44,7 +50,10 @@ void _callbackdata_free(IrmoCallbackData *data);
 void _callbackdata_raise(IrmoCallbackData *data,
 			 IrmoObject *object, gint variable_index);
 void _callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
+void _callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 
+void universe_watch_new(IrmoUniverse *universe, gchar *classname,
+			IrmoDestroyCallback func, gpointer user_data);
 void universe_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
 			  IrmoCallback func, gpointer user_data);
@@ -59,6 +68,9 @@ void object_watch_destroy(IrmoObject *object,
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/11/05 15:55:12  sdh300
+// object destroy callbacks
+//
 // Revision 1.5  2002/11/05 15:17:17  sdh300
 // more consistent naming for callback types
 //
