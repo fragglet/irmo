@@ -11,13 +11,13 @@ static inline void sendatom_change_free_data(IrmoSendAtom *atom)
 
 	if (atom->data.change.newvalues) {
 		ClassSpec *objclass = atom->data.change.objclass;
-		
+
 		for (i=0; i<objclass->nvariables; ++i) {
 			// only changed values are stored
 			
 			if (!atom->data.change.changed[i])
 				continue;
-
+			
 			// free strings
 			
 			if (objclass->variables[i]->type == TYPE_STRING)
@@ -145,6 +145,7 @@ void client_sendq_add_change(IrmoClient *client,
 void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 {
 	IrmoSendAtom *atom;
+	int i;
 	
 	// check for any changeatoms referring to this object
 
@@ -158,6 +159,15 @@ void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 		sendatom_nullify(atom);
 		g_hash_table_remove(client->sendq_hashtable,
 				    (gpointer) object->id);
+	}
+
+	// nullify atoms in send window too
+	
+	for (i=0; i<client->sendwindow_size; ++i) {
+		if (client->sendwindow[i]->type == ATOM_CHANGE
+		    && object == client->sendwindow[i]->data.change.object) {
+			sendatom_nullify(client->sendwindow[i]);
+		}
 	}
 	
 	// create a destroy atom
@@ -205,6 +215,10 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/05 15:32:21  sdh300
+// Add object class to change atoms to make their coding in packets
+// unambiguous.
+//
 // Revision 1.7  2003/03/05 15:28:13  sdh300
 // Add receive window and extra data for sendatoms in the receive window.
 //
