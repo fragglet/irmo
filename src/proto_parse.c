@@ -276,6 +276,15 @@ void proto_parse_packet(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 
+	// verify packet before parsing for security
+	
+	if (!proto_verify_packet(packet)) {
+		fprintf(stderr,
+			"proto_parse_packet: Dropped packet (failed security "
+			"verification)\n");
+		return;
+	}
+	
 	// read ack field if there is one
 
 	if (packet->flags & PACKET_FLAG_ACK) {
@@ -301,6 +310,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/12 18:59:26  sdh300
+// Remove/comment out some debug messages
+//
 // Revision 1.7  2003/03/07 12:31:51  sdh300
 // Add protocol.h
 //
