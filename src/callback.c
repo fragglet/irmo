@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "callback.h"
 #include "if_spec.h"
@@ -142,6 +143,10 @@ void object_watch(IrmoObject *object, gchar *variable,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/11/05 15:01:05  sdh300
+// change callback function names
+// initial destroy callback variables
+//
 // Revision 1.3  2002/10/29 16:28:50  sdh300
 // functioning callbacks
 //

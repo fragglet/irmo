@@ -25,6 +25,7 @@ typedef enum {
 	TOKEN_COMMA,
 } token_t;
 
+#define YY_NO_UNPUT 
 #define YY_DECL static token_t yylex()
  
 // redefine YY_INPUT to count line numbers
@@ -450,6 +451,10 @@ void interface_spec_unref(InterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/10/29 15:58:25  sdh300
+// add index entry for ClassSpec, use "index" instead of n for index
+// member name
+//
 // Revision 1.4  2002/10/21 15:32:34  sdh300
 // variable value setting
 //

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "if_spec.h"
 #include "universe.h"
@@ -101,9 +102,15 @@ int main(int argc, char *argv[])
 	
 	universe_unref(universe);
 	interface_spec_unref(spec);
+
+	return 0;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2002/11/05 15:01:06  sdh300
+// change callback function names
+// initial destroy callback variables
+//
 // Revision 1.10  2002/10/29 16:28:50  sdh300
 // functioning callbacks
 //

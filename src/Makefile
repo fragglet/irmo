@@ -1,5 +1,5 @@
 PKGS=glib-2.0
-CFLAGS=`pkg-config --cflags $(PKGS)`
+CFLAGS=-Wall `pkg-config --cflags $(PKGS)`
 LDFLAGS = `pkg-config --libs $(PKGS)` -lfl
 OBJS=if_spec.o main.o universe.o object.o callback.o
 
@@ -13,6 +13,9 @@ irmo: $(OBJS)
 	flex -o$@ $<
 
 # $Log: not supported by cvs2svn $
+# Revision 1.4  2002/10/29 16:09:09  sdh300
+# initial callback code
+#
 # Revision 1.3  2002/10/21 14:58:08  sdh300
 # split off object code to a seperate module
 #
