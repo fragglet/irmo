@@ -126,11 +126,26 @@ int irmo_client_ping_time(IrmoClient *client);
 
 void irmo_client_set_max_sendwindow(IrmoClient *client, int max);
 
+/*!
+ * \brief Get the address of the client.
+ *
+ * This returns the BSD sockets address object of the remote
+ * client.
+ * 
+ * \param client  The client to query.
+ *
+ */
+
+struct sockaddr *irmo_client_get_addr(IrmoClient *client);
+
 //! \}
 
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/05/04 00:28:17  sdh300
+// Add ability to manually set the maximum sendwindow size
+//
 // Revision 1.7  2003/04/21 20:10:22  sdh300
 // Add a function to the API to get the RTT for a client
 //

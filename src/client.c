@@ -312,6 +312,8 @@ int irmo_client_ping_time(IrmoClient *client)
 
 void irmo_client_set_max_sendwindow(IrmoClient *client, int max)
 {
+	g_return_if_fail(client != NULL);
+
 	client->local_sendwindow_max = max;
 
 	// send to remote machine
@@ -319,7 +321,17 @@ void irmo_client_set_max_sendwindow(IrmoClient *client, int max)
 	irmo_client_sendq_add_sendwindow(client, max);
 }
 
+struct sockaddr *irmo_client_get_addr(IrmoClient *client)
+{
+	g_return_val_if_fail(client != NULL, NULL);
+
+	return client->addr;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.24  2003/05/04 00:28:13  sdh300
+// Add ability to manually set the maximum sendwindow size
+//
 // Revision 1.23  2003/04/25 01:26:18  sdh300
 // Add glib assertations to all public API functions
 //
