@@ -123,7 +123,11 @@ gboolean irmo_packet_readi8(IrmoPacket *packet, guint *i)
 	if (packet->pos + 1 > packet->len)
 		return FALSE;
 
-	*i = packet->data[packet->pos++];
+	if (i) {
+		*i = packet->data[packet->pos];
+	}
+
+	packet->pos += 1;
 
 	return TRUE;
 }
@@ -137,8 +141,10 @@ gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i)
 
 	data = packet->data + packet->pos;
 	
-	*i = (data[0] << 8) + data[1];
-	
+	if (i) {
+		*i = (data[0] << 8) + data[1];
+	}
+
 	packet->pos += 2;
 
 	return TRUE;
@@ -153,7 +159,10 @@ gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i)
 		
 	data = packet->data + packet->pos;
 
-	*i = (data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3];
+	if (i) {
+		*i = (data[0] << 24) + (data[1] << 16) 
+		   + (data[2] << 8) + data[3];
+	}
 
 	packet->pos += 4;
 
@@ -179,7 +188,63 @@ gchar *irmo_packet_readstring(IrmoPacket *packet)
 	return NULL;
 }
 
+gboolean irmo_packet_verify_value(IrmoPacket *packet,
+				  IrmoValueType type)
+{
+	switch (type) {
+	case IRMO_TYPE_INT8:
+		return irmo_packet_readi8(packet, NULL);
+	case IRMO_TYPE_INT16:
+		return irmo_packet_readi16(packet, NULL);
+	case IRMO_TYPE_INT32:
+		return irmo_packet_readi32(packet, NULL);
+	case IRMO_TYPE_STRING:
+		return irmo_packet_readstring(packet) != NULL;
+	}
+}
+
+void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
+			    IrmoValueType type)
+{
+	switch (type) {
+	case IRMO_TYPE_INT8:
+		irmo_packet_readi8(packet, &value->i);
+		break;
+	case IRMO_TYPE_INT16:
+		irmo_packet_readi16(packet, &value->i);
+		break;
+	case IRMO_TYPE_INT32:
+		irmo_packet_readi32(packet, &value->i);
+		break;
+	case IRMO_TYPE_STRING:
+		value->s = strdup(irmo_packet_readstring(packet));
+		break;
+	}
+}
+
+void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
+			     IrmoValueType type)
+{
+	switch (type) {
+	case IRMO_TYPE_INT8:
+		irmo_packet_writei8(packet, value->i);
+		break;
+	case IRMO_TYPE_INT16:
+		irmo_packet_writei16(packet, value->i);
+		break;
+	case IRMO_TYPE_INT32:
+		irmo_packet_writei32(packet, value->i);
+		break;
+	case IRMO_TYPE_STRING:
+		irmo_packet_writestring(packet, value->s);
+		break;
+	}
+}
+
 // $Log$
+// Revision 1.6  2003/10/22 16:05:01  fraggle
+// Move field reading routines into packet.c
+//
 // Revision 1.5  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than

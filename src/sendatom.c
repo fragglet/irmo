@@ -29,62 +29,6 @@
 #include "object.h"
 #include "packet.h"
 
-G_INLINE_FUNC gboolean verify_field(IrmoPacket *packet,
-				    IrmoValueType type)
-{
-	guint i;
-	
-	switch (type) {
-	case IRMO_TYPE_INT8:
-		return irmo_packet_readi8(packet, &i);
-	case IRMO_TYPE_INT16:
-		return irmo_packet_readi16(packet, &i);
-	case IRMO_TYPE_INT32:
-		return irmo_packet_readi32(packet, &i);
-	case IRMO_TYPE_STRING:
-		return irmo_packet_readstring(packet) != NULL;
-	}
-}
-
-G_INLINE_FUNC void read_field(IrmoPacket *packet,
-			      IrmoValue *value,
-			      IrmoValueType type)
-{
-	switch (type) {
-	case IRMO_TYPE_INT8:
-		irmo_packet_readi8(packet, &value->i);
-		break;
-	case IRMO_TYPE_INT16:
-		irmo_packet_readi16(packet, &value->i);
-		break;
-	case IRMO_TYPE_INT32:
-		irmo_packet_readi32(packet, &value->i);
-		break;
-	case IRMO_TYPE_STRING:
-		value->s = strdup(irmo_packet_readstring(packet));
-		break;
-	}
-}
-
-G_INLINE_FUNC void write_field(IrmoPacket *packet, IrmoValue *value, 
-			       IrmoValueType type)
-{
-	switch (type) {
-	case IRMO_TYPE_INT8:
-		irmo_packet_writei8(packet, value->i);
-		break;
-	case IRMO_TYPE_INT16:
-		irmo_packet_writei16(packet, value->i);
-		break;
-	case IRMO_TYPE_INT32:
-		irmo_packet_writei32(packet, value->i);
-		break;
-	case IRMO_TYPE_STRING:
-		irmo_packet_writestring(packet, value->s);
-		break;
-	}
-}
-
 //
 // Null atom.
 //
@@ -308,8 +252,8 @@ static gboolean irmo_change_atom_verify(IrmoPacket *packet)
 			if (!changed[i])
 				continue;
 			
-			if (!verify_field(packet,
-					  objclass->variables[i]->type)) {
+			if (!irmo_packet_verify_value
+				(packet, objclass->variables[i]->type)) {
 				result = FALSE;
 				break;
 			}
@@ -371,8 +315,8 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 		if (!changed[i])
 			continue;
 
-		read_field(packet, &newvalues[i],
-			   objclass->variables[i]->type);
+		irmo_packet_read_value(packet, &newvalues[i],
+				       objclass->variables[i]->type);
 	}
 
 	return IRMO_SENDATOM(atom);
@@ -423,8 +367,9 @@ static void irmo_change_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
 		// check we are sending this variable
 
 		if (atom->changed[i])
-			write_field(packet, &obj->variables[i], 
-				    obj->objclass->variables[i]->type);
+			irmo_packet_write_value
+				(packet, &obj->variables[i], 
+				 obj->objclass->variables[i]->type);
 	}
 }
 
@@ -624,7 +569,8 @@ static gboolean irmo_method_atom_verify(IrmoPacket *packet)
 	// read arguments
 
 	for (i=0; i<method->narguments; ++i) {
-		if (!verify_field(packet, method->arguments[i]->type))
+		if (!irmo_packet_verify_value
+			(packet, method->arguments[i]->type))
 			return FALSE;
 	}
 
@@ -651,8 +597,8 @@ static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 	atom->method.args = g_new0(IrmoValue, method->narguments);
 
 	for (i=0; i<method->narguments; ++i) {
-		read_field(packet, &atom->method.args[i],
-			   method->arguments[i]->type);
+		irmo_packet_read_value(packet, &atom->method.args[i],
+				       method->arguments[i]->type);
 	}
 
 	return IRMO_SENDATOM(atom);
@@ -672,8 +618,8 @@ static void irmo_method_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
 	// send arguments
 
 	for (i=0; i<method->narguments; ++i)
-		write_field(packet, &args[i],
-			    method->arguments[i]->type);
+		irmo_packet_write_value(packet, &args[i],
+					method->arguments[i]->type);
 }
 
 static void irmo_method_atom_run(IrmoSendAtom *_atom)
@@ -910,6 +856,9 @@ IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.11  2003/10/22 16:05:01  fraggle
+// Move field reading routines into packet.c
+//
 // Revision 1.10  2003/10/22 15:32:20  fraggle
 // Some documentation
 //

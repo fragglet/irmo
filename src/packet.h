@@ -35,6 +35,7 @@
 
 typedef struct _IrmoPacket IrmoPacket;
 
+#include "object.h"
 #include "socket.h"
 
 #define	PACKET_FLAG_SYN 0x01
@@ -66,9 +67,18 @@ gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i);
 gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i);
 gchar *irmo_packet_readstring(IrmoPacket *packet);
 
+gboolean irmo_packet_verify_value(IrmoPacket *packet, IrmoValueType type);
+void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
+			    IrmoValueType type);
+void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value, 
+			     IrmoValueType type);
+
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log$
+// Revision 1.5  2003/10/22 16:05:01  fraggle
+// Move field reading routines into packet.c
+//
 // Revision 1.4  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
