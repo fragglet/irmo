@@ -155,7 +155,7 @@ void irmo_server_unref(IrmoServer *server)
 
 	if (server->refcount <= 0) {
 		
-		irmo_server_internal_shudown(server);
+		irmo_server_internal_shutdown(server);
 		g_hash_table_destroy(server->clients);
 
 		// destroy callbacks
@@ -258,6 +258,9 @@ void irmo_server_shutdown(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.9  2003/09/01 19:28:04  fraggle
+// Fix typo
+//
 // Revision 1.8  2003/09/01 18:59:27  fraggle
 // Add a timeout parameter for blocking on sockets. Use block function
 // internally.
