@@ -9,7 +9,7 @@
 #include "if_spec.h"
 #include "universe.h"
 
-IrmoUniverse *universe_new(IrmoInterfaceSpec *spec)
+IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec)
 {
 	IrmoUniverse *universe;
 	int i;
@@ -23,7 +23,7 @@ IrmoUniverse *universe_new(IrmoInterfaceSpec *spec)
 	universe->servers = g_ptr_array_new();
 	universe->remote = FALSE;
 	
-	interface_spec_ref(spec);
+	irmo_interface_spec_ref(spec);
 
 	// create a callback for each class
 	
@@ -36,22 +36,22 @@ IrmoUniverse *universe_new(IrmoInterfaceSpec *spec)
 	return universe;
 }
 
-void universe_ref(IrmoUniverse *universe)
+void irmo_universe_ref(IrmoUniverse *universe)
 {
 	++universe->refcount;
 }
 
-static void universe_unref_foreach(irmo_objid_t id, IrmoObject *object,
-				   gpointer user_data)
+static void irmo_universe_unref_foreach(irmo_objid_t id, IrmoObject *object,
+					gpointer user_data)
 {
 	// destroy object. do not notify objects. do not remove
 	// from universe as this may upset the foreach function
 	// we are in.
 	
-	object_internal_destroy(object, FALSE, FALSE);
+	irmo_object_internal_destroy(object, FALSE, FALSE);
 }
 
-void universe_unref(IrmoUniverse *universe)
+void irmo_universe_unref(IrmoUniverse *universe)
 {
 	--universe->refcount;
 
@@ -66,7 +66,8 @@ void universe_unref(IrmoUniverse *universe)
 		// delete all objects
 		
 		g_hash_table_foreach(universe->objects,
-				     (GHFunc) universe_unref_foreach, NULL);
+				     (GHFunc) irmo_universe_unref_foreach, 
+				     NULL);
 		g_hash_table_destroy(universe->objects);
 
 		// delete callbacks
@@ -78,14 +79,14 @@ void universe_unref(IrmoUniverse *universe)
 
 		// no longer using the interface spec
 		
-		interface_spec_unref(universe->spec);
+		irmo_interface_spec_unref(universe->spec);
 		
 		free(universe);
 	}
 }
 
-IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
-				       irmo_objid_t id)
+IrmoObject *irmo_universe_get_object_for_id(IrmoUniverse *universe,
+					    irmo_objid_t id)
 {
 	IrmoObject *object;
 
@@ -113,8 +114,8 @@ static void universe_foreach_foreach(gint key,
 }
 					    
 
-void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
-			     IrmoObjCallback func, gpointer user_data)
+void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
+				  IrmoObjCallback func, gpointer user_data)
 {
 	ClassSpec *spec;
 	struct universe_foreach_data data = {
@@ -128,7 +129,8 @@ void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 
 		if (!spec) {
 			fprintf(stderr,
-				"universe_foreach_object: unknown class '%s'\n",
+				"irmo_universe_foreach_object: unknown "
+				"class '%s'\n",
 				classname);
 			return;
 		}
@@ -144,6 +146,9 @@ void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/06 20:53:16  sdh300
+// Checking of remote flag for universe objects
+//
 // Revision 1.12  2003/03/06 19:33:51  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //

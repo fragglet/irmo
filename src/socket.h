@@ -46,13 +46,18 @@ struct _IrmoSocket {
 	GHashTable *clients;
 };
 
-IrmoSocket *socket_new_unbound(int domain);
-void socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
-		       IrmoPacket *packet);
+IrmoSocket *irmo_socket_new_unbound(int domain);
+void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
+			    IrmoPacket *packet);
 
 #endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.7  2003/02/23 00:00:04  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

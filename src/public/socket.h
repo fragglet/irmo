@@ -30,17 +30,17 @@ typedef struct _IrmoSocket IrmoSocket;
  *                not be created.
  */
 
-IrmoSocket *socket_new(int domain, int port);
+IrmoSocket *irmo_socket_new(int domain, int port);
 
 /*!
  * \brief Add a reference to a socket
  *
  * \param sock  Socket to reference
- * \sa socket_unref
+ * \sa irmo_socket_unref
  *
  */
 
-void socket_ref(IrmoSocket *sock);
+void irmo_socket_ref(IrmoSocket *sock);
 
 /*!
  * \brief Remove a reference to a socket
@@ -49,10 +49,10 @@ void socket_ref(IrmoSocket *sock);
  * 1. When the count reaches 0, the socket is destroyed.
  *
  * \param sock  Socket to unreference
- * \sa socket_ref
+ * \sa irmo_socket_ref
  */
 
-void socket_unref(IrmoSocket *sock);
+void irmo_socket_unref(IrmoSocket *sock);
 
 /*!
  * \brief Run socket
@@ -64,13 +64,16 @@ void socket_unref(IrmoSocket *sock);
  * \param sock   The socket to update
  */
 
-void socket_run(IrmoSocket *sock);
+void irmo_socket_run(IrmoSocket *sock);
 
 //! \}
 
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/07 10:48:08  sdh300
+// Add new sections to documentation
+//
 // Revision 1.1  2003/02/23 00:00:07  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

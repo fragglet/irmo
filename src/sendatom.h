@@ -58,20 +58,23 @@ void sendatom_free(IrmoSendAtom *atom);
 
 // create a new sendatom and add to a clients sendqueue
 
-void client_sendq_add_new(IrmoClient *client, IrmoObject *object);
-void client_sendq_add_change(IrmoClient *client,
-			     IrmoObject *object, int variable);
-void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
+void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object);
+void irmo_client_sendq_add_change(IrmoClient *client,
+			          IrmoObject *object, int variable);
+void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
        
-IrmoSendAtom *client_sendq_pop(IrmoClient *client);
+IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client);
 
 // send entire universe state
 
-void client_sendq_add_state(IrmoClient *client);
+void irmo_client_sendq_add_state(IrmoClient *client);
 
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/06 21:29:05  sdh300
+// On connect, send the entire universe state to the client
+//
 // Revision 1.7  2003/03/05 15:45:37  sdh300
 // Split sendatom type into a seperate type,
 // Add missing #includes

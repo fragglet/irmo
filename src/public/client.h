@@ -27,10 +27,10 @@ typedef struct _IrmoClient IrmoClient;
  * it will not be deleted.
  *
  * \param client  The client object to reference
- * \sa client_unref
+ * \sa irmo_client_unref
  */
 
-void client_ref(IrmoClient *client);
+void irmo_client_ref(IrmoClient *client);
 
 /*!
  * \brief Unreference a client object 
@@ -38,10 +38,10 @@ void client_ref(IrmoClient *client);
  * Specify that you are no longer referencing a client object
  *
  * \param client   The client object to unreference
- * \sa client_ref
+ * \sa irmo_client_ref
  */
 
-void client_unref(IrmoClient *client);
+void irmo_client_unref(IrmoClient *client);
 
 /*!
  * \brief Forcibly disconnect a client
@@ -50,7 +50,7 @@ void client_unref(IrmoClient *client);
  *
  */
 
-void client_disconnect(IrmoClient *client);
+void irmo_client_disconnect(IrmoClient *client);
 
 /*!
  * \brief Get the clients universe object
@@ -61,17 +61,20 @@ void client_disconnect(IrmoClient *client);
  * that remote universe object if it exists, or NULL if it does not.
  *
  * \sa irmo_connect
- * \sa connection_get_universe
+ * \sa irmo_connection_get_universe
  *
  */
 
-IrmoUniverse *client_get_universe(IrmoClient *client);
+IrmoUniverse *irmo_client_get_universe(IrmoClient *client);
 
 //! \}
 
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/07 10:48:07  sdh300
+// Add new sections to documentation
+//
 // Revision 1.3  2003/02/23 00:45:43  sdh300
 // Add universe access functions for client, connection
 //

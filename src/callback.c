@@ -232,8 +232,8 @@ static gboolean callbackdata_unwatch(IrmoCallbackData *data,
 
 // watch creation of new objects of a particular class
 
-void universe_watch_new(IrmoUniverse *universe, gchar *classname,
-			IrmoObjCallback func, gpointer user_data)
+void irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
+			     IrmoObjCallback func, gpointer user_data)
 {
 	IrmoCallbackData *data;
 	ClassSpec *spec;
@@ -244,7 +244,8 @@ void universe_watch_new(IrmoUniverse *universe, gchar *classname,
 
 	if (!spec) {
 		fprintf(stderr,
-			"universe_watch_new: unknown class '%s'\n", classname);
+			"irmo_universe_watch_new: unknown class '%s'\n", 
+			classname);
 	} else {
 		data = universe->callbacks[spec->index];
 		
@@ -256,8 +257,8 @@ void universe_watch_new(IrmoUniverse *universe, gchar *classname,
 
 // stop watching new objects
 
-void universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
-			  IrmoObjCallback func, gpointer user_data)
+void irmo_universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
+			       IrmoObjCallback func, gpointer user_data)
 {
 	IrmoCallbackData *data;
 	ClassSpec *spec;
@@ -268,7 +269,8 @@ void universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
 
 	if (!spec) {
 		fprintf(stderr,
-			"universe_unwatch_new: unknown class '%s'\n", classname);
+			"irmo_universe_unwatch_new: unknown class '%s'\n", 
+			classname);
 	} else {
 		data = universe->callbacks[spec->index];
 		
@@ -278,16 +280,16 @@ void universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
 					 (IrmoVarCallback) func,
 					 user_data)) {
 			fprintf(stderr,
-				"universe_unwatch_new: watch not found for "
-				"new objects of class '%s'\n",
+				"irmo_universe_unwatch_new: watch not "
+				"found for new objects of class '%s'\n",
 				classname);
 		}
 	}
 }
 
-void universe_watch_class(IrmoUniverse *universe,
-			  gchar *classname, gchar *variable,
-			  IrmoVarCallback func, gpointer user_data)
+void irmo_universe_watch_class(IrmoUniverse *universe,
+			       gchar *classname, gchar *variable,
+			       IrmoVarCallback func, gpointer user_data)
 {
 	ClassSpec *spec;
 	
@@ -297,23 +299,23 @@ void universe_watch_class(IrmoUniverse *universe,
 
 	if (!spec) {
 		fprintf(stderr,
-			"universe_watch_class: unknown class '%s'\n",
+			"irmo_universe_watch_class: unknown class '%s'\n",
 			classname);
 	} else {
 		if (!callbackdata_watch(universe->callbacks[spec->index],
 					variable,
 					func, user_data)) {
 			fprintf(stderr,
-				"universe_watch_class: unknown variable '%s' "
-				"in class '%s'\n",
+				"irmo_universe_watch_class: unknown "
+				"variable '%s' in class '%s'\n",
 				variable, classname);
 		}
 	}
 }
 
-void universe_unwatch_class(IrmoUniverse *universe,
-			    gchar *classname, gchar *variable,
-			    IrmoVarCallback func, gpointer user_data)
+void irmo_universe_unwatch_class(IrmoUniverse *universe,
+				 gchar *classname, gchar *variable,
+				 IrmoVarCallback func, gpointer user_data)
 {
 	ClassSpec *spec;
 	
@@ -323,15 +325,15 @@ void universe_unwatch_class(IrmoUniverse *universe,
 
 	if (!spec) {
 		fprintf(stderr,
-			"universe_unwatch_class: unknown class '%s'\n",
+			"irmo_universe_unwatch_class: unknown class '%s'\n",
 			classname);
 	} else {
 		if (!callbackdata_unwatch(universe->callbacks[spec->index],
 					  variable,
 					  func, user_data)) {
 			fprintf(stderr,
-				"universe_unwatch_class: watch not found for "
-				"class '%s' ",
+				"irmo_universe_unwatch_class: watch not "
+				"found for class '%s' ",
 				classname);
 			if (variable)
 				fprintf(stderr, "(variable '%s')\n", variable);
@@ -341,8 +343,8 @@ void universe_unwatch_class(IrmoUniverse *universe,
 	}
 }
 
-void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
-			    IrmoObjCallback func, gpointer user_data)
+void irmo_universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
+				 IrmoObjCallback func, gpointer user_data)
 {
 	IrmoCallbackData *data;
 	ClassSpec *spec;
@@ -351,7 +353,7 @@ void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
 
 	if (!spec) {
 		fprintf(stderr,
-			"universe_watch_destroy: unknown class '%s'\n",
+			"irmo_universe_watch_destroy: unknown class '%s'\n",
 			classname);
 	} else {
 		data = universe->callbacks[spec->index];
@@ -362,8 +364,8 @@ void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
 	}
 }
 
-void universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
-			      IrmoObjCallback func, gpointer user_data)
+void irmo_universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
+				   IrmoObjCallback func, gpointer user_data)
 {
 	IrmoCallbackData *data;
 	ClassSpec *spec;
@@ -372,7 +374,7 @@ void universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
 
 	if (!spec) {
 		fprintf(stderr,
-			"universe_unwatch_destroy: unknown class '%s'\n",
+			"irmo_universe_unwatch_destroy: unknown class '%s'\n",
 			classname);
 	} else {
 		data = universe->callbacks[spec->index];
@@ -381,65 +383,71 @@ void universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
 					 (IrmoVarCallback) func,
 					 user_data)) {
 			fprintf(stderr,
-				"universe_unwatch_destroy: watch not found "
-				"for destroy in class '%s'\n", classname);
+				"irmo_universe_unwatch_destroy: watch not "
+				"found for destroy in class '%s'\n", 
+				classname);
 		}
 	}
 }
 
-void object_watch(IrmoObject *object, gchar *variable,
-		  IrmoVarCallback func, gpointer user_data)
+void irmo_object_watch(IrmoObject *object, gchar *variable,
+		       IrmoVarCallback func, gpointer user_data)
 {
 	if (!callbackdata_watch(object->callbacks, variable,
 				func, user_data)) {
 		fprintf(stderr,
-			"object_watch: unknown variable '%s' "
+			"irmo_object_watch: unknown variable '%s' "
 			"in class '%s'\n",
 			variable, object->objclass->name);
 	}
 }
 
-void object_unwatch(IrmoObject *object, gchar *variable,
-		    IrmoVarCallback func, gpointer user_data)
+void irmo_object_unwatch(IrmoObject *object, gchar *variable,
+			 IrmoVarCallback func, gpointer user_data)
 {
 	if (!callbackdata_unwatch(object->callbacks, variable,
 				  func, user_data)) {
 
 		if (variable)
 			fprintf(stderr,
-				"object_unwatch: unknown variable or watch "
-				"not found for object (class '%s', variable "
-				"'%s')\n",
+				"irmo_object_unwatch: unknown variable "
+				"or watch not found for object "
+				"(class '%s', variable '%s')\n",
 				object->objclass->name, variable);
 		else
 			fprintf(stderr,
-				"object_unwatch: watch not found for object "
-				"(class '%s')\n",
+				"irmo_object_unwatch: watch not found "
+				"for object (class '%s')\n",
 				object->objclass->name);
 	}
 }
 
-void object_watch_destroy(IrmoObject *object,
-			  IrmoObjCallback func, gpointer user_data)
+void irmo_object_watch_destroy(IrmoObject *object,
+			       IrmoObjCallback func, gpointer user_data)
 {
 	callbacklist_add(&object->callbacks->destroy_callbacks,
 			 (IrmoVarCallback) func,
 			 user_data);
 }
 
-void object_unwatch_destroy(IrmoObject *object,
-			    IrmoObjCallback func, gpointer user_data)
+void irmo_object_unwatch_destroy(IrmoObject *object,
+				 IrmoObjCallback func, gpointer user_data)
 {
 	if (!callbacklist_remove(&object->callbacks->destroy_callbacks,
 				 (IrmoVarCallback) func, user_data)) {
 		fprintf(stderr,
-			"object_unwatch_destroy: watch not found for destroy "
-			"in class '%s'\n",
+			"irmo_object_unwatch_destroy: watch not found "
+			"for destroy in class '%s'\n",
 			object->objclass->name);
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2003/02/23 01:01:00  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.16  2003/02/23 00:05:02  sdh300
 // Fix compile after header changes
 //

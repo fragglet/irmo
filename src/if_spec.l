@@ -312,7 +312,7 @@ static MethodSpec *eat_method()
 	return spec;
 }
 
-static void interface_spec_free(IrmoInterfaceSpec *spec)
+static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
 {
 	int i;
 	
@@ -331,7 +331,7 @@ static void interface_spec_free(IrmoInterfaceSpec *spec)
 	free(spec);
 }
 
-static guint interface_spec_hash(IrmoInterfaceSpec *spec)
+static guint irmo_interface_spec_hash(IrmoInterfaceSpec *spec)
 {
 	guint hash = 0;
 	int i;
@@ -413,19 +413,19 @@ static IrmoInterfaceSpec *eat_interface()
 		spec->methods = realloc(spec->methods,
 					sizeof(MethodSpec *) * spec->nmethods);
 
-	spec->hash = interface_spec_hash(spec);
+	spec->hash = irmo_interface_spec_hash(spec);
 	
 	return spec;
 }
 
-IrmoInterfaceSpec *interface_spec_new(char *filename)
+IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 {
 	IrmoInterfaceSpec *spec;
 
 	yyin = fopen(filename, "r");
 
 	if (!yyin) {
-		fprintf(stderr, "interface_spec_new: cant open '%s'",
+		fprintf(stderr, "irmo_interface_spec_new: cant open '%s'",
 			filename);
 		exit(-1);
 	}
@@ -440,20 +440,23 @@ IrmoInterfaceSpec *interface_spec_new(char *filename)
 	return spec;
 }
 
-void interface_spec_ref(IrmoInterfaceSpec *spec)
+void irmo_interface_spec_ref(IrmoInterfaceSpec *spec)
 {
 	++spec->refcount;
 }
 
-void interface_spec_unref(IrmoInterfaceSpec *spec)
+void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 {
 	--spec->refcount;
 
 	if (spec->refcount <= 0)
-		interface_spec_free(spec);
+		irmo_interface_spec_free(spec);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/03/07 01:43:51  sdh300
+// Rename if_spec.lex to the standard name if_spec.l
+//
 // Revision 1.8  2003/03/06 19:33:50  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //

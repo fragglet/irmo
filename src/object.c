@@ -71,9 +71,9 @@ static gint get_free_id(IrmoUniverse *universe)
 	return universe->lastid;
 }
 
-IrmoObject *object_internal_new(IrmoUniverse *universe,
-				ClassSpec *objclass,
-				irmo_objid_t id)
+IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
+				     ClassSpec *objclass,
+				     irmo_objid_t id)
 {
 	IrmoObject *object;
 	int i;
@@ -111,13 +111,13 @@ IrmoObject *object_internal_new(IrmoUniverse *universe,
 	// notify attached clients
 
 	foreach_client(universe,
-		       (ClientCallback) client_sendq_add_new, object);
+		       (ClientCallback) irmo_client_sendq_add_new, object);
 
 	return object;
 }
 				
 
-IrmoObject *object_new(IrmoUniverse *universe, char *typename)
+IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename)
 {
 	ClassSpec *spec;
 	gint id;
@@ -127,7 +127,7 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 	spec = g_hash_table_lookup(universe->spec->class_hash, typename);
 
 	if (!spec) {
-		fprintf(stderr, "universe_object_new: unknown type '%s'\n",
+		fprintf(stderr, "irmo_object_new: unknown type '%s'\n",
 			typename);
 		return NULL;
 	}
@@ -136,20 +136,20 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 
 	if (id < 0) {
 		fprintf(stderr,
-			"universe_object_new: maximum of %i objects "
+			"irmo_object_new: maximum of %i objects "
 			"per universe (no more objects)\n",
 			MAX_OBJECTS);
 		return NULL;
 	}
 
-	return object_internal_new(universe, spec, id);
+	return irmo_object_internal_new(universe, spec, id);
 }
 
 // internal object destroy function
 
-void object_internal_destroy(IrmoObject *object,
-			     gboolean notify,
-			     gboolean remove)
+void irmo_object_internal_destroy(IrmoObject *object,
+				  gboolean notify,
+				  gboolean remove)
 {
 	int i;
 
@@ -164,7 +164,7 @@ void object_internal_destroy(IrmoObject *object,
 		// notify connected clients
 		
 		foreach_client(object->universe,
-			       (ClientCallback) client_sendq_add_destroy,
+			       (ClientCallback) irmo_client_sendq_add_destroy,
 			       object);
 	}	
 
@@ -191,22 +191,22 @@ void object_internal_destroy(IrmoObject *object,
 	free(object);
 }
 
-void object_destroy(IrmoObject *object)
+void irmo_object_destroy(IrmoObject *object)
 {
 	g_return_if_fail(object->universe->remote == FALSE);
 	
 	// destroy object
 	// notify callbacks and remove from universe
 	
-	object_internal_destroy(object, TRUE, TRUE);
+	irmo_object_internal_destroy(object, TRUE, TRUE);
 }
 
-irmo_objid_t object_get_id(IrmoObject *object)
+irmo_objid_t irmo_object_get_id(IrmoObject *object)
 {
 	return object->id;
 }
 
-gchar *object_get_class(IrmoObject *object)
+gchar *irmo_object_get_class(IrmoObject *object)
 {
 	return object->objclass->name;
 }
@@ -221,12 +221,12 @@ struct set_notify_data {
 static void object_set_notify_foreach(IrmoClient *client,
 				      struct set_notify_data *data)
 {
-	client_sendq_add_change(client, data->object, data->variable);
+	irmo_client_sendq_add_change(client, data->object, data->variable);
 }
 
 // call callback functions and notify clients when a variable is changed
 
-void object_set_raise(IrmoObject *object, int variable)
+void irmo_object_set_raise(IrmoObject *object, int variable)
 {
 	ClassSpec *objclass = object->objclass;
 	ClassVarSpec *spec = objclass->variables[variable];
@@ -248,7 +248,7 @@ void object_set_raise(IrmoObject *object, int variable)
 		       &data);
 }
 
-void object_set_int(IrmoObject *object, gchar *variable, gint value)
+void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 {
 	ClassVarSpec *spec;
 	
@@ -259,7 +259,7 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 
 	if (!spec) {
 		fprintf(stderr,
-			"object_set_int: unknown variable '%s' "
+			"irmo_object_set_int: unknown variable '%s' "
 			"in class '%s'\n",
 			variable,
 			object->objclass->name);
@@ -279,16 +279,16 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 		break;
 	default:
 		fprintf(stderr,
-			"object_set_int: variable '%s' in class '%s' "
+			"irmo_object_set_int: variable '%s' in class '%s' "
 			"is not an int type\n",
 			variable, object->objclass->name);
 		return;
 	}
 
-	object_set_raise(object, spec->index);
+	irmo_object_set_raise(object, spec->index);
 }
 
-void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
+void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 {
 	ClassVarSpec *spec;
 
@@ -300,7 +300,7 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 	if (!spec) {
 		fprintf(stderr,
-			"object_set_string: unknown variable '%s' "
+			"irmo_object_set_string: unknown variable '%s' "
 			"in class '%s'\n",
 			variable,
 			object->objclass->name);
@@ -310,7 +310,7 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 	if (spec->type != TYPE_STRING) {
 		fprintf(stderr,
-			"object_set_string: variable '%s' in class '%s' "
+			"irmo_object_set_string: variable '%s' in class '%s' "
 			"is not string type\n",
 			variable, object->objclass->name);
 		return;
@@ -320,12 +320,12 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 	object->variables[spec->index].s = strdup(value);
 
-	object_set_raise(object, spec->index);
+	irmo_object_set_raise(object, spec->index);
 }
 
 // get int value
 
-gint object_get_int(IrmoObject *object, gchar *variable)
+gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 {
 	ClassVarSpec *spec;
 
@@ -334,7 +334,7 @@ gint object_get_int(IrmoObject *object, gchar *variable)
 
 	if (!spec) {
 		fprintf(stderr,
-			"object_get_int: unknown variable '%s' "
+			"irmo_object_get_int: unknown variable '%s' "
 			"in class '%s'\n",
 			variable,
 			object->objclass->name);
@@ -351,7 +351,7 @@ gint object_get_int(IrmoObject *object, gchar *variable)
 		return object->variables[spec->index].i32;
 	default:
 		fprintf(stderr,
-			"object_get_int: variable '%s' in class '%s' "
+			"irmo_object_get_int: variable '%s' in class '%s' "
 			"is not an int type\n",
 			variable, object->objclass->name);
 		return -1;
@@ -360,7 +360,7 @@ gint object_get_int(IrmoObject *object, gchar *variable)
 
 // get int value
 
-gchar *object_get_string(IrmoObject *object, gchar *variable)
+gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 {
 	ClassVarSpec *spec;
 
@@ -369,7 +369,7 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 
 	if (!spec) {
 		fprintf(stderr,
-			"object_get_string: unknown variable '%s' "
+			"irmo_object_get_string: unknown variable '%s' "
 			"in class '%s'\n",
 			variable,
 			object->objclass->name);
@@ -379,7 +379,7 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 
 	if (spec->type != TYPE_STRING) {
 		fprintf(stderr,
-			"object_get_string: variable '%s' in class '%s' "
+			"irmo_object_get_string: variable '%s' in class '%s' "
 			"is not a string type\n",
 			variable, object->objclass->name);
 		return NULL;
@@ -389,6 +389,10 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2003/03/06 21:28:33  sdh300
+// String variables in objects always point to a string; they begin as
+// the empty string ("") and not NULL as before
+//
 // Revision 1.18  2003/03/06 20:53:16  sdh300
 // Checking of remote flag for universe objects
 //

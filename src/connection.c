@@ -14,7 +14,7 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 
 	// create a socket
 	
-	sock = socket_new_unbound(domain);
+	sock = irmo_socket_new_unbound(domain);
 	
 	if (!sock)
 		return NULL;
@@ -27,13 +27,13 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	// local universe the server is seen as a client connecting
 	// to our own local server (symmetrical)
 	
-	server = server_new(sock, NULL, local_universe, spec);
+	server = irmo_server_new(sock, NULL, local_universe, spec);
 
 	// create a client object, also representing the servers
 	// connection to us
 
-	client = client_new(server, addr);
-	client_ref(client);
+	client = irmo_client_new(server, addr);
+	irmo_client_ref(client);
 	
 	// now initiate the connection
 	// send SYN packets to the server once every second and
@@ -44,16 +44,16 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	// the server responded with a SYN FIN and something went wrong
 
 	while (client->state == CLIENT_CONNECTING) {
-		socket_run(sock);
+		irmo_socket_run(sock);
 	}
 
 	if (client->state == CLIENT_DISCONNECTED) {
 		// connection failed
 		// unreference objects we were using
 		
-		client_unref(client);
-		server_unref(server);
-		socket_unref(sock);
+		irmo_client_unref(client);
+		irmo_server_unref(server);
+		irmo_socket_unref(sock);
 		
 		return NULL;
 	}
@@ -68,27 +68,30 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	connection->universe = client->universe;
 
 	if (local_universe)
-		universe_ref(local_universe);
+		irmo_universe_ref(local_universe);
 
 	return connection;
 } 
 
-IrmoSocket *connection_get_socket(IrmoConnection *conn)
+IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn)
 {
 	return conn->sock;
 }
 
-void connection_run(IrmoConnection *conn)
+void irmo_connection_run(IrmoConnection *conn)
 {
-	socket_run(conn->sock);
+	irmo_socket_run(conn->sock);
 }
 
-IrmoUniverse *connection_get_universe(IrmoConnection *conn)
+IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
 {
 	return conn->universe;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/03/06 19:33:50  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.9  2003/03/06 19:21:39  sdh300
 // Fill in missing field in connection objects
 //

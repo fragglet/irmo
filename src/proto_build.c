@@ -198,7 +198,7 @@ static void proto_pump_client(IrmoClient *client)
 
 		// pop another from the sendq and add to the sendwindow
 
-		atom = client_sendq_pop(client);		
+		atom = irmo_client_sendq_pop(client);		
 		atom->sendtime.tv_sec = 0;
 		
 		client->sendwindow[client->sendwindow_size++] = atom;
@@ -278,9 +278,9 @@ void proto_run_client(IrmoClient *client)
 
 		//printf("sendpacket: %i->%i\n", start, i-1);
 		
-		socket_sendpacket(client->server->socket,
-				  client->addr,
-				  packet);
+		irmo_socket_sendpacket(client->server->socket,
+				       client->addr,
+				       packet);
 
 		//printf("free packet\n");
 		
@@ -310,15 +310,18 @@ void proto_run_client(IrmoClient *client)
 
 		// send packet
 
-		socket_sendpacket(client->server->socket,
-				  client->addr,
-				  packet);
+		irmo_socket_sendpacket(client->server->socket,
+				       client->addr,
+				       packet);
 
 		packet_free(packet);
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/06 20:15:25  sdh300
+// Initial ack code
+//
 // Revision 1.4  2003/03/05 17:33:57  sdh300
 // Fix length threshold checking (len variable was uninitialised)
 //

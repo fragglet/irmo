@@ -77,13 +77,16 @@ struct _IrmoClient {
 	gboolean need_ack;
 };
 
-IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr);
-void client_run(IrmoClient *client);
-void client_destroy(IrmoClient *client);
+IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr);
+void irmo_client_run(IrmoClient *client);
+void irmo_client_destroy(IrmoClient *client);
 
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/06 20:15:24  sdh300
+// Initial ack code
+//
 // Revision 1.12  2003/03/05 15:28:13  sdh300
 // Add receive window and extra data for sendatoms in the receive window.
 //

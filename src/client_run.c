@@ -18,8 +18,8 @@ static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 	
 	// sanity check
 
-	if (universe_get_object_for_id(client->universe,
-				       atom->data.newobj.id)) {
+	if (irmo_universe_get_object_for_id(client->universe,
+					    atom->data.newobj.id)) {
 		fprintf(stderr,
 			"client_run_new: new object id of %i but an object "
 			"with that id already exists!\n",
@@ -29,8 +29,8 @@ static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 	
 	// create new object
 							  
-	object_internal_new(client->universe, objclass,
-			    atom->data.newobj.id);
+	irmo_object_internal_new(client->universe, objclass,
+				 atom->data.newobj.id);
 }
 
 static void client_run_change(IrmoClient *client, IrmoSendAtom *atom)
@@ -42,8 +42,8 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom)
 
 	// sanity checks
 
-	obj = universe_get_object_for_id(client->universe,
-					 atom->data.change.id);
+	obj = irmo_universe_get_object_for_id(client->universe,
+					      atom->data.change.id);
 
 	if (!obj) {
 		fprintf(stderr,
@@ -92,7 +92,7 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom)
 			break;
 		}
 
-		object_set_raise(obj, i);
+		irmo_object_set_raise(obj, i);
 	}
 }
 
@@ -102,8 +102,8 @@ static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
 
 	// sanity check
 
-	obj = universe_get_object_for_id(client->universe,
-					 atom->data.destroy.id);
+	obj = irmo_universe_get_object_for_id(client->universe,
+					      atom->data.destroy.id);
 
 	if (!obj) {
 		fprintf(stderr,
@@ -115,10 +115,10 @@ static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
 
 	// destroy object. remove from universe and call notify functions
 	
-	object_internal_destroy(obj, TRUE, TRUE);
+	irmo_object_internal_destroy(obj, TRUE, TRUE);
 }
 
-void client_run_recvwindow(IrmoClient *client)
+void irmo_client_run_recvwindow(IrmoClient *client)
 {
 	int i;
 
@@ -171,6 +171,9 @@ void client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/06 19:33:50  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.1  2003/03/06 19:23:13  sdh300
 // Add initial code to run through the atoms in the send window
 //

@@ -34,39 +34,43 @@ typedef struct _IrmoServer IrmoServer;
  * \return          A new IrmoServer or NULL if the function fails.
  */
 
-IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
-		       IrmoUniverse *universe, IrmoInterfaceSpec *spec);
+IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
+			    IrmoUniverse *universe, IrmoInterfaceSpec *spec);
 
 /*!
  * \brief Reference a server object
  *
  * Add a reference to a server object. When a server is created its 
- * reference count is set to 1. References can be added with server_ref
- * and removed with \ref server_unref. When the reference count reaches
+ * reference count is set to 1. References can be added with 
+ * irmo_server_ref and removed with \ref irmo_server_unref.
+ * When the reference count reaches
  * 0 the server is automatically shut down and destroyed.
  *
  * \param server   The server object to reference.
- * \sa server_unref
+ * \sa irmo_server_unref
  *
  */
 
-void server_ref(IrmoServer *server);
+void irmo_server_ref(IrmoServer *server);
 
 /*!
  * \brief  Unreference a server object
  * 
  * \param server   The server object to unreference
- * \sa server_ref
+ * \sa irmo_server_ref
  *
  */
 
-void server_unref(IrmoServer *server);
+void irmo_server_unref(IrmoServer *server);
 
 //! \}
 
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/07 10:48:08  sdh300
+// Add new sections to documentation
+//
 // Revision 1.3  2003/03/06 19:33:53  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //

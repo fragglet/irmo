@@ -293,7 +293,7 @@ void proto_parse_packet(IrmoPacket *packet)
 	if (packet->flags & PACKET_FLAG_DTA) {
 		proto_parse_packet_cluster(client, packet);
 
-		client_run_recvwindow(client);
+		irmo_client_run_recvwindow(client);
 
 		// need to send an ack
 		// do this even if we already got the data received, incase
@@ -305,6 +305,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/06 20:42:06  sdh300
+// Fix a couple of bugs in received change atom creation
+//
 // Revision 1.4  2003/03/06 20:15:25  sdh300
 // Initial ack code
 //

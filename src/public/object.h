@@ -34,7 +34,7 @@ typedef void (*IrmoObjCallback) (IrmoObject *object, gpointer user_data);
  * \return 	   The created object or NULL for failure
  */
 
-IrmoObject *object_new(IrmoUniverse *universe, char *typename);
+IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename);
 
 /*!
  * \brief Destroy an object
@@ -42,7 +42,7 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename);
  * \param object  The object to destroy
  */
 
-void object_destroy(IrmoObject *object);
+void irmo_object_destroy(IrmoObject *object);
 
 /*!
  * \brief Get numerical object identifier
@@ -55,7 +55,7 @@ void object_destroy(IrmoObject *object);
  * \return 	  Object ID
  */
 
-irmo_objid_t object_get_id(IrmoObject *object);
+irmo_objid_t irmo_object_get_id(IrmoObject *object);
 
 /*!
  * \brief Get the class of an object
@@ -68,70 +68,73 @@ irmo_objid_t object_get_id(IrmoObject *object);
  * \return 	 A string with the classname
  */
 
-gchar *object_get_class(IrmoObject *object);
+gchar *irmo_object_get_class(IrmoObject *object);
 
 /*!
  * \brief Set the value of an object variable (int type)
  *
  * Set the value of a member variable. This is for use on variables of
- * int type. To set string values, use \ref object_set_string
+ * int type. To set string values, use \ref irmo_object_set_string
  *
  * \param object   The object to change
  * \param variable The name of the variable to change
  * \param value    The new value for the variable
  */
 
-void object_set_int(IrmoObject *object, gchar *variable, int value);
+void irmo_object_set_int(IrmoObject *object, gchar *variable, int value);
 
 /*!
  * \brief Set the value of an object variable (string type)
  *
  * Set the value of a member variable. This is for use on variables of
- * string type. To set integer values, use \ref object_set_int
+ * string type. To set integer values, use \ref irmo_object_set_int
  *
  * \param object   The object to change
  * \param variable The name of the variable to change
  * \param value    The new value for the variable
  */
 
-void object_set_string(IrmoObject *object, gchar *variable, gchar *value);
+void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value);
 
 /*!
  * \brief Get the value of an object variable(int type)
  *
  * Retrieve the value of an object's member variable. This function is
  * for variables of integer type. To get string values, use 
- * \ref object_get_string
+ * \ref irmo_object_get_string
  *
  * \param object   The object to query
  * \param variable The name of the member variable
  * \return         The value of the member variable
  */
 
-gint object_get_int(IrmoObject *object, gchar *variable);
+gint irmo_object_get_int(IrmoObject *object, gchar *variable);
 
 /*!
  * \brief Get the value of an object variable(string type)
  *
  * Retrieve the value of an object's member variable. This function is
  * for variables of string type. To get integer values, use 
- * \ref object_get_int
+ * \ref irmo_object_get_int
  *
  * The returned string should not be modified; to set the value of a 
- * member variable use \ref object_set_string
+ * member variable use \ref irmo_object_set_string
  *
  * \param object   The object to query
  * \param variable The name of the member variable
  * \return         The value of the member variable
  */
 
-gchar *object_get_string(IrmoObject *object, gchar *variable);
+gchar *irmo_object_get_string(IrmoObject *object, gchar *variable);
 
 //! \}
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/06 19:33:53  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.1  2003/02/23 00:00:06  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

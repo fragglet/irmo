@@ -18,7 +18,7 @@
  *
  * The InterfaceSpec is defined in a seperate file. This has a C-like
  * syntax and is quite simple. The file is loaded with the 
- * \ref interface_spec_new function.
+ * \ref irmo_interface_spec_new function.
  */
 
 /*!
@@ -67,7 +67,7 @@
  * 
  * The clients themselves may also serve a universe back to the 
  * server. The client universe to serve is specified using the
- * 'spec' field of the server_new constructor.
+ * 'spec' field of the irmo_server_new constructor.
  */
 
 /*!
@@ -104,6 +104,9 @@
  */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/07 10:49:11  sdh300
+// Convert InterfaceSpec -> IrmoInterfaceSpec
+//
 // Revision 1.5  2003/03/07 10:48:05  sdh300
 // Add new sections to documentation
 //

@@ -28,7 +28,7 @@ typedef struct _IrmoConnection IrmoConnection;
  *
  * Care must be taken in the interface specification and the local 
  * universe: their types must match those expected by the server.
- * (see \ref server_new)
+ * (see \ref irmo_server_new)
  *
  * \param domain         Domain of the socket to use. Usually this will
  *                       be AF_INET.
@@ -57,7 +57,7 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
  *
  */
 
-IrmoSocket *connection_get_socket(IrmoConnection *conn);
+IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn);
 
 /*!
  * \brief Check for new packets received from the server.
@@ -67,12 +67,12 @@ IrmoSocket *connection_get_socket(IrmoConnection *conn);
  * protocol.
  * 
  * This is identical to:
- *   socket_run(connection_get_socket(conn));
+ *   irmo_socket_run(irmo_connection_get_socket(conn));
  *
- * \sa socket_run
+ * \sa irmo_socket_run
  */
 
-void connection_run(IrmoConnection *conn);
+void irmo_connection_run(IrmoConnection *conn);
 
 /*!
  * \brief Get the universe object for the remote server
@@ -82,17 +82,20 @@ void connection_run(IrmoConnection *conn);
  * the remote universe (or NULL if the server is not serving a
  * universe)
  *
- * \sa server_new
+ * \sa irmo_server_new
  * \sa client_get_universe
  */
 
-IrmoUniverse *connection_get_universe(IrmoConnection *conn);
+IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn);
 
 //! \}
 
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/07 10:48:07  sdh300
+// Add new sections to documentation
+//
 // Revision 1.4  2003/03/06 19:33:53  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //

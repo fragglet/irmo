@@ -5,8 +5,8 @@
 #include "netlib.h"
 #include "server.h"
 
-IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
-		       IrmoUniverse *universe, IrmoInterfaceSpec *spec)
+IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
+			    IrmoUniverse *universe, IrmoInterfaceSpec *spec)
 {
 	IrmoServer *server;
 	
@@ -15,16 +15,16 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 	if (hostname) {
 		if (g_hash_table_lookup(sock->servers, hostname)) {
 			fprintf(stderr,
-				"server_new: already a server bound to '%s' "
-				"on socket %i::%i\n",
+				"irmo_server_new: already a server bound "
+				"to '%s' on socket %i::%i\n",
 				hostname, sock->domain, sock->port);
 			return NULL;
 		}
 	} else {
 		if (sock->default_server) {
 			fprintf(stderr,
-				"server_new: already a default server for "
-				"socket %i::%i\n",
+				"irmo_server_new: already a default server "
+				"for socket %i::%i\n",
 				sock->domain, sock->port);
 			return NULL;
 		}
@@ -38,17 +38,17 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 	server->universe = universe;
 	server->client_spec = spec;
 
-	socket_ref(sock);
+	irmo_socket_ref(sock);
 
 	if (spec)
-		interface_spec_ref(spec);
+		irmo_interface_spec_ref(spec);
 	
 	// we can have a server which does not serve a universe
 	// store this server in the list of servers attached to this
 	// universe
 	
 	if (universe) {
-		universe_ref(universe);
+		irmo_universe_ref(universe);
 		g_ptr_array_add(universe->servers, server);
 	}
 	
@@ -66,7 +66,7 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 	return server;
 }
 
-void server_ref(IrmoServer *server)
+void irmo_server_ref(IrmoServer *server)
 {
 	++server->refcount;
 }
@@ -80,14 +80,14 @@ static gboolean server_unref_client_foreach(gpointer key, IrmoClient *client,
 
 	// destroy
 
-	client_destroy(client);
+	irmo_client_destroy(client);
 	
 	// remove from server list
 	
 	return TRUE;
 }
 
-void server_unref(IrmoServer *server)
+void irmo_server_unref(IrmoServer *server)
 {
 	--server->refcount;
 
@@ -111,17 +111,17 @@ void server_unref(IrmoServer *server)
 			server->socket->default_server = NULL;
 		}
 
-		socket_unref(server->socket);
+		irmo_socket_unref(server->socket);
 		
 		if (server->client_spec)
-			interface_spec_unref(server->client_spec);
+			irmo_interface_spec_unref(server->client_spec);
 		if (server->universe) {
 			// remove from list of attached servers
 			
 			g_ptr_array_remove(server->universe->servers,
 					   server);
 			
-			universe_unref(server->universe);
+			irmo_universe_unref(server->universe);
 		}
 		
 		free(server);
@@ -129,6 +129,9 @@ void server_unref(IrmoServer *server)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/03/06 19:33:50  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.9  2003/02/23 01:01:01  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split

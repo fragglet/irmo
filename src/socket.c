@@ -25,8 +25,8 @@
 
 // socket send function
 
-void socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
-		       IrmoPacket *packet)
+void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
+			    IrmoPacket *packet)
 {
 	int result;
 
@@ -39,7 +39,7 @@ void socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 
 	if (result < 0) {
 		fprintf(stderr,
-			"socket_sendpacket: Error sending packet (%s)\n",
+			"irmo_socket_sendpacket: Error sending packet (%s)\n",
 			strerror(errno));
 	}
 }
@@ -64,7 +64,7 @@ static IrmoSocket *_socket_new(int domain)
 #endif
 		) {
 		fprintf(stderr,
-			"socket_new: unsupported domain (%i)\n", domain);
+			"irmo_socket_new: unsupported domain (%i)\n", domain);
 		return NULL;
 	}
 	
@@ -74,7 +74,7 @@ static IrmoSocket *_socket_new(int domain)
 
 	if (sock < 0) {
 		fprintf(stderr,
-			"socket_new: Can't create new datagram socket in "
+			"irmo_socket_new: Can't create new datagram socket in "
 			"domain %i (%s)\n",
 			domain, strerror(errno));
 
@@ -87,7 +87,7 @@ static IrmoSocket *_socket_new(int domain)
 
 	if (opts < 0) {
 		fprintf(stderr,
-			"socket_new: Can't fcntl(F_GETFL) (%s)\n",
+			"irmo_socket_new: Can't fcntl(F_GETFL) (%s)\n",
 			strerror(errno));
 		close(sock);
 		return NULL;
@@ -97,7 +97,7 @@ static IrmoSocket *_socket_new(int domain)
 
 	if (fcntl(sock, F_SETFL, opts) < 0) {
 		fprintf(stderr,
-			"socket_new: Can't fcntl(F_SETFL) (%s)\n",
+			"irmo_socket_new: Can't fcntl(F_SETFL) (%s)\n",
 			strerror(errno));
 		close(sock);
 		return NULL;
@@ -116,12 +116,12 @@ static IrmoSocket *_socket_new(int domain)
 	return irmosock;
 }
 
-void socket_ref(IrmoSocket *sock)
+void irmo_socket_ref(IrmoSocket *sock)
 {
 	++sock->refcount;
 }
 
-void socket_unref(IrmoSocket *sock)
+void irmo_socket_unref(IrmoSocket *sock)
 {
 	--sock->refcount;
 
@@ -144,7 +144,7 @@ void socket_unref(IrmoSocket *sock)
 
 // create a socket for clients, unbound
 
-IrmoSocket *socket_new_unbound(int domain)
+IrmoSocket *irmo_socket_new_unbound(int domain)
 {
 	IrmoSocket *sock = _socket_new(domain);
 
@@ -159,7 +159,7 @@ IrmoSocket *socket_new_unbound(int domain)
 
 // create a socket for servers, bound to a port
 
-IrmoSocket *socket_new(int domain, int port)
+IrmoSocket *irmo_socket_new(int domain, int port)
 {
 	IrmoSocket *sock = _socket_new(domain);
 	struct sockaddr *addr;
@@ -191,9 +191,9 @@ IrmoSocket *socket_new(int domain, int port)
 	
 	if (bind(sock->sock, addr, addr_len) < 0) {
 		fprintf(stderr,
-			"socket_new: Can't bind to %i::%i (%s)\n",
+			"irmo_socket_new: Can't bind to %i::%i (%s)\n",
 			domain, port, strerror(errno));
-		socket_unref(sock);
+		irmo_socket_unref(sock);
 		return NULL;
 	}
 
@@ -213,7 +213,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	IrmoServer *server;
 	IrmoPacket *sendpacket;
 	guint32 local_hash, server_hash;
-	guint32 local_hash_expected, server_hash_expected;
+	guint32 local_hash_expected=0, server_hash_expected=0;
 	gchar *s;
 
 	// if this is a client socket, dont let people connect
@@ -269,9 +269,9 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
-		socket_sendpacket(packet->sock,
-				  packet->src,
-				  sendpacket);
+		irmo_socket_sendpacket(packet->sock,
+				       packet->src,
+				       sendpacket);
 		
 		packet_free(sendpacket);
 	} else {
@@ -281,7 +281,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 		// create a new client object
 
 		if (!client) {
-			client = client_new(server, packet->src);
+			client = irmo_client_new(server, packet->src);
 		}
 		
 		// send a reply
@@ -290,9 +290,9 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		socket_sendpacket(packet->sock,
-				  packet->src,
-				  sendpacket);
+		irmo_socket_sendpacket(packet->sock,
+				       packet->src,
+				       sendpacket);
 		
 		packet_free(sendpacket);
 	}
@@ -311,7 +311,7 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 		if (packet->client->server->client_spec) {
 			packet->client->universe
-			  = universe_new(packet->client->server->client_spec);
+			  = irmo_universe_new(packet->client->server->client_spec);
 
 			// mark this as a remote universe
 			
@@ -322,7 +322,7 @@ static inline void socket_run_synack(IrmoPacket *packet)
 		// send the entire current universe state
 
 		if (packet->client->server->universe)
-			client_sendq_add_state(packet->client);
+			irmo_client_sendq_add_state(packet->client);
 	}
 
 	// if we are the client receiving this from the server,
@@ -334,9 +334,9 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		socket_sendpacket(packet->sock,
-				  packet->src,
-				  sendpacket);
+		irmo_socket_sendpacket(packet->sock,
+				       packet->src,
+				       sendpacket);
 
 		packet_free(sendpacket);
 	}
@@ -412,7 +412,7 @@ static inline void socket_run_packet(IrmoPacket *packet)
 static gboolean socket_run_client(gpointer key, IrmoClient *client,
 				  gpointer user_data)
 {
-	client_run(client);
+	irmo_client_run(client);
 
 	// if this client is dead and nothing is watching it,
 	// garbage collect
@@ -427,7 +427,7 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 
 		// destroy client object
 
-		client_destroy(client);
+		irmo_client_destroy(client);
 		
 		// remove from socket list: return TRUE
 		
@@ -437,7 +437,7 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 	return FALSE;
 }
 
-void socket_run(IrmoSocket *sock)
+void irmo_socket_run(IrmoSocket *sock)
 {
 	guchar buf[PACKET_BUFFER_LEN];
 	struct sockaddr *addr;
@@ -461,7 +461,8 @@ void socket_run(IrmoSocket *sock)
 		if (result < 0) {
 			if (errno != EWOULDBLOCK)
 				fprintf(stderr,
-					"socket_run: error on receive (%s)\n",
+					"irmo_socket_run: error on "
+					"receive (%s)\n",
 					strerror(errno));
 			
 			break;
@@ -487,6 +488,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.27  2003/03/06 21:29:05  sdh300
+// On connect, send the entire universe state to the client
+//
 // Revision 1.26  2003/03/06 20:53:16  sdh300
 // Checking of remote flag for universe objects
 //

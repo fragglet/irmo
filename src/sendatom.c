@@ -95,7 +95,7 @@ static int sendatom_change_len(IrmoSendAtom *atom)
 	return len;
 }
 
-void client_sendq_add_new(IrmoClient *client, IrmoObject *object)
+void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 {
 	IrmoSendAtom *atom;
 
@@ -113,7 +113,7 @@ void client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 	g_queue_push_tail(client->sendq, atom);
 }
 
-void client_sendq_add_change(IrmoClient *client,
+void irmo_client_sendq_add_change(IrmoClient *client,
 			     IrmoObject *object, int variable)
 {
 	IrmoSendAtom *atom;
@@ -142,7 +142,7 @@ void client_sendq_add_change(IrmoClient *client,
 	atom->len = sendatom_change_len(atom);
 }
 
-void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
+void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 {
 	IrmoSendAtom *atom;
 	int i;
@@ -184,7 +184,7 @@ void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	g_queue_push_tail(client->sendq, atom);
 }
 
-IrmoSendAtom *client_sendq_pop(IrmoClient *client)
+IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 {
 	IrmoSendAtom *atom;
 
@@ -220,38 +220,42 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 
 static void client_sendq_add_objects(IrmoObject *object, IrmoClient *client)
 {
-	client_sendq_add_new(client, object);
+	irmo_client_sendq_add_new(client, object);
 }
 
-static void client_sendq_add_variables(IrmoObject *object, IrmoClient *client)
+static void client_sendq_add_variables(IrmoObject *object, 
+				       IrmoClient *client)
 {
 	int i;
 
 	// queue up variables
 	
 	for (i=0; i<object->objclass->nvariables; ++i)
-		client_sendq_add_change(client, object, i);
+		irmo_client_sendq_add_change(client, object, i);
 }
 
-void client_sendq_add_state(IrmoClient *client)
+void irmo_client_sendq_add_state(IrmoClient *client)
 {
 	// create all the objects first
 	// this is done all together and seperately from sending the
 	// variable state, as the rle encoding in the packets will
 	// better compress the atoms this way
 
-	universe_foreach_object(client->server->universe, NULL,
-				(IrmoObjCallback) client_sendq_add_objects,
-				client);
+	irmo_universe_foreach_object(client->server->universe, NULL,
+				     (IrmoObjCallback) client_sendq_add_objects,
+				     client);
 
 	// send variable states
 
-	universe_foreach_object(client->server->universe, NULL,
-				(IrmoObjCallback) client_sendq_add_variables,
-				client);
+	irmo_universe_foreach_object(client->server->universe, NULL,
+				     (IrmoObjCallback) client_sendq_add_variables,
+				     client);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/03/06 21:29:05  sdh300
+// On connect, send the entire universe state to the client
+//
 // Revision 1.9  2003/03/06 20:43:11  sdh300
 // Nullify sendatoms in the send window as well as the send queue
 //

@@ -14,7 +14,7 @@
 
 // create a new client (used internally)
 
-IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr)
+IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 {
 	IrmoClient *client;
 
@@ -43,7 +43,7 @@ IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr)
 	// in the server, when a client is disconnected it goes into
 	// the CLIENT_DISCONNECTED state, but is kept in the server's
 	// clients list. the server removes disconnected clients
-	// in its pass through the list in socket_run. however, it
+	// in its pass through the list in irmo_socket_run. however, it
 	// only removes clients if their refcount == 0. this allows
 	// 'hooks' to be kept on particular clients the user may be
 	// watching.
@@ -61,24 +61,24 @@ IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr)
 	return client;
 }
 
-void client_ref(IrmoClient *client)
+void irmo_client_ref(IrmoClient *client)
 {
 	// when you reference a client, you're effectively referencing
 	// the server its part of
 
-	server_ref(client->server);
+	irmo_server_ref(client->server);
 	
 	++client->refcount;
 }
 
-void client_unref(IrmoClient *client)
+void irmo_client_unref(IrmoClient *client)
 {
 	--client->refcount;
 	
-	server_unref(client->server);	
+	irmo_server_unref(client->server);	
 }
 
-void client_destroy(IrmoClient *client)
+void irmo_client_destroy(IrmoClient *client)
 {
 	int i;
 	
@@ -160,9 +160,9 @@ static void client_run_connecting(IrmoClient *client)
 					PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 		}
 		
-		socket_sendpacket(client->server->socket,
-				  client->addr,
-				  packet);
+		irmo_socket_sendpacket(client->server->socket,
+				       client->addr,
+				       packet);
 
 		packet_free(packet);		
 		
@@ -172,9 +172,9 @@ static void client_run_connecting(IrmoClient *client)
 	}
 }
 
-// called by socket_run for each client connected
+// called by irmo_socket_run for each client connected
 
-void client_run(IrmoClient *client)
+void irmo_client_run(IrmoClient *client)
 {
 	switch (client->state) {
 	case CLIENT_DISCONNECTED:
@@ -188,12 +188,15 @@ void client_run(IrmoClient *client)
 	}
 }
 
-IrmoUniverse *client_get_universe(IrmoClient *client)
+IrmoUniverse *irmo_client_get_universe(IrmoClient *client)
 {
 	return client->universe;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/06 19:33:50  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.11  2003/03/05 17:37:11  sdh300
 // Initialise receive window
 // Free receive window and send window in destructor

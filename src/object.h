@@ -49,16 +49,16 @@ struct _IrmoObject {
 
 // internal function create a new object
 
-IrmoObject *object_internal_new(IrmoUniverse *universe,
-				ClassSpec *objclass,
-				irmo_objid_t id);
+IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
+				     ClassSpec *objclass,
+				     irmo_objid_t id);
 
 // internal function to destroy an object. control over whether to
 // call notify routines (call callbacks, forward info to clients)
 // and whether to remove from the universe.
 
-void object_internal_destroy(IrmoObject *object, gboolean notify,
-			     gboolean remove);
+void irmo_object_internal_destroy(IrmoObject *object, gboolean notify,
+				  gboolean remove);
 
 
 // internal function to raise notify functions for when an object
@@ -66,12 +66,15 @@ void object_internal_destroy(IrmoObject *object, gboolean notify,
 // to connected clients. needs object and index of variable number
 // modified.
 
-void object_set_raise(IrmoObject *object, int variable);
+void irmo_object_set_raise(IrmoObject *object, int variable);
 
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/03/06 20:58:50  sdh300
+// Add documentation for IrmoObject data
+//
 // Revision 1.14  2003/03/06 19:21:26  sdh300
 // Split off some of the constructor/destructor/change code into
 // seperate functions that can be reused elsewhere

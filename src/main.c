@@ -3,11 +3,11 @@
 #include <string.h>
 #include <time.h>
 
-#include "public/connection.h"
-#include "public/if_spec.h"
-#include "public/universe.h"
-#include "public/socket.h"
-#include "public/server.h"
+#include "connection.h"
+#include "if_spec.h"
+#include "universe.h"
+#include "socket.h"
+#include "server.h"
 
 void my_callback(IrmoObject *object, gchar *variable, gpointer user_data)
 {
@@ -38,7 +38,7 @@ void my_destroy_callback_2(IrmoObject *object, gpointer user_data)
 void my_iterator_callback(IrmoObject *object, gpointer user_data)
 {
 	printf("iterator function invoked!\n");
-	printf("this is object number: %i\n", object_get_id(object));
+	printf("this is object number: %i\n", irmo_object_get_id(object));
 }
 
 void test_universe()
@@ -47,13 +47,13 @@ void test_universe()
 	IrmoUniverse *universe;
 	IrmoObject *object;
 	
-	spec = interface_spec_new("test.if");
+	spec = irmo_interface_spec_new("test.if");
 	
 //	printf("hash: %u\n", spec->hash);
 
 	printf("creating universe\n");
 
-	universe = universe_new(spec);
+	universe = irmo_universe_new(spec);
 
 	if (!universe) {
 		printf("failed.\n");
@@ -62,12 +62,12 @@ void test_universe()
 
 	printf("trying to set callback on creation of new objects\n");
 
-	universe_watch_new(universe, "my_class",
-			   my_destroy_callback, "new object callback");
+	irmo_universe_watch_new(universe, "my_class",
+				my_destroy_callback, "new object callback");
 	
 	printf("creating object\n");
 
-	object = object_new(universe, "my_class");
+	object = irmo_object_new(universe, "my_class");
 
 	if (universe)
 		printf("successful!\n");
@@ -76,120 +76,123 @@ void test_universe()
 
 	printf("trying to set callback on object\n");
 
-	object_watch(object, NULL,
-		     my_callback, "object watch callback");
+	irmo_object_watch(object, NULL,
+			  my_callback, "object watch callback");
 
 	printf("trying to set callback on object variable\n");
 
-	object_watch(object, "my_int",
-		     my_callback, "variable watch callback");
+	irmo_object_watch(object, "my_int",
+			  my_callback, "variable watch callback");
 
 	printf("trying to set callback on class\n");
 
-	universe_watch_class(universe,
-			     "my_class", NULL,
-			     my_callback, "class watch callback");
+	irmo_universe_watch_class(universe,
+				  "my_class", NULL,
+				  my_callback, "class watch callback");
 
 	printf("trying to set callback on class variable\n");
 
-	universe_watch_class(universe,
-			     "my_class", "my_int",
-			     my_callback, "class variable watch callback");
+	irmo_universe_watch_class(universe,
+				  "my_class", "my_int",
+				  my_callback, "class variable watch callback");
 
 	printf("trying to set destroy callback on class\n");
 
-	universe_watch_destroy(universe, "my_class",
-			       my_destroy_callback, "class destroy callback");
+	irmo_universe_watch_destroy(universe, "my_class",
+				    my_destroy_callback, 
+				    "class destroy callback");
 
 	printf("trying to set destroy callback on object\n");
 
-	object_watch_destroy(object,
-			     my_destroy_callback, "object destroy callback");
+	irmo_object_watch_destroy(object,
+				  my_destroy_callback, 
+				  "object destroy callback");
 
 	printf("trying to set and remove some callbacks\n");
 
 	printf("\tnew: \n");
-	universe_watch_new(universe, "my_class", my_destroy_callback_2, NULL);
-	universe_unwatch_new(universe, "my_class", my_destroy_callback_2, NULL);
+	irmo_universe_watch_new(universe, "my_class", my_destroy_callback_2, NULL);
+	irmo_universe_unwatch_new(universe, "my_class", my_destroy_callback_2, NULL);
 
 	printf("\tdestroy: \n");
-	universe_watch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
-	universe_unwatch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
+	irmo_universe_watch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
+	irmo_universe_unwatch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
 
 	printf("\tvariable watch:\n");
-	universe_watch_class(universe, "my_class", "my_int",
+	irmo_universe_watch_class(universe, "my_class", "my_int",
 			     my_callback_2, NULL);
-	universe_unwatch_class(universe, "my_class", "my_int",
+	irmo_universe_unwatch_class(universe, "my_class", "my_int",
 			       my_callback_2, NULL);
 			     
 	printf("\tobject destroy: \n");
-	object_watch_destroy(object, my_destroy_callback_2, NULL);
-	object_unwatch_destroy(object, my_destroy_callback_2, NULL);
+	irmo_object_watch_destroy(object, my_destroy_callback_2, NULL);
+	irmo_object_unwatch_destroy(object, my_destroy_callback_2, NULL);
 
 	printf("\tobject variable watch:\n");
-	object_watch(object, "my_int", my_callback_2, NULL);
-	object_unwatch(object, "my_int", my_callback_2, NULL);
+	irmo_object_watch(object, "my_int", my_callback_2, NULL);
+	irmo_object_unwatch(object, "my_int", my_callback_2, NULL);
 
 	printf("\ttesting invalid unwatch calls:\n");
 
-	universe_unwatch_new(universe, "my_class",
-			     my_destroy_callback_2, NULL);
-	universe_unwatch_destroy(universe, "my_class",
-				 my_destroy_callback_2, NULL);
-	universe_unwatch_class(universe, "my_class", "my_int",
-			       my_callback_2, NULL);
-	object_unwatch_destroy(object, my_destroy_callback_2, NULL);
-	object_unwatch(object, "my_int", my_callback_2, NULL);
+	irmo_universe_unwatch_new(universe, "my_class",
+				  my_destroy_callback_2, NULL);
+	irmo_universe_unwatch_destroy(universe, "my_class",
+				      my_destroy_callback_2, NULL);
+	irmo_universe_unwatch_class(universe, "my_class", "my_int",
+				    my_callback_2, NULL);
+	irmo_object_unwatch_destroy(object, my_destroy_callback_2, NULL);
+	irmo_object_unwatch(object, "my_int", my_callback_2, NULL);
 	
 	printf("looking for object in universe\n");
 
-	if (universe_get_object_for_id(universe, object_get_id(object)))
+	if (irmo_universe_get_object_for_id(universe, 
+					    irmo_object_get_id(object)))
 		printf("successful!\n");
 	else
 		printf("failed!\n");
 
 	printf("trying to set variable value\n");
 	
-	object_set_int(object, "my_int", 1234);
+	irmo_object_set_int(object, "my_int", 1234);
 
 	printf("trying to set variable value (invalid)\n");
 	
-	object_set_int(object, "my_string", 1234);
+	irmo_object_set_int(object, "my_string", 1234);
 
 	printf("trying to set string variable value\n");
 	
-	object_set_string(object, "my_string", "yoyodyne");
+	irmo_object_set_string(object, "my_string", "yoyodyne");
 
 	printf("trying to get variable value\n");
 
-	printf("value: %i\n", object_get_int(object, "my_int"));
+	printf("value: %i\n", irmo_object_get_int(object, "my_int"));
 
 	printf("trying to get variable string value\n");
 
-	printf("value: %s\n", object_get_string(object, "my_string"));
+	printf("value: %s\n", irmo_object_get_string(object, "my_string"));
 
 	printf("trying to get variable value (invalid)\n");
 
-	object_get_string(object, "my_int");
+	irmo_object_get_string(object, "my_int");
 	
 	printf("trying to iterate over objects of class my_class\n");
 
-	universe_foreach_object(universe, "my_class",
-				my_iterator_callback, NULL);
+	irmo_universe_foreach_object(universe, "my_class",
+				     my_iterator_callback, NULL);
 
 	printf("trying to iterate over all objects\n");
 
-	universe_foreach_object(universe, NULL,
-				my_iterator_callback, NULL);
+	irmo_universe_foreach_object(universe, NULL,
+				     my_iterator_callback, NULL);
 	
 	printf("destroying object\n");
 
-	object_destroy(object);
+	irmo_object_destroy(object);
 
 	printf("done\n");
 
-	universe_unref(universe);
-	interface_spec_unref(spec);
+	irmo_universe_unref(universe);
+	irmo_interface_spec_unref(spec);
 }
 
 #define TEST_PORT 7000
@@ -205,7 +208,7 @@ int main(int argc, char *argv[])
 		IrmoInterfaceSpec *spec;
 		IrmoConnection *conn;
 
-		spec = interface_spec_new("test.if");
+		spec = irmo_interface_spec_new("test.if");
 		
 		conn = irmo_connect(AF_INET, "localhost", TEST_PORT,
 				    spec, NULL);
@@ -215,16 +218,16 @@ int main(int argc, char *argv[])
 			
 			printf("connected to server!\n");
 
-			universe = connection_get_universe(conn);
+			universe = irmo_connection_get_universe(conn);
 			
-			universe_watch_new(universe, "my_class",
-					   my_destroy_callback,
-					   "new object callback");
-			universe_watch_destroy(universe, "my_class",
-					       my_destroy_callback,
-					       "object destroyed");
+			irmo_universe_watch_new(universe, "my_class",
+						my_destroy_callback,
+						"new object callback");
+			irmo_universe_watch_destroy(universe, "my_class",
+						    my_destroy_callback,
+						    "object destroyed");
 			for (;;)
-				connection_run(conn);
+				irmo_connection_run(conn);
 		} else {
 			printf("connection failed.\n");
 		}
@@ -237,25 +240,25 @@ int main(int argc, char *argv[])
 		IrmoObject *obj;
 		time_t t;
 		
-		socket = socket_new(AF_INET, TEST_PORT);
+		socket = irmo_socket_new(AF_INET, TEST_PORT);
 
 		if (!socket) {
 			printf("couldnt bind to test port\n");
 			return;
 		}
 
-		spec = interface_spec_new("test.if");
+		spec = irmo_interface_spec_new("test.if");
 
-		universe = universe_new(spec);
+		universe = irmo_universe_new(spec);
 
-		server = server_new(socket, NULL, universe, NULL);
+		server = irmo_server_new(socket, NULL, universe, NULL);
 
 		t = time(NULL);
 
-		obj = object_new(universe, "my_class");
+		obj = irmo_object_new(universe, "my_class");
 
 		while (1) {
-			socket_run(socket);
+			irmo_socket_run(socket);
 			usleep(100);
 
 			// every 4 seconds create a new object
@@ -263,12 +266,12 @@ int main(int argc, char *argv[])
 			if (time(NULL) > t + 4) {
 				// destroy the previously created object
 				
-				object_destroy(obj);
+				irmo_object_destroy(obj);
 				
 				printf("create new object\n");
-				obj = object_new(universe, "my_class");
-				object_set_int(obj, "my_int", 3);
-				object_set_string(obj, "my_string", "hi");
+				obj = irmo_object_new(universe, "my_class");
+				irmo_object_set_int(obj, "my_int", 3);
+				irmo_object_set_string(obj, "my_string", "hi");
 				
 				t = time(NULL);
 			}
@@ -277,6 +280,10 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.23  2003/03/06 20:43:45  sdh300
+// Delay before deleting objects in server harness
+// This is so that the object change atoms go through and are tested
+//
 // Revision 1.22  2003/03/06 19:35:24  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec
 // Improve client test harness to add callbacks for new object creation

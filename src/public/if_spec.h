@@ -23,37 +23,40 @@ typedef struct _IrmoInterfaceSpec IrmoInterfaceSpec;
  * \return		A new IrmoInterfaceSpec object or NULL for failure
  */
 
-IrmoInterfaceSpec *interface_spec_new(char *filename);
+IrmoInterfaceSpec *irmo_interface_spec_new(char *filename);
 
 /*!
  * \brief Add a reference to an IrmoInterfaceSpec object
  *
  * Reference counting is implemented for IrmoInterfaceSpec objects. Every time 
  * a new reference is kept, call this to increment the reference count.
- * When a reference is removed, call \ref interface_spec_unref. The 
+ * When a reference is removed, call \ref irmo_interface_spec_unref. The 
  * reference count starts at 1. When the reference count reaches 0, the
  * object is destroyed.
  *
  * \param spec		The object to reference
  */
 
-void interface_spec_ref(IrmoInterfaceSpec *spec);
+void irmo_interface_spec_ref(IrmoInterfaceSpec *spec);
 
 /*!
  * \brief Remove a reference to an IrmoInterfaceSpec object
  *
- * See \ref interface_spec_ref
+ * See \ref irmo_interface_spec_ref
  *
  * \param spec		The object to unreference
  */
 
-void interface_spec_unref(IrmoInterfaceSpec *spec);
+void irmo_interface_spec_unref(IrmoInterfaceSpec *spec);
 
 //! \}
 
 #endif /* #ifndef IFSPEC_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/06 19:33:53  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.1  2003/02/23 00:00:06  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

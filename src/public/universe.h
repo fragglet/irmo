@@ -22,7 +22,7 @@ typedef struct _IrmoUniverse IrmoUniverse;
  * All objects in a \ref IrmoUniverse have a unique number assigned to
  * them. This can be used to refer to objects by their number. You can
  * search for an object by number using the 
- * \ref universe_get_object_for_id function.
+ * \ref irmo_universe_get_object_for_id function.
  */
 
 typedef guint irmo_objid_t;
@@ -42,7 +42,7 @@ typedef guint irmo_objid_t;
  * \return	The new universe.
  */
 
-IrmoUniverse *universe_new(IrmoInterfaceSpec *spec);
+IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec);
 
 /*!
  * \brief Find an object by its ID
@@ -56,8 +56,8 @@ IrmoUniverse *universe_new(IrmoInterfaceSpec *spec);
  * \return		The IrmoObject or NULL if the object is not found.
  */
 
-IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
-				       irmo_objid_t id);
+IrmoObject *irmo_universe_get_object_for_id(IrmoUniverse *universe,
+					    irmo_objid_t id);
 
 /*!
  * \brief Iterate over objects in a Universe
@@ -76,38 +76,41 @@ IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
  * 			are called.
  */
 
-void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
-			     IrmoObjCallback func, gpointer user_data);
+void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
+				  IrmoObjCallback func, gpointer user_data);
 
 /*!
  * \brief	Add a reference to a Universe.
  *
  * Universes implement reference counting. Each time you store a 
- * reference to a universe, call universe_ref to increase the reference
- * count. When you remove a reference, call \ref universe_unref. The
+ * reference to a universe, call irmo_universe_ref to increase the reference
+ * count. When you remove a reference, call \ref irmo_universe_unref. The
  * count starts at 1. When the count reaches 0, the universe is 
  * destroyed.
  *
  * \param universe	The universe to reference
  */
 
-void universe_ref(IrmoUniverse *universe);
+void irmo_universe_ref(IrmoUniverse *universe);
 
 /*!
  * \brief	Remove a reference to a Universe.
  *
- * See \ref universe_ref.
+ * See \ref irmo_universe_ref.
  *
  * \param universe	The universe to unreference.
  */
 
-void universe_unref(IrmoUniverse *universe);
+void irmo_universe_unref(IrmoUniverse *universe);
 
 //! \}
 
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/06 19:33:53  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.1  2003/02/23 00:00:07  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)
