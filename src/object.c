@@ -27,6 +27,11 @@ struct foreach_client_data {
 static void foreach_client_foreach(gpointer key, IrmoClient *client,
 				   struct foreach_client_data *data)
 {
+	// only do this for clients which are full connected
+
+	if (client->state != CLIENT_CONNECTED)
+		return;
+
 	data->func(client, data->user_data);
 }
 
@@ -389,6 +394,9 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.20  2003/03/07 12:17:16  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.19  2003/03/06 21:28:33  sdh300
 // String variables in objects always point to a string; they begin as
 // the empty string ("") and not NULL as before
