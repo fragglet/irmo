@@ -96,14 +96,14 @@ IrmoSocket *socket_new(int domain, int port)
 
 void socket_ref(IrmoSocket *sock)
 {
-	++socket->refcount;
+	++sock->refcount;
 }
 
 void socket_unref(IrmoSocket *sock)
 {
-	--socket->refcount;
+	--sock->refcount;
 
-	if (socket->refcount <= 0) {
+	if (sock->refcount <= 0) {
 		
 		// close socket
 
@@ -113,14 +113,17 @@ void socket_unref(IrmoSocket *sock)
 		// there are no servers or clients either as they
 		// reference it.
 
-		g_hash_table_destroy(irmosock->clients);
-		g_hash_table_destroy(irmosock->servers);
+		g_hash_table_destroy(sock->clients);
+		g_hash_table_destroy(sock->servers);
 
 		free(sock);
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/12/02 21:32:51  sdh300
+// reference counting for IrmoSockets
+//
 // Revision 1.5  2002/11/26 16:37:00  sdh300
 // add missing header to remove warnings
 // || test should be &&
