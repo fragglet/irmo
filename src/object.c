@@ -38,7 +38,6 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 	IrmoObject *object;
 	ClassSpec *spec;
 	gint id;
-	int i;
 
 	spec = g_hash_table_lookup(universe->spec->class_hash, typename);
 
@@ -69,12 +68,7 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 	
 	// member variables:
 
-	object->variables = malloc(sizeof(IrmoVariable) * spec->nvariables);
-
-	// initialisation
-
-	for (i=0; i<spec->nvariables; ++i)
-		object->variables[i].i32 = 0;
+	object->variables = g_new0(IrmoVariable, spec->nvariables);
 	
 	// add to universe
 
@@ -273,6 +267,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2002/11/05 16:28:10  sdh300
+// new object callbacks
+//
 // Revision 1.10  2002/11/05 16:00:37  sdh300
 // various "oops"'es
 //
