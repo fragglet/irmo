@@ -28,6 +28,8 @@ typedef enum {
 // an argument to a method
 
 struct _MethodArgSpec {
+	int index;
+
 	TypeSpec type;
 	char *name;
 };
@@ -35,6 +37,8 @@ struct _MethodArgSpec {
 // method declaration
 
 struct _MethodSpec {
+	int index;
+
 	char *name;			// method name
 	
 	MethodArgSpec **arguments;
@@ -93,6 +97,9 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/06 19:33:50  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.6  2003/02/23 00:00:03  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

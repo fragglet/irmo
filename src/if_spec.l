@@ -296,6 +296,7 @@ static MethodSpec *eat_method()
 
 		arg = g_new0(MethodArgSpec, 1); 
 		arg->type = type_token_to_spec(token);
+		arg->index = i;
 
 		// argument name
 
@@ -411,6 +412,7 @@ static IrmoInterfaceSpec *eat_interface()
 				parse_assert(0, "multiple definitions of '%s'",
 					     method->name);
 			
+			method->index = spec->nmethods;
 			spec->methods[spec->nmethods++] = method;
 			g_hash_table_insert(spec->method_hash, method->name,
 					    method);
@@ -467,6 +469,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/03/08 20:02:07  sdh300
+// Fix namespace pollution from if_spec flex parser
+//
 // Revision 1.2  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //
