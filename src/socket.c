@@ -264,6 +264,33 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	}
 }
 
+// handle syn-ack connection acknowledgements
+
+static inline void socket_run_synack(IrmoPacket *packet)
+{
+	packet->client->state = CLIENT_CONNECTED;
+
+	// if we are the client receiving this from the server,
+	// we need to send a syn ack back so it can complete
+	// its connection.
+
+	if (packet->sock->type == SOCKET_CLIENT) {
+		IrmoPacket *sendpacket = packet_new(2);
+
+		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+
+		/* todo
+		   socket_sendpacket(packet->sock,
+		                     packet->src,
+				     sendpacket);
+		*/
+		packet_free(sendpacket);
+	}
+
+	// dont do this if we're the server, or we'll get stuck in
+	// an infinite loop :)
+}
+
 static inline void socket_run_packet(IrmoPacket *packet)
 {
 	guint16 flags;
@@ -299,7 +326,13 @@ static inline void socket_run_packet(IrmoPacket *packet)
 
 		return;
 	}
+
+	// check for syn ack connection acknowledgements
 	
+	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_ACK)) {
+		socket_run_synack(packet);
+		return;
+	}
 }
 
 void socket_run(IrmoSocket *sock)
@@ -349,6 +382,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/02/06 01:58:39  sdh300
+// Security for client sockets (dont allow connections to client sockets)
+//
 // Revision 1.14  2003/02/06 01:01:59  sdh300
 // remove test code accidentally left in
 //
