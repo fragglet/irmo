@@ -130,7 +130,7 @@ static void client_run_method(IrmoClient *client, IrmoSendAtom *atom)
 
 void irmo_client_run_recvwindow(IrmoClient *client)
 {
-	int i;
+	int i, n;
 
 	// nothing to run?
 	
@@ -174,11 +174,14 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 
 	// clear the end
 	
-	for (; i<client->recvwindow_size; ++i)
-		client->recvwindow[i] = NULL;
+	for (n=client->recvwindow_size-i; n<client->recvwindow_size; ++n)
+		client->recvwindow[n] = NULL;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/16 01:54:23  sdh300
+// Method calls over network protocol
+//
 // Revision 1.4  2003/03/12 18:59:25  sdh300
 // Remove/comment out some debug messages
 //
