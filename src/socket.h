@@ -8,8 +8,15 @@ typedef struct _IrmoSocket IrmoSocket;
 #include "client.h"
 #include "server.h"
 
+typedef enum {
+	SOCKET_SERVER,
+	SOCKET_CLIENT,
+} IrmoSocketType;
+
 struct _IrmoSocket {
 
+	IrmoSocketType type;
+	
 	// reference count
 	
 	int refcount;
@@ -70,9 +77,14 @@ void socket_ref(IrmoSocket *sock);
 
 void socket_unref(IrmoSocket *sock);
 
+IrmoSocket *_socket_new_unbound(int domain);
+
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/12/02 21:32:51  sdh300
+// reference counting for IrmoSockets
+//
 // Revision 1.2  2002/11/26 15:32:12  sdh300
 // store port number in IrmoSocket objects as well
 //

@@ -23,12 +23,13 @@
 
 #define PACKET_BUFFER_LEN 0x10000
 
-IrmoSocket *socket_new(int domain, int port)
+// shared constructor
+// this does not bind to a port
+
+static IrmoSocket *_socket_new(int domain)
 {
 	IrmoSocket *irmosock;
 	int sock;
-	struct sockaddr *addr;
-	int addr_len;
 	int opts;
 	
 	if (domain == AF_UNSPEC)
@@ -59,37 +60,6 @@ IrmoSocket *socket_new(int domain, int port)
 		return NULL;
 	}
 
-	// bind
-
-	addr_len = sockaddr_len(domain);
-	addr = (struct sockaddr *) g_malloc0(addr_len);
-
-	switch (domain) {
-	case AF_INET:
-		((struct sockaddr_in *) addr)->sin_family = AF_INET;
-		((struct sockaddr_in *) addr)->sin_addr.s_addr = INADDR_ANY;
-		((struct sockaddr_in *) addr)->sin_port = htons(port);
-		break;
-#ifdef USE_IPV6
-	case AF_INET6:
-		((struct sockaddr_in6 *) addr)->sin6_family = AF_INET6;
-		((struct sockaddr_in6 *) addr)->sin6_addr = in6addr_any;
-		((struct sockaddr_in6 *) addr)->sin6_port = htons(port);
-		
-		break;
-#endif
-	}
-	
-	if (bind(sock, addr, addr_len) < 0) {
-		fprintf(stderr,
-			"socket_new: Can't bind to %i::%i (%s)\n",
-			domain, port, strerror(errno));
-		close(sock);
-		return NULL;
-	}
-
-	free(addr);
-
 	// make socket nonblocking
 
 	opts = fcntl(sock, F_GETFL);
@@ -118,7 +88,6 @@ IrmoSocket *socket_new(int domain, int port)
 	irmosock->refcount = 1;
 	irmosock->domain = domain;
 	irmosock->sock = sock;
-	irmosock->port = port;
 	irmosock->servers = g_hash_table_new(g_str_hash, g_str_equal);
 	irmosock->clients = g_hash_table_new((GHashFunc) sockaddr_hash,
 					     (GCompareFunc) sockaddr_cmp);
@@ -152,6 +121,72 @@ void socket_unref(IrmoSocket *sock)
 	}
 }
 
+// create a socket for clients, unbound
+
+IrmoSocket *_socket_new_unbound(int domain)
+{
+	IrmoSocket *sock = _socket_new(domain);
+
+	if (!sock)
+		return NULL;
+
+	sock->type = SOCKET_CLIENT;
+	sock->port = -1;
+	
+	return sock;
+}
+
+// create a socket for servers, bound to a port
+
+IrmoSocket *socket_new(int domain, int port)
+{
+	IrmoSocket *sock = _socket_new(domain);
+	struct sockaddr *addr;
+	int addr_len;
+
+	if (!sock)
+		return NULL;
+	
+	// try to bind to the port
+
+	addr_len = sockaddr_len(domain);
+	addr = (struct sockaddr *) g_malloc0(addr_len);
+
+	switch (domain) {
+	case AF_INET:
+		((struct sockaddr_in *) addr)->sin_family = AF_INET;
+		((struct sockaddr_in *) addr)->sin_addr.s_addr = INADDR_ANY;
+		((struct sockaddr_in *) addr)->sin_port = htons(port);
+		break;
+#ifdef USE_IPV6
+	case AF_INET6:
+		((struct sockaddr_in6 *) addr)->sin6_family = AF_INET6;
+		((struct sockaddr_in6 *) addr)->sin6_addr = in6addr_any;
+		((struct sockaddr_in6 *) addr)->sin6_port = htons(port);
+		
+		break;
+#endif
+	}
+	
+	if (bind(sock->sock, addr, addr_len) < 0) {
+		fprintf(stderr,
+			"socket_new: Can't bind to %i::%i (%s)\n",
+			domain, port, strerror(errno));
+		socket_unref(sock);
+		return NULL;
+	}
+
+	free(addr);
+
+	// bound successfully
+
+	sock->type = SOCKET_SERVER;
+	sock->port = port;
+	printf("port: %i\n", port);
+	
+	return sock;
+}
+
 static inline void socket_run_syn(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
@@ -159,7 +194,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	IrmoPacket *sendpacket;
 	guint32 local_hash, server_hash;
 	gchar *s;
-	
+
 	if (!packet_readi32(packet, &local_hash)
 	 && !packet_readi32(packet, &server_hash)) {
 		// no hashes - drop
@@ -307,6 +342,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/02/03 21:13:55  sdh300
+// establish connections from connecting clients
+//
 // Revision 1.11  2003/02/03 20:44:20  sdh300
 // move sockaddr_len into netlib
 //
