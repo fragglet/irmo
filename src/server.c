@@ -9,6 +9,8 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 			    IrmoUniverse *universe, IrmoInterfaceSpec *spec)
 {
 	IrmoServer *server;
+
+	g_return_val_if_fail(sock != NULL, NULL);
 	
 	// sanity checks; make sure the hostname is not already taken
 	
@@ -68,6 +70,8 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 
 void irmo_server_ref(IrmoServer *server)
 {
+	g_return_if_fail(server != NULL);
+	
 	++server->refcount;
 }
 
@@ -89,6 +93,8 @@ static gboolean server_unref_client_foreach(gpointer key, IrmoClient *client,
 
 void irmo_server_unref(IrmoServer *server)
 {
+	g_return_if_fail(server != NULL);
+	
 	--server->refcount;
 
 	if (server->refcount <= 0) {
@@ -135,13 +141,18 @@ void irmo_server_unref(IrmoServer *server)
 void irmo_server_watch_connect(IrmoServer *server, IrmoClientCallback func,
 			       gpointer user_data)
 {
+	g_return_if_fail(server != NULL);
+	g_return_if_fail(func != NULL);
+	
 	irmo_callbacklist_add(&server->connect_callbacks, func, user_data);
 }
 
 void irmo_server_unwatch_connect(IrmoServer *server, IrmoClientCallback func,
 				 gpointer user_data)
 {
-
+	g_return_if_fail(server != NULL);
+	g_return_if_fail(func != NULL);
+	
 	if (!irmo_callbacklist_remove(&server->connect_callbacks, 
 				      func, user_data)) {
 		fprintf(stderr,
@@ -171,6 +182,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/03/17 17:33:59  sdh300
+// Fix arguments to irmo_client_callback_raise
+//
 // Revision 1.15  2003/03/17 17:16:48  sdh300
 // Generalise to invoking lists of IrmoClientCallback callbacks
 //

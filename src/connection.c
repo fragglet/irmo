@@ -11,6 +11,8 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	IrmoServer *server;
 	IrmoClient *client;
 
+	g_return_val_if_fail(location != NULL, NULL);
+	
 	// create a socket
 	
 	sock = irmo_socket_new_unbound(domain);
@@ -68,6 +70,8 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 
 void irmo_disconnect(IrmoConnection *conn)
 {
+	g_return_if_fail(conn != NULL);
+	
 	// keep a watch on the client and stop it being destroyed
 	
 	irmo_client_ref(conn);
@@ -89,20 +93,29 @@ void irmo_disconnect(IrmoConnection *conn)
 
 IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn)
 {
+	g_return_val_if_fail(conn != NULL, NULL);
+	
 	return conn->server->socket;
 }
 
 void irmo_connection_run(IrmoConnection *conn)
 {
+	g_return_if_fail(conn != NULL);
+	
 	irmo_socket_run(conn->server->socket);
 }
 
 IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
 {
+	g_return_val_if_fail(conn != NULL, NULL);
+	
 	return conn->universe;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/17 16:48:23  sdh300
+// Add ability to disconnect from servers and to disconnect clients
+//
 // Revision 1.12  2003/03/17 15:45:34  sdh300
 // Remove 'IrmoConnection' object; make it into a typedef for IrmoClient
 //

@@ -13,6 +13,8 @@ IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec)
 {
 	IrmoUniverse *universe;
 	int i;
+
+	g_return_val_if_fail(spec != NULL, NULL);
 	
 	universe = g_new0(IrmoUniverse, 1);
 
@@ -42,6 +44,8 @@ IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec)
 
 void irmo_universe_ref(IrmoUniverse *universe)
 {
+	g_return_if_fail(universe != NULL);
+	
 	++universe->refcount;
 }
 
@@ -57,6 +61,8 @@ static void irmo_universe_unref_foreach(irmo_objid_t id, IrmoObject *object,
 
 void irmo_universe_unref(IrmoUniverse *universe)
 {
+	g_return_if_fail(universe != NULL);
+	
 	--universe->refcount;
 
 	if (universe->refcount <= 0) {
@@ -94,6 +100,8 @@ IrmoObject *irmo_universe_get_object_for_id(IrmoUniverse *universe,
 {
 	IrmoObject *object;
 
+	g_return_if_fail(universe != NULL);
+	
 	object = g_hash_table_lookup(universe->objects, (gpointer) id);
 
 	return object;
@@ -127,6 +135,9 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 		user_data: user_data,
 	};
 
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(func != NULL);
+	
 	if (classname) {
 		spec = g_hash_table_lookup(universe->spec->class_hash,
 					   classname);
@@ -150,6 +161,9 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/03/15 02:21:16  sdh300
+// Initial method code
+//
 // Revision 1.14  2003/03/07 12:17:18  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

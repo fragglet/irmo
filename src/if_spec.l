@@ -438,6 +438,8 @@ IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 {
 	IrmoInterfaceSpec *spec;
 
+	g_return_val_if_fail(filename != NULL, NULL);
+
 	yyin = fopen(filename, "r");
 
 	if (!yyin) {
@@ -458,11 +460,15 @@ IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 
 void irmo_interface_spec_ref(IrmoInterfaceSpec *spec)
 {
+	g_return_if_fail(spec != NULL);
+
 	++spec->refcount;
 }
 
 void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 {
+	g_return_if_fail(spec != NULL);
+
 	--spec->refcount;
 
 	if (spec->refcount <= 0)
@@ -470,6 +476,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/17 18:08:39  sdh300
+// Remove debug messages
+//
 // Revision 1.5  2003/03/16 02:08:01  sdh300
 // Add irmo_objid_t type to lexer
 //

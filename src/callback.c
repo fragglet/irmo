@@ -235,6 +235,10 @@ void irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
 {
 	IrmoCallbackData *data;
 	ClassSpec *spec;
+
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(classname != NULL);
+	g_return_if_fail(func != NULL);
 	
 	// find the class
 
@@ -260,6 +264,10 @@ void irmo_universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
 	IrmoCallbackData *data;
 	ClassSpec *spec;
 
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(classname != NULL);
+	g_return_if_fail(func != NULL);
+	
 	// find the class
 
 	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
@@ -289,6 +297,10 @@ void irmo_universe_watch_class(IrmoUniverse *universe,
 {
 	ClassSpec *spec;
 	
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(classname != NULL);
+	g_return_if_fail(func != NULL);
+	
 	// find the class
 	
 	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
@@ -314,6 +326,10 @@ void irmo_universe_unwatch_class(IrmoUniverse *universe,
 				 IrmoVarCallback func, gpointer user_data)
 {
 	ClassSpec *spec;
+	
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(classname != NULL);
+	g_return_if_fail(func != NULL);
 	
 	// find the class
 	
@@ -345,6 +361,10 @@ void irmo_universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
 	IrmoCallbackData *data;
 	ClassSpec *spec;
 
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(classname != NULL);
+	g_return_if_fail(func != NULL);
+	
 	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
 
 	if (!spec) {
@@ -365,6 +385,10 @@ void irmo_universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
 	IrmoCallbackData *data;
 	ClassSpec *spec;
 
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(classname != NULL);
+	g_return_if_fail(func != NULL);
+	
 	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
 
 	if (!spec) {
@@ -387,6 +411,9 @@ void irmo_universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
 void irmo_object_watch(IrmoObject *object, gchar *variable,
 		       IrmoVarCallback func, gpointer user_data)
 {
+	g_return_if_fail(object != NULL);
+	g_return_if_fail(func != NULL);
+	
 	if (!callbackdata_watch(object->callbacks, variable,
 				func, user_data)) {
 		fprintf(stderr,
@@ -399,6 +426,9 @@ void irmo_object_watch(IrmoObject *object, gchar *variable,
 void irmo_object_unwatch(IrmoObject *object, gchar *variable,
 			 IrmoVarCallback func, gpointer user_data)
 {
+	g_return_if_fail(object != NULL);
+	g_return_if_fail(func != NULL);
+	
 	if (!callbackdata_unwatch(object->callbacks, variable,
 				  func, user_data)) {
 
@@ -419,6 +449,9 @@ void irmo_object_unwatch(IrmoObject *object, gchar *variable,
 void irmo_object_watch_destroy(IrmoObject *object,
 			       IrmoObjCallback func, gpointer user_data)
 {
+	g_return_if_fail(object != NULL);
+	g_return_if_fail(func != NULL);
+	
 	irmo_callbacklist_add(&object->callbacks->destroy_callbacks,
 			      func, user_data);
 }
@@ -426,6 +459,9 @@ void irmo_object_watch_destroy(IrmoObject *object,
 void irmo_object_unwatch_destroy(IrmoObject *object,
 				 IrmoObjCallback func, gpointer user_data)
 {
+	g_return_if_fail(object != NULL);
+	g_return_if_fail(func != NULL);
+	
 	if (!irmo_callbacklist_remove(&object->callbacks->destroy_callbacks,
 				      (IrmoVarCallback) func, user_data)) {
 		fprintf(stderr,
@@ -436,6 +472,9 @@ void irmo_object_unwatch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.21  2003/03/16 00:44:04  sdh300
+// Add irmo_callbacklist_free function
+//
 // Revision 1.20  2003/03/14 18:31:36  sdh300
 // Generalise callback functions to irmo_callbacklist type,
 // remove redundant client_callback code

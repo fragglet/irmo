@@ -119,11 +119,15 @@ static IrmoSocket *_socket_new(int domain)
 
 void irmo_socket_ref(IrmoSocket *sock)
 {
+	g_return_if_fail(sock != NULL);
+	
 	++sock->refcount;
 }
 
 void irmo_socket_unref(IrmoSocket *sock)
 {
+	g_return_if_fail(sock != NULL);
+	
 	--sock->refcount;
 
 	if (sock->refcount <= 0) {
@@ -161,10 +165,12 @@ IrmoSocket *irmo_socket_new_unbound(int domain)
 
 IrmoSocket *irmo_socket_new(int domain, int port)
 {
-	IrmoSocket *sock = _socket_new(domain);
+	IrmoSocket *sock;
 	struct sockaddr *addr;
 	int addr_len;
 
+	sock = _socket_new(domain);
+	
 	if (!sock)
 		return NULL;
 	
@@ -514,6 +520,8 @@ void irmo_socket_run(IrmoSocket *sock)
 	struct sockaddr *addr;
 	int addr_len;
 
+	g_return_if_fail(sock != NULL);
+	
 	addr_len = sockaddr_len(sock->domain);
 	addr = malloc(addr_len);
 	
@@ -559,6 +567,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.39  2003/04/25 00:17:28  sdh300
+// Remove unneccesary leading underscores from variables in IrmoClient
+//
 // Revision 1.38  2003/03/17 18:08:40  sdh300
 // Remove debug messages
 //

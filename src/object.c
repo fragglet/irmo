@@ -82,7 +82,7 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 {
 	IrmoObject *object;
 	int i;
-	
+
 	// make object
 	
 	object = g_new0(IrmoObject, 1);
@@ -127,6 +127,8 @@ IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename)
 	ClassSpec *spec;
 	gint id;
 
+	g_return_val_if_fail(universe != NULL, NULL);
+	g_return_val_if_fail(typename != NULL, NULL);
 	g_return_val_if_fail(universe->remote == FALSE, NULL);
 	
 	spec = g_hash_table_lookup(universe->spec->class_hash, typename);
@@ -198,6 +200,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 
 void irmo_object_destroy(IrmoObject *object)
 {
+	g_return_if_fail(object != NULL);
 	g_return_if_fail(object->universe->remote == FALSE);
 	
 	// destroy object
@@ -208,11 +211,15 @@ void irmo_object_destroy(IrmoObject *object)
 
 irmo_objid_t irmo_object_get_id(IrmoObject *object)
 {
+	g_return_val_if_fail(object != NULL, -1);
+	
 	return object->id;
 }
 
 gchar *irmo_object_get_class(IrmoObject *object)
 {
+	g_return_val_if_fail(object != NULL, NULL);
+	
 	return object->objclass->name;
 }
 
@@ -256,7 +263,9 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 {
 	ClassVarSpec *spec;
-	
+
+	g_return_if_fail(object != NULL);
+	g_return_if_fail(variable != NULL);
 	g_return_if_fail(object->universe->remote == FALSE);
 	
 	spec = g_hash_table_lookup(object->objclass->variable_hash,
@@ -297,8 +306,10 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 {
 	ClassVarSpec *spec;
 
-	g_return_if_fail(object->universe->remote == FALSE);
+	g_return_if_fail(object != NULL);
+	g_return_if_fail(variable != NULL);
 	g_return_if_fail(value != NULL);
+	g_return_if_fail(object->universe->remote == FALSE);
 	
 	spec = g_hash_table_lookup(object->objclass->variable_hash,
 				   variable);
@@ -334,6 +345,9 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 {
 	ClassVarSpec *spec;
 
+	g_return_val_if_fail(object != NULL, -1);
+	g_return_val_if_fail(variable != NULL, -1);
+	
 	spec = g_hash_table_lookup(object->objclass->variable_hash,
 				   variable);
 
@@ -369,6 +383,9 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 {
 	ClassVarSpec *spec;
 
+	g_return_val_if_fail(object != NULL, NULL);
+	g_return_val_if_fail(variable != NULL, NULL);
+
 	spec = g_hash_table_lookup(object->objclass->variable_hash,
 				   variable);
 
@@ -394,6 +411,11 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.21  2003/03/12 18:58:24  sdh300
+// Only send changes to clients which are properly connected.
+// This fixes problems sending changes to clients not yet completely
+// connected.
+//
 // Revision 1.20  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

@@ -82,6 +82,8 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 void irmo_client_ref(IrmoClient *client)
 {
+	g_return_if_fail(client != NULL);
+	
 	// when you reference a client, you're effectively referencing
 	// the server its part of
 
@@ -92,6 +94,8 @@ void irmo_client_ref(IrmoClient *client)
 
 void irmo_client_unref(IrmoClient *client)
 {
+	g_return_if_fail(client != NULL);
+	
 	--client->refcount;
 	
 	irmo_server_unref(client->server);	
@@ -249,6 +253,8 @@ void irmo_client_run(IrmoClient *client)
 
 IrmoUniverse *irmo_client_get_universe(IrmoClient *client)
 {
+	g_return_val_if_fail(client != NULL, NULL);
+	
 	return client->universe;
 }
 
@@ -269,6 +275,9 @@ void irmo_client_watch_disconnect(IrmoClient *client,
 				  IrmoClientCallback func,
 				  gpointer user_data)
 {
+	g_return_if_fail(client != NULL);
+	g_return_if_fail(func != NULL);
+	
 	irmo_callbacklist_add(&client->disconnect_callbacks,
 			      func, user_data);
 }
@@ -277,6 +286,9 @@ void irmo_client_unwatch_disconnect(IrmoClient *client,
 				    IrmoClientCallback func,
 				    gpointer user_data)
 {
+	g_return_if_fail(client != NULL);
+	g_return_if_fail(func != NULL);
+	
 	if (!irmo_callbacklist_remove(&client->disconnect_callbacks,
 				      func, user_data)) {
 		fprintf(stderr,
@@ -293,10 +305,15 @@ int irmo_client_timeout_time(IrmoClient *client)
 
 int irmo_client_ping_time(IrmoClient *client)
 {
+	g_return_val_if_fail(client != NULL, -1);
+	
 	return (int) client->rtt;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.22  2003/04/25 00:17:28  sdh300
+// Remove unneccesary leading underscores from variables in IrmoClient
+//
 // Revision 1.21  2003/04/21 20:10:19  sdh300
 // Add a function to the API to get the RTT for a client
 //

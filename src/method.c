@@ -10,6 +10,10 @@ void irmo_universe_method_watch(IrmoUniverse *universe, gchar *method_name,
 {
 	MethodSpec *spec;
 
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(method_name != NULL);
+	g_return_if_fail(method != NULL);
+	
 	spec = g_hash_table_lookup(universe->spec->method_hash,
 				   method_name);
 
@@ -30,6 +34,10 @@ void irmo_universe_method_unwatch(IrmoUniverse *universe, gchar *method_name,
 {
 	MethodSpec *spec;
 
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(method_name != NULL);
+	g_return_if_fail(method != NULL);
+	
 	spec = g_hash_table_lookup(universe->spec->method_hash,
 				   method_name);
 	
@@ -80,6 +88,9 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 	IrmoVariable *args;
 	va_list arglist;
 	int i;
+
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(method != NULL);
 	
 	spec = g_hash_table_lookup(universe->spec->method_hash, method);
 
@@ -126,6 +137,8 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 
 IrmoClient *irmo_method_get_source(IrmoMethodData *data)
 {
+	g_return_val_if_fail(data != NULL, NULL);
+	
 	return data->src;
 }
 
@@ -133,6 +146,9 @@ gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
 {
 	MethodArgSpec *spec;
 
+	g_return_val_if_fail(data != NULL, NULL);
+	g_return_val_if_fail(argname != NULL, NULL);
+	
 	spec = g_hash_table_lookup(data->spec->argument_hash, argname);
 
 	if (!spec) {
@@ -158,6 +174,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 {
 	MethodArgSpec *spec;
 
+	g_return_val_if_fail(data != NULL, -1);
+	g_return_val_if_fail(argname != NULL, -1);
+	
 	spec = g_hash_table_lookup(data->spec->argument_hash, argname);
 
 	if (!spec) {
@@ -185,6 +204,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/03/16 01:54:24  sdh300
+// Method calls over network protocol
+//
 // Revision 1.2  2003/03/16 00:44:19  sdh300
 // Pass correct argument to callback functions
 //
