@@ -155,7 +155,7 @@ void irmo_client_run(IrmoClient *client);
 
 // destroy client data structure
 
-void irmo_client_destroy(IrmoClient *client);
+void irmo_client_internal_unref(IrmoClient *client);
 
 // run through sendatoms waiting in the receive window
 
@@ -172,8 +172,12 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:23  fraggle
-// Initial revision
+// Revision 1.2  2003/08/30 03:08:00  fraggle
+// Use irmo_client_internal_unref instead of unreffing externally. Make
+// irmo_client_destroy static now.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:23  fraggle
+// Initial sourceforge import
 //
 // Revision 1.23  2003/06/09 21:06:50  sdh300
 // Add CVS Id tag and copyright/license notices

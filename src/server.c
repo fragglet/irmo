@@ -107,7 +107,7 @@ static gboolean server_unref_client_foreach(gpointer key, IrmoClient *client,
 
 	// destroy
 
-	irmo_client_destroy(client);
+	irmo_client_internal_unref(client);
 	
 	// remove from server list
 	
@@ -222,6 +222,10 @@ void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
 }
 
 // $Log$
+// Revision 1.5  2003/08/30 03:08:00  fraggle
+// Use irmo_client_internal_unref instead of unreffing externally. Make
+// irmo_client_destroy static now.
+//
 // Revision 1.4  2003/08/15 15:22:42  fraggle
 // Add an iterator function to iterate over clients connected to a server.
 //

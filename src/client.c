@@ -110,19 +110,7 @@ void irmo_client_ref(IrmoClient *client)
 	++client->refcount;
 }
 
-void irmo_client_unref(IrmoClient *client)
-{
-	g_return_if_fail(client != NULL);
-	
-	--client->refcount;
-	
-	irmo_server_unref(client->server);	
-
-	if (client->refcount <= 0) 
-		irmo_client_destroy(client);
-}
-
-void irmo_client_destroy(IrmoClient *client)
+static void irmo_client_destroy(IrmoClient *client)
 {
 	int i;
 
@@ -160,6 +148,23 @@ void irmo_client_destroy(IrmoClient *client)
 	
 	free(client->addr);
 	free(client);
+}
+
+void irmo_client_internal_unref(IrmoClient *client)
+{
+	--client->refcount;
+
+	if (client->refcount <= 0)
+		irmo_client_destroy(client);
+}
+
+void irmo_client_unref(IrmoClient *client)
+{
+	g_return_if_fail(client != NULL);
+
+	irmo_client_internal_unref(client);
+	
+	irmo_server_unref(client->server);	
 }
 
 // run when in the connecting state
@@ -346,6 +351,10 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.7  2003/08/30 03:08:00  fraggle
+// Use irmo_client_internal_unref instead of unreffing externally. Make
+// irmo_client_destroy static now.
+//
 // Revision 1.6  2003/08/26 16:15:40  fraggle
 // fix bug with reconnect immediately after a disconnect
 //

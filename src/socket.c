@@ -289,10 +289,7 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 		g_hash_table_remove(client->server->clients,
 				    client->addr);
 
-		--client->refcount;
-
-		if (client->refcount <= 0)
-			irmo_client_destroy(client);		
+		irmo_client_internal_unref(client);
 
 		client = NULL;
 	}
@@ -570,14 +567,8 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 	g_hash_table_remove(client->server->clients,
 			    key);
 	
-	--client->refcount;
+	irmo_client_internal_unref(client);
 
-	// destroy client object if no references
-	
-	if (client->refcount <= 0) {
-		irmo_client_destroy(client);
-	}
-	
 	// remove from socket list: return TRUE
 	
 	return TRUE;
@@ -634,6 +625,10 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log$
+// Revision 1.6  2003/08/30 03:08:00  fraggle
+// Use irmo_client_internal_unref instead of unreffing externally. Make
+// irmo_client_destroy static now.
+//
 // Revision 1.5  2003/08/26 16:15:40  fraggle
 // fix bug with reconnect immediately after a disconnect
 //
