@@ -1,0 +1,60 @@
+2 byte header:		bitmap:
+			SYN	- connect: syn/syn-ack/ack
+			ACK	- for connection
+			FIN	- disconnect
+			NEW	- new object announcements
+			SET	- new object values
+			DEL	- deleted object announcements
+			FNC	- function calls
+
+if SYN:
+	4 bytes for hash of local (connecting client) universe spec
+		0 if no local universe
+	4 bytes for hash of remote (server connecting to) universe spec
+	up to 64 bytes for vhost name, 0 terminated
+	end of packet
+
+2 bytes for position in stream
+
+2 bytes for last acked point in stream (includes all new object, value
+	and deletion messages) for data going the other way
+
+if NEW set:
+	new object announcements
+
+if SET set:
+	new (changed) object values
+
+if DEL set:
+	deleted object announcements
+
+if FNC set:
+	function calls
+
+-----------------------------
+
+client				server
+
+connection
+
+	--------- SYN -------->
+
+	<------ SYN ACK -------
+
+	------- SYN ACK ------>
+
+refused connection
+
+	--------- SYN -------->
+
+	<------ SYN FIN -------
+
+disconnect
+
+	--------- FIN -------->
+
+	<------ FIN ACK -------
+
+	------- FIN ACK ------>
+
+$Log: not supported by cvs2svn $
