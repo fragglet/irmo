@@ -378,7 +378,7 @@ static inline void socket_run_synfin(IrmoPacket *packet)
 
 	if (client->state == CLIENT_CONNECTED) {
 		client->state = CLIENT_DISCONNECTED;
-		client->_connect_time = time(NULL);
+		client->connect_time = time(NULL);
 		client->disconnect_wait = TRUE;
 
 		irmo_client_callback_raise(client->disconnect_callbacks,
@@ -491,7 +491,7 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 	// we wait a while before destroying the object
 	
 	if (client->disconnect_wait
-	    && time(NULL) - client->_connect_time < 10)
+	    && time(NULL) - client->connect_time < 10)
 		return FALSE;
 	
 	// remove from server list
@@ -559,6 +559,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.38  2003/03/17 18:08:40  sdh300
+// Remove debug messages
+//
 // Revision 1.37  2003/03/17 17:34:27  sdh300
 // Add disconnect callbacks for clients
 //

@@ -49,8 +49,8 @@ struct _IrmoClient {
 	// protocol stuff (internal)
 
 	// time last syn/synack was sent
-	time_t _connect_time;
-	gint _connect_attempts;
+	time_t connect_time;
+	gint connect_attempts;
 
 	// when a client remotely disconnects, keep the client object
 	// for several seconds before destroying it (if they do not
@@ -137,6 +137,10 @@ int irmo_client_timeout_time(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2003/04/21 18:10:53  sdh300
+// Fix sending of unneccesary acks
+// Slow start/Congestion avoidance
+//
 // Revision 1.18  2003/03/21 17:21:45  sdh300
 // Round Trip Time estimatation and adaptive timeout times
 //

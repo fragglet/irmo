@@ -25,8 +25,8 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 	client->state = CLIENT_CONNECTING;
 	client->server = server;
 	client->addr = sockaddr_copy(addr);
-	client->_connect_time = 0;
-	client->_connect_attempts = CLIENT_CONNECT_ATTEMPTS;
+	client->connect_time = 0;
+	client->connect_attempts = CLIENT_CONNECT_ATTEMPTS;
 
 	// send queue
 
@@ -144,11 +144,11 @@ static void client_run_connecting(IrmoClient *client)
 	IrmoPacket *packet;
 	time_t nowtime = time(NULL);
 
-	if (nowtime >= client->_connect_time + CLIENT_SYN_INTERVAL) {
+	if (nowtime >= client->connect_time + CLIENT_SYN_INTERVAL) {
 
 		// run out of connection attempts?
 
-		if (client->_connect_attempts <= 0) {
+		if (client->connect_attempts <= 0) {
 			client->state = CLIENT_DISCONNECTED;
 			return;
 		}
@@ -188,9 +188,9 @@ static void client_run_connecting(IrmoClient *client)
 
 		packet_free(packet);		
 		
-		client->_connect_time = nowtime;
+		client->connect_time = nowtime;
 
-		--client->_connect_attempts;		
+		--client->connect_attempts;		
 	}
 }
 
@@ -199,12 +199,12 @@ static void client_run_disconnecting(IrmoClient *client)
 	IrmoPacket *packet;
 	time_t nowtime = time(NULL);
 
-	if (nowtime >= client->_connect_time + CLIENT_SYN_INTERVAL) {
+	if (nowtime >= client->connect_time + CLIENT_SYN_INTERVAL) {
 
 		// after several attempts, give up and just set them
 		// as disconnected
 		
-		if (client->_connect_attempts <= 0) {
+		if (client->connect_attempts <= 0) {
 			client->state = CLIENT_DISCONNECTED;
 			return;
 		}
@@ -223,8 +223,8 @@ static void client_run_disconnecting(IrmoClient *client)
 
 		// save the time
 
-		--client->_connect_attempts;
-		client->_connect_time = nowtime;
+		--client->connect_attempts;
+		client->connect_time = nowtime;
 	}
 }
 
@@ -261,8 +261,8 @@ void irmo_client_disconnect(IrmoClient *client)
 	// try to send 6 disconnect attempts before
 	// giving up
 	
-	client->_connect_time = 0;
-	client->_connect_attempts = CLIENT_CONNECT_ATTEMPTS;
+	client->connect_time = 0;
+	client->connect_attempts = CLIENT_CONNECT_ATTEMPTS;
 }
 
 void irmo_client_watch_disconnect(IrmoClient *client,
@@ -297,6 +297,9 @@ int irmo_client_ping_time(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.21  2003/04/21 20:10:19  sdh300
+// Add a function to the API to get the RTT for a client
+//
 // Revision 1.20  2003/04/21 18:10:53  sdh300
 // Fix sending of unneccesary acks
 // Slow start/Congestion avoidance
