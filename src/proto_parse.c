@@ -14,6 +14,10 @@
 #include "protocol.h"
 #include "sendatom.h"
 
+// alpha value used for estimating round trip time
+
+#define RTT_ALPHA 0.9
+
 // only the low 16 bits of the stream position is sent
 // therefore we must expand positions we get based on the
 // current position
@@ -304,13 +308,31 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 
 	if (!client->sendwindow[0]->resent) {
 		struct timeval nowtime, rtt;
-
+		int rtt_ms, deviation;
+		
 		gettimeofday(&nowtime, NULL);
 
 		irmo_timeval_sub(&nowtime, &client->sendwindow[0]->sendtime,
 				 &rtt);
 
-		printf("round trip time: %i ms\n", irmo_timeval_to_ms(&rtt));
+		rtt_ms = irmo_timeval_to_ms(&rtt);
+
+		deviation = abs(rtt_ms - client->rtt);
+		
+		client->rtt = RTT_ALPHA * client->rtt
+			+ (1-RTT_ALPHA) * rtt_ms;
+
+		client->rtt_deviation = RTT_ALPHA * client->rtt_deviation
+			+ (1-RTT_ALPHA) * deviation;
+
+		// if we were backing off, but this came within
+		// the timeout time, we have now adjusted the
+		// backoff time correctly to the new rtt
+		// backoff can be turned off 
+		
+		if (client->backoff != 1
+		    && rtt_ms < irmo_client_timeout_time(client))
+			client->backoff = 1;
 	}	
 	
 	// need to move the sendwindow along
@@ -366,6 +388,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/18 20:55:46  sdh300
+// Initial round trip time measurement
+//
 // Revision 1.10  2003/03/16 01:54:24  sdh300
 // Method calls over network protocol
 //

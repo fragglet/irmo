@@ -51,6 +51,15 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 	// watching.
 	
 	client->refcount = 0;
+
+	// initial rtt mean/stddev
+
+	client->rtt = 3000;
+	client->rtt_deviation = 1000;
+
+	// backoff
+
+	client->backoff = 1;
 	
 	// insert into server hashtable and socket hashtable
 	g_hash_table_insert(server->clients,
@@ -269,8 +278,15 @@ void irmo_client_unwatch_disconnect(IrmoClient *client,
 	}
 }
 
+int irmo_client_timeout_time(IrmoClient *client)
+{
+	return (int) (client->rtt + client->rtt_deviation * 2 + 1);
+}
 
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2003/03/17 17:34:27  sdh300
+// Add disconnect callbacks for clients
+//
 // Revision 1.17  2003/03/17 17:02:23  sdh300
 // Add some missing destroy/unref calls to irmo_client_destroy
 //

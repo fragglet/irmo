@@ -87,6 +87,16 @@ struct _IrmoClient {
 	// disconnect callbacks
 
 	GSList *disconnect_callbacks;
+
+	// estimations of round trip time mean and standard deviation
+	// (in milliseconds)
+
+	float rtt;
+	float rtt_deviation;
+
+	// backoff multiply
+
+	int backoff;
 };
 
 // create a new client, attached to a particular server
@@ -105,9 +115,16 @@ void irmo_client_destroy(IrmoClient *client);
 
 void irmo_client_run_recvwindow(IrmoClient *client);
 
+// timeout time for a client
+
+int irmo_client_timeout_time(IrmoClient *client);
+
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2003/03/17 17:34:27  sdh300
+// Add disconnect callbacks for clients
+//
 // Revision 1.16  2003/03/17 16:48:22  sdh300
 // Add ability to disconnect from servers and to disconnect clients
 //

@@ -181,8 +181,20 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 		for (; n>0; --n, ++i) {
 			proto_add_atom(packet, client->sendwindow[i]);
 
-			if (client->sendwindow[i]->sendtime.tv_sec)
+			if (client->sendwindow[i]->sendtime.tv_sec) {
+
+				// set resent flag
+
 				client->sendwindow[i]->resent = TRUE;
+
+				// if we are resending the first atom,
+				// use exponential backoff and double the
+				// resend time every time we resend
+				
+				if (i == 0) {
+					client->backoff *= 2;
+				}
+			}
 			
 			// store send time in atoms
 
@@ -247,13 +259,24 @@ static void proto_pump_client(IrmoClient *client)
 
 void proto_run_client(IrmoClient *client)
 {
-	struct timeval timeout_time;
+	struct timeval nowtime, timeout_time, timeout_length;
+	int timeout_length_ms;
 	int i;
 	
 	proto_pump_client(client);
 
-	gettimeofday(&timeout_time, NULL);
-	timeout_time.tv_sec -= TIMEOUT_LENGTH;
+	gettimeofday(&nowtime, NULL);
+
+	timeout_length_ms = irmo_client_timeout_time(client) * client->backoff;
+	
+	irmo_timeval_from_ms(timeout_length_ms, &timeout_length);
+
+	//printf("timeout for client: %i ms (%i, %i)\n",
+	//timeout_length_ms,
+	//(int) client->rtt,
+	//(int) client->rtt_deviation);
+	
+	irmo_timeval_sub(&nowtime, &timeout_length, &timeout_time);
 
 	//printf("-- %i\n", timeout_time.tv_sec);
 
@@ -344,6 +367,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/18 20:55:46  sdh300
+// Initial round trip time measurement
+//
 // Revision 1.10  2003/03/16 20:18:19  sdh300
 // Fix bug in packet building with run length encoding making runs too long
 // (33 max rather than 32)
