@@ -60,6 +60,8 @@ IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec)
 		universe->callbacks[i] = callbackdata_new(spec->classes[i]);
 	}
 
+	universe->callbacks_all = callbackdata_new(NULL);
+
 	// method callbacks
 	
 	universe->method_callbacks = g_new0(GSList *, spec->nmethods);
@@ -109,6 +111,8 @@ void irmo_universe_unref(IrmoUniverse *universe)
 		
 		for (i=0; i<universe->spec->nclasses; ++i)
 			callbackdata_free(universe->callbacks[i]);
+
+		callbackdata_free(universe->callbacks_all);
 		
 		free(universe->callbacks);
 
@@ -191,6 +195,9 @@ IrmoInterfaceSpec *irmo_universe_get_spec(IrmoUniverse *universe)
 }
 
 // $Log$
+// Revision 1.4  2003/08/16 16:45:11  fraggle
+// Allow watches on all objects regardless of class
+//
 // Revision 1.3  2003/08/15 17:53:55  fraggle
 // irmo_object_get_universe, irmo_universe_get_spec functions
 //

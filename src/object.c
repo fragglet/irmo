@@ -137,6 +137,7 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 
 	callbackdata_raise_new(universe->callbacks[objclass->index],
 			       object);
+	callbackdata_raise_new(universe->callbacks_all, object);
 
 	// notify attached clients
 
@@ -195,6 +196,8 @@ void irmo_object_internal_destroy(IrmoObject *object,
 		callbackdata_raise_destroy(object->callbacks, object);
 		callbackdata_raise_destroy(object->universe->callbacks
 					   [object->objclass->index],
+					   object);
+		callbackdata_raise_destroy(object->universe->callbacks_all,
 					   object);
 		
 		// notify connected clients
@@ -285,6 +288,8 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 
 	callbackdata_raise(object->callbacks, object, spec->index);
 	callbackdata_raise(object->universe->callbacks[objclass->index],
+			   object, variable);
+	callbackdata_raise(object->universe->callbacks_all,
 			   object, variable);
 	
 	// notify clients
@@ -443,6 +448,9 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
 }
 
 // $Log$
+// Revision 1.4  2003/08/16 16:45:11  fraggle
+// Allow watches on all objects regardless of class
+//
 // Revision 1.3  2003/08/15 17:53:55  fraggle
 // irmo_object_get_universe, irmo_universe_get_spec functions
 //

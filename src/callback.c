@@ -88,7 +88,10 @@ IrmoCallbackData *callbackdata_new(ClassSpec *objclass)
 	data->new_callbacks = NULL;
 	data->class_callbacks = NULL;
 	data->destroy_callbacks = NULL;
-	data->variable_callbacks = g_new0(GSList *, objclass->nvariables);
+
+	if (objclass)
+		data->variable_callbacks 
+			= g_new0(GSList *, objclass->nvariables);
 
 	return data;
 }
@@ -105,13 +108,16 @@ void callbackdata_free(IrmoCallbackData *data)
 
 	irmo_callbacklist_free(data->destroy_callbacks);
 	
-	// free all variable callbacks
+	if (data->objclass) {
 
-	for (i=0; i<data->objclass->nvariables; ++i) {
-		irmo_callbacklist_free(data->variable_callbacks[i]);
+		// free all variable callbacks
+
+		for (i=0; i<data->objclass->nvariables; ++i) {
+			irmo_callbacklist_free(data->variable_callbacks[i]);
+		}
+
+		free(data->variable_callbacks);
 	}
-
-	free(data->variable_callbacks);
 
 	free(data);
 }
@@ -135,7 +141,7 @@ void callbackdata_raise(IrmoCallbackData *data,
 {
 	struct raise_data raise_data = {
 		object: object,
-		variable: data->objclass->variables[variable_index]->name,
+		variable: object->objclass->variables[variable_index]->name,
 	};
 
 	// call class callbacks
@@ -144,11 +150,13 @@ void callbackdata_raise(IrmoCallbackData *data,
 			(GFunc) callbackdata_raise_foreach,
 			&raise_data);
 
-	// variable callbacks
+	if (data->objclass) {
+		// variable callbacks
 
-	g_slist_foreach(data->variable_callbacks[variable_index],
-			(GFunc) callbackdata_raise_foreach,
-			&raise_data);
+		g_slist_foreach(data->variable_callbacks[variable_index],
+				(GFunc) callbackdata_raise_foreach,
+				&raise_data);
+	}
 }
 
 static void callbackdata_raise_destroy_foreach(IrmoCallback *callback,
@@ -160,7 +168,7 @@ static void callbackdata_raise_destroy_foreach(IrmoCallback *callback,
 }
 
 void callbackdata_raise_destroy(IrmoCallbackData *data,
-				 IrmoObject *object)
+			        IrmoObject *object)
 {
 	struct raise_data raise_data = {
 		object: object,
@@ -185,8 +193,14 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 static GSList **find_variable(IrmoCallbackData *data, gchar *variable)
 {
 	if (variable) {
-		ClassVarSpec *varspec
-			= g_hash_table_lookup(data->objclass->variable_hash,
+		ClassVarSpec *varspec;
+
+		// cannot specify a variable name and no classname
+
+		if (data->objclass)
+			return NULL;
+
+		varspec = g_hash_table_lookup(data->objclass->variable_hash,
 					      variable);
 		if (varspec)
 			return &data->variable_callbacks[varspec->index];
@@ -212,29 +226,40 @@ static IrmoCallback *callbackdata_watch(IrmoCallbackData *data,
 	return irmo_callbacklist_add(list, func, user_data);
 }
 
+static IrmoCallbackData *find_callback_class(IrmoUniverse *universe, gchar *classname)
+{
+	ClassSpec *spec;
+
+	if (classname == NULL) 
+		return universe->callbacks_all;
+
+	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
+
+	if (!spec)
+		return NULL;
+
+	return universe->callbacks[spec->index];
+}
+
 // watch creation of new objects of a particular class
 
 IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
 				      IrmoObjCallback func, gpointer user_data)
 {
 	IrmoCallbackData *data;
-	ClassSpec *spec;
 
 	g_return_val_if_fail(universe != NULL, NULL);
-	g_return_val_if_fail(classname != NULL, NULL);
 	g_return_val_if_fail(func != NULL, NULL);
 	
 	// find the class
 
-	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
+	data = find_callback_class(universe, classname);
 
-	if (!spec) {
+	if (!data) {
 		irmo_error_report("irmo_universe_watch_new",
 				  "unknown class '%s'", classname);
 		return NULL;
 	} else {
-		data = universe->callbacks[spec->index];
-		
 		return irmo_callbacklist_add(&data->new_callbacks,
 					     func, user_data);
 	}
@@ -245,22 +270,22 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
 					IrmoVarCallback func, 
 					gpointer user_data)
 {
-	ClassSpec *spec;
+	IrmoCallbackData *data;
 	IrmoCallback *callback = NULL;
 	
 	g_return_val_if_fail(universe != NULL, NULL);
-	g_return_val_if_fail(classname != NULL, NULL);
 	g_return_val_if_fail(func != NULL, NULL);
+	g_return_val_if_fail(!(classname == NULL && variable != NULL), NULL);
 	
 	// find the class
 	
-	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
+	data = find_callback_class(universe, classname);
 
-	if (!spec) {
+	if (!data) {
 		irmo_error_report("irmo_universe_watch_class",
 				  "unknown class '%s'", classname);
 	} else {
-	        callback = callbackdata_watch(universe->callbacks[spec->index],
+	        callback = callbackdata_watch(data,
 					      variable,
 					      func, user_data);
 
@@ -280,21 +305,17 @@ IrmoCallback *irmo_universe_watch_destroy(IrmoUniverse *universe,
 					  gpointer user_data)
 {
 	IrmoCallbackData *data;
-	ClassSpec *spec;
 	IrmoCallback *callback = NULL;
 
 	g_return_val_if_fail(universe != NULL, NULL);
-	g_return_val_if_fail(classname != NULL, NULL);
 	g_return_val_if_fail(func != NULL, NULL);
 	
-	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
+	data = find_callback_class(universe, classname);
 
-	if (!spec) {
+	if (!data) {
 		irmo_error_report("irmo_universe_watch_destroy",
 				  "unknown class '%s'", classname);
 	} else {
-		data = universe->callbacks[spec->index];
-		
 		callback = irmo_callbacklist_add(&data->destroy_callbacks,
 						 func, user_data);
 	}
@@ -334,6 +355,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.4  2003/08/16 16:45:11  fraggle
+// Allow watches on all objects regardless of class
+//
 // Revision 1.3  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

@@ -50,8 +50,16 @@ struct _IrmoUniverse {
 	IrmoInterfaceSpec *spec;
 
 	// universe-global callback objects, 1 per class
+	// used for eg. "watch creation of objects of class my_class"
+	// 		"watch for when my_class::my_string is changed"
 	
 	IrmoCallbackData **callbacks;
+
+	// global callbacks for all objects 
+	// eg. "watch destruction of all objects"
+	//     "watch for when any object is changed"
+
+	IrmoCallbackData *callbacks_all;
 
 	// objects in the universe, hashed by their object id
 	
@@ -88,8 +96,11 @@ struct _IrmoUniverse {
 #endif /* #ifndef IRMO_INTERNAL_UNIVERSE_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/08/16 16:45:11  fraggle
+// Allow watches on all objects regardless of class
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.16  2003/06/09 21:06:53  sdh300
 // Add CVS Id tag and copyright/license notices

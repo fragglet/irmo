@@ -75,7 +75,8 @@ void irmo_callback_unset(IrmoCallback *callback);
  * called.
  *
  * \param universe	Universe to watch in.
- * \param classname	The object class to watch.
+ * \param classname	The object class to watch. Specify NULL to watch
+ *                      for creation of all objects.
  * \param func		The function to call when new objects are
  * 			created.
  * \param user_data	Some extra data to pass to the callback function.
@@ -98,9 +99,10 @@ IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe,
  * changed.
  *
  * \param universe	The universe to watch in.
- * \param classname	The class to watch
- * \param variable	The variable name to watch. To create a callback
- * 			whenever any variable in the class is changed,
+ * \param classname	The class to watch. Specify NULL to watch for
+ *                      changes to objects of all classes.
+ * \param variable	The variable name to watch. Specify NULL to
+ *                      watch for changes to all variables.
  * 			pass NULL for this value.
  * \param func		A function to call.
  * \param user_data	Some extra data to pass to the callback function.
@@ -120,7 +122,9 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
  * a callback function will first be called.
  *
  * \param universe	The universe to watch in.
- * \param classname	The name of the class of object to watch.
+ * \param classname	The name of the class of object to watch. Specify
+ *                      NULL to watch for destruction of objects of all
+ * 		        classes.
  * \param func		The function to call.
  * \param user_data	Some extra data to pass to the callback function.
  *
@@ -182,6 +186,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
+// Revision 1.3  2003/08/16 16:45:11  fraggle
+// Allow watches on all objects regardless of class
+//
 // Revision 1.2  2003/07/22 02:05:39  fraggle
 // Move callbacks to use a more object-oriented API.
 //

@@ -45,6 +45,11 @@ struct _IrmoCallback {
 };
 
 struct _IrmoCallbackData {
+
+	// Class this callback data is being used for watching
+	// if this is NULL, it is for the global callback data
+	// for a universe, used to watch all objects.
+
 	ClassSpec *objclass;
 
 	// callbacks for watching for creations of new objects
@@ -58,6 +63,7 @@ struct _IrmoCallbackData {
 	GSList *class_callbacks;
 
 	// callbacks for if a particular variable is changed
+	// this is redundant if objclass == NULL
 	
 	GSList **variable_callbacks;
 
@@ -82,6 +88,9 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.3  2003/08/16 16:45:11  fraggle
+// Allow watches on all objects regardless of class
+//
 // Revision 1.2  2003/07/22 02:05:39  fraggle
 // Move callbacks to use a more object-oriented API.
 //
