@@ -28,8 +28,6 @@ multiplayer games
 * Overview::			A brief introduction to the library and 
 				the concepts of multiplayer gaming
 * API Notes::			Notes on using the library
-* Interface Specification::	Defining an interface to the game world
-				through Interface Specification files
 * World Representation::	How the game world data is represented
 * Index::			Index of concepts
 @end menu
@@ -113,7 +111,7 @@ in a lower level language. For this reason, a language binding
 already exists for the Ruby scripting language. Bindings are
 planned for other high-level languages.
 
-@node API Notes, Interface Specification, Overview, Top
+@node API Notes, , Overview, Top
 @chapter API Notes
 
 @section Compiling
@@ -159,7 +157,27 @@ about Doxygen can be found from the website:
 
 http://www.doxygen.org/
 
-@node Interface Specification, World Representation, API Notes, Top
+@node World Representation, Index, , Top
+@chapter World Representation
+
+Irmo requires the programmer to describe the game world; this is 
+to specify the data which is to be transmitted over the network.
+The world is assumed to consist of a number of objects. These
+are represented in the program as @code{IrmoObject} objects. The 
+objects exist within a ``container'' world object, of type
+@code{IrmoWorld}.
+
+Before an @code{IrmoWorld} world object can be created, an
+Interface Specification must first be made, defining the 
+types of object which can exist within the world.
+
+@menu
+* Interface Specification:: 	Defining an interface to the game world
+* IrmoWorld::			World container object
+* IrmoObject::			Objects in the game world
+@end menu
+
+@node Interface Specification, IrmoWorld, World Representation, World Representation
 @chapter Interface Specification
 
 Irmo allows the programmer to describe the game world.  It is 
@@ -270,19 +288,15 @@ includes a parser which parses the file given and returns a
 @end example
 
 If an error occurs during parsing an error message is printed
-to @code{STDERR} and the function returns @code{NULL}.
+to @code{stderr} and the function returns @code{NULL}.
 
-@node World Representation, Index, Interface Specification, Top
-@chapter World Representation
-
-@menu
-* IrmoWorld::			
-@end menu
-
-@node IrmoWorld,  , World Representation, World Representation
-@section IrmoWorld
+@node IrmoWorld, IrmoObject, Interface Specification, World Representation
 
 @cindex IrmoWorld
+
+@chapter IrmoWorld
+
+@cindex irmo_world_new
 
 Having defined the interface and types of object which can be 
 created in the game world, Irmo then allows the programmer
@@ -300,30 +314,19 @@ created using the
 @end example
 
 Creating a world object requires giving an interface specification,
-as described in the previous section. @code{irmo_world_new} 
+as described in the previous chapter. @code{irmo_world_new} 
 returns a pointer to the new world object.
 
-Having created a world object, objects can be created within the
-world with the types defined in the Interface Specification. Each object
-in the world has a unique numeric identifier. A reference to the object
-can be found from its ID using the @code{irmo_world_get_object_for_id}
-function call. For example:
+@section Iterating over objects in the world
 
-@example
-	IrmoObject *object;
+@cindex irmo_world_foreach_object
 
-	// search for object 55
-
-	object = irmo_world_get_object_for_id(world, 55);
-@end example
-
-If there is no object in the world with the identifier given, the function
-returns @code{NULL}.
-
-Similarly, it is possible to iterate over objects in an 
-@code{IrmoWorld} using the @code{irmo_world_foreach_object}
+An @code{IrmoWorld} contains a number of @code{IrmoObject}
+objects (see the next chapter). 
+It is possible to iterate over these objects 
+using the @code{irmo_world_foreach_object}
 function. This is performed by passing a pointer to a function to 
-call for each object. For example:
+execute for each object. For example:
 
 @example
 	void my_object_callback(IrmoObject *object, gpointer user_data)
@@ -357,6 +360,157 @@ is done similarly:
 The user_data field allows a pointer to some extra data to also be 
 passed  to the callback function. In these examples this is not being 
 used and @code{NULL} is being passed.
+
+@node IrmoObject, , IrmoWorld, World Representation
+
+@chapter IrmoObject
+
+@cindex IrmoObject
+
+@section Creating and destroying objects
+
+@cindex Creating objects
+@cindex irmo_object_new
+
+Objects within the game world are represented using the
+@code{IrmoObject} class. Each @code{IrmoObject} exists within
+a container @code{IrmoWorld}.  New objects are created with the
+@code{irmo_object_new} function:
+
+@example
+
+	IrmoObject *obj;
+
+	obj = irmo_object_new(world, "Explosion");
+
+@end example
+
+The above example creates a new @code{IrmoObject} of the ``Explosion''
+class.  Objects can be of any of the classes defined in the 
+interface specification which the world is using.
+
+@cindex Destroying objects
+@cindex irmo_object_destroy
+
+Similarly, objects can be removed from the world and destroyed
+using the @code{irmo_object_destroy} function:
+
+@example
+	// destroy the object
+
+	irmo_object_destroy(obj);
+@end example
+
+@section Object ID
+
+@cindex IrmoObjectID
+@cindex Object ID
+@cindex irmo_object_get_id
+
+Each object within a @code{IrmoWorld} has a unique numeric identifier
+which can be used to refer to it. This can be retrieved using
+the @code{irmo_object_get_id} function. For example:
+
+@example
+	IrmoObjectID my_id;
+
+	my_id = irmo_object_get_id(obj);
+@end example
+
+@cindex irmo_world_get_object_for_id
+
+The object can then be retrieved again from its ID using the
+@code{irmo_world_get_object_for_id} function.
+
+@example
+	IrmoObject *object;
+
+	// search for object 55
+
+	object = irmo_world_get_object_for_id(world, 55);
+@end example
+
+If there is no object in the world with the identifier given, the function
+returns @code{NULL}.
+
+@section Variables
+
+@cindex Object Variables
+@cindex irmo_object_get_int
+@cindex irmo_object_get_string
+
+Each object has a number of variables, which are pieces of data
+held by the object. The variables are defined in the
+interface specification, and the variables an object has depends on
+the class of the object.
+
+Each variable is either of an integer or a string type (see the 
+Interface Specification section of this manual). The value of a
+variable can be retrieved using the @code{irmo_object_get_int}
+and @code{irmo_object_get_string} functions. For example:
+
+@example
+	char *name;
+	int x;
+
+	x = irmo_object_get_int(obj, "x");
+	
+	// player_obj is an object of the Player class
+
+	name = irmo_object_get_string(player_obj, "name");
+@end example
+
+@cindex irmo_object_set_int
+@cindex irmo_object_set_string
+
+Similarly, the values of the variables can be set using the
+@code{irmo_object_set_int} and @code{irmo_object_set_string}
+functions:
+
+@example
+	// set the value of "x"
+
+	irmo_object_set_int(obj, "x", 1234);
+
+	// set the value of "name" to "new player"
+
+	irmo_object_set_string(obj, "name", "new player");
+@end example
+
+@section Object Classes
+
+@cindex Object Classes
+@cindex irmo_object_get_class
+
+Each @code{IrmoObject} has a class, which is specified when it 
+is created. The name of the class can be retrieved using the
+@code{irmo_object_get_class} function. 
+
+@example
+	void print_object_class(IrmoObject *obj)
+	@{
+		printf("this object is of the %s class\n",
+			irmo_object_get_class(obj));
+	@}
+@end example
+
+@cindex irmo_object_is_a
+
+In the interface specification file, it is possible to extend
+existing classes to create new classes by subclassing them. 
+You can find if an object is an instance of a particular class
+or any of its subclasses using the @code{irmo_object_is_a}
+function:
+
+@example
+	void is_a_player()
+	@{
+		if (irmo_object_is_a(obj, "Player"))
+			puts("this object is a player");
+		else
+			puts("this object is not a player");
+	@}
+@end example
 
 @node Index, , World Representation, Top
 @unnumbered Index
