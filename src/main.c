@@ -37,9 +37,15 @@ int main(int argc, char *argv[])
 		printf("successful!\n");
 	else
 		printf("failed!\n");
+
+	universe_unref(universe);
+	interface_spec_unref(spec);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/10/21 10:43:32  sdh300
+// initial universe code
+//
 // Revision 1.1.1.1  2002/10/19 18:53:24  sdh300
 // initial import
 //

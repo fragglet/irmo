@@ -33,7 +33,12 @@ IrmoUniverse *universe_new(InterfaceSpec *spec);
 IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
 				       irmo_objid_t id);
 IrmoObject *universe_object_new(IrmoUniverse *universe, char *typename);
+void universe_ref(IrmoUniverse *universe);
+void universe_unref(IrmoUniverse *universe);
 
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/10/21 10:43:31  sdh300
+// initial universe code
+//

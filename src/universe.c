@@ -23,6 +23,32 @@ IrmoUniverse *universe_new(InterfaceSpec *spec)
 	return universe;
 }
 
+void universe_ref(IrmoUniverse *universe)
+{
+	++universe->refcount;
+}
+
+static void object_destroy(irmo_objid_t id, IrmoObject *object,
+			   gpointer user_data)
+{
+	// TODO: destroy member variables etc.
+	
+	free(object);
+}
+
+void universe_unref(IrmoUniverse *universe)
+{
+	--universe->refcount;
+
+	if (universe->refcount <= 0) {
+		g_hash_table_foreach(universe->objects,
+				     (GHFunc) object_destroy, NULL);
+		g_hash_table_destroy(universe->objects);
+		interface_spec_unref(universe->spec);
+		free(universe);
+	}
+}
+
 IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
 				       irmo_objid_t id)
 {
@@ -98,3 +124,6 @@ IrmoObject *universe_object_new(IrmoUniverse *universe, char *typename)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/10/21 10:43:31  sdh300
+// initial universe code
+//
