@@ -189,8 +189,7 @@ struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain,
 
 #define USEC_MAX 1000000
 
-void irmo_timeval_add(struct timeval *a, struct timeval *b,
-		      struct timeval *result)
+void irmo_timeval_add(GTimeVal *a, GTimeVal *b, GTimeVal *result)
 {
 	result->tv_sec = a->tv_sec + b->tv_sec;
 	result->tv_usec = a->tv_usec + b->tv_usec;
@@ -201,8 +200,7 @@ void irmo_timeval_add(struct timeval *a, struct timeval *b,
 	}
 }
 
-void irmo_timeval_sub(struct timeval *a, struct timeval *b,
-		      struct timeval *result)
+void irmo_timeval_sub(GTimeVal *a, GTimeVal *b, GTimeVal *result)
 {
 	result->tv_sec = a->tv_sec - b->tv_sec;
 
@@ -214,7 +212,7 @@ void irmo_timeval_sub(struct timeval *a, struct timeval *b,
 	}
 }
 
-int irmo_timeval_cmp(struct timeval *a, struct timeval *b)
+int irmo_timeval_cmp(GTimeVal *a, GTimeVal *b)
 {
 	if (a->tv_sec == b->tv_sec) {
 		return a->tv_usec < b->tv_usec ? -1 :
@@ -225,18 +223,21 @@ int irmo_timeval_cmp(struct timeval *a, struct timeval *b)
 		a->tv_sec > b->tv_sec ? 1 : 0;
 }
 
-int irmo_timeval_to_ms(struct timeval *a)
+int irmo_timeval_to_ms(GTimeVal *a)
 {
 	return a->tv_sec + (a->tv_usec / 1000);
 }
 
-void irmo_timeval_from_ms(int ms, struct timeval *time)
+void irmo_timeval_from_ms(int ms, GTimeVal *time)
 {
 	time->tv_sec = ms / 1000;
 	time->tv_usec = (ms % 1000) * 1000;
 }
 
 // $Log$
+// Revision 1.6  2003/11/18 19:32:19  fraggle
+// Use GTimeVal instead of struct timeval
+//
 // Revision 1.5  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //

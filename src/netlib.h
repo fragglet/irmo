@@ -61,26 +61,29 @@ struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain,
 
 // add two timevals (result = a + b)
 
-void irmo_timeval_add(struct timeval *a, struct timeval *b,
-		      struct timeval *result);
+void irmo_timeval_add(GTimeVal *a, GTimeVal *b,
+		      GTimeVal *result);
 
 // subtract timevals (result = a - b)
 
-void irmo_timeval_sub(struct timeval *a, struct timeval *b,
-		      struct timeval *result);
+void irmo_timeval_sub(GTimeVal *a, GTimeVal *b,
+		      GTimeVal *result);
 
 // compare timevals
 
-int irmo_timeval_cmp(struct timeval *a, struct timeval *b);
+int irmo_timeval_cmp(GTimeVal *a, GTimeVal *b);
 
 // conversion to milliseconds
 
-int irmo_timeval_to_ms(struct timeval *a);
-void irmo_timeval_from_ms(int ms, struct timeval *a);
+int irmo_timeval_to_ms(GTimeVal *a);
+void irmo_timeval_from_ms(int ms, GTimeVal *a);
 
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.7  2003/11/18 19:32:19  fraggle
+// Use GTimeVal instead of struct timeval
+//
 // Revision 1.6  2003/11/18 19:24:22  fraggle
 // Fix compile errors and warnings introduced by previous commit
 //

@@ -221,10 +221,10 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	// If the atom was resent, this cannot be used.
 
 	if (!client->sendwindow[0]->resent) {
-		struct timeval nowtime, rtt;
+		GTimeVal nowtime, rtt;
 		int rtt_ms, deviation;
 		
-		gettimeofday(&nowtime, NULL);
+		g_get_current_time(&nowtime);
 
 		irmo_timeval_sub(&nowtime, &client->sendwindow[0]->sendtime,
 				 &rtt);
@@ -289,6 +289,9 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.12  2003/11/18 19:32:19  fraggle
+// Use GTimeVal instead of struct timeval
+//
 // Revision 1.11  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than

@@ -680,7 +680,7 @@ void irmo_socket_run(IrmoSocket *sock)
 void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 {
 	fd_set set;
-	struct timeval tv_timeout;
+	GTimeVal tv_timeout;
 	int result;
 	int max;
 	int i;
@@ -714,6 +714,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.19  2003/11/18 19:32:19  fraggle
+// Use GTimeVal instead of struct timeval
+//
 // Revision 1.18  2003/11/18 19:24:22  fraggle
 // Fix compile errors and warnings introduced by previous commit
 //

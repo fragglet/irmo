@@ -61,12 +61,12 @@ static void proto_atom_resent(IrmoClient *client, int i)
 
 static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 {
-	struct timeval nowtime;
+	GTimeVal nowtime;
 	IrmoPacket *packet;
 	int i, n;
 	int backstart;
 
-	gettimeofday(&nowtime, NULL);
+	g_get_current_time(&nowtime);
 	
 	// make a new packet
 	
@@ -225,7 +225,7 @@ static void proto_pump_client(IrmoClient *client)
 
 void irmo_proto_run_client(IrmoClient *client)
 {
-	struct timeval nowtime, timeout_time, timeout_length;
+	GTimeVal nowtime, timeout_time, timeout_length;
 	int timeout_length_ms;
 	int i;
 
@@ -244,7 +244,7 @@ void irmo_proto_run_client(IrmoClient *client)
 	
 	proto_pump_client(client);
 
-	gettimeofday(&nowtime, NULL);
+	g_get_current_time(&nowtime);
 	
 	irmo_timeval_from_ms(timeout_length_ms, &timeout_length);
 
@@ -344,6 +344,9 @@ void irmo_proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.12  2003/11/18 19:32:19  fraggle
+// Use GTimeVal instead of struct timeval
+//
 // Revision 1.11  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //

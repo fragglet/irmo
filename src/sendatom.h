@@ -103,7 +103,7 @@ struct _IrmoSendAtom {
 
 	// time atom was last sent
 
-	struct timeval sendtime;
+	GTimeVal sendtime;
 
 	// true if this atom was resent
 
@@ -200,6 +200,9 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.10  2003/11/18 19:32:19  fraggle
+// Use GTimeVal instead of struct timeval
+//
 // Revision 1.9  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //
