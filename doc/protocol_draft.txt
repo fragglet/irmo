@@ -2,10 +2,6 @@
 			SYN	- connect: syn/syn-ack/ack
 			ACK	- for connection
 			FIN	- disconnect
-			NEW	- new object announcements
-			SET	- new object values
-			DEL	- deleted object announcements
-			FNC	- function calls
 
 if SYN:
 	4 bytes for hash of local (connecting client) universe spec
@@ -14,22 +10,83 @@ if SYN:
 	up to 64 bytes for vhost name, 0 terminated
 	end of packet
 
-2 bytes for position in stream
-
 2 bytes for last acked point in stream (includes all new object, value
 	and deletion messages) for data going the other way
 
-if NEW set:
-	new object announcements
+// allow multiple clusters of atoms per packet?
 
-if SET set:
-	new (changed) object values
+2 bytes for position in stream
 
-if DEL set:
-	deleted object announcements
+{	runlength encoded groups of atoms until end of packet
 
-if FNC set:
-	function calls
+1 byte:
+	high 3 bits: atom type
+		0 = ATOM_NULL: NULL (change atom nullified by object deletion)
+		1 = ATOM_NEW: new object
+		2 = ATOM_CHANGE: object change
+		3 = ATOM_DESTROY: object destruction
+		4 = ATOM_METHOD: method call
+	low 5 bits: 
+		number of atoms to group (counting from 0, 0=1 atom,
+		1=2 atoms), n
+
+then n atoms as defined in start byte above.
+
+data for each atom depends on type in start byte:
+	ATOM_NULL:	no data
+	ATOM_NEW:	
+		2 bytes for object ID
+		1 byte for object class number
+	ATOM_CHANGE:
+		bitfield of changed variables
+		   (length depends on number of variables/class),
+			bit on = variable changed
+		for each changed variable:
+			depending on type:
+			TYPE_INT8:
+				1 byte for new value
+			TYPE_INT16:
+				2 bytes for new value
+			TYPE_INT32:
+				4 bytes for new value
+			TYPE_STRING:
+				new string terminated by 0 (NUL)
+	ATOM_DESTROY:
+		2 bytes for id of destroyed object
+	ATOM_METHOD:
+		// todo
+
+} 	next run of atoms
+
+As objects are created, modified and destroyed new atoms are added to the
+send queue. When the send window is empty, new atoms are read from the
+queue and added to the send window.
+
+ changes ->  |||| send queue ||||
+
+				|
+	atoms removed from queue, added to send window as window empties
+				|
+				V
+
+	|_______send window __________| 	-> send packets
+
+If an object is destroyed while it has a change atom waiting to be sent,
+the change atom is found from a hash table and nullified: it becomes a
+ATOM_NULL type atom instead. As atoms are popped from the send queue,
+any null atoms are automatically ignored and destroyed (they are not added
+to the send window). As they have not been sent yet, it is safe to simply
+discard them. However, once atoms reach the send window they cannot be 
+removed as doing so could desync the protocol (the original change atom
+might have been sent already). Instead, they are sent as NULL atoms.
+
+In packets, atoms of the same type are grouped together (run length 
+encoded by type). This allows the type of up to 32 consecutive atoms 
+to be implied through only a single byte.
+
+In sending change atoms, a bit field is used to indicate which variables 
+are changed. For classes with <= 8 variables, only 1 byte is needed.
+("delta" compression)
 
 -----------------------------
 
@@ -58,3 +115,6 @@ disconnect
 	------- FIN ACK ------>
 
 $Log: not supported by cvs2svn $
+Revision 1.1  2002/12/02 22:41:18  sdh300
+draft protocol spec
+
