@@ -98,7 +98,7 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 
 static void proto_add_method_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 {
-	MethodSpec *method = atom->data.method.spec;
+	IrmoMethod *method = atom->data.method.spec;
 	IrmoVariable *args = atom->data.method.args;
 	int i;
 	
@@ -458,6 +458,11 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.5  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.4  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

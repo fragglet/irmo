@@ -35,7 +35,7 @@ IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe,
 					 IrmoMethodCallback method, 
 					 gpointer user_data)
 {
-	MethodSpec *spec;
+	IrmoMethod *spec;
 
 	g_return_if_fail(universe != NULL);
 	g_return_if_fail(method_name != NULL);
@@ -81,7 +81,7 @@ void irmo_method_invoke(IrmoUniverse *universe, IrmoMethodData *data)
 void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 {
 	IrmoMethodData method_data;
-	MethodSpec *spec;
+	IrmoMethod *spec;
 	IrmoVariable *args;
 	va_list arglist;
 	int i;
@@ -140,7 +140,7 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data)
 
 gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
 {
-	MethodArgSpec *spec;
+	IrmoMethodArg *spec;
 
 	g_return_val_if_fail(data != NULL, NULL);
 	g_return_val_if_fail(argname != NULL, NULL);
@@ -166,7 +166,7 @@ gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
 
 guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 {
-	MethodArgSpec *spec;
+	IrmoMethodArg *spec;
 
 	g_return_val_if_fail(data != NULL, -1);
 	g_return_val_if_fail(argname != NULL, -1);
@@ -196,6 +196,11 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.5  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.4  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

@@ -150,7 +150,7 @@ G_INLINE_FUNC IrmoVarType type_token_to_spec(int i)
 	return 0;
 }
 
-static void class_free(ClassSpec *spec)
+static void class_free(IrmoClass *spec)
 {
 	int i;
 
@@ -171,7 +171,7 @@ G_INLINE_FUNC guint rotate(guint i)
 	return (i << 1) | (i >> 31);
 }
 
-static guint class_hash(ClassSpec *spec)
+static guint class_hash(IrmoClass *spec)
 {
 	guint hash = 0;
 	int i;
@@ -187,16 +187,16 @@ static guint class_hash(ClassSpec *spec)
 	return hash;
 }
 
-static ClassSpec *eat_class()
+static IrmoClass *eat_class()
 {
-	ClassSpec *spec;
+	IrmoClass *spec;
 	int i;
 
 	parse_assert(yylex() == TOKEN_ID, "class name expected");
 
-	spec = g_new0(ClassSpec, 1); 
+	spec = g_new0(IrmoClass, 1); 
 	spec->name = strdup(yytext);
-	spec->variables = malloc(sizeof(ClassVarSpec *) * MAX_VARIABLES);
+	spec->variables = malloc(sizeof(IrmoClassVar *) * MAX_VARIABLES);
 
 	spec->variable_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	
@@ -204,7 +204,7 @@ static ClassSpec *eat_class()
 
 	for (i=0; ;  ++i) {
 		token_t token = yylex();
-		ClassVarSpec *var;
+		IrmoClassVar *var;
 
 		// end of class
 
@@ -214,7 +214,7 @@ static ClassSpec *eat_class()
 		parse_assert(i < MAX_VARIABLES,
 			     "maximum %i variables per class", MAX_VARIABLES);
 
-		var = g_new0(ClassVarSpec, 1);
+		var = g_new0(IrmoClassVar, 1);
 
 		// type token
 		
@@ -246,14 +246,14 @@ static ClassSpec *eat_class()
 
 	if (i < MAX_VARIABLES)
 		spec->variables 
-		   = realloc(spec->variables, i * sizeof(ClassVarSpec *));
+		   = realloc(spec->variables, i * sizeof(IrmoClassVar *));
 
 	//printf("read class: name '%s', %i variables\n", spec->name, i);
 
 	return spec;
 }
 
-static void method_free(MethodSpec *spec)
+static void method_free(IrmoMethod *spec)
 {
 	int i;
 	
@@ -269,7 +269,7 @@ static void method_free(MethodSpec *spec)
 	free(spec);
 }
 
-static guint method_hash(MethodSpec *spec)
+static guint method_hash(IrmoMethod *spec)
 {
 	guint hash = 0;
 	int i;
@@ -285,16 +285,16 @@ static guint method_hash(MethodSpec *spec)
 	return hash;
 }
 
-static MethodSpec *eat_method()
+static IrmoMethod *eat_method()
 {
-	MethodSpec *spec;
+	IrmoMethod *spec;
 	int i;
 	
 	parse_assert(yylex() == TOKEN_ID, "function name expected");
 	
-	spec = g_new0(MethodSpec, 1); 
+	spec = g_new0(IrmoMethod, 1); 
 	spec->name = strdup(yytext);
-	spec->arguments = malloc(sizeof(MethodArgSpec *) * MAX_ARGUMENTS);
+	spec->arguments = malloc(sizeof(IrmoMethodArg *) * MAX_ARGUMENTS);
 
 	spec->argument_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	
@@ -303,7 +303,7 @@ static MethodSpec *eat_method()
 
 	for (i=0;; ++i) {
 		token_t token = yylex();
-		MethodArgSpec *arg;
+		IrmoMethodArg *arg;
 
 		if (token == TOKEN_RPAREN)
 			break;
@@ -319,7 +319,7 @@ static MethodSpec *eat_method()
 		parse_assert(is_type_token(token), 
 			     "'%s' not a variable type", yytext);
 
-		arg = g_new0(MethodArgSpec, 1); 
+		arg = g_new0(IrmoMethodArg, 1); 
 		arg->type = type_token_to_spec(token);
 		arg->index = i;
 
@@ -341,7 +341,7 @@ static MethodSpec *eat_method()
 	spec->narguments = i;
 	if (i < MAX_ARGUMENTS) {
 		spec->arguments = realloc(spec->arguments,
-					  sizeof(MethodArgSpec) * i);
+					  sizeof(IrmoMethodArg) * i);
 	}
 
 	parse_assert(yylex() == TOKEN_SEMICOLON,
@@ -393,8 +393,8 @@ static IrmoInterfaceSpec *eat_interface()
 	int token;
 
 	spec = g_new0(IrmoInterfaceSpec, 1); 
-	spec->classes = malloc(sizeof(ClassSpec *) * MAX_CLASSES);
-	spec->methods = malloc(sizeof(MethodSpec *) * MAX_METHODS);
+	spec->classes = malloc(sizeof(IrmoClass *) * MAX_CLASSES);
+	spec->methods = malloc(sizeof(IrmoMethod *) * MAX_METHODS);
 	spec->nclasses = spec->nmethods = 0;
 	spec->refcount = 1;
 	
@@ -403,7 +403,7 @@ static IrmoInterfaceSpec *eat_interface()
 	
 	while ((token = yylex())) {
 		if (token == TOKEN_CLASS) {
-			ClassSpec *class_spec;
+			IrmoClass *class_spec;
 			
 			parse_assert(spec->nclasses < MAX_CLASSES,
 				     "maximum of %i classes", MAX_CLASSES);
@@ -426,7 +426,7 @@ static IrmoInterfaceSpec *eat_interface()
 					    class_spec);
 
 		} else if (token == TOKEN_FUNC) {
-			MethodSpec *method;
+			IrmoMethod *method;
 			parse_assert(spec->nmethods < MAX_METHODS,
 				     "maximum of %i methods", MAX_METHODS);
 
@@ -448,10 +448,10 @@ static IrmoInterfaceSpec *eat_interface()
 
 	if (spec->nclasses < MAX_METHODS)
 		spec->classes = realloc(spec->classes,
-					sizeof(ClassSpec *) * spec->nclasses);
+					sizeof(IrmoClass *) * spec->nclasses);
 	if (spec->nmethods < MAX_METHODS)
 		spec->methods = realloc(spec->methods,
-					sizeof(MethodSpec *) * spec->nmethods);
+					sizeof(IrmoMethod *) * spec->nmethods);
 
 	spec->hash = irmo_interface_spec_hash(spec);
 	
@@ -500,6 +500,11 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.6  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.5  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

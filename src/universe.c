@@ -137,7 +137,7 @@ IrmoObject *irmo_universe_get_object_for_id(IrmoUniverse *universe,
 }
 
 struct universe_foreach_data {
-	ClassSpec *spec;
+	IrmoClass *spec;
 	IrmoObjCallback func;
 	gpointer user_data;
 };
@@ -158,7 +158,7 @@ static void universe_foreach_foreach(gint key,
 void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 				  IrmoObjCallback func, gpointer user_data)
 {
-	ClassSpec *spec;
+	IrmoClass *spec;
 	struct universe_foreach_data data = {
 		func: func,
 		user_data: user_data,
@@ -195,6 +195,11 @@ IrmoInterfaceSpec *irmo_universe_get_spec(IrmoUniverse *universe)
 }
 
 // $Log$
+// Revision 1.5  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.4  2003/08/16 16:45:11  fraggle
 // Allow watches on all objects regardless of class
 //

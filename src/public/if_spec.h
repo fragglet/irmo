@@ -46,6 +46,30 @@ typedef enum {
 } IrmoVarType;
 
 /*!
+ * \brief An object representing a class in an interface
+ */
+
+typedef struct _IrmoClass IrmoClass;
+
+/*!
+ * \brief An object representing a variable in a class
+ */
+
+typedef struct _IrmoClassVar IrmoClassVar;
+
+/*!
+ * \brief An object representing a method in an interface
+ */
+
+typedef struct _IrmoMethod IrmoMethod;
+
+/*!
+ * \brief An object representing an argument to a method
+ */ 
+
+typedef struct _IrmoMethodArg IrmoMethodArg;
+
+/*!
  * \brief An IrmoInterfaceSpec object
  * \ingroup if_spec
  */
@@ -88,25 +112,112 @@ void irmo_interface_spec_ref(IrmoInterfaceSpec *spec);
 
 void irmo_interface_spec_unref(IrmoInterfaceSpec *spec);
 
-/*! 
- * \brief Find the type of a variable
+/*!
+ * \brief Get the \ref IrmoClass object representing a particular class
  *
- * \param spec    	The interface specification object
- * \param classname	The name of the class the variable is part of
- * \param variable	The name of the variable
- * \return 		IrmoVarType indicating the type, or 
- *                      IRMO_TYPE_UNKNOWN if an error occurred.
+ * \param spec		The interface specification
+ * \param class_name 	The name of the class
+ *
+ * \return 		A pointer to the object or NULL if it does not exist
  */
 
-IrmoVarType irmo_interface_spec_get_var_type(IrmoInterfaceSpec *spec,
-                                             gchar *classname,
-                                             gchar *variable);
+IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec, 
+					 gchar *class_name);
+
+/*!
+ * \brief Get the \ref IrmoMethod object representing a particular method
+ *
+ * \param spec		The interface specification
+ * \param method_name 	The name of the method
+ *
+ * \return 		A pointer to the object or NULL if it does not exist
+ */
+
+IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
+					   gchar *method_name);
+
+/*! 
+ * \brief Get the name of a \ref IrmoClass object
+ */
+
+gchar *irmo_class_get_name(IrmoClass *klass);
+
+/*!
+ * \brief Get the number of member variables in an \ref IrmoClass
+ */
+
+gint irmo_class_num_variables(IrmoClass *klass);
+
+/*!
+ * \brief Get the \ref IrmoClassVar object representing a particular class
+ *        variable
+ *
+ * \param klass		The \ref IrmoClass object representing the class
+ * \param var_name	The variable name
+ *
+ * \return 		A pointer to the object or NULL if it does not exist
+ */
+
+IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name);
+
+/*!
+ * \brief Get the name of a \ref IrmoClassVar object
+ */
+
+gchar *irmo_class_var_get_name(IrmoClassVar *var);
+
+/*!
+ * \brief Get the type of a \ref IrmoClassVar object 
+ */
+
+IrmoVarType irmo_class_var_get_type(IrmoClassVar *var);
+
+/*!
+ * \brief Get the name of a \ref IrmoMethod
+ */
+
+gchar *irmo_method_get_name(IrmoMethod *method);
+
+/*!
+ * \brief Get the number of arguments to the method
+ */
+
+gint irmo_method_num_arguments(IrmoMethod *method);
+
+/*!
+ * \brief Get the \ref IrmoMethodArg object representing a particular class
+ *        variable
+ *
+ * \param method	The \ref IrmoMethod object representing the method
+ * \param arg_name	The argument name
+ *
+ * \return 		A pointer to the object or NULL if it does not exist
+ */
+
+IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name);
+
+/*! 
+ * \brief Get the name of a method argument
+ */
+
+gchar *irmo_method_arg_get_name(IrmoMethodArg *arg);
+
+/*! 
+ * \brief Get the type of a method argument
+ */
+
+IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg);
 
 //! \}
 
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.4  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.3  2003/08/21 14:32:29  fraggle
 // Initial reflection API
 //

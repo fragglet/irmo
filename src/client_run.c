@@ -39,7 +39,7 @@
 static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 {
 	IrmoInterfaceSpec *spec = client->universe->spec;
-	ClassSpec *objclass = spec->classes[atom->data.newobj.classnum];
+	IrmoClass *objclass = spec->classes[atom->data.newobj.classnum];
 	
 	// sanity check
 
@@ -63,7 +63,7 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom,
 			      int seq)
 {
 	IrmoObject *obj;
-	ClassSpec *objclass;
+	IrmoClass *objclass;
 	IrmoVariable *newvalues;
 	int i;
 
@@ -240,6 +240,11 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.4  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.3  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

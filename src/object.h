@@ -60,7 +60,7 @@ struct _IrmoObject {
 	// in the interface spec for the universe this object exists
 	// in.
 	
-	ClassSpec *objclass;
+	IrmoClass *objclass;
 
 	// numerical id reference for this object in the universe
 	
@@ -80,7 +80,7 @@ struct _IrmoObject {
 // internal function create a new object
 
 IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
-				     ClassSpec *objclass,
+				     IrmoClass *objclass,
 				     irmo_objid_t id);
 
 // internal function to destroy an object. control over whether to
@@ -102,8 +102,13 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.19  2003/06/09 21:06:51  sdh300
 // Add CVS Id tag and copyright/license notices

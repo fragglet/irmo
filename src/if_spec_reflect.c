@@ -25,33 +25,122 @@
 
 #include "if_spec.h"
 
-IrmoVarType irmo_interface_spec_get_var_type(IrmoInterfaceSpec *spec,
-					     gchar *classname,
-					     gchar *variable)
+//
+// IrmoInterfaceSpec
+//
+
+IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec, 
+					 gchar *class_name)
 {
-	ClassSpec *class_spec;
-	ClassVarSpec *var_spec;
+	g_return_val_if_fail(spec != NULL, NULL);
+	g_return_val_if_fail(class_name != NULL, NULL);
 
-	g_return_val_if_fail(spec != NULL, IRMO_TYPE_UNKNOWN);
-	g_return_val_if_fail(classname != NULL, IRMO_TYPE_UNKNOWN);
-	g_return_val_if_fail(variable != NULL, IRMO_TYPE_UNKNOWN);
+	return g_hash_table_lookup(spec->class_hash, class_name);
+}
 
-	class_spec = g_hash_table_lookup(spec->class_hash,
-					 classname);
+IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
+					   gchar *method_name)
+{
+	g_return_val_if_fail(spec != NULL, NULL);
+	g_return_val_if_fail(method_name != NULL, NULL);
 
-	if (class_spec == NULL) 
-		return IRMO_TYPE_UNKNOWN;
+	return g_hash_table_lookup(spec->method_hash, method_name);
+}
 
-	var_spec = g_hash_table_lookup(class_spec->variable_hash,
-				       variable);
+//
+// IrmoClass
+//
 
-	if (var_spec == NULL)
-		return IRMO_TYPE_UNKNOWN;
+gchar *irmo_class_get_name(IrmoClass *klass)
+{
+	g_return_val_if_fail(klass != NULL, NULL);
 
-	return var_spec->type;
+	return klass->name;
+}
+
+gint irmo_class_num_variables(IrmoClass *klass)
+{
+	g_return_val_if_fail(klass != NULL, -1);
+
+	return klass->nvariables;
+}
+
+IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name)
+{
+	g_return_val_if_fail(klass != NULL, NULL);
+	g_return_val_if_fail(var_name != NULL, NULL);
+
+	return g_hash_table_lookup(klass->variable_hash, var_name);
+}
+
+//
+// IrmoClassVar
+//
+
+gchar *irmo_class_var_get_name(IrmoClassVar *var)
+{
+	g_return_val_if_fail(var != NULL, NULL);
+
+	return var->name;
+}
+
+IrmoVarType irmo_class_var_get_type(IrmoClassVar *var)
+{
+	g_return_val_if_fail(var != NULL, IRMO_TYPE_UNKNOWN);
+
+	return var->type;
+}
+
+//
+// IrmoMethod
+//
+
+gchar *irmo_method_get_name(IrmoMethod *method)
+{
+	g_return_val_if_fail(method != NULL, NULL);
+
+	return method->name;
+}
+
+gint irmo_method_num_arguments(IrmoMethod *method)
+{
+	g_return_val_if_fail(method != NULL, -1);
+
+	return method->narguments;
+}
+
+IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name)
+{
+	g_return_val_if_fail(method != NULL, NULL);
+	g_return_val_if_fail(arg_name != NULL, NULL);
+
+	return g_hash_table_lookup(method->argument_hash, arg_name);
+}
+
+//
+// IrmoMethod
+//
+
+gchar *irmo_method_arg_get_name(IrmoMethodArg *arg)
+{
+	g_return_val_if_fail(arg != NULL, NULL);
+
+	return arg->name;
+}
+
+IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg)
+{
+	g_return_val_if_fail(arg != NULL, IRMO_TYPE_UNKNOWN);
+
+	return arg->type;
 }
 
 // $Log$
+// Revision 1.2  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.1  2003/08/21 14:32:29  fraggle
 // Initial reflection API
 //

@@ -30,11 +30,6 @@
 
 #include "public/if_spec.h"
 
-typedef struct _ClassSpec ClassSpec;
-typedef struct _ClassVarSpec ClassVarSpec;
-typedef struct _MethodSpec MethodSpec;
-typedef struct _MethodArgSpec MethodArgSpec;
-
 // these are imposed by the size restrictions
 // of the network protocol 
 
@@ -45,7 +40,7 @@ typedef struct _MethodArgSpec MethodArgSpec;
 
 // an argument to a method
 
-struct _MethodArgSpec {
+struct _IrmoMethodArg {
 	int index;
 
 	IrmoVarType type;
@@ -54,12 +49,12 @@ struct _MethodArgSpec {
 
 // method declaration
 
-struct _MethodSpec {
+struct _IrmoMethod {
 	int index;
 
 	char *name;			// method name
 	
-	MethodArgSpec **arguments;
+	IrmoMethodArg **arguments;
 	int narguments;
 
 	GHashTable *argument_hash;
@@ -67,7 +62,7 @@ struct _MethodSpec {
 
 // class member variable
 
-struct _ClassVarSpec {
+struct _IrmoClassVar {
 	int index;                      // index in variable list
 	
 	IrmoVarType type;
@@ -76,12 +71,12 @@ struct _ClassVarSpec {
 
 // class
 
-struct _ClassSpec {
+struct _IrmoClass {
 	int index;                      // index in class list
 
 	char *name;			// class name
 	
-	ClassVarSpec **variables;	// class member variables
+	IrmoClassVar **variables;	// class member variables
 	int nvariables;
 	
 	GHashTable *variable_hash;
@@ -95,14 +90,14 @@ struct _IrmoInterfaceSpec {
 	
 	// classes:
 	
-	ClassSpec **classes;
+	IrmoClass **classes;
 	int nclasses;
 
 	GHashTable *class_hash;
 
 	// methods:
 	
-	MethodSpec **methods;
+	IrmoMethod **methods;
 	int nmethods;
 
 	GHashTable *method_hash;
@@ -115,6 +110,11 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
+// Revision 1.3  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.2  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

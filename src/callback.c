@@ -77,7 +77,7 @@ void irmo_callbacklist_free(GSList *list)
 
 // create a new callbackdata object for watching an object or class
 
-IrmoCallbackData *callbackdata_new(ClassSpec *objclass)
+IrmoCallbackData *callbackdata_new(IrmoClass *objclass)
 {
 	IrmoCallbackData *data;
 
@@ -193,7 +193,7 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 static GSList **find_variable(IrmoCallbackData *data, gchar *variable)
 {
 	if (variable) {
-		ClassVarSpec *varspec;
+		IrmoClassVar *varspec;
 
 		// cannot specify a variable name and no classname
 
@@ -228,7 +228,7 @@ static IrmoCallback *callbackdata_watch(IrmoCallbackData *data,
 
 static IrmoCallbackData *find_callback_class(IrmoUniverse *universe, gchar *classname)
 {
-	ClassSpec *spec;
+	IrmoClass *spec;
 
 	if (classname == NULL) 
 		return universe->callbacks_all;
@@ -355,6 +355,11 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.5  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.4  2003/08/16 16:45:11  fraggle
 // Allow watches on all objects regardless of class
 //

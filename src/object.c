@@ -102,7 +102,7 @@ static gint get_free_id(IrmoUniverse *universe)
 }
 
 IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
-				     ClassSpec *objclass,
+				     IrmoClass *objclass,
 				     irmo_objid_t id)
 {
 	IrmoObject *object;
@@ -155,7 +155,7 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 
 IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename)
 {
-	ClassSpec *spec;
+	IrmoClass *spec;
 	gint id;
 
 	g_return_val_if_fail(universe != NULL, NULL);
@@ -277,8 +277,8 @@ static void object_set_notify_foreach(IrmoClient *client,
 
 void irmo_object_set_raise(IrmoObject *object, int variable)
 {
-	ClassSpec *objclass = object->objclass;
-	ClassVarSpec *spec = objclass->variables[variable];
+	IrmoClass *objclass = object->objclass;
+	IrmoClassVar *spec = objclass->variables[variable];
 	struct set_notify_data data = {
 		object,
 		variable,
@@ -301,7 +301,7 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 
 void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 {
-	ClassVarSpec *spec;
+	IrmoClassVar *spec;
 
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(variable != NULL);
@@ -340,7 +340,7 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 
 void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 {
-	ClassVarSpec *spec;
+	IrmoClassVar *spec;
 
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(variable != NULL);
@@ -377,7 +377,7 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 {
-	ClassVarSpec *spec;
+	IrmoClassVar *spec;
 
 	g_return_val_if_fail(object != NULL, -1);
 	g_return_val_if_fail(variable != NULL, -1);
@@ -413,7 +413,7 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 
 gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 {
-	ClassVarSpec *spec;
+	IrmoClassVar *spec;
 
 	g_return_val_if_fail(object != NULL, NULL);
 	g_return_val_if_fail(variable != NULL, NULL);
@@ -448,6 +448,11 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
 }
 
 // $Log$
+// Revision 1.6  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.5  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

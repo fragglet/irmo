@@ -73,7 +73,7 @@ struct _IrmoSendAtom {
 			// class of the object being changed. this is only
 			// used for the receive window.
 
-			ClassSpec *objclass;
+			IrmoClass *objclass;
 
 			// array of the new values. this is only used for the
 			// receive window. for the send window this is NULL
@@ -110,8 +110,13 @@ void irmo_client_sendq_add_state(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.15  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

@@ -50,7 +50,7 @@ G_INLINE_FUNC gboolean proto_verify_field(IrmoPacket *packet,
 static gboolean proto_verify_change_atom(IrmoClient *client,
 					 IrmoPacket *packet)
 {
-	ClassSpec *objclass;
+	IrmoClass *objclass;
 	int i, n, b;
 	guint8 i8;
 	guint16 i16;
@@ -113,7 +113,7 @@ static gboolean proto_verify_change_atom(IrmoClient *client,
 static gboolean proto_verify_method_atom(IrmoClient *client,
 					 IrmoPacket *packet)
 {
-	MethodSpec *method;
+	IrmoMethod *method;
 	guint8 i8;
 	int i;
 
@@ -282,6 +282,11 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.4  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.3  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

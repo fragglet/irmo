@@ -90,7 +90,7 @@ G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 					   IrmoPacket *packet,
 					   IrmoSendAtom *atom)
 {
-	ClassSpec *objclass;
+	IrmoClass *objclass;
 	gboolean *changed;
 	IrmoVariable *newvalues;
 	int i, b, n;
@@ -146,7 +146,7 @@ static IrmoSendAtom *proto_parse_method_atom(IrmoClient *client,
 					     IrmoPacket *packet,
 					     IrmoSendAtom *atom)
 {
-	MethodSpec *method;
+	IrmoMethod *method;
 	guint8 i8;
 	int i;
 	
@@ -438,6 +438,11 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.5  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.4  2003/08/21 14:21:25  fraggle
 // TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
 // accessible.

@@ -50,7 +50,7 @@ struct _IrmoCallbackData {
 	// if this is NULL, it is for the global callback data
 	// for a universe, used to watch all objects.
 
-	ClassSpec *objclass;
+	IrmoClass *objclass;
 
 	// callbacks for watching for creations of new objects
 	// this is only for the class callbackdata - redundant
@@ -78,7 +78,7 @@ IrmoCallback *irmo_callbacklist_add(GSList **list, gpointer func,
 				    gpointer user_data);
 void irmo_callbacklist_free(GSList *list);
 
-IrmoCallbackData *callbackdata_new(ClassSpec *objclass);
+IrmoCallbackData *callbackdata_new(IrmoClass *objclass);
 void callbackdata_free(IrmoCallbackData *data);
 void callbackdata_raise(IrmoCallbackData *data,
 			 IrmoObject *object, gint variable_index);
@@ -88,6 +88,11 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.4  2003/08/28 15:24:02  fraggle
+// Make types for object system part of the public API.
+// *Spec renamed -> Irmo*.
+// More complete reflection API and better structured.
+//
 // Revision 1.3  2003/08/16 16:45:11  fraggle
 // Allow watches on all objects regardless of class
 //
