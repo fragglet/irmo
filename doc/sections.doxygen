@@ -11,7 +11,7 @@
 /*!
  * \defgroup if_spec Interface Specification
  *
- * An \ref InterfaceSpec object defines an interface specification 
+ * An \ref IrmoInterfaceSpec object defines an interface specification 
  * comprising specification for several object classes and methods.
  * The specification can then be used to create an \ref IrmoUniverse
  * where the classes can be instantiated as \ref IrmoObject objects.
@@ -38,7 +38,7 @@
  *
  * Irmo Objects exist within a Universe (see \ref IrmoUniverse). They 
  * have a class which defines member variables which hold data. The
- * classes are defined by the InterfaceSpec which the Universe
+ * classes are defined by the IrmoInterfaceSpec which the Universe
  * is using. The object member variables can hold several different 
  * types of data (int, string) and the values of the variables can
  * be changed and retrieved. Callback functions can be set to watch
@@ -104,6 +104,9 @@
  */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/07 10:48:05  sdh300
+// Add new sections to documentation
+//
 // Revision 1.4  2002/11/17 22:02:01  sdh300
 // InterfaceSpec documentation
 //
