@@ -150,7 +150,7 @@ static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	}
 }
 
-static inline void proto_atom_resent(IrmoClient *client, int i)
+G_INLINE_FUNC void proto_atom_resent(IrmoClient *client, int i)
 {
 	// set resent flag
 	
@@ -458,6 +458,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.3  2003/08/18 01:23:14  fraggle
+// Use G_INLINE_FUNC instead of inline for portable inline function support
+//
 // Revision 1.2  2003/07/22 02:32:34  fraggle
 // Fix segfault in back-including past sendatoms
 //

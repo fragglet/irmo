@@ -28,7 +28,7 @@
 
 #include "packet.h"
 
-static inline gboolean proto_verify_field(IrmoPacket *packet,
+G_INLINE_FUNC gboolean proto_verify_field(IrmoPacket *packet,
 					  TypeSpec type)
 {
 	guint8 i8;
@@ -282,8 +282,11 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/08/18 01:23:14  fraggle
+// Use G_INLINE_FUNC instead of inline for portable inline function support
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.6  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

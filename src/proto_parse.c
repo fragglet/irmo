@@ -49,7 +49,7 @@ gboolean irmo_proto_use_preexec = TRUE;
 // therefore we must expand positions we get based on the
 // current position
 
-static inline int get_stream_position(int current, int low)
+G_INLINE_FUNC int get_stream_position(int current, int low)
 {
 	int newpos = (current & ~0xffff) | low;
 
@@ -65,7 +65,7 @@ static inline int get_stream_position(int current, int low)
 	return newpos;
 }
 
-static inline void proto_parse_field(IrmoPacket *packet,
+G_INLINE_FUNC void proto_parse_field(IrmoPacket *packet,
 				     IrmoVariable *value,
 				     TypeSpec type)
 {
@@ -86,7 +86,7 @@ static inline void proto_parse_field(IrmoPacket *packet,
 }
 				     
 
-static inline void proto_parse_change_atom(IrmoClient *client,
+G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 					   IrmoPacket *packet,
 					   IrmoSendAtom *atom)
 {
@@ -438,6 +438,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.3  2003/08/18 01:23:14  fraggle
+// Use G_INLINE_FUNC instead of inline for portable inline function support
+//
 // Revision 1.2  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

@@ -131,13 +131,13 @@ static void parse_assert(int expr, char *msg, ...)
 	}
 }
 
-static inline int is_type_token(int i)
+G_INLINE_FUNC int is_type_token(int i)
 {
 	return i == TOKEN_INT8 || i == TOKEN_INT16 
 	    || i == TOKEN_INT32 || i == TOKEN_STRING;
 }
 
-static inline TypeSpec type_token_to_spec(int i)
+G_INLINE_FUNC TypeSpec type_token_to_spec(int i)
 {
 	switch(i) {
 		case TOKEN_INT8: return TYPE_INT8;
@@ -166,7 +166,7 @@ static void class_free(ClassSpec *spec)
 	free(spec);
 }
 
-static inline guint rotate(guint i)
+G_INLINE_FUNC guint rotate(guint i)
 {
 	return (i << 1) | (i >> 31);
 }
@@ -500,6 +500,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.4  2003/08/18 01:23:14  fraggle
+// Use G_INLINE_FUNC instead of inline for portable inline function support
+//
 // Revision 1.3  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

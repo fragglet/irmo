@@ -30,7 +30,7 @@
 #include "object.h"
 #include "sendatom.h"
 
-static inline void sendatom_change_free_data(IrmoSendAtom *atom)
+G_INLINE_FUNC void sendatom_change_free_data(IrmoSendAtom *atom)
 {
 	int i;
 
@@ -55,7 +55,7 @@ static inline void sendatom_change_free_data(IrmoSendAtom *atom)
 	free(atom->data.change.changed);
 }
 
-static inline void sendatom_method_free_data(IrmoSendAtom *atom)
+G_INLINE_FUNC void sendatom_method_free_data(IrmoSendAtom *atom)
 {
 	MethodSpec *method = atom->data.method.spec;
 	int i;
@@ -404,8 +404,11 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/08/18 01:23:14  fraggle
+// Use G_INLINE_FUNC instead of inline for portable inline function support
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.17  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

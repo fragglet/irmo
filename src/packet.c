@@ -50,7 +50,7 @@ void packet_free(IrmoPacket *packet)
 	free(packet);
 }
 
-static inline void packet_resize(IrmoPacket *packet, int newsize)
+G_INLINE_FUNC void packet_resize(IrmoPacket *packet, int newsize)
 {
 	packet->data = realloc(packet->data, newsize);
 	packet->len = newsize;
@@ -163,8 +163,11 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/08/18 01:23:14  fraggle
+// Use G_INLINE_FUNC instead of inline for portable inline function support
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.9  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

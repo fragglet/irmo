@@ -237,7 +237,7 @@ IrmoSocket *irmo_socket_new(int domain, int port)
 	return sock;
 }
 
-static inline void socket_run_syn(IrmoPacket *packet)
+G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	IrmoServer *server;
@@ -335,7 +335,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 // handle syn-ack connection acknowledgements
 
-static inline void socket_run_synack(IrmoPacket *packet)
+G_INLINE_FUNC void socket_run_synack(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	
@@ -393,7 +393,7 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 // run SYN FIN (disconnect)
 
-static inline void socket_run_synfin(IrmoPacket *packet)
+G_INLINE_FUNC void socket_run_synfin(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	IrmoPacket *sendpacket;
@@ -432,7 +432,7 @@ static inline void socket_run_synfin(IrmoPacket *packet)
 	}
 }
 
-static inline void socket_run_synfinack(IrmoPacket *packet)
+G_INLINE_FUNC void socket_run_synfinack(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	
@@ -443,7 +443,7 @@ static inline void socket_run_synfinack(IrmoPacket *packet)
 	}
 }
 
-static inline void socket_run_packet(IrmoPacket *packet)
+G_INLINE_FUNC void socket_run_packet(IrmoPacket *packet)
 {
 	guint16 flags;
 	IrmoClient *client;
@@ -589,6 +589,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log$
+// Revision 1.3  2003/08/18 01:23:14  fraggle
+// Use G_INLINE_FUNC instead of inline for portable inline function support
+//
 // Revision 1.2  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //
