@@ -624,9 +624,10 @@ void irmo_socket_run(IrmoSocket *sock)
 				    (GHRFunc) socket_run_client, NULL);
 }
 
-void irmo_socket_block_set(IrmoSocket **sockets, int nsockets)
+void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 {
 	fd_set set;
+	struct timeval tv_timeout;
 	int result;
 	int max;
 	int i;
@@ -641,20 +642,29 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets)
 		if (max < sockets[i]->sock)
 			max = sockets[i]->sock;
 	}
-	
-	result = select(max+1, &set, NULL, NULL, NULL);
 
+	if (timeout > 0) {
+		irmo_timeval_from_ms(timeout, &tv_timeout);
+		result = select(max+1, &set, NULL, NULL, &tv_timeout);
+	} else {
+		result = select(max+1, &set, NULL, NULL, NULL);
+	}
+	
 	g_return_if_fail(result >= 0);
 }
 
-void irmo_socket_block(IrmoSocket *socket)
+void irmo_socket_block(IrmoSocket *socket, int timeout)
 {
 	g_return_if_fail(socket != NULL);
 
-	irmo_socket_block_set(&socket, 1);
+	irmo_socket_block_set(&socket, 1, timeout);
 }
 
 // $Log$
+// Revision 1.10  2003/09/01 18:59:27  fraggle
+// Add a timeout parameter for blocking on sockets. Use block function
+// internally.
+//
 // Revision 1.9  2003/09/01 18:52:51  fraggle
 // Blocking functions for IrmoSocket
 //

@@ -251,13 +251,17 @@ void irmo_server_shutdown(IrmoServer *server)
 	
 	while (g_hash_table_size(server->clients)) {
 		irmo_socket_run(server->socket);
-		usleep(100);
+		irmo_socket_block(server->socket, 100);
 	}
 	
 	irmo_server_internal_shutdown(server);
 }
 
 // $Log$
+// Revision 1.8  2003/09/01 18:59:27  fraggle
+// Add a timeout parameter for blocking on sockets. Use block function
+// internally.
+//
 // Revision 1.7  2003/09/01 18:41:55  fraggle
 // irmo_server_shutdown
 //

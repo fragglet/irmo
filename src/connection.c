@@ -131,7 +131,7 @@ void irmo_disconnect(IrmoConnection *conn)
 
 	while (conn->state != CLIENT_DISCONNECTED) {
 		irmo_socket_run(conn->server->socket);
-		usleep(100);
+		irmo_socket_block(conn->server->socket, 100);
 	}
 
 	irmo_client_unref(conn);
@@ -173,6 +173,10 @@ void irmo_connection_unref(IrmoConnection *conn)
 }
 
 // $Log$
+// Revision 1.7  2003/09/01 18:59:27  fraggle
+// Add a timeout parameter for blocking on sockets. Use block function
+// internally.
+//
 // Revision 1.6  2003/09/01 17:02:58  fraggle
 // Turn irmo_connection_[un]ref into real functions
 //

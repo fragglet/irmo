@@ -110,9 +110,11 @@ void irmo_socket_run(IrmoSocket *sock);
  *
  * \param 	sockets		An array of sockets to block on
  * \param	nsockets	Number of sockets in the array
+ * \param 	timeout		Maximum time to block for, in milliseconds.
+ * 				Specify 0 to block forever.
  */
 
-void irmo_socket_block_set(IrmoSocket **sockets, int nsockets);
+void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout);
 
 /*!
  * \brief Block on a single socket
@@ -121,15 +123,21 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets);
  * a single socket.
  *
  * \param 	socket		The socket to block on
+ * \param	timeout		Maximum time to block for, in milliseconds,
+ * 				Specify 0 to block forever.
  */
 
-void irmo_socket_block(IrmoSocket *sock);
+void irmo_socket_block(IrmoSocket *sock, int timeout);
 
 //! \}
 
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.7  2003/09/01 18:59:28  fraggle
+// Add a timeout parameter for blocking on sockets. Use block function
+// internally.
+//
 // Revision 1.6  2003/09/01 18:52:51  fraggle
 // Blocking functions for IrmoSocket
 //
