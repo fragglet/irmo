@@ -158,7 +158,24 @@ IrmoWorld *irmo_connection_get_world(IrmoConnection *conn)
 	return conn->world;
 }
 
+void irmo_connection_ref(IrmoConnection *conn)
+{
+	g_return_if_fail(conn != NULL);
+	
+	irmo_client_ref(conn);
+}
+
+void irmo_connection_unref(IrmoConnection *conn)
+{
+	g_return_if_fail(conn != NULL);
+
+	irmo_client_unref(conn);
+}
+
 // $Log$
+// Revision 1.6  2003/09/01 17:02:58  fraggle
+// Turn irmo_connection_[un]ref into real functions
+//
 // Revision 1.5  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

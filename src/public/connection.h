@@ -135,14 +135,26 @@ void irmo_connection_run(IrmoConnection *conn);
 
 IrmoWorld *irmo_connection_get_world(IrmoConnection *conn);
 
-#define irmo_connection_ref irmo_client_ref
-#define irmo_connection_unref irmo_client_unref
+/*!
+ * \brief Add a reference to an \ref IrmoConnection object
+ */
+
+void irmo_connection_ref(IrmoConnection *conn);
+
+/*!
+ * \brief Remove a reference to an \ref IrmoConnection object
+ */
+
+void irmo_connection_unref(IrmoConnection *conn);
 
 //! \}
 
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log$
+// Revision 1.4  2003/09/01 17:02:59  fraggle
+// Turn irmo_connection_[un]ref into real functions
+//
 // Revision 1.3  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
