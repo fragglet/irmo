@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include "packet.h"
+#include "protocol.h"
 #include "sendatom.h"
 
 // only the low 16 bits of the stream position is sent
@@ -305,6 +306,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/07 12:17:17  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.5  2003/03/06 20:42:06  sdh300
 // Fix a couple of bugs in received change atom creation
 //

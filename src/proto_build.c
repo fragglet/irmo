@@ -3,6 +3,7 @@
 #include <sys/time.h>
 
 #include "packet.h"
+#include "protocol.h"
 #include "sendatom.h"
 
 static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
@@ -319,6 +320,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/07 12:17:17  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.5  2003/03/06 20:15:25  sdh300
 // Initial ack code
 //

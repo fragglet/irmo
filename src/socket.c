@@ -16,6 +16,7 @@
 
 #include "netlib.h"
 #include "packet.h"
+#include "protocol.h"
 #include "socket.h"
 
 // size of packet buffer (maximum packet size
@@ -488,6 +489,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.28  2003/03/07 12:17:18  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.27  2003/03/06 21:29:05  sdh300
 // On connect, send the entire universe state to the client
 //

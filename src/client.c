@@ -4,6 +4,7 @@
 #include "client.h"
 #include "netlib.h"
 #include "packet.h"
+#include "protocol.h"
 #include "sendatom.h"
 
 // number of seconds between sending SYN (for client) and SYN ACK (for server)
@@ -194,6 +195,9 @@ IrmoUniverse *irmo_client_get_universe(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/07 12:17:16  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.12  2003/03/06 19:33:50  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //
