@@ -260,6 +260,13 @@ gchar *irmo_object_get_class(IrmoObject *object)
 	return object->objclass->name;
 }
 
+IrmoClass *irmo_object_get_class_obj(IrmoObject *object)
+{
+	g_return_val_if_fail(object != NULL, NULL);
+
+	return object->objclass;
+}
+
 // notify connected clients of changes
 
 struct set_notify_data {
@@ -444,6 +451,9 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
 }
 
 // $Log$
+// Revision 1.8  2003/08/31 18:20:32  fraggle
+// irmo_object_get_class_obj
+//
 // Revision 1.7  2003/08/28 16:43:45  fraggle
 // Use the reflection API internally to improve readability in places
 //

@@ -91,9 +91,24 @@ irmo_objid_t irmo_object_get_id(IrmoObject *object);
  *
  * \param object The object to query.
  * \return 	 A string with the classname
+ *
+ * \sa irmo_object_get_class_obj
  */
 
 gchar *irmo_object_get_class(IrmoObject *object);
+
+/*!
+ * \brief Get the class object representing the class of an object
+ *
+ * This is similar to \ref irmo_object_get_class, except that this
+ * function returns the class object and not just the name of the
+ * class.
+ *
+ * \param object  The object to query
+ * \return        The class of the object
+ */
+
+IrmoClass *irmo_object_get_class_obj(IrmoObject *object);
 
 /*!
  * \brief Set the value of an object variable (int type)
@@ -169,6 +184,9 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *object);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.3  2003/08/31 18:20:32  fraggle
+// irmo_object_get_class_obj
+//
 // Revision 1.2  2003/08/15 17:53:56  fraggle
 // irmo_object_get_universe, irmo_universe_get_spec functions
 //
