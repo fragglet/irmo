@@ -45,6 +45,11 @@ struct _IrmoObject {
 	// the number of variables is specified in objclass
 	
 	IrmoVariable *variables;
+
+	// position in stream from remote server where variable
+	// was last changed
+
+	int *variable_time;
 };
 
 // internal function create a new object
@@ -72,6 +77,9 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2003/03/07 14:25:40  sdh300
+// Fix ordering of IrmoVariable typedef
+//
 // Revision 1.16  2003/03/07 12:17:17  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

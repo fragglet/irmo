@@ -31,36 +31,32 @@ static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 							  
 	irmo_object_internal_new(client->universe, objclass,
 				 atom->data.newobj.id);
+	
 }
 
-static void client_run_change(IrmoClient *client, IrmoSendAtom *atom)
+static void client_run_change(IrmoClient *client, IrmoSendAtom *atom,
+			      int seq)
 {
 	IrmoObject *obj;
 	ClassSpec *objclass;
 	IrmoVariable *newvalues;
 	int i;
 
+	if (atom->data.change.executed)
+		return;
+	
 	// sanity checks
 
 	obj = irmo_universe_get_object_for_id(client->universe,
 					      atom->data.change.id);
 
-	if (!obj) {
-		fprintf(stderr,
-			"client_run_change: change to object %i but object "
-			"does not exist!\n",
-			atom->data.change.id);
+	// if these fail, it is possibly because of dependencies on
+	// previous atoms in the stream
+	
+	if (!obj)
 		return;
-	}
-
-	if (obj->objclass != atom->data.change.objclass) {
-		fprintf(stderr,
-			"client_run_change: conflicting object classes for "
-			"change (%s, %s)\n",
-			obj->objclass->name,
-			atom->data.change.objclass->name);
+	if (obj->objclass != atom->data.change.objclass)
 		return;	       
-	}
 
 	objclass = obj->objclass;
 	newvalues = atom->data.change.newvalues;
@@ -74,6 +70,14 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom)
 		if (!atom->data.change.changed[i])
 			continue;
 
+		// check if a newer change to this atom has been run
+		// do not apply older changes
+		// dont run the same atom twice (could conceivably
+		// happen with resends)
+		
+		if (seq <= obj->variable_time[i])
+			continue;
+		
 		// apply change
 
 		switch (objclass->variables[i]->type) {
@@ -93,7 +97,13 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom)
 		}
 
 		irmo_object_set_raise(obj, i);
+
+		obj->variable_time[i] = seq;
 	}
+
+	// mark as executed
+	
+	atom->data.change.executed = TRUE;
 }
 
 static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
@@ -125,6 +135,31 @@ static void client_run_method(IrmoClient *client, IrmoSendAtom *atom)
 	irmo_method_invoke(client->server->universe, &atom->data.method);
 }
 
+// preexec receive window, run change atoms where possible,
+// asyncronously
+
+void irmo_client_run_preexec(IrmoClient *client, int start, int end)
+{
+	int i;
+
+	if (start < 0)
+		start = 0;
+	
+	//printf("preexec %i->%i\n", start, end);
+	
+	for (i=start; i<end; ++i) {
+		IrmoSendAtom *atom = client->recvwindow[i];
+
+		// only run change atoms
+		
+		if (atom && atom->type == ATOM_CHANGE)
+			client_run_change(client, atom,
+					  client->recvwindow_start + i);
+	}
+}
+
+// run through receive window
+
 void irmo_client_run_recvwindow(IrmoClient *client)
 {
 	int i, n;
@@ -148,7 +183,8 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 			client_run_new(client, atom);
 			break;
 		case ATOM_CHANGE:
-			client_run_change(client, atom);
+			client_run_change(client, atom,
+					  client->recvwindow_start + i);
 			break;
 		case ATOM_DESTROY:
 			client_run_destroy(client, atom);
@@ -180,6 +216,9 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/05/04 00:28:14  sdh300
+// Add ability to manually set the maximum sendwindow size
+//
 // Revision 1.7  2003/03/17 16:49:44  sdh300
 // Always include source as IrmoConnections are now IrmoClients
 //

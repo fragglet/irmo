@@ -26,13 +26,14 @@ struct _IrmoSendAtom {
 	gboolean resent;                // this atom was resent
 	int len;			// length in packet
 	IrmoSendAtomType type;
-
+	
 	union {
 		struct {
 			irmo_objid_t id;
 			guint classnum;
 		} newobj;
 		struct {
+			gboolean executed;           // atom has been executed
 			irmo_objid_t id;
 			IrmoObject *object;
 
@@ -84,6 +85,9 @@ void irmo_client_sendq_add_state(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/05/04 00:28:14  sdh300
+// Add ability to manually set the maximum sendwindow size
+//
 // Revision 1.12  2003/04/25 00:40:50  sdh300
 // Nullifying of change atoms for out-of-date data in the send window
 //

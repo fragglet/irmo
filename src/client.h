@@ -140,9 +140,16 @@ void irmo_client_run_recvwindow(IrmoClient *client);
 
 int irmo_client_timeout_time(IrmoClient *client);
 
+// preexec starting from a position in the recvwindow
+
+void irmo_client_run_preexec(IrmoClient *client, int start, int end);
+
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.21  2003/05/04 00:28:14  sdh300
+// Add ability to manually set the maximum sendwindow size
+//
 // Revision 1.20  2003/04/25 00:17:28  sdh300
 // Remove unneccesary leading underscores from variables in IrmoClient
 //

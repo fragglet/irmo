@@ -118,6 +118,11 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 	foreach_client(universe,
 		       (ClientCallback) irmo_client_sendq_add_new, object);
 
+	// if a remote universe, create variable_time array
+
+	if (universe->remote)
+		object->variable_time = g_new0(int, objclass->nvariables);
+	
 	return object;
 }
 				
@@ -193,6 +198,11 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	free(object->variables);
 	callbackdata_free(object->callbacks);
 
+	// free variable time array
+
+	if (object->variable_time)
+		free(object->variable_time);
+	
 	// done
 	
 	free(object);
@@ -411,6 +421,9 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.22  2003/04/25 01:26:19  sdh300
+// Add glib assertations to all public API functions
+//
 // Revision 1.21  2003/03/12 18:58:24  sdh300
 // Only send changes to clients which are properly connected.
 // This fixes problems sending changes to clients not yet completely

@@ -283,6 +283,12 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 			proto_parse_insert_atom(client, atom, seq);
 		}
 	}
+
+	// try to preexec the new data
+
+	irmo_client_run_preexec(client,
+				start - client->recvwindow_start,
+				seq - client->recvwindow_start);
 }
 
 static void proto_parse_ack(IrmoClient *client, int ack)
@@ -404,6 +410,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/05/07 15:48:05  sdh300
+// Fix backoff timeout bug
+//
 // Revision 1.14  2003/05/04 00:28:14  sdh300
 // Add ability to manually set the maximum sendwindow size
 //
