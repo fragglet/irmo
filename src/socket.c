@@ -78,6 +78,22 @@ IrmoSocket *socket_new(int domain, int port)
 	addr_len = get_sockaddr_len(domain);
 	addr = (struct sockaddr *) g_malloc0(addr_len);
 
+	switch (domain) {
+	case AF_INET:
+		((struct sockaddr_in *) addr)->sin_family = AF_INET;
+		((struct sockaddr_in *) addr)->sin_addr.s_addr = INADDR_ANY;
+		((struct sockaddr_in *) addr)->sin_port = htons(port);
+		break;
+#ifdef USE_IPV6
+	case AF_INET6:
+		((struct sockaddr_in6 *) addr)->sin6_family = AF_INET6;
+		((struct sockaddr_in6 *) addr)->sin6_addr = in6addr_any;
+		((struct sockaddr_in6 *) addr)->sin6_port = htons(port);
+		
+		break;
+#endif
+	}
+	
 	if (bind(sock, addr, addr_len) < 0) {
 		fprintf(stderr,
 			"socket_new: Can't bind to %i::%i (%s)\n",
@@ -195,6 +211,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2002/12/02 22:24:23  sdh300
+// Initial socket run code/add extra data to packet objects
+//
 // Revision 1.8  2002/12/02 22:04:04  sdh300
 // Make created sockets nonblocking
 //
