@@ -398,10 +398,18 @@ void object_unwatch(IrmoObject *object, gchar *variable,
 {
 	if (!callbackdata_unwatch(object->callbacks, variable,
 				  func, user_data)) {
-		fprintf(stderr,
-			"object_unwatch: unknown variable or watch not "
-			"set for variable '%s' in class '%s'\n",
-			variable, object->objclass->name);
+
+		if (variable)
+			fprintf(stderr,
+				"object_unwatch: unknown variable or watch "
+				"not found for object (class '%s', variable "
+				"'%s')\n",
+				object->objclass->name, variable);
+		else
+			fprintf(stderr,
+				"object_unwatch: watch not found for object "
+				"(class '%s')\n",
+				object->objclass->name);
 	}
 }
 
@@ -426,6 +434,9 @@ void object_unwatch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2002/11/12 23:04:30  sdh300
+// callback removal, and code cleanup/generalisation
+//
 // Revision 1.11  2002/11/05 22:33:26  sdh300
 // more name changes
 //

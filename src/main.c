@@ -99,26 +99,35 @@ int main(int argc, char *argv[])
 
 	printf("\tnew: \n");
 	universe_watch_new(universe, "my_class", my_destroy_callback_2, NULL);
-	universe_unwatch_new(universe, "my_class", my_destroy_callback_2, NULL);	universe_unwatch_new(universe, "my_class", my_destroy_callback_2, NULL);
+	universe_unwatch_new(universe, "my_class", my_destroy_callback_2, NULL);
+
 	printf("\tdestroy: \n");
 	universe_watch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
-	universe_unwatch_destroy(universe, "my_class", my_destroy_callback_2, NULL);	universe_unwatch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
+	universe_unwatch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
+
 	printf("\tvariable watch:\n");
 	universe_watch_class(universe, "my_class", "my_int",
 			     my_callback_2, NULL);
-	universe_unwatch_class(universe, "my_class", "my_int",
-			       my_callback_2, NULL);
 	universe_unwatch_class(universe, "my_class", "my_int",
 			       my_callback_2, NULL);
 			     
 	printf("\tobject destroy: \n");
 	object_watch_destroy(object, my_destroy_callback_2, NULL);
 	object_unwatch_destroy(object, my_destroy_callback_2, NULL);
-	object_unwatch_destroy(object, my_destroy_callback_2, NULL);
 
 	printf("\tobject variable watch:\n");
 	object_watch(object, "my_int", my_callback_2, NULL);
 	object_unwatch(object, "my_int", my_callback_2, NULL);
+
+	printf("\ttesting invalid unwatch calls:\n");
+
+	universe_unwatch_new(universe, "my_class",
+			     my_destroy_callback_2, NULL);
+	universe_unwatch_destroy(universe, "my_class",
+				 my_destroy_callback_2, NULL);
+	universe_unwatch_class(universe, "my_class", "my_int",
+			       my_callback_2, NULL);
+	object_unwatch_destroy(object, my_destroy_callback_2, NULL);
 	object_unwatch(object, "my_int", my_callback_2, NULL);
 	
 	printf("looking for object in universe\n");
@@ -165,6 +174,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2002/11/12 23:04:31  sdh300
+// callback removal, and code cleanup/generalisation
+//
 // Revision 1.14  2002/11/05 16:28:10  sdh300
 // new object callbacks
 //
