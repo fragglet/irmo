@@ -291,7 +291,16 @@ int irmo_client_timeout_time(IrmoClient *client)
 	return (int) (client->rtt + client->rtt_deviation * 2 + 1);
 }
 
+int irmo_client_ping_time(IrmoClient *client)
+{
+	return (int) client->rtt;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.20  2003/04/21 18:10:53  sdh300
+// Fix sending of unneccesary acks
+// Slow start/Congestion avoidance
+//
 // Revision 1.19  2003/03/21 17:21:45  sdh300
 // Round Trip Time estimatation and adaptive timeout times
 //

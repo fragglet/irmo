@@ -97,11 +97,29 @@ void irmo_client_unwatch_disconnect(IrmoClient *client,
 				    IrmoClientCallback func,
 				    gpointer user_data);
 
+/*!
+ * \brief Get the ping time for a client
+ *
+ * Returns the round trip time (ping time) for a particular client.
+ * The accuracy of this is reliant on the amount of data which has
+ * been sent to the client. If no or very little data has been sent
+ * recently it may be inaccurate.
+ *
+ * \return Round Trip Time in milliseconds
+ *
+ */
+
+int irmo_client_ping_time(IrmoClient *client);
+
 //! \}
 
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/17 17:35:15  sdh300
+// Add disconnect callbacks for clients
+// Move IrmoClientCallback to client.h
+//
 // Revision 1.5  2003/03/07 12:17:21  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //
