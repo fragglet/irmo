@@ -1,6 +1,16 @@
 #ifndef IRMO_SOCKET_H
 #define IRMO_SOCKET_H
 
+/*!
+ * \addtogroup socket
+ * \{
+ */
+
+
+/*!
+ * \brief an IrmoSocket object.
+ */
+
 typedef struct _IrmoSocket IrmoSocket;
 
 #include <netinet/in.h>
@@ -56,9 +66,15 @@ void socket_unref(IrmoSocket *sock);
 
 void socket_run(IrmoSocket *sock);
 
+//! \}
+
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/02/23 00:00:07  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.6  2003/02/11 19:18:43  sdh300
 // Initial working connection code!
 //

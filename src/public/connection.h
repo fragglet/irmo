@@ -1,6 +1,18 @@
 #ifndef IRMO_CONNECTION_H
 #define IRMO_CONNECTION_H
 
+/*!
+ * \addtogroup connection
+ * \{
+ */
+
+/*!
+ * \brief An IrmoConnection object 
+ *
+ * This represents a connection to a \ref IrmoServer server running
+ * on a remote machine
+ */
+
 typedef struct _IrmoConnection IrmoConnection;
 
 #include "if_spec.h"
@@ -76,9 +88,14 @@ void connection_run(IrmoConnection *conn);
 
 IrmoUniverse *connection_get_universe(IrmoConnection *conn);
 
+//! \}
+
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/06 19:33:53  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.3  2003/02/23 00:45:43  sdh300
 // Add universe access functions for client, connection
 //

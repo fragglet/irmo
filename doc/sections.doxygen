@@ -45,7 +45,68 @@
  * when the values of these variables change.
  */
 
+/*!
+ * \defgroup socket Irmo Socket
+ *
+ * Socket objects listen on a particular UDP port. Servers (see
+ * \ref IrmoServer) can then be attached to the socket to allow
+ * connections. Multiple servers can listen on the same socket.
+ * Connecting clients will be connected to a different server
+ * depending on the hostname they specify. It is therefore 
+ * possible to set up a "virtual host" system through this
+ * mechanism.
+ */
+
+/*!
+ * \defgroup server Irmo Server
+ *
+ * Server objects are used to serve a particular \ref IrmoUniverse
+ * universe object on an \ref IrmoSocket socket. Clients can then
+ * connect to the server using the \ref irmo_connect function
+ * and receive information about the universe being served.
+ * 
+ * The clients themselves may also serve a universe back to the 
+ * server. The client universe to serve is specified using the
+ * 'spec' field of the server_new constructor.
+ */
+
+/*!
+ * \defgroup client Irmo Client
+ * 
+ * The \ref IrmoClient object represents clients currently 
+ * connected to a server. For each client currently connected
+ * there is an associated IrmoClient object.
+ *
+ * Once clients are disconnected from the server, they are
+ * automatically 'garbage collected' and destroyed. However, 
+ * the \ref client_ref and \ref client_unref functions can be
+ * used to hold a reference to an IrmoClient object and prevent
+ * it from being destroyed.
+ */
+
+/*!
+ * \defgroup connection Irmo Client Interface
+ *
+ * This is the client side interface. \ref IrmoConnection objects
+ * represent an open connection to a remote \ref IrmoServer.
+ * The key function is \ref irmo_connect which establishes a new
+ * connection.
+ * 
+ * In using irmo_connect, the 'spec' object is used to specify the
+ * universe being served by the remote server. The specification
+ * file must be identical; if the specification objects differ
+ * on the client and the server, the server will refuse the connection.
+ *
+ * The client may serve a universe back to the server by setting
+ * the 'local_universe' parameter to irmo_connect to point to a
+ * valid IrmoUniverse object. The type here must also be identical to
+ * that expected by the server.
+ */
+
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/11/17 22:02:01  sdh300
+// InterfaceSpec documentation
+//
 // Revision 1.3  2002/11/17 20:38:31  sdh300
 // add cvs tags
 //

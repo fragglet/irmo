@@ -1,6 +1,17 @@
 #ifndef IRMO_CLIENT_H
 #define IRMO_CLIENT_H
 
+/*!
+ * \addtogroup client
+ * \{
+ */
+
+/*!
+ * \brief An IrmoClient object
+ *
+ * This represents a client connected to a \ref IrmoServer server.
+ */
+
 typedef struct _IrmoClient IrmoClient;
 
 #include "server.h"
@@ -56,9 +67,14 @@ void client_disconnect(IrmoClient *client);
 
 IrmoUniverse *client_get_universe(IrmoClient *client);
 
+//! \}
+
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/23 00:45:43  sdh300
+// Add universe access functions for client, connection
+//
 // Revision 1.2  2003/02/23 00:35:16  sdh300
 // Add some missing documentation
 //

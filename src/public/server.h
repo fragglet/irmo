@@ -1,6 +1,15 @@
 #ifndef IRMO_SERVER_H
 #define IRMO_SERVER_H
 
+/*!
+ * \addtogroup server
+ * \{
+ */
+
+/*!
+ * \brief An IrmoServer object
+ */
+
 typedef struct _IrmoServer IrmoServer;
 
 #include "if_spec.h"
@@ -53,9 +62,14 @@ void server_ref(IrmoServer *server);
 
 void server_unref(IrmoServer *server);
 
+//! \}
+
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/03/06 19:33:53  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.2  2003/02/23 00:35:16  sdh300
 // Add some missing documentation
 //
