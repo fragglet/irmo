@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	
 	printf("creating object\n");
 
-	object = object_new(universe, "myclass");
+	object = object_new(universe, "my_class");
 
 	if (universe)
 		printf("successful!\n");
@@ -40,27 +40,27 @@ int main(int argc, char *argv[])
 
 	printf("trying to set variable value\n");
 	
-	object_set_int(object, "myvar", 1234);
+	object_set_int(object, "my_int", 1234);
 
 	printf("trying to set variable value (invalid)\n");
 	
-	object_set_int(object, "blah", 1234);
+	object_set_int(object, "my_string", 1234);
 
 	printf("trying to set string variable value\n");
 	
-	object_set_string(object, "blah", "yoyodyne");
+	object_set_string(object, "my_string", "yoyodyne");
 
 	printf("trying to get variable value\n");
 
-	printf("value: %i\n", object_get_int(object, "myvar"));
+	printf("value: %i\n", object_get_int(object, "my_int"));
 
 	printf("trying to get variable string value\n");
 
-	printf("value: %s\n", object_get_string(object, "blah"));
+	printf("value: %s\n", object_get_string(object, "my_string"));
 
 	printf("trying to get variable value (invalid)\n");
 
-	object_get_string(object, "myvar");
+	object_get_string(object, "my_int");
 	
 	printf("destroying object\n");
 
@@ -73,6 +73,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2002/10/29 14:48:16  sdh300
+// variable value retrieval
+//
 // Revision 1.7  2002/10/21 15:39:35  sdh300
 // setting string values
 //

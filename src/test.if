@@ -7,11 +7,9 @@
    a *****
    multiline comment */
 
-class myclass {
-	string foo;
-	int32 myvar;
-	int32 heh;
-	string blah;
+class my_class {
+	string my_string;
+	int32 my_int;
 }
 
 // can use 'func' or 'method'
