@@ -2,6 +2,7 @@
 // Base socket code
 //
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,6 +37,7 @@ IrmoSocket *socket_new(int domain, int port)
 	int sock;
 	struct sockaddr *addr;
 	int addr_len;
+	int opts;
 	
 	if (domain == AF_UNSPEC)
 		domain = AF_INET;
@@ -79,6 +81,28 @@ IrmoSocket *socket_new(int domain, int port)
 	}
 
 	free(addr);
+
+	// make socket nonblocking
+
+	opts = fcntl(sock, F_GETFL);
+
+	if (opts < 0) {
+		fprintf(stderr,
+			"socket_new: Can't fcntl(F_GETFL) (%s)\n",
+			strerror(errno));
+		close(sock);
+		return NULL;
+	}
+
+	opts |= O_NONBLOCK;
+
+	if (fcntl(sock, F_SETFL, opts) < 0) {
+		fprintf(stderr,
+			"socket_new: Can't fcntl(F_SETFL) (%s)\n",
+			strerror(errno));
+		close(sock);
+		return NULL;
+	}
 	
 	// wrap it all up in an IrmoSocket object
 
@@ -121,6 +145,9 @@ void socket_unref(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/12/02 21:56:46  sdh300
+// Fix build (compile errors)
+//
 // Revision 1.6  2002/12/02 21:32:51  sdh300
 // reference counting for IrmoSockets
 //
