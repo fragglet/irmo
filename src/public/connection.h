@@ -62,9 +62,26 @@ IrmoSocket *connection_get_socket(IrmoConnection *conn);
 
 void connection_run(IrmoConnection *conn);
 
+/*!
+ * \brief Get the universe object for the remote server
+ *
+ * Servers can serve a \ref IrmoUniverse object to their connecting
+ * clients. This function returns a reference to the local copy of 
+ * the remote universe (or NULL if the server is not serving a
+ * universe)
+ *
+ * \sa server_new
+ * \sa client_get_universe
+ */
+
+IrmoUniverse *connection_get_universe(IrmoConnection *conn);
+
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/02/23 00:26:57  sdh300
+// Add some documentation and helper functions for IrmoConnection
+//
 // Revision 1.1  2003/02/23 00:00:06  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

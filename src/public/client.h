@@ -41,9 +41,27 @@ void client_unref(IrmoClient *client);
 
 void client_disconnect(IrmoClient *client);
 
+/*!
+ * \brief Get the clients universe object
+ *
+ * While a server can serve a \ref IrmoUniverse object to connecting 
+ * clients, the clients can also serve a universe object back to the
+ * server. This function returns a reference to the local copy of 
+ * that remote universe object if it exists, or NULL if it does not.
+ *
+ * \sa irmo_connect
+ * \sa connection_get_universe
+ *
+ */
+
+IrmoUniverse *client_get_universe(IrmoClient *client);
+
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/02/23 00:35:16  sdh300
+// Add some missing documentation
+//
 // Revision 1.1  2003/02/23 00:00:06  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

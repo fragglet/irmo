@@ -81,7 +81,15 @@ void connection_run(IrmoConnection *conn)
 	socket_run(conn->sock);
 }
 
+IrmoUniverse *connection_get_universe(IrmoConnection *conn)
+{
+	return conn->universe;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/02/23 00:26:46  sdh300
+// Add some documentation and helper functions for IrmoConnection
+//
 // Revision 1.5  2003/02/18 17:41:37  sdh300
 // Add timeout for connect (6 attempts)
 //

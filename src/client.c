@@ -164,7 +164,16 @@ void _client_run(IrmoClient *client)
 	}
 }
 
+IrmoUniverse *client_get_universe(IrmoClient *client)
+{
+	return client->universe;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/02/20 18:24:59  sdh300
+// Use GQueue instead of a GPtrArray for the send queue
+// Initial change/destroy code
+//
 // Revision 1.6  2003/02/18 20:04:39  sdh300
 // Automatically increase size of packets when writing
 //
