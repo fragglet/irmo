@@ -46,13 +46,14 @@ struct _IrmoPacket {
 	IrmoSocket *sock;       // socket this came from
 	struct sockaddr *src;   // source address
 	guchar *data;           // packet data
-	gsize len;              // data length
+	gsize data_size;	// size of the buffer
+	gsize len;              // length of used data in the buffer
 	guint pos;              // current position in packet
 	IrmoClient *client;     // client implied by address (or NULL if none)
 	guint16 flags;          // flags from header
 };
 
-IrmoPacket *packet_new(gsize size);
+IrmoPacket *packet_new(void);
 void packet_free(IrmoPacket *packet);
 
 gboolean packet_writei8(IrmoPacket *packet, guchar c);
@@ -68,8 +69,12 @@ gchar *packet_readstring(IrmoPacket *packet);
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/09/01 01:25:49  fraggle
+// Improve packet code; increase packet size exponentially.
+// Remove the need to specify the size when creating a new packet object.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.10  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

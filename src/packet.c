@@ -32,12 +32,13 @@
 
 #include "packet.h"
 
-IrmoPacket *packet_new(gsize size)
+IrmoPacket *packet_new(void)
 {
 	IrmoPacket *packet = g_new0(IrmoPacket, 1);
 
-	packet->data = malloc(size);
-	packet->len = size;
+	packet->data_size = 256;
+	packet->data = malloc(packet->data_size);
+	packet->len = 0;
 	packet->pos = 0;
 
 	return packet;
@@ -50,53 +51,69 @@ void packet_free(IrmoPacket *packet)
 	free(packet);
 }
 
-G_INLINE_FUNC void packet_resize(IrmoPacket *packet, int newsize)
+G_INLINE_FUNC void packet_resize(IrmoPacket *packet)
 {
-	packet->data = realloc(packet->data, newsize);
-	packet->len = newsize;
+	// resize exponentially bigger
+
+	packet->data_size *= 2;
+	packet->data = realloc(packet->data, packet->data_size);
+}
+
+G_INLINE_FUNC void packet_update_len(IrmoPacket *packet)
+{
+	if (packet->pos > packet->len)
+		packet->len = packet->pos;
 }
 
 gboolean packet_writei8(IrmoPacket *packet, guchar c)
 {
-	if (packet->pos + 1 > packet->len)
-		packet_resize(packet, packet->pos + 1);
+	if (packet->pos + 1 > packet->data_size)
+		packet_resize(packet);
 	
 	packet->data[packet->pos++] = c;
+
+	packet_update_len(packet);
 
 	return TRUE;
 }
 
 gboolean packet_writei16(IrmoPacket *packet, guint16 s)
 {
-	if (packet->pos + 2 > packet->len)
-		packet_resize(packet, packet->pos + 2);
+	if (packet->pos + 2 > packet->data_size)
+		packet_resize(packet);
 
 	packet->data[packet->pos++] = (s >> 8) & 0xff;
 	packet->data[packet->pos++] = (s) & 0xff;
+
+	packet_update_len(packet);
 
 	return TRUE;
 }
 
 gboolean packet_writei32(IrmoPacket *packet, guint32 l)
 {
-	if (packet->pos + 4 > packet->len)
-		packet_resize(packet, packet->pos + 4);
+	if (packet->pos + 4 > packet->data_size)
+		packet_resize(packet);
 
 	packet->data[packet->pos++] = (l >> 24) & 0xff;
 	packet->data[packet->pos++] = (l >> 16) & 0xff;
 	packet->data[packet->pos++] = (l >> 8) & 0xff;
 	packet->data[packet->pos++] = (l) & 0xff;
 
+	packet_update_len(packet);
+
 	return TRUE;
 }
 
 gboolean packet_writestring(IrmoPacket *packet, gchar *s)
 {
-	if (packet->pos + strlen(s) + 1 > packet->len)
-		packet_resize(packet, packet->pos + strlen(s) + 1);
+	if (packet->pos + strlen(s) + 1 > packet->data_size)
+		packet_resize(packet);
 
 	strcpy(packet->data + packet->pos, s);
 	packet->pos += strlen(s) + 1;
+
+	packet_update_len(packet);
 
 	return TRUE;
 }
@@ -163,6 +180,10 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.3  2003/09/01 01:25:49  fraggle
+// Improve packet code; increase packet size exponentially.
+// Remove the need to specify the size when creating a new packet object.
+//
 // Revision 1.2  2003/08/18 01:23:14  fraggle
 // Use G_INLINE_FUNC instead of inline for portable inline function support
 //

@@ -190,7 +190,7 @@ static void client_run_connecting(IrmoClient *client)
 				= client->server->universe;
 			IrmoInterfaceSpec *spec = client->server->client_spec;
 
-			packet = packet_new(4); 
+			packet = packet_new(); 
 
 			// this is the client making a connection to
 			// the server
@@ -206,7 +206,7 @@ static void client_run_connecting(IrmoClient *client)
 			// we are the server, sending syn ack replies
 			// to the connecting client
 
-			packet = packet_new(2);
+			packet = packet_new();
 
 			packet_writei16(packet,
 					PACKET_FLAG_SYN|PACKET_FLAG_ACK);
@@ -241,7 +241,7 @@ static void client_run_disconnecting(IrmoClient *client)
 
 		// build a syn fin
 
-		packet = packet_new(2);
+		packet = packet_new();
 
 		packet_writei16(packet, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
@@ -351,6 +351,10 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.8  2003/09/01 01:25:49  fraggle
+// Improve packet code; increase packet size exponentially.
+// Remove the need to specify the size when creating a new packet object.
+//
 // Revision 1.7  2003/08/30 03:08:00  fraggle
 // Use irmo_client_internal_unref instead of unreffing externally. Make
 // irmo_client_destroy static now.

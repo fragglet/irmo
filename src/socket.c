@@ -342,7 +342,7 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 		// are wrong)
 		// send a refusal
 
-		sendpacket = packet_new(2);
+		sendpacket = packet_new();
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
@@ -363,7 +363,7 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 		
 		// send a reply
 
-		sendpacket = packet_new(2);
+		sendpacket = packet_new();
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
@@ -418,7 +418,7 @@ G_INLINE_FUNC void socket_run_synack(IrmoPacket *packet)
 	// its connection.
 
 	if (packet->sock->type == SOCKET_CLIENT) {
-		IrmoPacket *sendpacket = packet_new(2);
+		IrmoPacket *sendpacket = packet_new();
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
@@ -461,7 +461,7 @@ G_INLINE_FUNC void socket_run_synfin(IrmoPacket *packet)
 		
 		// send a syn/fin/ack to reply
 
-		sendpacket = packet_new(2);
+		sendpacket = packet_new();
 		packet_writei16(sendpacket,
 				PACKET_FLAG_SYN | PACKET_FLAG_FIN
 				| PACKET_FLAG_ACK);
@@ -625,6 +625,10 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log$
+// Revision 1.7  2003/09/01 01:25:49  fraggle
+// Improve packet code; increase packet size exponentially.
+// Remove the need to specify the size when creating a new packet object.
+//
 // Revision 1.6  2003/08/30 03:08:00  fraggle
 // Use irmo_client_internal_unref instead of unreffing externally. Make
 // irmo_client_destroy static now.

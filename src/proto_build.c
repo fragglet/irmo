@@ -189,7 +189,7 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	
 	// make a new packet
 	
-	packet = packet_new(5);
+	packet = packet_new();
 
 	// header
 	// always send last-acked point 
@@ -439,7 +439,7 @@ void proto_run_client(IrmoClient *client)
 
 		//printf("send ack to client\n");
 
-		packet = packet_new(4);
+		packet = packet_new();
 
 		// only ack flag is sent, not dta as there is no data
 		
@@ -458,6 +458,10 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.7  2003/09/01 01:25:49  fraggle
+// Improve packet code; increase packet size exponentially.
+// Remove the need to specify the size when creating a new packet object.
+//
 // Revision 1.6  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke
