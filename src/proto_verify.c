@@ -37,13 +37,13 @@ G_INLINE_FUNC gboolean proto_verify_field(IrmoPacket *packet,
 	
 	switch (type) {
 	case IRMO_TYPE_INT8:
-		return packet_readi8(packet, &i8);
+		return irmo_packet_readi8(packet, &i8);
 	case IRMO_TYPE_INT16:
-		return packet_readi16(packet, &i16);
+		return irmo_packet_readi16(packet, &i16);
 	case IRMO_TYPE_INT32:
-		return packet_readi32(packet, &i32);
+		return irmo_packet_readi32(packet, &i32);
 	case IRMO_TYPE_STRING:
-		return packet_readstring(packet) != NULL;
+		return irmo_packet_readstring(packet) != NULL;
 	}
 }
 
@@ -60,7 +60,7 @@ static gboolean proto_verify_change_atom(IrmoClient *client,
 	
 	// class
 
-	if (!packet_readi8(packet, &i8))
+	if (!irmo_packet_readi8(packet, &i8))
 		return FALSE;
 
 	if (i8 >= client->world->spec->nclasses)
@@ -70,7 +70,7 @@ static gboolean proto_verify_change_atom(IrmoClient *client,
 	
 	// object id
 
-	if (!packet_readi16(packet, &i16))
+	if (!irmo_packet_readi16(packet, &i16))
 		return FALSE;
 
 	// read object changed bitmap
@@ -80,7 +80,7 @@ static gboolean proto_verify_change_atom(IrmoClient *client,
 	changed = g_new0(gboolean, objclass->nvariables);
 
 	for (i=0, n=0; result && i<(objclass->nvariables+7) / 8; ++i) {
-		if (!packet_readi8(packet, &i8)) {
+		if (!irmo_packet_readi8(packet, &i8)) {
 			result = FALSE;
 			break;
 		}
@@ -119,7 +119,7 @@ static gboolean proto_verify_method_atom(IrmoClient *client,
 
 	// read method index
 
-	if (!packet_readi8(packet, &i8))
+	if (!irmo_packet_readi8(packet, &i8))
 		return FALSE;
 
 	// sanity check method index
@@ -151,12 +151,12 @@ static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 	case ATOM_NEW:
 		// object id
 
-		if (!packet_readi16(packet, &i16))
+		if (!irmo_packet_readi16(packet, &i16))
 			return FALSE;
 
 		// class of new object
 
-		if (!packet_readi8(packet, &i8))
+		if (!irmo_packet_readi8(packet, &i8))
 			return FALSE;
 
 		// check valid class
@@ -174,14 +174,14 @@ static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 
 		// object id
 
-		if (!packet_readi16(packet, &i16))
+		if (!irmo_packet_readi16(packet, &i16))
 			return FALSE;
 		
 		break;
 	case ATOM_SENDWINDOW:
 		// set maximum sendwindow size
 
-		if (!packet_readi16(packet, &i16))
+		if (!irmo_packet_readi16(packet, &i16))
 			return FALSE;
 
 		break;
@@ -197,7 +197,7 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 
 	// start position
 	
-	if (!packet_readi16(packet, &i16))
+	if (!irmo_packet_readi16(packet, &i16))
 		return FALSE;
 
 	// read atoms
@@ -208,7 +208,7 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 		int atomtype;
 		int natoms;
 		
-		if (!packet_readi8(packet, &i8))
+		if (!irmo_packet_readi8(packet, &i8))
 			break;
 
 		atomtype = (i8 >> 5) & 0x07;
@@ -253,7 +253,7 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 	return TRUE;
 }
 
-gboolean proto_verify_packet(IrmoPacket *packet)
+gboolean irmo_proto_verify_packet(IrmoPacket *packet)
 {
 	gboolean result = TRUE;
 	guint origpos = packet->pos;
@@ -265,7 +265,7 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 	if (packet->flags & PACKET_FLAG_ACK) {
 		guint16 i16;
 
-		if (!packet_readi16(packet, &i16))
+		if (!irmo_packet_readi16(packet, &i16))
 			result = FALSE;
 	}
 
@@ -282,6 +282,9 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.6  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.5  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

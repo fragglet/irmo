@@ -65,7 +65,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 
 	// try to resolve the name
 
-	addr = sockaddr_for_name(domain, location, port);
+	addr = irmo_sockaddr_for_name(domain, location, port);
 	
 	// create a server for our local world. for accessing the
 	// local world the server is seen as a client connecting
@@ -173,6 +173,9 @@ void irmo_connection_unref(IrmoConnection *conn)
 }
 
 // $Log$
+// Revision 1.8  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.7  2003/09/01 18:59:27  fraggle
 // Add a timeout parameter for blocking on sockets. Use block function
 // internally.

@@ -82,16 +82,22 @@ IrmoCallback *irmo_callbacklist_add(GSList **list, gpointer func,
 				    gpointer user_data);
 void irmo_callbacklist_free(GSList *list);
 
-IrmoCallbackData *callbackdata_new(IrmoClass *objclass, IrmoCallbackData *parent_data);
-void callbackdata_free(IrmoCallbackData *data);
-void callbackdata_raise(IrmoCallbackData *data,
-			 IrmoObject *object, gint variable_index);
-void callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
-void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
+IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass, 
+					IrmoCallbackData *parent_data);
+void irmo_callbackdata_free(IrmoCallbackData *data);
+void irmo_callbackdata_raise(IrmoCallbackData *data,
+			     IrmoObject *object, gint variable_index);
+void irmo_callbackdata_raise_destroy(IrmoCallbackData *data, 
+				     IrmoObject *object);
+void irmo_callbackdata_raise_new(IrmoCallbackData *data, 
+				 IrmoObject *object);
 
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.7  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.6  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

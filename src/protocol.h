@@ -31,25 +31,28 @@
 
 // verifying integrity of received packets before parsing
 
-gboolean proto_verify_packet(IrmoPacket *packet);
+gboolean irmo_proto_verify_packet(IrmoPacket *packet);
 
 // parsing received packets
 
-void proto_parse_packet(IrmoPacket *packet);
+void irmo_proto_parse_packet(IrmoPacket *packet);
 
 // running client to build and send packets
 
-void proto_run_client(IrmoClient *client);
+void irmo_proto_run_client(IrmoClient *client);
 
 // timeout time for a particular client
 
-int proto_client_timeout_time(IrmoClient *client);
+int irmo_proto_client_timeout_time(IrmoClient *client);
 
 #endif /* #ifndef IRMO_PROTO_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.4  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

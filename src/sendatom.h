@@ -90,7 +90,7 @@ struct _IrmoSendAtom {
 	} data;
 };
 
-void sendatom_free(IrmoSendAtom *atom);
+void irmo_sendatom_free(IrmoSendAtom *atom);
 
 // create a new sendatom and add to a clients sendqueue
 
@@ -110,6 +110,9 @@ void irmo_client_sendq_add_state(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.5  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.4  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

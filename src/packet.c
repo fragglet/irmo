@@ -32,7 +32,7 @@
 
 #include "packet.h"
 
-IrmoPacket *packet_new(void)
+IrmoPacket *irmo_packet_new(void)
 {
 	IrmoPacket *packet = g_new0(IrmoPacket, 1);
 
@@ -44,14 +44,14 @@ IrmoPacket *packet_new(void)
 	return packet;
 }
 
-void packet_free(IrmoPacket *packet)
+void irmo_packet_free(IrmoPacket *packet)
 {
 	free(packet->data);
 	free(packet->src);
 	free(packet);
 }
 
-G_INLINE_FUNC void packet_resize(IrmoPacket *packet)
+G_INLINE_FUNC void irmo_packet_resize(IrmoPacket *packet)
 {
 	// resize exponentially bigger
 
@@ -59,66 +59,66 @@ G_INLINE_FUNC void packet_resize(IrmoPacket *packet)
 	packet->data = realloc(packet->data, packet->data_size);
 }
 
-G_INLINE_FUNC void packet_update_len(IrmoPacket *packet)
+G_INLINE_FUNC void irmo_packet_update_len(IrmoPacket *packet)
 {
 	if (packet->pos > packet->len)
 		packet->len = packet->pos;
 }
 
-gboolean packet_writei8(IrmoPacket *packet, guchar c)
+gboolean irmo_packet_writei8(IrmoPacket *packet, guchar c)
 {
 	if (packet->pos + 1 > packet->data_size)
-		packet_resize(packet);
+		irmo_packet_resize(packet);
 	
 	packet->data[packet->pos++] = c;
 
-	packet_update_len(packet);
+	irmo_packet_update_len(packet);
 
 	return TRUE;
 }
 
-gboolean packet_writei16(IrmoPacket *packet, guint16 s)
+gboolean irmo_packet_writei16(IrmoPacket *packet, guint16 s)
 {
 	if (packet->pos + 2 > packet->data_size)
-		packet_resize(packet);
+		irmo_packet_resize(packet);
 
 	packet->data[packet->pos++] = (s >> 8) & 0xff;
 	packet->data[packet->pos++] = (s) & 0xff;
 
-	packet_update_len(packet);
+	irmo_packet_update_len(packet);
 
 	return TRUE;
 }
 
-gboolean packet_writei32(IrmoPacket *packet, guint32 l)
+gboolean irmo_packet_writei32(IrmoPacket *packet, guint32 l)
 {
 	if (packet->pos + 4 > packet->data_size)
-		packet_resize(packet);
+		irmo_packet_resize(packet);
 
 	packet->data[packet->pos++] = (l >> 24) & 0xff;
 	packet->data[packet->pos++] = (l >> 16) & 0xff;
 	packet->data[packet->pos++] = (l >> 8) & 0xff;
 	packet->data[packet->pos++] = (l) & 0xff;
 
-	packet_update_len(packet);
+	irmo_packet_update_len(packet);
 
 	return TRUE;
 }
 
-gboolean packet_writestring(IrmoPacket *packet, gchar *s)
+gboolean irmo_packet_writestring(IrmoPacket *packet, gchar *s)
 {
 	if (packet->pos + strlen(s) + 1 > packet->data_size)
-		packet_resize(packet);
+		irmo_packet_resize(packet);
 
 	strcpy(packet->data + packet->pos, s);
 	packet->pos += strlen(s) + 1;
 
-	packet_update_len(packet);
+	irmo_packet_update_len(packet);
 
 	return TRUE;
 }
 
-gboolean packet_readi8(IrmoPacket *packet, guchar *c)
+gboolean irmo_packet_readi8(IrmoPacket *packet, guchar *c)
 {
 	if (packet->pos + 1 > packet->len)
 		return FALSE;
@@ -128,7 +128,7 @@ gboolean packet_readi8(IrmoPacket *packet, guchar *c)
 	return TRUE;
 }
 
-gboolean packet_readi16(IrmoPacket *packet, guint16 *s)
+gboolean irmo_packet_readi16(IrmoPacket *packet, guint16 *s)
 {
 	guchar *data;
 	
@@ -144,7 +144,7 @@ gboolean packet_readi16(IrmoPacket *packet, guint16 *s)
 	return TRUE;
 }
 
-gboolean packet_readi32(IrmoPacket *packet, guint32 *l)
+gboolean irmo_packet_readi32(IrmoPacket *packet, guint32 *l)
 {
 	guchar *data;
 
@@ -160,7 +160,7 @@ gboolean packet_readi32(IrmoPacket *packet, guint32 *l)
 	return TRUE;
 }
 
-gchar *packet_readstring(IrmoPacket *packet)
+gchar *irmo_packet_readstring(IrmoPacket *packet)
 {
 	guchar *start = packet->data + packet->pos;
 
@@ -180,6 +180,9 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.4  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.3  2003/09/01 01:25:49  fraggle
 // Improve packet code; increase packet size exponentially.
 // Remove the need to specify the size when creating a new packet object.

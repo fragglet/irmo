@@ -53,22 +53,25 @@ struct _IrmoPacket {
 	guint16 flags;          // flags from header
 };
 
-IrmoPacket *packet_new(void);
-void packet_free(IrmoPacket *packet);
+IrmoPacket *irmo_packet_new(void);
+void irmo_packet_free(IrmoPacket *packet);
 
-gboolean packet_writei8(IrmoPacket *packet, guchar c);
-gboolean packet_writei16(IrmoPacket *packet, guint16 s);
-gboolean packet_writei32(IrmoPacket *packet, guint32 l);
-gboolean packet_writestring(IrmoPacket *packet, gchar *s);
+gboolean irmo_packet_writei8(IrmoPacket *packet, guchar c);
+gboolean irmo_packet_writei16(IrmoPacket *packet, guint16 s);
+gboolean irmo_packet_writei32(IrmoPacket *packet, guint32 l);
+gboolean irmo_packet_writestring(IrmoPacket *packet, gchar *s);
 
-gboolean packet_readi8(IrmoPacket *packet, guchar *c);
-gboolean packet_readi16(IrmoPacket *packet, guint16 *s);
-gboolean packet_readi32(IrmoPacket *packet, guint32 *l);
-gchar *packet_readstring(IrmoPacket *packet);
+gboolean irmo_packet_readi8(IrmoPacket *packet, guchar *c);
+gboolean irmo_packet_readi16(IrmoPacket *packet, guint16 *s);
+gboolean irmo_packet_readi32(IrmoPacket *packet, guint32 *l);
+gchar *irmo_packet_readstring(IrmoPacket *packet);
 
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log$
+// Revision 1.3  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.2  2003/09/01 01:25:49  fraggle
 // Improve packet code; increase packet size exponentially.
 // Remove the need to specify the size when creating a new packet object.

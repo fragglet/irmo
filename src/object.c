@@ -115,7 +115,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	object->id = id;
 	object->objclass = objclass;
 	object->world = world;
-	object->callbacks = callbackdata_new(objclass, NULL);
+	object->callbacks = irmo_callbackdata_new(objclass, NULL);
 	
 	// member variables:
 
@@ -135,9 +135,9 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 	// raise callback functions for new object creation
 
-	callbackdata_raise_new(world->callbacks[objclass->index],
-			       object);
-	callbackdata_raise_new(world->callbacks_all, object);
+	irmo_callbackdata_raise_new(world->callbacks[objclass->index],
+				    object);
+	irmo_callbackdata_raise_new(world->callbacks_all, object);
 
 	// notify attached clients
 
@@ -193,12 +193,12 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	if (notify) {
 		// raise destroy callbacks
 		
-		callbackdata_raise_destroy(object->callbacks, object);
-		callbackdata_raise_destroy(object->world->callbacks
-					   [object->objclass->index],
-					   object);
-		callbackdata_raise_destroy(object->world->callbacks_all,
-					   object);
+		irmo_callbackdata_raise_destroy(object->callbacks, object);
+		irmo_callbackdata_raise_destroy(object->world->callbacks
+						   [object->objclass->index],
+						object);
+		irmo_callbackdata_raise_destroy(object->world->callbacks_all,
+						object);
 		
 		// notify connected clients
 		
@@ -223,7 +223,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	}
 
 	free(object->variables);
-	callbackdata_free(object->callbacks);
+	irmo_callbackdata_free(object->callbacks);
 
 	// free variable time array
 
@@ -293,11 +293,11 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 
 	// call callback functions for change
 
-	callbackdata_raise(object->callbacks, object, spec->index);
-	callbackdata_raise(object->world->callbacks[objclass->index],
-			   object, variable);
-	callbackdata_raise(object->world->callbacks_all,
-			   object, variable);
+	irmo_callbackdata_raise(object->callbacks, object, spec->index);
+	irmo_callbackdata_raise(object->world->callbacks[objclass->index],
+				object, variable);
+	irmo_callbackdata_raise(object->world->callbacks_all,
+				object, variable);
 	
 	// notify clients
 
@@ -480,6 +480,9 @@ gboolean irmo_object_is_a(IrmoObject *obj, gchar *classname)
 }
 
 // $Log$
+// Revision 1.12  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.11  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

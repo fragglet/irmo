@@ -32,22 +32,15 @@
 
 // various network util functions
 
-int sockaddr_len(int domain);
+int irmo_sockaddr_len(int domain);
 
-guint sockaddr_in_hash(struct sockaddr_in *addr);
-gint sockaddr_in_cmp(struct sockaddr_in *a, struct sockaddr_in *b);
+guint irmo_sockaddr_hash(struct sockaddr *addr);
+gint irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
 
-#ifdef USE_IPV6
-guint sockaddr_in6_hash(struct sockaddr_in6 *addr);
-gint sockaddr_in6_cmp(struct sockaddr_in6 *a, struct sockaddr_in6 *b);
-#endif
+struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr);
 
-guint sockaddr_hash(struct sockaddr *addr);
-gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
-
-struct sockaddr *sockaddr_copy(struct sockaddr *addr);
-
-struct sockaddr *sockaddr_for_name(IrmoSocketDomain domain, gchar *name, int port);
+struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain, 
+					gchar *name, int port);
 
 // time functions
 
@@ -73,6 +66,9 @@ void irmo_timeval_from_ms(int ms, struct timeval *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.3  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.2  2003/08/26 14:57:31  fraggle
 // Remove AF_* BSD sockets dependency from Irmo API
 //

@@ -75,19 +75,19 @@ G_INLINE_FUNC void proto_parse_field(IrmoPacket *packet,
 
 	switch (type) {
 	case IRMO_TYPE_INT8:
-		packet_readi8(packet, &i8);
+		irmo_packet_readi8(packet, &i8);
 		value->i = i8;
 		break;
 	case IRMO_TYPE_INT16:
-		packet_readi16(packet, &i16);
+		irmo_packet_readi16(packet, &i16);
 		value->i = i16;
 		break;
 	case IRMO_TYPE_INT32:
-		packet_readi32(packet, &i32);
+		irmo_packet_readi32(packet, &i32);
 		value->i = i32;
 		break;
 	case IRMO_TYPE_STRING:
-		value->s = strdup(packet_readstring(packet));
+		value->s = strdup(irmo_packet_readstring(packet));
 		break;
 	}
 }
@@ -105,14 +105,14 @@ G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 
 	// read class
 	
-	packet_readi8(packet, &i8);
+	irmo_packet_readi8(packet, &i8);
 
 	objclass = client->world->spec->classes[i8];
 	atom->data.change.objclass = objclass;
 
 	// read object id
 	
-	packet_readi16(packet, &i16);
+	irmo_packet_readi16(packet, &i16);
 
 	atom->data.change.id = i16;
 	
@@ -126,7 +126,7 @@ G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 		// read the bits out of this byte in the bitmap into the
 		// changed array
 		
-		packet_readi8(packet, &i8);
+		irmo_packet_readi8(packet, &i8);
 
 		for (b=0; b<8 && n<objclass->nvariables; ++b,++n)
 			if (i8 & (1 << b))
@@ -158,7 +158,7 @@ static IrmoSendAtom *proto_parse_method_atom(IrmoClient *client,
 	
 	// read method number
 	
-	packet_readi8(packet, &i8);
+	irmo_packet_readi8(packet, &i8);
 	method = client->server->world->spec->methods[i8];
 	
 	atom->data.method.spec = method;
@@ -189,12 +189,12 @@ static IrmoSendAtom *proto_parse_atom(IrmoClient *client, IrmoPacket *packet,
 	case ATOM_NEW:
 		// object id of new object
 		
-		packet_readi16(packet, &i16);
+		irmo_packet_readi16(packet, &i16);
 		atom->data.newobj.id = i16;
 
 		// class of new object
 		
-		packet_readi8(packet, &i8);
+		irmo_packet_readi8(packet, &i8);
 		atom->data.newobj.classnum = i8;
 		break;
 
@@ -204,7 +204,7 @@ static IrmoSendAtom *proto_parse_atom(IrmoClient *client, IrmoPacket *packet,
 	case ATOM_DESTROY:
 		// object id to destroy
 
-		packet_readi16(packet, &i16);
+		irmo_packet_readi16(packet, &i16);
 		atom->data.destroy.id = i16;
 
 		break;
@@ -214,7 +214,7 @@ static IrmoSendAtom *proto_parse_atom(IrmoClient *client, IrmoPacket *packet,
 	case ATOM_SENDWINDOW:
 		// read window advertisement
 
-		packet_readi16(packet, &i16);
+		irmo_packet_readi16(packet, &i16);
 		atom->data.sendwindow.max = i16;
 
 		break;
@@ -253,7 +253,7 @@ static void proto_parse_insert_atom(IrmoClient *client,
 	// new retransmitted atoms are more up to date)
 	
 	if (client->recvwindow[index])
-		sendatom_free(client->recvwindow[index]);
+		irmo_sendatom_free(client->recvwindow[index]);
 
 	client->recvwindow[index] = atom;
 }
@@ -267,7 +267,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 	
 	// get the start position
 	
-	packet_readi16(packet, &i16);
+	irmo_packet_readi16(packet, &i16);
 
 	start = get_stream_position(client->recvwindow_start, i16);
 
@@ -280,7 +280,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 		// read type/count byte
 		// if none, end of packet
 		
-		if (!packet_readi8(packet, &i8))
+		if (!irmo_packet_readi8(packet, &i8))
 			break;
 
 		atomtype = (i8 >> 5) & 0x07;
@@ -307,7 +307,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 			// too old?
 			
 			if (seq < client->recvwindow_start) {
-				sendatom_free(atom);
+				irmo_sendatom_free(atom);
 				continue;
 			}
 
@@ -403,7 +403,7 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	// destroy the atoms in the area acked
 	
 	for (i=0; i<relative; ++i)
-		sendatom_free(client->sendwindow[i]);
+		irmo_sendatom_free(client->sendwindow[i]);
 
 	memcpy(client->sendwindow,
 	       client->sendwindow + relative,
@@ -414,13 +414,13 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	client->sendwindow_size -= relative;
 }
 
-void proto_parse_packet(IrmoPacket *packet)
+void irmo_proto_parse_packet(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 
 	// verify packet before parsing for security
 	
-	if (!proto_verify_packet(packet)) {
+	if (!irmo_proto_verify_packet(packet)) {
 		irmo_error_report("proto_parse_packet",
 				  "dropped packet (failed security verification)");
 		return;
@@ -431,7 +431,7 @@ void proto_parse_packet(IrmoPacket *packet)
 	if (packet->flags & PACKET_FLAG_ACK) {
 		guint16 i16;
 
-		packet_readi16(packet, &i16);
+		irmo_packet_readi16(packet, &i16);
 
 		proto_parse_ack(client, i16);
 	}
@@ -444,6 +444,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.8  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.7  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

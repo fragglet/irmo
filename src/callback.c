@@ -77,7 +77,8 @@ void irmo_callbacklist_free(GSList *list)
 
 // create a new callbackdata object for watching an object or class
 
-IrmoCallbackData *callbackdata_new(IrmoClass *objclass, IrmoCallbackData *parent)
+IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass, 
+					IrmoCallbackData *parent)
 {
 	IrmoCallbackData *data;
 
@@ -98,7 +99,7 @@ IrmoCallbackData *callbackdata_new(IrmoClass *objclass, IrmoCallbackData *parent
 	return data;
 }
 
-void callbackdata_free(IrmoCallbackData *data)
+void irmo_callbackdata_free(IrmoCallbackData *data)
 {
 	int i;
 	
@@ -138,8 +139,8 @@ static void callbackdata_raise_foreach(IrmoCallback *callback,
 	     callback->user_data);
 }
 
-void callbackdata_raise(IrmoCallbackData *data,
-			 IrmoObject *object, gint variable_index)
+void irmo_callbackdata_raise(IrmoCallbackData *data,
+			     IrmoObject *object, gint variable_index)
 {
 	struct raise_data raise_data = {
 		object: object,
@@ -165,8 +166,8 @@ void callbackdata_raise(IrmoCallbackData *data,
 
 	if (data->parent_data
 	 && variable_index < data->parent_data->objclass->nvariables) {
-		callbackdata_raise(data->parent_data, object, 
-				   variable_index);
+		irmo_callbackdata_raise(data->parent_data, object, 
+					variable_index);
 	}
 }
 
@@ -178,8 +179,8 @@ static void callbackdata_raise_destroy_foreach(IrmoCallback *callback,
 	func(raise_data->object, callback->user_data);
 }
 
-void callbackdata_raise_destroy(IrmoCallbackData *data,
-			        IrmoObject *object)
+void irmo_callbackdata_raise_destroy(IrmoCallbackData *data,
+				     IrmoObject *object)
 {
 	struct raise_data raise_data = {
 		object: object,
@@ -192,10 +193,10 @@ void callbackdata_raise_destroy(IrmoCallbackData *data,
 	// recurse through superclass watches
 
 	if (data->parent_data)
-		callbackdata_raise_destroy(data->parent_data, object);
+		irmo_callbackdata_raise_destroy(data->parent_data, object);
 }
 
-void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
+void irmo_callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 {
 	struct raise_data raise_data = {
 		object: object,
@@ -208,7 +209,7 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 	// recurse through superclass watches
 
 	if (data->parent_data)
-		callbackdata_raise_new(data->parent_data, object);
+		irmo_callbackdata_raise_new(data->parent_data, object);
 }
 
 static GSList **find_variable(IrmoCallbackData *data, gchar *variable)
@@ -376,6 +377,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.9  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.8  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

@@ -42,11 +42,11 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	// decode (if we receive a change atom for an object which has
 	// not yet been received, for example)
 
-	packet_writei8(packet, obj->objclass->index);
+	irmo_packet_writei8(packet, obj->objclass->index);
 	
 	// send object id
 	
-	packet_writei16(packet, obj->id);
+	irmo_packet_writei16(packet, obj->id);
 
 	// build and send bitmap
 
@@ -65,7 +65,7 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 			}
 		}
 
-		packet_writei8(packet, b);
+		irmo_packet_writei8(packet, b);
 	}
 
 	// send variables
@@ -81,16 +81,16 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 
 		switch (obj->objclass->variables[i]->type) {
 		case IRMO_TYPE_INT8:
-			packet_writei8(packet, obj->variables[i].i);
+			irmo_packet_writei8(packet, obj->variables[i].i);
 			break;
 		case IRMO_TYPE_INT16:
-			packet_writei16(packet, obj->variables[i].i);
+			irmo_packet_writei16(packet, obj->variables[i].i);
 			break;
 		case IRMO_TYPE_INT32:
-			packet_writei32(packet, obj->variables[i].i);
+			irmo_packet_writei32(packet, obj->variables[i].i);
 			break;
 		case IRMO_TYPE_STRING:
-			packet_writestring(packet, obj->variables[i].s);
+			irmo_packet_writestring(packet, obj->variables[i].s);
 			break;
 		}
 	}
@@ -104,23 +104,23 @@ static void proto_add_method_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	
 	// send method index
 	
-	packet_writei8(packet, method->index);
+	irmo_packet_writei8(packet, method->index);
 
 	// send arguments
 
 	for (i=0; i<method->narguments; ++i) {
 		switch (method->arguments[i]->type) {
 		case IRMO_TYPE_INT8:
-			packet_writei8(packet, args[i].i);
+			irmo_packet_writei8(packet, args[i].i);
 			break;
 		case IRMO_TYPE_INT16:
-			packet_writei16(packet, args[i].i);
+			irmo_packet_writei16(packet, args[i].i);
 			break;
 		case IRMO_TYPE_INT32:
-			packet_writei16(packet, args[i].i);
+			irmo_packet_writei16(packet, args[i].i);
 			break;
 		case IRMO_TYPE_STRING:
-			packet_writestring(packet, args[i].s);
+			irmo_packet_writestring(packet, args[i].s);
 			break;
 		}
 	}
@@ -130,14 +130,14 @@ static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 {
 	switch (atom->type) {
 	case ATOM_NEW:
-		packet_writei16(packet, atom->data.newobj.id);
-		packet_writei8(packet, atom->data.newobj.classnum);
+		irmo_packet_writei16(packet, atom->data.newobj.id);
+		irmo_packet_writei8(packet, atom->data.newobj.classnum);
 		break;
 	case ATOM_CHANGE:
 		proto_add_change_atom(packet, atom);
 		break;
 	case ATOM_DESTROY:
-		packet_writei16(packet, atom->data.destroy.id);
+		irmo_packet_writei16(packet, atom->data.destroy.id);
 		break;
 	case ATOM_METHOD:
 		proto_add_method_atom(packet, atom);
@@ -145,7 +145,7 @@ static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	case ATOM_NULL:
 		break;
 	case ATOM_SENDWINDOW:
-		packet_writei16(packet, atom->data.sendwindow.max);
+		irmo_packet_writei16(packet, atom->data.sendwindow.max);
 		break;
 	}
 }
@@ -178,7 +178,7 @@ G_INLINE_FUNC void proto_atom_resent(IrmoClient *client, int i)
 	
 }
 
-IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
+static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 {
 	struct timeval nowtime;
 	IrmoPacket *packet;
@@ -189,12 +189,12 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	
 	// make a new packet
 	
-	packet = packet_new();
+	packet = irmo_packet_new();
 
 	// header
 	// always send last-acked point 
 	
-	packet_writei16(packet, PACKET_FLAG_ACK|PACKET_FLAG_DTA);
+	irmo_packet_writei16(packet, PACKET_FLAG_ACK|PACKET_FLAG_DTA);
 	
 	// in sending stream positions we only send the low 16
 	// bits. the higher bits can be implied by their current
@@ -202,7 +202,7 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	
 	// last acked point
 	
-	packet_writei16(packet, client->recvwindow_start & 0xffff);
+	irmo_packet_writei16(packet, client->recvwindow_start & 0xffff);
 	client->need_ack = FALSE;
 
 	// move the start back to cover all null atoms that prefix this
@@ -221,8 +221,8 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	
 	// start position in stream
 	
-	packet_writei16(packet, 
-			(client->sendwindow_start + backstart) & 0xffff);
+	irmo_packet_writei16(packet, 
+			     (client->sendwindow_start + backstart) & 0xffff);
 
 	//printf("-- build_packet: range %i-%i\n", start,end);
 	// add all sendatoms in the range specified
@@ -245,8 +245,8 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 
 		// store extra count in the low bits, type in the high bits
 
-		packet_writei8(packet,
-			       (client->sendwindow[i]->type << 5) | (n-1));
+		irmo_packet_writei8(packet,
+			            (client->sendwindow[i]->type << 5) | (n-1));
 
 		// add atoms
 
@@ -337,7 +337,7 @@ static void proto_pump_client(IrmoClient *client)
 
 #define MAX_TIMEOUT 40000
 
-void proto_run_client(IrmoClient *client)
+void irmo_proto_run_client(IrmoClient *client)
 {
 	struct timeval nowtime, timeout_time, timeout_length;
 	int timeout_length_ms;
@@ -425,7 +425,7 @@ void proto_run_client(IrmoClient *client)
 		
 		// finished using packet
 		
-		packet_free(packet);
+		irmo_packet_free(packet);
 	}
 
 	//printf("finished\n");
@@ -439,12 +439,12 @@ void proto_run_client(IrmoClient *client)
 
 		//printf("send ack to client\n");
 
-		packet = packet_new();
+		packet = irmo_packet_new();
 
 		// only ack flag is sent, not dta as there is no data
 		
-		packet_writei16(packet, PACKET_FLAG_ACK);
-		packet_writei16(packet, client->recvwindow_start & 0xffff);
+		irmo_packet_writei16(packet, PACKET_FLAG_ACK);
+		irmo_packet_writei16(packet, client->recvwindow_start & 0xffff);
 		client->need_ack = FALSE;
 
 		// send packet
@@ -453,11 +453,14 @@ void proto_run_client(IrmoClient *client)
 				       client->addr,
 				       packet);
 
-		packet_free(packet);
+		irmo_packet_free(packet);
 	}
 }
 
 // $Log$
+// Revision 1.8  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.7  2003/09/01 01:25:49  fraggle
 // Improve packet code; increase packet size exponentially.
 // Remove the need to specify the size when creating a new packet object.

@@ -86,8 +86,8 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 		sock->default_server = server;
 	}
 
-	server->clients = g_hash_table_new((GHashFunc) sockaddr_hash,
-					   (GCompareFunc) sockaddr_cmp);
+	server->clients = g_hash_table_new((GHashFunc) irmo_sockaddr_hash,
+					   (GCompareFunc) irmo_sockaddr_cmp);
 	
 	return server;
 }
@@ -258,6 +258,9 @@ void irmo_server_shutdown(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.10  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.9  2003/09/01 19:28:04  fraggle
 // Fix typo
 //

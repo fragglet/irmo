@@ -50,7 +50,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 	client->state = CLIENT_CONNECTING;
 	client->server = server;
-	client->addr = sockaddr_copy(addr);
+	client->addr = irmo_sockaddr_copy(addr);
 	client->connect_time = 0;
 	client->connect_attempts = CLIENT_CONNECT_ATTEMPTS;
 
@@ -121,7 +121,7 @@ static void irmo_client_destroy(IrmoClient *client)
 
 		atom = (IrmoSendAtom *) g_queue_pop_head(client->sendq);
 
-		sendatom_free(atom);
+		irmo_sendatom_free(atom);
 	}
 
 	g_queue_free(client->sendq);
@@ -131,7 +131,7 @@ static void irmo_client_destroy(IrmoClient *client)
 	// destroy sendwindow and all data in it
 	
 	for (i=0; i<client->sendwindow_size; ++i)
-		sendatom_free(client->sendwindow[i]);
+		irmo_sendatom_free(client->sendwindow[i]);
 
 	//free(client->sendwindow);
 
@@ -139,7 +139,7 @@ static void irmo_client_destroy(IrmoClient *client)
 	
 	for (i=0; i<client->recvwindow_size; ++i)
 		if (client->recvwindow[i])
-			sendatom_free(client->recvwindow[i]);
+			irmo_sendatom_free(client->recvwindow[i]);
 
 	free(client->recvwindow);
 
@@ -190,33 +190,33 @@ static void client_run_connecting(IrmoClient *client)
 				= client->server->world;
 			IrmoInterfaceSpec *spec = client->server->client_spec;
 
-			packet = packet_new(); 
+			packet = irmo_packet_new(); 
 
 			// this is the client making a connection to
 			// the server
 
-			packet_writei16(packet, PACKET_FLAG_SYN);
-			packet_writei32(packet,
-					local_world ?
-					local_world->spec->hash : 0);
-			packet_writei32(packet, spec ? spec->hash : 0);
+			irmo_packet_writei16(packet, PACKET_FLAG_SYN);
+			irmo_packet_writei32(packet,
+					     local_world ?
+					     local_world->spec->hash : 0);
+			irmo_packet_writei32(packet, spec ? spec->hash : 0);
 
 			// no hostname yet, fixme
 		} else {
 			// we are the server, sending syn ack replies
 			// to the connecting client
 
-			packet = packet_new();
+			packet = irmo_packet_new();
 
-			packet_writei16(packet,
-					PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+			irmo_packet_writei16(packet,
+					     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 		}
 		
 		irmo_socket_sendpacket(client->server->socket,
 				       client->addr,
 				       packet);
 
-		packet_free(packet);		
+		irmo_packet_free(packet);		
 		
 		client->connect_time = nowtime;
 
@@ -241,15 +241,15 @@ static void client_run_disconnecting(IrmoClient *client)
 
 		// build a syn fin
 
-		packet = packet_new();
+		packet = irmo_packet_new();
 
-		packet_writei16(packet, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
+		irmo_packet_writei16(packet, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
 		irmo_socket_sendpacket(client->server->socket,
 				       client->addr,
 				       packet);
 
-		packet_free(packet);
+		irmo_packet_free(packet);
 
 		// save the time
 
@@ -269,7 +269,7 @@ void irmo_client_run(IrmoClient *client)
 		client_run_connecting(client);
 		break;
 	case CLIENT_CONNECTED:
-		proto_run_client(client);
+		irmo_proto_run_client(client);
 		break;
 	case CLIENT_DISCONNECTING:
 		client_run_disconnecting(client);
@@ -351,6 +351,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.10  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.9  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

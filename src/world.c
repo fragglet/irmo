@@ -64,11 +64,11 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 		else
 			parent_data = NULL;
 		
-		world->callbacks[i] = callbackdata_new(spec->classes[i],
-						       parent_data);
+		world->callbacks[i] = irmo_callbackdata_new(spec->classes[i],
+							    parent_data);
 	}
 
-	world->callbacks_all = callbackdata_new(NULL, NULL);
+	world->callbacks_all = irmo_callbackdata_new(NULL, NULL);
 
 	// method callbacks
 	
@@ -118,9 +118,9 @@ void irmo_world_unref(IrmoWorld *world)
 		// delete callbacks
 		
 		for (i=0; i<world->spec->nclasses; ++i)
-			callbackdata_free(world->callbacks[i]);
+			irmo_callbackdata_free(world->callbacks[i]);
 
-		callbackdata_free(world->callbacks_all);
+		irmo_callbackdata_free(world->callbacks_all);
 		
 		free(world->callbacks);
 
@@ -202,6 +202,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.3  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.2  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

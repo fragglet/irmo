@@ -39,7 +39,7 @@
 
 #include "netlib.h"
 
-int sockaddr_len(int domain)
+int irmo_sockaddr_len(int domain)
 {
         switch (domain) {
         case AF_INET:
@@ -53,13 +53,13 @@ int sockaddr_len(int domain)
         return 0;
 }
 
-guint sockaddr_in_hash(struct sockaddr_in *addr)
+static guint sockaddr_in_hash(struct sockaddr_in *addr)
 {
 	return addr->sin_addr.s_addr ^ addr->sin_port;
 }
 
-gint sockaddr_in_cmp(struct sockaddr_in *a,
-		     struct sockaddr_in *b)
+static gint sockaddr_in_cmp(struct sockaddr_in *a,
+			  struct sockaddr_in *b)
 {
 	return a->sin_addr.s_addr == b->sin_addr.s_addr
 	    && a->sin_port == b->sin_port;
@@ -67,15 +67,15 @@ gint sockaddr_in_cmp(struct sockaddr_in *a,
 
 #ifdef USE_IPV6
 
-guint sockaddr_in6_hash(struct sockaddr_in6 *addr)
+static guint sockaddr_in6_hash(struct sockaddr_in6 *addr)
 {
 	guint *a = addr->sin6_addr.in6_u.u6_addr32;
 	
 	return a[0] ^ a[1] ^ a[2] ^ a[3] ^ addr->sin6_port;
 }
 
-gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
-		      struct sockaddr_in6 *b)
+static gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
+			   struct sockaddr_in6 *b)
 {
 	guint *aa = a->sin6_addr.in6_u.u6_addr32;
 	guint *ba = b->sin6_addr.in6_u.u6_addr32;
@@ -87,7 +87,7 @@ gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
 
 #endif /* #ifdef USE_IPV6 */
 
-guint sockaddr_hash(struct sockaddr *addr)
+guint irmo_sockaddr_hash(struct sockaddr *addr)
 {
 	switch (addr->sa_family) {
 	case AF_INET:
@@ -101,7 +101,7 @@ guint sockaddr_hash(struct sockaddr *addr)
 	return 0;
 }
 
-gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
+gint irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 {
 	switch (a->sa_family) {
 	case AF_INET:
@@ -110,16 +110,16 @@ gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 #ifdef USE_IPV6
 	case AF_INET6:
 		return sockaddr_in6_cmp((struct sockaddr_in6 *) a,
-					(struct sockaddr_in6 *) b);
+				        (struct sockaddr_in6 *) b);
 #endif
 	}
 
 	return 0;
 }
 
-struct sockaddr *sockaddr_copy(struct sockaddr *addr)
+struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr)
 {
-	int len = sockaddr_len(addr->sa_family);
+	int len = irmo_sockaddr_len(addr->sa_family);
 	struct sockaddr *cp = malloc(len);
 
 	memcpy(cp, addr, len);
@@ -127,7 +127,7 @@ struct sockaddr *sockaddr_copy(struct sockaddr *addr)
 	return cp;
 }
 
-static struct sockaddr_in *sockaddr_in_for_name(gchar *name, int port)
+static struct sockaddr *sockaddr_in_for_name(gchar *name, int port)
 {
 	struct hostent *hp;
 	struct sockaddr_in *addr;
@@ -142,12 +142,12 @@ static struct sockaddr_in *sockaddr_in_for_name(gchar *name, int port)
 	addr->sin_port = htons(port);
 	memcpy(&addr->sin_addr, hp->h_addr, hp->h_length);
 	
-	return addr;
+	return (struct sockaddr *) addr;
 }
 
 #ifdef USE_IPV6
 
-static struct sockaddr_in6 *sockaddr_in6_for_name(gchar *name, int port)
+static struct sockaddr *sockaddr_in6_for_name(gchar *name, int port)
 {
 	struct hostent *hp;
 	struct addrinfo *info;
@@ -168,7 +168,7 @@ static struct sockaddr_in6 *sockaddr_in6_for_name(gchar *name, int port)
 
 		addr->sin6_port = htons(port);
 
-		return addr;
+		return (struct sockaddr *) addr;
 	}
 
 	return NULL;
@@ -176,15 +176,16 @@ static struct sockaddr_in6 *sockaddr_in6_for_name(gchar *name, int port)
 
 #endif
 
-struct sockaddr *sockaddr_for_name(IrmoSocketDomain domain, gchar *name, int port)
+struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain, 
+					gchar *name, int port)
 {
 	switch (domain) {
 	case IRMO_SOCKET_AUTO:
 	case IRMO_SOCKET_IPV4:
-		return (struct sockaddr *) sockaddr_in_for_name(name, port);
+		return sockaddr_in_for_name(name, port);
 #ifdef USE_IPV6
 	case IRMO_SOCKET_IPV6:
-		return (struct sockaddr *) sockaddr_in6_for_name(name, port);
+		return sockaddr_in6_for_name(name, port);
 #endif
 	}
 
@@ -241,6 +242,9 @@ void irmo_timeval_from_ms(int ms, struct timeval *time)
 }
 
 // $Log$
+// Revision 1.4  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.3  2003/08/26 14:57:31  fraggle
 // Remove AF_* BSD sockets dependency from Irmo API
 //

@@ -61,7 +61,7 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 			packet->len,
 			0,
 			dest,
-			sockaddr_len(dest->sa_family));
+			irmo_sockaddr_len(dest->sa_family));
 
 	if (result < 0) {
 		irmo_error_report("irmo_socket_sendpacket",
@@ -154,8 +154,8 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 	irmosock->domain = type;
 	irmosock->sock = sock;
 	irmosock->servers = g_hash_table_new(g_str_hash, g_str_equal);
-	irmosock->clients = g_hash_table_new((GHashFunc) sockaddr_hash,
-					     (GCompareFunc) sockaddr_cmp);
+	irmosock->clients = g_hash_table_new((GHashFunc) irmo_sockaddr_hash,
+					     (GCompareFunc) irmo_sockaddr_cmp);
 
 	return irmosock;
 }
@@ -220,7 +220,7 @@ IrmoSocket *irmo_socket_new(IrmoSocketDomain domain, int port)
 	
 	// try to bind to the port
 
-	addr_len = sockaddr_len(socket_type_to_domain(sock->domain));
+	addr_len = irmo_sockaddr_len(socket_type_to_domain(sock->domain));
 	addr = (struct sockaddr *) g_malloc0(addr_len);
 
 	switch (sock->domain) {
@@ -301,8 +301,8 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 	
 	// read packet data
 	
-	if (!packet_readi32(packet, &local_hash)
-	 || !packet_readi32(packet, &server_hash)) {
+	if (!irmo_packet_readi32(packet, &local_hash)
+	 || !irmo_packet_readi32(packet, &server_hash)) {
 		// no hashes - drop
 
 		return;
@@ -310,7 +310,7 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 
 	// read server vhost name
 	
-	s = packet_readstring(packet);
+	s = irmo_packet_readstring(packet);
 
 	if (s) {
 		server = g_hash_table_lookup(packet->sock->servers,
@@ -342,15 +342,16 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 		// are wrong)
 		// send a refusal
 
-		sendpacket = packet_new();
+		sendpacket = irmo_packet_new();
 
-		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
+		irmo_packet_writei16(sendpacket, 
+				     PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
 		irmo_socket_sendpacket(packet->sock,
 				       packet->src,
 				       sendpacket);
 		
-		packet_free(sendpacket);
+		irmo_packet_free(sendpacket);
 	} else {
 		// valid syn
 		
@@ -363,15 +364,16 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 		
 		// send a reply
 
-		sendpacket = packet_new();
+		sendpacket = irmo_packet_new();
 
-		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+		irmo_packet_writei16(sendpacket, 
+				     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
 		irmo_socket_sendpacket(packet->sock,
 				       packet->src,
 				       sendpacket);
 		
-		packet_free(sendpacket);
+		irmo_packet_free(sendpacket);
 	}
 }
 
@@ -418,15 +420,16 @@ G_INLINE_FUNC void socket_run_synack(IrmoPacket *packet)
 	// its connection.
 
 	if (packet->sock->type == SOCKET_CLIENT) {
-		IrmoPacket *sendpacket = packet_new();
+		IrmoPacket *sendpacket = irmo_packet_new();
 
-		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+		irmo_packet_writei16(sendpacket, 
+				     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
 		irmo_socket_sendpacket(packet->sock,
 				       packet->src,
 				       sendpacket);
 
-		packet_free(sendpacket);
+		irmo_packet_free(sendpacket);
 	}
 
 	// dont do this if we're the server, or we'll get stuck in
@@ -461,16 +464,16 @@ G_INLINE_FUNC void socket_run_synfin(IrmoPacket *packet)
 		
 		// send a syn/fin/ack to reply
 
-		sendpacket = packet_new();
-		packet_writei16(sendpacket,
-				PACKET_FLAG_SYN | PACKET_FLAG_FIN
-				| PACKET_FLAG_ACK);
+		sendpacket = irmo_packet_new();
+		irmo_packet_writei16(sendpacket,
+				     PACKET_FLAG_SYN | PACKET_FLAG_FIN
+						     | PACKET_FLAG_ACK);
 
 		irmo_socket_sendpacket(client->server->socket,
 				       client->addr,
 				       sendpacket);
 
-		packet_free(sendpacket);
+		irmo_packet_free(sendpacket);
 	}
 }
 
@@ -497,7 +500,7 @@ G_INLINE_FUNC void socket_run_packet(IrmoPacket *packet)
 
 	// read packet header
 	
-	if (!packet_readi16(packet, &flags)) {
+	if (!irmo_packet_readi16(packet, &flags)) {
 		// cant read header
 		// drop packet
 		
@@ -542,7 +545,7 @@ G_INLINE_FUNC void socket_run_packet(IrmoPacket *packet)
 	
 	// pass it to the protocol parsing code
 	
-	proto_parse_packet(packet);
+	irmo_proto_parse_packet(packet);
 }
 
 static gboolean socket_run_client(gpointer key, IrmoClient *client,
@@ -582,7 +585,7 @@ void irmo_socket_run(IrmoSocket *sock)
 
 	g_return_if_fail(sock != NULL);
 	
-	addr_len = sockaddr_len(socket_type_to_domain(sock->domain));
+	addr_len = irmo_sockaddr_len(socket_type_to_domain(sock->domain));
 	addr = malloc(addr_len);
 	
 	while (1) {
@@ -661,6 +664,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.11  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.10  2003/09/01 18:59:27  fraggle
 // Add a timeout parameter for blocking on sockets. Use block function
 // internally.

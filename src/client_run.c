@@ -218,7 +218,7 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 			break;
 		}
 
-		sendatom_free(atom);
+		irmo_sendatom_free(atom);
 	}
 	
 	// move recvwindow along
@@ -236,6 +236,9 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.7  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.6  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

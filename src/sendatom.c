@@ -30,7 +30,7 @@
 #include "object.h"
 #include "sendatom.h"
 
-G_INLINE_FUNC void sendatom_change_free_data(IrmoSendAtom *atom)
+G_INLINE_FUNC void irmo_sendatom_change_free_data(IrmoSendAtom *atom)
 {
 	int i;
 
@@ -55,7 +55,7 @@ G_INLINE_FUNC void sendatom_change_free_data(IrmoSendAtom *atom)
 	free(atom->data.change.changed);
 }
 
-G_INLINE_FUNC void sendatom_method_free_data(IrmoSendAtom *atom)
+G_INLINE_FUNC void irmo_sendatom_method_free_data(IrmoSendAtom *atom)
 {
 	IrmoMethod *method = atom->data.method.spec;
 	int i;
@@ -68,25 +68,25 @@ G_INLINE_FUNC void sendatom_method_free_data(IrmoSendAtom *atom)
 	free(atom->data.method.args);
 }
 
-void sendatom_free(IrmoSendAtom *atom)
+void irmo_sendatom_free(IrmoSendAtom *atom)
 {
 	if (atom->type == ATOM_CHANGE)
-		sendatom_change_free_data(atom);
+		irmo_sendatom_change_free_data(atom);
 	if (atom->type == ATOM_METHOD)
-		sendatom_method_free_data(atom);
+		irmo_sendatom_method_free_data(atom);
 	
 	free(atom);
 }
 
-static void sendatom_nullify(IrmoSendAtom *atom)
+static void irmo_sendatom_nullify(IrmoSendAtom *atom)
 {
 	if (atom->type == ATOM_CHANGE)
-		sendatom_change_free_data(atom);
+		irmo_sendatom_change_free_data(atom);
 
 	atom->type = ATOM_NULL;
 }
 
-static int sendatom_change_len(IrmoSendAtom *atom)
+static int irmo_sendatom_change_len(IrmoSendAtom *atom)
 {
 	IrmoObject *obj = atom->data.change.object;
 	IrmoClass *spec = obj->objclass;
@@ -182,7 +182,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 			// with a NULL
 
 			if (atom->data.change.nchanged <= 0) {
-				sendatom_nullify(atom);
+				irmo_sendatom_nullify(atom);
 			}
 			
 			// there can only be one change atom for a
@@ -222,7 +222,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 	
 	// need to recalculate atom size
 
-	atom->len = sendatom_change_len(atom);
+	atom->len = irmo_sendatom_change_len(atom);
 }
 
 void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
@@ -238,7 +238,7 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	// convert to a ATOM_NULL atom
 	
 	if (atom) {
-		sendatom_nullify(atom);
+		irmo_sendatom_nullify(atom);
 		g_hash_table_remove(client->sendq_hashtable,
 				    (gpointer) object->id);
 	}
@@ -248,7 +248,7 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	for (i=0; i<client->sendwindow_size; ++i) {
 		if (client->sendwindow[i]->type == ATOM_CHANGE
 		    && object == client->sendwindow[i]->data.change.object) {
-			sendatom_nullify(client->sendwindow[i]);
+			irmo_sendatom_nullify(client->sendwindow[i]);
 		}
 	}
 	
@@ -352,7 +352,7 @@ IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 		if (atom->type != ATOM_NULL)
 			break;
 		
-		sendatom_free(atom);
+		irmo_sendatom_free(atom);
 	} 
 
 	// if a change, remove from the change hash
@@ -404,6 +404,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.7  2003/09/03 15:28:30  fraggle
+// Add irmo_ prefix to all internal global functions (namespacing)
+//
 // Revision 1.6  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
