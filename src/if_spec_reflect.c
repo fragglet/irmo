@@ -155,7 +155,7 @@ gchar *irmo_class_var_get_name(IrmoClassVar *var)
 	return var->name;
 }
 
-IrmoVarType irmo_class_var_get_type(IrmoClassVar *var)
+IrmoValueType irmo_class_var_get_type(IrmoClassVar *var)
 {
 	g_return_val_if_fail(var != NULL, IRMO_TYPE_UNKNOWN);
 
@@ -240,7 +240,7 @@ gchar *irmo_method_arg_get_name(IrmoMethodArg *arg)
 	return arg->name;
 }
 
-IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg)
+IrmoValueType irmo_method_arg_get_type(IrmoMethodArg *arg)
 {
 	g_return_val_if_fail(arg != NULL, IRMO_TYPE_UNKNOWN);
 
@@ -262,6 +262,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.8  2003/09/12 11:30:25  fraggle
+// Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
+//
 // Revision 1.7  2003/09/03 15:46:40  fraggle
 // In reflection functions, do not include variables inherited from
 // parent classes.

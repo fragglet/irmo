@@ -180,7 +180,7 @@ G_INLINE_FUNC int is_type_token(int i)
 	    || i == TOKEN_INT32 || i == TOKEN_STRING;
 }
 
-G_INLINE_FUNC IrmoVarType type_token_to_spec(int i)
+G_INLINE_FUNC IrmoValueType type_token_to_spec(int i)
 {
 	switch(i) {
 		case TOKEN_INT8: return IRMO_TYPE_INT8;
@@ -200,7 +200,7 @@ static void class_var_free(IrmoClassVar *var)
 
 static IrmoClassVar *eat_class_var(IrmoClass *klass)
 {
-	IrmoVarType vartype;
+	IrmoValueType vartype;
 	token_t token;
 	IrmoClassVar *var;
 
@@ -381,7 +381,7 @@ static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 {
 	token_t token = yylex();
 	IrmoMethodArg *arg;
-	IrmoVarType argtype;
+	IrmoValueType argtype;
 
 	if (token == TOKEN_RPAREN)
 		return NULL;
@@ -650,6 +650,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.11  2003/09/12 11:30:25  fraggle
+// Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
+//
 // Revision 1.10  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

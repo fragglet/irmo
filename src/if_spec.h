@@ -44,7 +44,7 @@ struct _IrmoMethodArg {
 	IrmoMethod *parent;
 
 	int index;
-	IrmoVarType type;
+	IrmoValueType type;
 	char *name;
 };
 
@@ -68,7 +68,7 @@ struct _IrmoClassVar {
 	IrmoClass *parent;
 
 	int index;                      // index in variable list
-	IrmoVarType type;
+	IrmoValueType type;
 	char *name;
 };
 
@@ -122,6 +122,9 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
+// Revision 1.6  2003/09/12 11:30:25  fraggle
+// Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
+//
 // Revision 1.5  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

@@ -29,7 +29,7 @@
 #include "packet.h"
 
 G_INLINE_FUNC gboolean proto_verify_field(IrmoPacket *packet,
-					  IrmoVarType type)
+					  IrmoValueType type)
 {
 	guint8 i8;
 	guint16 i16;
@@ -282,6 +282,9 @@ gboolean irmo_proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.7  2003/09/12 11:30:26  fraggle
+// Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
+//
 // Revision 1.6  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

@@ -44,7 +44,7 @@ typedef enum {
 	IRMO_TYPE_INT32,
 	IRMO_TYPE_STRING,
 	IRMO_NUM_TYPES,
-} IrmoVarType;
+} IrmoValueType;
 
 /*!
  * \brief An object representing a class in an interface
@@ -239,7 +239,7 @@ gchar *irmo_class_var_get_name(IrmoClassVar *var);
  * \brief Get the type of a \ref IrmoClassVar object 
  */
 
-IrmoVarType irmo_class_var_get_type(IrmoClassVar *var);
+IrmoValueType irmo_class_var_get_type(IrmoClassVar *var);
 
 /*!
  * \brief Add a reference to an \ref IrmoClassVar object
@@ -311,7 +311,7 @@ gchar *irmo_method_arg_get_name(IrmoMethodArg *arg);
  * \brief Get the type of a method argument
  */
 
-IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg);
+IrmoValueType irmo_method_arg_get_type(IrmoMethodArg *arg);
 
 /*!
  * \brief Add a reference to an \ref IrmoMethodArg object
@@ -330,6 +330,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.11  2003/09/12 11:30:26  fraggle
+// Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
+//
 // Revision 1.10  2003/09/03 15:46:40  fraggle
 // In reflection functions, do not include variables inherited from
 // parent classes.

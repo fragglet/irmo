@@ -67,7 +67,7 @@ G_INLINE_FUNC int get_stream_position(int current, int low)
 
 G_INLINE_FUNC void proto_parse_field(IrmoPacket *packet,
 				     IrmoValue *value,
-				     IrmoVarType type)
+				     IrmoValueType type)
 {
 	guint8 i8;
 	guint16 i16;
@@ -444,6 +444,9 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.9  2003/09/12 11:30:26  fraggle
+// Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
+//
 // Revision 1.8  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //
