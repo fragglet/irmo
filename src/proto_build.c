@@ -162,7 +162,7 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 		// the starting one: the first one is implied. after that
 		// we can specify up to 31 of the same type that follow
 		
-		for (n=1; i+n<=end && n<=32; ++n)
+		for (n=1; i+n<=end && n<32; ++n)
 			if (client->sendwindow[i+n]->type
 			 != client->sendwindow[i]->type)
 				break;
@@ -351,6 +351,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/03/16 01:54:24  sdh300
+// Method calls over network protocol
+//
 // Revision 1.8  2003/03/12 19:02:26  sdh300
 // Comment out debug message
 //
