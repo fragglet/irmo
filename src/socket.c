@@ -320,7 +320,8 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 			// raise callback functions for new client
 
-			irmo_server_raise_connect(server, client);
+			irmo_server_raise_connect(packet->client->server, 
+						  packet->client);
 		}
 
 		// if we are serving a universe to the client,
@@ -493,6 +494,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.30  2003/03/07 14:31:19  sdh300
+// Callback functions for watching new client connects
+//
 // Revision 1.29  2003/03/07 12:31:50  sdh300
 // Add protocol.h
 //
