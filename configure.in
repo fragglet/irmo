@@ -42,6 +42,7 @@ fi
 
 AC_OUTPUT([
 	Makefile
+	doc/Makefile
 	src/Makefile
 	src/public/Makefile
 	irmo.pc
