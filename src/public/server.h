@@ -17,8 +17,6 @@ typedef struct _IrmoServer IrmoServer;
 #include "socket.h"
 #include "universe.h"
 
-typedef void (*IrmoClientCallback) (IrmoClient *client, gpointer user_data);
-
 /*!
  * \brief Create a new server
  *
@@ -97,6 +95,9 @@ void irmo_server_unref(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/07 14:31:23  sdh300
+// Callback functions for watching new client connects
+//
 // Revision 1.5  2003/03/07 12:17:22  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

@@ -1,6 +1,8 @@
 #ifndef IRMO_CLIENT_H
 #define IRMO_CLIENT_H
 
+#include <glib.h>
+
 /*!
  * \addtogroup client
  * \{
@@ -13,6 +15,8 @@
  */
 
 typedef struct _IrmoClient IrmoClient;
+
+typedef void (*IrmoClientCallback) (IrmoClient *client, gpointer user_data);
 
 #include "server.h"
 #include "socket.h"
@@ -67,11 +71,40 @@ void irmo_client_disconnect(IrmoClient *client);
 
 IrmoUniverse *irmo_client_get_universe(IrmoClient *client);
 
+/*!
+ * \brief Watch for client disconnection
+ *
+ * Set a watch on a client. When that client disconnects, a
+ * \ref IrmoClientCallback callback function is invoked.
+ *
+ * \param client    The client to watch
+ * \param func      The callback function to invoke
+ * \param user_data Extra data to pass to the callback function
+ * \sa irmo_client_unwatch_disconnect
+ */
+
+void irmo_client_watch_disconnect(IrmoClient *client,
+				  IrmoClientCallback func, gpointer user_data);
+
+/*!
+ * \brief Unset a watch set with \ref irmo_client_watch_disconnect
+ *
+ * Unset a disconnect watch. All parameters must be the same as those
+ * used to initially set the watch.
+ */
+
+void irmo_client_unwatch_disconnect(IrmoClient *client,
+				    IrmoClientCallback func,
+				    gpointer user_data);
+
 //! \}
 
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/07 12:17:21  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.4  2003/03/07 10:48:07  sdh300
 // Add new sections to documentation
 //
