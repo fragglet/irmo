@@ -30,10 +30,25 @@ static inline void sendatom_change_free_data(IrmoSendAtom *atom)
 	free(atom->data.change.changed);
 }
 
+static inline void sendatom_method_free_data(IrmoSendAtom *atom)
+{
+	MethodSpec *method = atom->data.method.spec;
+	int i;
+
+	for (i=0; i<method->narguments; ++i) {
+		if (method->arguments[i]->type == TYPE_STRING)
+			free(atom->data.method.args[i].s);
+	}
+
+	free(atom->data.method.args);
+}
+
 void sendatom_free(IrmoSendAtom *atom)
 {
 	if (atom->type == ATOM_CHANGE)
 		sendatom_change_free_data(atom);
+	if (atom->type == ATOM_METHOD)
+		sendatom_method_free_data(atom);
 	
 	free(atom);
 }
@@ -183,6 +198,60 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	g_queue_push_tail(client->sendq, atom);
 }
 
+void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
+{
+	MethodSpec *method = data->spec;
+	IrmoSendAtom *atom;
+	int i;
+	
+	// create a new method atom
+	
+	atom = g_new0(IrmoSendAtom, 1);
+	atom->type = ATOM_METHOD;
+	atom->data.method.spec = data->spec;
+
+	// copy arguments
+
+	atom->data.method.args = g_new0(IrmoVariable, method->narguments);
+	memcpy(atom->data.method.args,
+	       data->args,
+	       sizeof(IrmoVariable) * method->narguments);
+
+	// find length of atom,
+
+	atom->len = 0;
+
+	// method number
+	
+	atom->len += 1;
+
+	// find length of arguments
+	// copy strings while we are here
+	
+	for (i=0; i<method->narguments; ++i) {
+		switch (method->arguments[i]->type) {
+		case TYPE_INT8:
+			atom->len += 1;
+			break;
+		case TYPE_INT16:
+			atom->len += 2;
+			break;
+		case TYPE_INT32:
+			atom->len += 4;
+			break;
+		case TYPE_STRING:
+			atom->data.method.args[i].s
+				= strdup(atom->data.method.args[i].s);
+			atom->len += strlen(atom->data.method.args[i].s) + 1;
+			break;
+		}
+	}
+
+	// add to queue
+
+	g_queue_push_tail(client->sendq, atom);
+}
+
 IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 {
 	IrmoSendAtom *atom;
@@ -252,6 +321,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/12 18:59:26  sdh300
+// Remove/comment out some debug messages
+//
 // Revision 1.11  2003/03/07 12:17:17  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

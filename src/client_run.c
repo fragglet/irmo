@@ -118,6 +118,16 @@ static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
 	irmo_object_internal_destroy(obj, TRUE, TRUE);
 }
 
+static void client_run_method(IrmoClient *client, IrmoSendAtom *atom)
+{
+	if (client->server->socket->type == SOCKET_SERVER)
+		atom->data.method.src = client;
+	else
+		atom->data.method.src = NULL;
+	
+	irmo_method_invoke(client->server->universe, &atom->data.method);
+}
+
 void irmo_client_run_recvwindow(IrmoClient *client)
 {
 	int i;
@@ -147,7 +157,7 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 			client_run_destroy(client, atom);
 			break;
 		case ATOM_METHOD:
-			// todo			
+			client_run_method(client, atom);
 			break;
 		}
 
@@ -169,6 +179,9 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/12 18:59:25  sdh300
+// Remove/comment out some debug messages
+//
 // Revision 1.3  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

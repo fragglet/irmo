@@ -15,6 +15,7 @@ typedef enum {
 
 #include "client.h"
 #include "if_spec.h"
+#include "method.h"
 #include "object.h"
 
 // queue object
@@ -48,9 +49,7 @@ struct _IrmoSendAtom {
 		struct {
 			irmo_objid_t id;
 		} destroy;
-		struct {
-			// will come later
-		} method;
+		IrmoMethodData method;
 	} data;
 };
 
@@ -62,7 +61,8 @@ void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object);
 void irmo_client_sendq_add_change(IrmoClient *client,
 			          IrmoObject *object, int variable);
 void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
-       
+void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data);
+
 IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client);
 
 // send entire universe state
@@ -72,6 +72,9 @@ void irmo_client_sendq_add_state(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/03/07 12:17:17  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.8  2003/03/06 21:29:05  sdh300
 // On connect, send the entire universe state to the client
 //

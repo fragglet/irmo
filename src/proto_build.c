@@ -71,6 +71,36 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	}
 }
 
+static void proto_add_method_atom(IrmoPacket *packet, IrmoSendAtom *atom)
+{
+	MethodSpec *method = atom->data.method.spec;
+	IrmoVariable *args = atom->data.method.args;
+	int i;
+	
+	// send method index
+	
+	packet_writei8(packet, method->index);
+
+	// send arguments
+
+	for (i=0; i<method->narguments; ++i) {
+		switch (method->arguments[i]->type) {
+		case TYPE_INT8:
+			packet_writei8(packet, args[i].i8);
+			break;
+		case TYPE_INT16:
+			packet_writei16(packet, args[i].i16);
+			break;
+		case TYPE_INT32:
+			packet_writei16(packet, args[i].i32);
+			break;
+		case TYPE_STRING:
+			packet_writestring(packet, args[i].s);
+			break;
+		}
+	}
+}
+
 static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 {
 	switch (atom->type) {
@@ -85,6 +115,7 @@ static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 		packet_writei16(packet, atom->data.destroy.id);
 		break;
 	case ATOM_METHOD:
+		proto_add_method_atom(packet, atom);
 		break;
 	case ATOM_NULL:
 		break;
@@ -320,6 +351,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/12 19:02:26  sdh300
+// Comment out debug message
+//
 // Revision 1.7  2003/03/07 12:31:51  sdh300
 // Add protocol.h
 //

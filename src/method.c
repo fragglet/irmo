@@ -57,24 +57,25 @@ static void method_invoke_foreach(IrmoCallbackFuncData *data,
 	func(method_data, data->user_data);
 }
 
-void irmo_universe_method_invoke(IrmoUniverse *universe,
-				 MethodSpec *method,
-				 IrmoVariable *args,
-				 IrmoClient *client)
+void irmo_method_invoke(IrmoUniverse *universe, IrmoMethodData *data)
 {
-	IrmoMethodData method_data = {
-		spec: method,
-		src: client,
-		args: args,
-	};
+	// send to source
 
-	g_slist_foreach(universe->method_callbacks[method->index],
+	if (universe->remote) {
+		irmo_client_sendq_add_method(universe->remote_client,
+					     data);
+	}
+	
+	// invoke callback functions
+	
+	g_slist_foreach(universe->method_callbacks[data->spec->index],
 			(GFunc) method_invoke_foreach,
-			&method_data);
+			data);
 }
 
 void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 {
+	IrmoMethodData method_data;
 	MethodSpec *spec;
 	IrmoVariable *args;
 	va_list arglist;
@@ -114,9 +115,13 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 
 	va_end(arglist);
 
-	irmo_universe_method_invoke(universe, spec, args, NULL);
+	method_data.spec = spec;
+	method_data.args = args;
+	method_data.src = NULL;
 
-	free(arglist);
+	irmo_method_invoke(universe, &method_data);
+
+	free(args);
 }
 
 IrmoClient *irmo_method_get_source(IrmoMethodData *data)
@@ -180,6 +185,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/16 00:44:19  sdh300
+// Pass correct argument to callback functions
+//
 // Revision 1.1  2003/03/15 02:21:16  sdh300
 // Initial method code
 //

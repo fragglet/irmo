@@ -3,6 +3,25 @@
 
 #include "packet.h"
 
+static inline gboolean proto_verify_field(IrmoPacket *packet,
+					  TypeSpec type)
+{
+	guint8 i8;
+	guint16 i16;
+	guint32 i32;
+	
+	switch (type) {
+	case TYPE_INT8:
+		return packet_readi8(packet, &i8);
+	case TYPE_INT16:
+		return packet_readi16(packet, &i16);
+	case TYPE_INT32:
+		return packet_readi32(packet, &i32);
+	case TYPE_STRING:
+		return packet_readstring(packet) != NULL;
+	}
+}
+
 static gboolean proto_verify_change_atom(IrmoClient *client,
 					 IrmoPacket *packet)
 {
@@ -47,27 +66,17 @@ static gboolean proto_verify_change_atom(IrmoClient *client,
 	}
 
 	// check new variable values
-	
-	for (i=0; result && i<objclass->nvariables; ++i) {
-		if (!changed[i])
-			continue;
-		switch (objclass->variables[i]->type) {
-		case TYPE_INT8:
-			if (!packet_readi8(packet, &i8))
+
+	if (result) {
+		for (i=0; i<objclass->nvariables; ++i) {
+			if (!changed[i])
+				continue;
+			
+			if (!proto_verify_field(packet,
+						objclass->variables[i]->type)) {
 				result = FALSE;
-			break;
-		case TYPE_INT16:
-			if (!packet_readi16(packet, &i16))
-				result = FALSE;
-			break;
-		case TYPE_INT32:
-			if (!packet_readi32(packet, &i32))
-				result = FALSE;
-			break;
-		case TYPE_STRING:
-			if (!packet_readstring(packet))
-				result = FALSE;
-			break;
+				break;
+			}
 		}
 	}
 	
@@ -76,13 +85,41 @@ static gboolean proto_verify_change_atom(IrmoClient *client,
 	return result;
 }
 					 
+static gboolean proto_verify_method_atom(IrmoClient *client,
+					 IrmoPacket *packet)
+{
+	MethodSpec *method;
+	guint8 i8;
+	int i;
+
+	// read method index
+
+	if (!packet_readi8(packet, &i8))
+		return FALSE;
+
+	// sanity check method index
+
+	if (i8 >= client->server->universe->spec->nmethods)
+		return FALSE;
+
+	method = client->server->universe->spec->methods[i8];
+
+	// read arguments
+
+	for (i=0; i<method->narguments; ++i) {
+		if (!proto_verify_field(packet, method->arguments[i]->type))
+			return FALSE;
+	}
+
+	return TRUE;
+}
 
 static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 				  IrmoSendAtomType type)
 {
 	guint8 i8;
 	guint16 i16;
-	
+
 	switch (type) {
 	case ATOM_NULL:
 		break;
@@ -106,6 +143,8 @@ static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 
 	case ATOM_CHANGE:
 		return proto_verify_change_atom(client, packet);
+	case ATOM_METHOD:
+		return proto_verify_method_atom(client, packet);
 	case ATOM_DESTROY:
 
 		// object id
@@ -143,7 +182,8 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 		natoms = (i8 & 0x1f) + 1;
 
 		if (atomtype != ATOM_NULL && atomtype != ATOM_NEW
-		    && atomtype != ATOM_CHANGE && atomtype != ATOM_DESTROY) {
+		    && atomtype != ATOM_CHANGE && atomtype != ATOM_DESTROY
+		    && atomtype != ATOM_METHOD) {
 			//printf("invalid atom type (%i)\n", atomtype);
 			return FALSE;
 		}
@@ -192,6 +232,9 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/14 18:30:24  sdh300
+// Fix verification
+//
 // Revision 1.1  2003/03/14 01:07:23  sdh300
 // Initial packet verification code
 //

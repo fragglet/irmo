@@ -34,6 +34,27 @@ static inline int get_stream_position(int current, int low)
 	return newpos;
 }
 
+static inline void proto_parse_field(IrmoPacket *packet,
+				     IrmoVariable *value,
+				     TypeSpec type)
+{
+	switch (type) {
+	case TYPE_INT8:
+		packet_readi8(packet, &value->i8);
+		break;
+	case TYPE_INT16:
+		packet_readi16(packet, &value->i16);
+		break;
+	case TYPE_INT32:
+		packet_readi32(packet, &value->i32);
+		break;
+	case TYPE_STRING:
+		value->s = strdup(packet_readstring(packet));
+		break;
+	}
+}
+				     
+
 static inline void proto_parse_change_atom(IrmoClient *client,
 					   IrmoPacket *packet,
 					   IrmoSendAtom *atom)
@@ -83,22 +104,36 @@ static inline void proto_parse_change_atom(IrmoClient *client,
 	for (i=0; i<objclass->nvariables; ++i) {
 		if (!changed[i])
 			continue;
-		switch (objclass->variables[i]->type) {
-		case TYPE_INT8:
-			packet_readi8(packet, &newvalues[i].i8);
-			break;
-		case TYPE_INT16:
-			packet_readi16(packet, &newvalues[i].i16);
-			break;
-		case TYPE_INT32:
-			packet_readi32(packet, &newvalues[i].i32);
-			break;
-		case TYPE_STRING:
-			newvalues[i].s = strdup(packet_readstring(packet));
-			break;
-		}
+
+		proto_parse_field(packet, &newvalues[i],
+				  objclass->variables[i]->type);
 	}
 
+}
+
+static IrmoSendAtom *proto_parse_method_atom(IrmoClient *client,
+					     IrmoPacket *packet,
+					     IrmoSendAtom *atom)
+{
+	MethodSpec *method;
+	guint8 i8;
+	int i;
+	
+	// read method number
+	
+	packet_readi8(packet, &i8);
+	method = client->server->universe->spec->methods[i8];
+	
+	atom->data.method.spec = method;
+
+	// read arguments
+	
+	atom->data.method.args = g_new0(IrmoVariable, method->narguments);
+
+	for (i=0; i<method->narguments; ++i) {
+		proto_parse_field(packet, &atom->data.method.args[i],
+				  method->arguments[i]->type);
+	}
 }
 
 static IrmoSendAtom *proto_parse_atom(IrmoClient *client, IrmoPacket *packet,
@@ -135,6 +170,9 @@ static IrmoSendAtom *proto_parse_atom(IrmoClient *client, IrmoPacket *packet,
 		packet_readi16(packet, &i16);
 		atom->data.destroy.id = i16;
 
+		break;
+	case ATOM_METHOD:
+		proto_parse_method_atom(client, packet, atom);
 		break;
 	default:
 		atom->type = ATOM_NULL;
@@ -310,6 +348,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/03/14 01:07:23  sdh300
+// Initial packet verification code
+//
 // Revision 1.8  2003/03/12 18:59:26  sdh300
 // Remove/comment out some debug messages
 //
