@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <arpa/inet.h>
 #include <time.h>
 
 #include "client.h"
@@ -339,7 +340,7 @@ const char *irmo_client_get_addr(IrmoClient *client)
 	switch (client->addr->sa_family) {
 	case AF_INET: {
 		struct sockaddr_in *addr = (struct sockaddr_in *) client->addr;
-		return inet_ntoa(addr->sin_addr.s_addr);
+		return inet_ntoa(addr->sin_addr);
 	}
 #ifdef USE_IPV6
 	case AF_INET6: {
@@ -350,6 +351,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.5  2003/08/21 15:11:53  fraggle
+// Fix compile errors
+//
 // Revision 1.4  2003/08/16 18:17:39  fraggle
 // Add missing USE_IPV6 #ifdef
 //
