@@ -30,6 +30,12 @@ void my_destroy_callback_2(IrmoObject *object, gpointer user_data)
 	exit(-1);
 }
 
+void my_iterator_callback(IrmoObject *object, gpointer user_data)
+{
+	printf("iterator function invoked!\n");
+	printf("this is object number: %i\n", object->id);
+}
+
 int main(int argc, char *argv[])
 {
 	InterfaceSpec *spec;
@@ -161,6 +167,16 @@ int main(int argc, char *argv[])
 
 	object_get_string(object, "my_int");
 	
+	printf("trying to iterate over objects of class my_class\n");
+
+	universe_foreach_object(universe, "my_class",
+				my_iterator_callback, NULL);
+
+	printf("trying to iterate over all objects\n");
+
+	universe_foreach_object(universe, NULL,
+				my_iterator_callback, NULL);
+	
 	printf("destroying object\n");
 
 	object_destroy(object);
@@ -174,6 +190,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2002/11/12 23:13:05  sdh300
+// add some clarity
+//
 // Revision 1.15  2002/11/12 23:04:31  sdh300
 // callback removal, and code cleanup/generalisation
 //

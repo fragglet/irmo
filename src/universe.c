@@ -83,7 +83,59 @@ IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
 	return object;
 }
 
+struct universe_foreach_data {
+	ClassSpec *spec;
+	IrmoObjCallback func;
+	gpointer user_data;
+};
+
+static void universe_foreach_foreach(gint key,
+				     IrmoObject *object,
+				     struct universe_foreach_data *data)
+{
+	// only call callback if this is of the particular class
+	// or if no class was specified
+	
+	if (!data->spec || object->objclass == data->spec) {
+		data->func(object, data->user_data);
+	}
+}
+					    
+
+void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
+			     IrmoObjCallback func, gpointer user_data)
+{
+	ClassSpec *spec;
+	struct universe_foreach_data data = {
+		func: func,
+		user_data: user_data,
+	};
+
+	if (classname) {
+		spec = g_hash_table_lookup(universe->spec->class_hash,
+					   classname);
+
+		if (!spec) {
+			fprintf(stderr,
+				"universe_foreach_object: unknown class '%s'\n",
+				classname);
+			return;
+		}
+	} else {
+		spec = NULL;
+	}
+
+	data.spec = spec;
+	
+	g_hash_table_foreach(universe->objects,
+			     (GHFunc) universe_foreach_foreach,
+			     &data);			     
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/10/29 16:09:11  sdh300
+// initial callback code
+//
 // Revision 1.6  2002/10/21 15:09:01  sdh300
 // object destruction
 //

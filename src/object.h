@@ -8,6 +8,10 @@
 typedef struct _IrmoObject IrmoObject;
 typedef union _IrmoVariable IrmoVariable;
 
+typedef void (*IrmoVarCallback) (IrmoObject *object, gchar *variable,
+				 gpointer user_data);
+typedef void (*IrmoObjCallback) (IrmoObject *object, gpointer user_data);
+
 #include "universe.h"
 
 union _IrmoVariable {
@@ -61,6 +65,9 @@ void __object_destroy(IrmoObject *object);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2002/11/13 13:57:42  sdh300
+// object_get_class to get the class of an object
+//
 // Revision 1.7  2002/11/13 13:56:24  sdh300
 // add some documentation
 //

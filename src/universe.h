@@ -34,6 +34,11 @@ IrmoUniverse *universe_new(InterfaceSpec *spec);
 IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
 				       irmo_objid_t id);
 
+// iterate over objects in the universe
+
+void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
+			     IrmoObjCallback func, gpointer user_data);
+
 // add reference
 
 void universe_ref(IrmoUniverse *universe);
@@ -45,6 +50,9 @@ void universe_unref(IrmoUniverse *universe);
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/11/13 13:56:23  sdh300
+// add some documentation
+//
 // Revision 1.6  2002/10/29 16:09:11  sdh300
 // initial callback code
 //

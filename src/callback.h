@@ -11,10 +11,6 @@ typedef struct _IrmoCallbackFuncData IrmoCallbackFuncData;
 #include "if_spec.h"
 #include "object.h"
 
-typedef void (*IrmoVarCallback) (IrmoObject *object, gchar *variable,
-				 gpointer user_data);
-typedef void (*IrmoObjCallback) (IrmoObject *object, gpointer user_data);
-
 struct _IrmoCallbackFuncData {
 	union {
 		IrmoVarCallback var;
@@ -92,6 +88,9 @@ void object_unwatch_destroy(IrmoObject *object,
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2002/11/12 23:04:31  sdh300
+// callback removal, and code cleanup/generalisation
+//
 // Revision 1.8  2002/11/05 22:33:26  sdh300
 // more name changes
 //
