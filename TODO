@@ -2,4 +2,6 @@
 	* Get it compiling on Windows
 	* Priority Queueing for sendatoms
 	* GObject-ify?
+	* File transfers
+	* Guile binding
 
