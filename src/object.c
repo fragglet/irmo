@@ -76,6 +76,7 @@ IrmoObject *object_internal_new(IrmoUniverse *universe,
 				irmo_objid_t id)
 {
 	IrmoObject *object;
+	int i;
 	
 	// make object
 	
@@ -89,6 +90,14 @@ IrmoObject *object_internal_new(IrmoUniverse *universe,
 	// member variables:
 
 	object->variables = g_new0(IrmoVariable, objclass->nvariables);
+
+	// int variables will be initialised to 0 by g_new0
+	// string values must be initialised to the empty string ("")
+	
+	for (i=0; i<objclass->nvariables; ++i)
+		if (objclass->variables[i]->type == TYPE_STRING)
+			object->variables[i].s = g_strdup("");
+
 	
 	// add to universe
 
@@ -284,7 +293,8 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 	ClassVarSpec *spec;
 
 	g_return_if_fail(object->universe->remote == FALSE);
-		
+	g_return_if_fail(value != NULL);
+	
 	spec = g_hash_table_lookup(object->objclass->variable_hash,
 				   variable);
 
@@ -306,8 +316,7 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 		return;
 	}
 
-	if (object->variables[spec->index].s)
-		free(object->variables[spec->index].s);
+	free(object->variables[spec->index].s);
 
 	object->variables[spec->index].s = strdup(value);
 
@@ -380,6 +389,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2003/03/06 20:53:16  sdh300
+// Checking of remote flag for universe objects
+//
 // Revision 1.17  2003/03/06 19:21:25  sdh300
 // Split off some of the constructor/destructor/change code into
 // seperate functions that can be reused elsewhere
