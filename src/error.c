@@ -46,12 +46,15 @@ void irmo_error_report(char *function_name, char *format, ...)
 	fprintf(stderr, "%s: %s\n", function_name, last_error);
 }
 
-char *irmo_error_get()
+char *irmo_error_get(void)
 {
 	return last_error;
 }
 
 // $Log$
+// Revision 1.2  2003/08/13 18:32:40  fraggle
+// Convert () in function definitions to the more explicit (void)
+//
 // Revision 1.1  2003/07/24 01:32:08  fraggle
 // Add error reporting modules
 //

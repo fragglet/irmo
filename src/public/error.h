@@ -41,13 +41,16 @@
  *
  */
 
-char *irmo_error_get();
+char *irmo_error_get(void);
 
 //! \}
 
 #endif /* #ifndef IRMO_ERROR_H */
 
 // $Log$
+// Revision 1.2  2003/08/13 18:32:40  fraggle
+// Convert () in function definitions to the more explicit (void)
+//
 // Revision 1.1  2003/07/24 01:32:08  fraggle
 // Add error reporting modules
 //
