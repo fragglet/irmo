@@ -89,7 +89,10 @@ gint irmo_class_num_variables(IrmoClass *klass)
 {
 	g_return_val_if_fail(klass != NULL, -1);
 
-	return klass->nvariables;
+	if (klass->parent_class)
+		return klass->nvariables - klass->parent_class->nvariables;
+	else
+		return klass->nvariables;
 }
 
 IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name)
@@ -105,11 +108,17 @@ void irmo_class_foreach_variable(IrmoClass *klass,
 				 gpointer user_data)
 {
 	int i;
+	int start;
 
 	g_return_if_fail(klass != NULL);
 	g_return_if_fail(func != NULL);
 
-	for (i=0; i<klass->nvariables; ++i)
+	if (klass->parent_class)
+		start = klass->parent_class->nvariables;
+	else
+		start = 0;
+
+	for (i=start; i<klass->nvariables; ++i)
 		func(klass->variables[i], user_data);
 }
 
@@ -253,6 +262,10 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.7  2003/09/03 15:46:40  fraggle
+// In reflection functions, do not include variables inherited from
+// parent classes.
+//
 // Revision 1.6  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

@@ -173,6 +173,9 @@ gchar *irmo_class_get_name(IrmoClass *klass);
 
 /*!
  * \brief Get the number of member variables in an \ref IrmoClass
+ *
+ * This returns only the number of unique variables. Variables 
+ * inherited from parent classes are not included.
  */
 
 gint irmo_class_num_variables(IrmoClass *klass);
@@ -211,7 +214,11 @@ void irmo_class_ref(IrmoClass *klass);
 void irmo_class_unref(IrmoClass *klass);
 
 /*!
- * \brief Iterate over all variables in a class
+ * \brief Iterate over variables in a class
+ *
+ * This function iterates over variables in a class. It only iterates
+ * over variables unique to that class; variables inherited from the
+ * parent class are not included.
  * 
  * \param klass		The class object
  * \param func		A user function to call for each variable
@@ -323,6 +330,10 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.10  2003/09/03 15:46:40  fraggle
+// In reflection functions, do not include variables inherited from
+// parent classes.
+//
 // Revision 1.9  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //
