@@ -45,9 +45,8 @@ IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe,
 				   method_name);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_universe_method_watch: Unknown method '%s'\n",
-			method_name);
+		irmo_error_report("irmo_universe_method_watch",
+				  "unknown method '%s'", method_name);
 		return;
 	}
 
@@ -93,9 +92,8 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 	spec = g_hash_table_lookup(universe->spec->method_hash, method);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_universe_method_call: Unknown method '%s'\n",
-			method);
+		irmo_error_report("irmo_universe_method_call",
+				  "unknown method '%s'", method);
 		return;
 	}
 
@@ -150,18 +148,16 @@ gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
 	spec = g_hash_table_lookup(data->spec->argument_hash, argname);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_method_arg_string: unknown method argument "
-			"'%s' for '%s' method\n",
-			data->spec->name, argname);
+		irmo_error_report("irmo_method_arg_string",
+				  "unknown method argument '%s' for '%s' method",
+				  data->spec->name, argname);
 		return NULL;
 	}
 
 	if (spec->type != TYPE_STRING) {
-		fprintf(stderr,
-			"irmo_method_arg_string: '%s' argument for '%s' "
-			"method is not a string type\n",
-			argname, data->spec->name);
+		irmo_error_report("irmo_method_arg_string",
+				  "'%s' argument for '%s' method is not a string type",
+				  argname, data->spec->name);
 		return NULL;
 	}
 
@@ -178,10 +174,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 	spec = g_hash_table_lookup(data->spec->argument_hash, argname);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_method_arg_int: unknown method argument "
-			"'%s' for '%s' method\n",
-			data->spec->name, argname);
+		irmo_error_report("irmo_method_arg_int",
+				  "unknown method argument '%s' for '%s' method",
+				  data->spec->name, argname);
 		return 0;
 	}
 
@@ -193,15 +188,17 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 	case TYPE_INT32:
 		return data->args[spec->index].i32;
 	default:
-		fprintf(stderr,
-			"irmo_method_arg_int: '%s' argument for '%s' "
-			"method is not an integer type\n",
-			argname, data->spec->name);
+		irmo_error_report("irmo_method_arg_int",
+				  "'%s' argument for '%s' method is not an integer type",
+				  argname, data->spec->name);
 		return 0;
 	}
 }
 
 // $Log$
+// Revision 1.3  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
 // Revision 1.2  2003/07/22 02:05:39  fraggle
 // Move callbacks to use a more object-oriented API.
 //

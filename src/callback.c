@@ -229,10 +229,8 @@ IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
 	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_universe_watch_new: unknown class '%s'\n", 
-			classname);
-
+		irmo_error_report("irmo_universe_watch_new",
+				  "unknown class '%s'", classname);
 		return NULL;
 	} else {
 		data = universe->callbacks[spec->index];
@@ -259,19 +257,17 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
 	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_universe_watch_class: unknown class '%s'\n",
-			classname);
+		irmo_error_report("irmo_universe_watch_class",
+				  "unknown class '%s'", classname);
 	} else {
 	        callback = callbackdata_watch(universe->callbacks[spec->index],
 					      variable,
 					      func, user_data);
 
 		if (!callback) {
-			fprintf(stderr,
-				"irmo_universe_watch_class: unknown "
-				"variable '%s' in class '%s'\n",
-				variable, classname);
+			irmo_error_report("irmo_universe_watch_class",
+					  "unknown variable '%s' in class '%s'",
+					  variable, classname);
 		}
 	}
 
@@ -294,9 +290,8 @@ IrmoCallback *irmo_universe_watch_destroy(IrmoUniverse *universe,
 	spec = g_hash_table_lookup(universe->spec->class_hash, classname);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_universe_watch_destroy: unknown class '%s'\n",
-			classname);
+		irmo_error_report("irmo_universe_watch_destroy",
+				  "unknown class '%s'", classname);
 	} else {
 		data = universe->callbacks[spec->index];
 		
@@ -319,10 +314,9 @@ IrmoCallback *irmo_object_watch(IrmoObject *object, gchar *variable,
 				      func, user_data);
 
 	if (!callback) {
-		fprintf(stderr,
-			"irmo_object_watch: unknown variable '%s' "
-			"in class '%s'\n",
-			variable, object->objclass->name);
+		irmo_error_report("irmo_object_watch",
+				  "unknown variable '%s' in class '%s'",
+				  variable, object->objclass->name);
 	}
 
 	return callback;
@@ -340,6 +334,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.3  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
 // Revision 1.2  2003/07/22 02:05:39  fraggle
 // Move callbacks to use a more object-oriented API.
 //

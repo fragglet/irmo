@@ -164,18 +164,17 @@ IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename)
 	spec = g_hash_table_lookup(universe->spec->class_hash, typename);
 
 	if (!spec) {
-		fprintf(stderr, "irmo_object_new: unknown type '%s'\n",
-			typename);
+		irmo_error_report("irmo_object_new", 
+				  "unknown type '%s'", typename);
 		return NULL;
 	}
 
 	id = get_free_id(universe);
 
 	if (id < 0) {
-		fprintf(stderr,
-			"irmo_object_new: maximum of %i objects "
-			"per universe (no more objects)\n",
-			MAX_OBJECTS);
+		irmo_error_report("irmo_object_new",
+				  "maximum of %i objects per universe (no more objects!)",
+				  MAX_OBJECTS);
 		return NULL;
 	}
 
@@ -307,12 +306,10 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 				   variable);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_object_set_int: unknown variable '%s' "
-			"in class '%s'\n",
-			variable,
-			object->objclass->name);
-		
+		irmo_error_report("irmo_object_set_int",
+				  "unknown variable '%s' in class '%s'",
+				  variable,
+				  object->objclass->name);
 		return;
 	}
 
@@ -327,10 +324,9 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 		object->variables[spec->index].i32 = value;
 		break;
 	default:
-		fprintf(stderr,
-			"irmo_object_set_int: variable '%s' in class '%s' "
-			"is not an int type\n",
-			variable, object->objclass->name);
+		irmo_error_report("irmo_object_set_int",
+				  "variable '%s' in class '%s' is not an int type",
+				  variable, object->objclass->name);
 		return;
 	}
 
@@ -350,20 +346,18 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 				   variable);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_object_set_string: unknown variable '%s' "
-			"in class '%s'\n",
-			variable,
-			object->objclass->name);
+		irmo_error_report("irmo_object_set_string",
+				  "unknown variable '%s' in class '%s'",
+				  variable,
+				  object->objclass->name);
 		
 		return;
 	}
 
 	if (spec->type != TYPE_STRING) {
-		fprintf(stderr,
-			"irmo_object_set_string: variable '%s' in class '%s' "
-			"is not string type\n",
-			variable, object->objclass->name);
+		irmo_error_report("irmo_object_set_string",
+				  "variable '%s' in class '%s' is not string type",
+				  variable, object->objclass->name);
 		return;
 	}
 
@@ -387,11 +381,10 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 				   variable);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_object_get_int: unknown variable '%s' "
-			"in class '%s'\n",
-			variable,
-			object->objclass->name);
+		irmo_error_report("irmo_object_get_int",
+				  "unknown variable '%s' in class '%s'",
+				  variable,
+				  object->objclass->name);
 		
 		return -1;
 	}
@@ -404,10 +397,9 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 	case TYPE_INT32:
 		return object->variables[spec->index].i32;
 	default:
-		fprintf(stderr,
-			"irmo_object_get_int: variable '%s' in class '%s' "
-			"is not an int type\n",
-			variable, object->objclass->name);
+		irmo_error_report("irmo_object_get_int",
+				  "variable '%s' in class '%s' is not an int type",
+				  variable, object->objclass->name);
 		return -1;
 	}
 }
@@ -425,20 +417,18 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 				   variable);
 
 	if (!spec) {
-		fprintf(stderr,
-			"irmo_object_get_string: unknown variable '%s' "
-			"in class '%s'\n",
-			variable,
-			object->objclass->name);
+		irmo_error_report("irmo_object_get_string",
+				  "unknown variable '%s' in class '%s'",
+				  variable,
+				  object->objclass->name);
 		
 		return NULL;
 	}
 
 	if (spec->type != TYPE_STRING) {
-		fprintf(stderr,
-			"irmo_object_get_string: variable '%s' in class '%s' "
-			"is not a string type\n",
-			variable, object->objclass->name);
+		irmo_error_report("irmo_object_get_string",
+				  "variable '%s' in class '%s' is not a string type",
+				  variable, object->objclass->name);
 		return NULL;
 	}
 
@@ -446,8 +436,11 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.24  2003/06/09 21:06:51  sdh300
 // Add CVS Id tag and copyright/license notices

@@ -467,9 +467,9 @@ IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 	yyin = fopen(filename, "r");
 
 	if (!yyin) {
-		fprintf(stderr, "irmo_interface_spec_new: cant open '%s'",
-			filename);
-		exit(-1);
+		irmo_error_report("irmo_interface_spec_new",
+				  "cannot open '%s'", filename);
+		return NULL;
 	}
 
 	yyin_filename = filename;
@@ -500,6 +500,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.3  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
 // Revision 1.2  2003/06/10 20:55:51  fraggle
 // Use /* -- */ comments for lex headers
 //

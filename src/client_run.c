@@ -45,10 +45,10 @@ static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 
 	if (irmo_universe_get_object_for_id(client->universe,
 					    atom->data.newobj.id)) {
-		fprintf(stderr,
-			"client_run_new: new object id of %i but an object "
-			"with that id already exists!\n",
-			atom->data.newobj.id);
+		irmo_error_report("client_run_new",
+				  "new object id of %i but an object with "
+				  "that id already exists!",
+				  atom->data.newobj.id);
 		return;
 	}
 
@@ -141,10 +141,9 @@ static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
 					      atom->data.destroy.id);
 
 	if (!obj) {
-		fprintf(stderr,
-			"client_run_destroy: destroy object %i, but object "
-			"does not exist!\n",
-			atom->data.destroy.id);
+		irmo_error_report("client_run_destroy",
+				  "destroy object %i, but object does not exist",
+				  atom->data.destroy.id);
 		return;
 	}
 
@@ -241,8 +240,11 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:23  fraggle
-// Initial revision
+// Revision 1.2  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:23  fraggle
+// Initial sourceforge import
 //
 // Revision 1.10  2003/06/09 21:06:50  sdh300
 // Add CVS Id tag and copyright/license notices

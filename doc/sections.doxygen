@@ -147,7 +147,19 @@
  * that expected by the server.
  */
 
+/*!
+ * \defgroup error Error Reporting
+ *
+ * Some functions report errors. All error messages are echoed to the 
+ * standard error output (stderr) and the error message can be retrieved
+ * by the program with \ref irmo_error_get.
+ *
+ */
+
 // $Log$
+// Revision 1.3  2003/07/24 01:25:26  fraggle
+// Add an error reporting API
+//
 // Revision 1.2  2003/07/22 02:05:39  fraggle
 // Move callbacks to use a more object-oriented API.
 //

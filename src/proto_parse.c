@@ -345,9 +345,10 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 		// bogus ack
 		// we havent even sent this far in the stream yet
 
-		fprintf(stderr, "proto_parse_ack: bogus ack (%i < %i < %i)\n",
-			client->sendwindow_start, seq,
-			client->sendwindow_start + client->sendwindow_size);
+		irmo_error_report("proto_parse_ack",
+				  "bogus ack (%i < %i < %i)",
+				  client->sendwindow_start, seq,
+				  client->sendwindow_start + client->sendwindow_size);
 		return;
 	}
 
@@ -414,9 +415,8 @@ void proto_parse_packet(IrmoPacket *packet)
 	// verify packet before parsing for security
 	
 	if (!proto_verify_packet(packet)) {
-		fprintf(stderr,
-			"proto_parse_packet: Dropped packet (failed security "
-			"verification)\n");
+		irmo_error_report("proto_parse_packet",
+				  "dropped packet (failed security verification)");
 		return;
 	}
 	
@@ -438,8 +438,11 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.18  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

@@ -64,9 +64,9 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 			sockaddr_len(dest->sa_family));
 
 	if (result < 0) {
-		fprintf(stderr,
-			"irmo_socket_sendpacket: Error sending packet (%s)\n",
-			strerror(errno));
+		irmo_error_report("irmo_socket_sendpacket",
+				  "error sending packet (%s)",
+				  strerror(errno));
 	}
 }
 
@@ -89,8 +89,8 @@ static IrmoSocket *_socket_new(int domain)
          && domain != AF_INET6
 #endif
 		) {
-		fprintf(stderr,
-			"irmo_socket_new: unsupported domain (%i)\n", domain);
+		irmo_error_report("irmo_socket_new",
+				  "unsupported address domain (%i)", domain);
 		return NULL;
 	}
 	
@@ -99,10 +99,9 @@ static IrmoSocket *_socket_new(int domain)
 	sock = socket(domain, SOCK_DGRAM, 0);
 
 	if (sock < 0) {
-		fprintf(stderr,
-			"irmo_socket_new: Can't create new datagram socket in "
-			"domain %i (%s)\n",
-			domain, strerror(errno));
+		irmo_error_report("irmo_socket_new",
+				  "cannot create new datagram socket (%s)",
+				  strerror(errno));
 
 		return NULL;
 	}
@@ -112,9 +111,9 @@ static IrmoSocket *_socket_new(int domain)
 	opts = fcntl(sock, F_GETFL);
 
 	if (opts < 0) {
-		fprintf(stderr,
-			"irmo_socket_new: Can't fcntl(F_GETFL) (%s)\n",
-			strerror(errno));
+		irmo_error_report("irmo_socket_new"
+				  "cannot make socket nonblocking (%s)",
+				  strerror(errno));
 		close(sock);
 		return NULL;
 	}
@@ -122,9 +121,9 @@ static IrmoSocket *_socket_new(int domain)
 	opts |= O_NONBLOCK;
 
 	if (fcntl(sock, F_SETFL, opts) < 0) {
-		fprintf(stderr,
-			"irmo_socket_new: Can't fcntl(F_SETFL) (%s)\n",
-			strerror(errno));
+		irmo_error_report("irmo_socket_new"
+				  "cannot make socket nonblocking (%s)",
+				  strerror(errno));
 		close(sock);
 		return NULL;
 	}
@@ -221,9 +220,9 @@ IrmoSocket *irmo_socket_new(int domain, int port)
 	}
 	
 	if (bind(sock->sock, addr, addr_len) < 0) {
-		fprintf(stderr,
-			"irmo_socket_new: Can't bind to %i::%i (%s)\n",
-			domain, port, strerror(errno));
+		irmo_error_report("irmo_socket_new",
+				  "cannot bind socket to port %i (%s)",
+				  port, strerror(errno));
 		irmo_socket_unref(sock);
 		return NULL;
 	}
@@ -564,11 +563,9 @@ void irmo_socket_run(IrmoSocket *sock)
 
 		if (result < 0) {
 			if (errno != EWOULDBLOCK)
-				fprintf(stderr,
-					"irmo_socket_run: error on "
-					"receive (%s)\n",
-					strerror(errno));
-			
+				irmo_error_report("irmo_socket_run",
+						  "error on receive (%s)",
+						  strerror(errno));
 			break;
 		}
 
@@ -592,8 +589,11 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.41  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

@@ -41,18 +41,16 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 	
 	if (hostname) {
 		if (g_hash_table_lookup(sock->servers, hostname)) {
-			fprintf(stderr,
-				"irmo_server_new: already a server bound "
-				"to '%s' on socket %i::%i\n",
-				hostname, sock->domain, sock->port);
+			irmo_error_report("irmo_server_new",
+					  "already a server bound to '%s' on socket %i::%i",
+					  hostname, sock->domain, sock->port);
 			return NULL;
 		}
 	} else {
 		if (sock->default_server) {
-			fprintf(stderr,
-				"irmo_server_new: already a default server "
-				"for socket %i::%i\n",
-				sock->domain, sock->port);
+			irmo_error_report("irmo_server_new",
+					  "already a default server for socket %i::%i\n",
+					  sock->domain, sock->port);
 			return NULL;
 		}
 	}
@@ -195,6 +193,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.3  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
 // Revision 1.2  2003/07/22 02:05:39  fraggle
 // Move callbacks to use a more object-oriented API.
 //

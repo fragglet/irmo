@@ -168,10 +168,8 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 					   classname);
 
 		if (!spec) {
-			fprintf(stderr,
-				"irmo_universe_foreach_object: unknown "
-				"class '%s'\n",
-				classname);
+			irmo_error_report("irmo_universe_foreach_object",
+					  "unknown class '%s'", classname);
 			return;
 		}
 	} else {
@@ -186,8 +184,11 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.17  2003/06/09 21:06:53  sdh300
 // Add CVS Id tag and copyright/license notices

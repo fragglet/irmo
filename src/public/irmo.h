@@ -30,6 +30,7 @@
 #include <irmo/callback.h>
 #include <irmo/client.h>
 #include <irmo/connection.h>
+#include <irmo/error.h>
 #include <irmo/if_spec.h>
 #include <irmo/method.h>
 #include <irmo/object.h>
@@ -40,8 +41,11 @@
 #endif /* #ifndef IRMO_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/07/24 01:25:27  fraggle
+// Add an error reporting API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.4  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices
