@@ -365,10 +365,48 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 static inline void socket_run_synfin(IrmoPacket *packet)
 {
+	IrmoClient *client = packet->client;
+	IrmoPacket *sendpacket;
+	
 	// connection refused?
 	
-	if (packet->client->state == CLIENT_CONNECTING) {
-		packet->client->state = CLIENT_DISCONNECTED;
+	if (client->state == CLIENT_CONNECTING) {
+		client->state = CLIENT_DISCONNECTED;
+	}
+
+	// disconnect
+
+	if (client->state == CLIENT_CONNECTED) {
+		client->state = CLIENT_DISCONNECTED;
+		client->_connect_time = time(NULL);
+		client->disconnect_wait = TRUE;
+	}
+
+	if (client->state == CLIENT_DISCONNECTED) {
+		
+		// send a syn/fin/ack to reply
+
+		printf("send synfinack reply\n");
+		sendpacket = packet_new(2);
+		packet_writei16(sendpacket,
+				PACKET_FLAG_SYN | PACKET_FLAG_FIN
+				| PACKET_FLAG_ACK);
+
+		irmo_socket_sendpacket(client->server->socket,
+				       client->addr,
+				       sendpacket);
+
+		packet_free(sendpacket);
+	}
+}
+
+static inline void socket_run_synfinack(IrmoPacket *packet)
+{
+	IrmoClient *client = packet->client;
+	
+	if (client->state == CLIENT_DISCONNECTING) {
+		client->state = CLIENT_DISCONNECTED;
+		printf("disconnected client ok\n");
 	}
 }
 
@@ -393,6 +431,8 @@ static inline void socket_run_packet(IrmoPacket *packet)
 
 	packet->flags = flags;
 
+	printf("packet flags: %04x\n", flags);
+	
 	// check for syn
 
 	if (flags == PACKET_FLAG_SYN) {
@@ -415,11 +455,17 @@ static inline void socket_run_packet(IrmoPacket *packet)
 		return;
 	}
 
-	if ((flags & PACKET_FLAG_SYN) && (flags & PACKET_FLAG_FIN)) {
+	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_FIN)) {
 		socket_run_synfin(packet);
 		return;
 	}
 
+	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_FIN|PACKET_FLAG_ACK)) {
+
+		printf("synfinack\n");
+		socket_run_synfinack(packet);
+		return;
+	}
 	if (client->state != CLIENT_CONNECTED)
 		return;
 	
@@ -435,25 +481,32 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 
 	// if this client is dead and nothing is watching it,
 	// garbage collect
+
+	if (client->state != CLIENT_DISCONNECTED)
+		return FALSE;
+
+	if (client->refcount > 0)
+		return FALSE;
+
+	// if this is a client remotely disconnecting,
+	// we wait a while before destroying the object
 	
-	if (client->state == CLIENT_DISCONNECTED
-	 && client->refcount == 0) {
-
-		// remove from server list
-
-		g_hash_table_remove(client->server->clients,
-				    key);
-
-		// destroy client object
-
-		irmo_client_destroy(client);
-		
-		// remove from socket list: return TRUE
-		
-		return TRUE;
-	}
+	if (client->disconnect_wait
+	    && time(NULL) - client->_connect_time < 10)
+		return FALSE;
 	
-	return FALSE;
+	// remove from server list
+	
+	g_hash_table_remove(client->server->clients,
+			    key);
+	
+	// destroy client object
+	
+	irmo_client_destroy(client);
+	
+	// remove from socket list: return TRUE
+	
+	return TRUE;
 }
 
 void irmo_socket_run(IrmoSocket *sock)
@@ -507,6 +560,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.35  2003/03/17 15:45:01  sdh300
+// Some extra sanity checks before parsing packets
+//
 // Revision 1.34  2003/03/14 17:33:25  sdh300
 // Fix bug caused by changes in previous commit
 //

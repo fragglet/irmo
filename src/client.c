@@ -82,7 +82,7 @@ void irmo_client_unref(IrmoClient *client)
 void irmo_client_destroy(IrmoClient *client)
 {
 	int i;
-	
+
 	// clear send queue
 
 	while (!g_queue_is_empty(client->sendq)) {
@@ -173,6 +173,40 @@ static void client_run_connecting(IrmoClient *client)
 	}
 }
 
+static void client_run_disconnecting(IrmoClient *client)
+{
+	IrmoPacket *packet;
+	time_t nowtime = time(NULL);
+
+	if (nowtime >= client->_connect_time + CLIENT_SYN_INTERVAL) {
+
+		// after several attempts, give up and just set them
+		// as disconnected
+		
+		if (client->_connect_attempts <= 0) {
+			client->state = CLIENT_DISCONNECTED;
+			return;
+		}
+
+		// build a syn fin
+
+		packet = packet_new(2);
+
+		packet_writei16(packet, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
+
+		irmo_socket_sendpacket(client->server->socket,
+				       client->addr,
+				       packet);
+
+		packet_free(packet);
+
+		// save the time
+
+		--client->_connect_attempts;
+		client->_connect_time = nowtime;
+	}
+}
+
 // called by irmo_socket_run for each client connected
 
 void irmo_client_run(IrmoClient *client)
@@ -186,6 +220,9 @@ void irmo_client_run(IrmoClient *client)
 	case CLIENT_CONNECTED:
 		proto_run_client(client);
 		break;
+	case CLIENT_DISCONNECTING:
+		client_run_disconnecting(client);
+		break;
 	}
 }
 
@@ -194,7 +231,23 @@ IrmoUniverse *irmo_client_get_universe(IrmoClient *client)
 	return client->universe;
 }
 
+void irmo_client_disconnect(IrmoClient *client)
+{
+	// set into the disconnecting state
+	
+	client->state = CLIENT_DISCONNECTING;
+
+	// try to send 6 disconnect attempts before
+	// giving up
+	
+	client->_connect_time = 0;
+	client->_connect_attempts = CLIENT_CONNECT_ATTEMPTS;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/03/14 17:33:08  sdh300
+// Fix crash on trying to free sendwindow
+//
 // Revision 1.14  2003/03/07 12:31:50  sdh300
 // Add protocol.h
 //

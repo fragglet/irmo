@@ -54,6 +54,23 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 			     IrmoUniverse *local_universe);
 
 /*!
+ * \brief Close a connection to a remote server
+ *
+ * This closes a connection to a remote server. It blocks until the
+ * server acknowledges the disconnect request or the connection
+ * times out.
+ *
+ * Note that this does not destroy the \ref IrmoConnection object, only
+ * closes the connection. To destroy the object, use the 
+ * \ref irmo_connection_unref function.
+ *
+ * \param conn     The connection to close
+ *
+ */
+
+void irmo_disconnect(IrmoConnection *conn);
+
+/*!
  * \brief Get the socket used by a IrmoConnection
  * 
  * Returns the socket object being used by a connection for network
@@ -100,6 +117,9 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn);
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/17 15:45:38  sdh300
+// Remove 'IrmoConnection' object; make it into a typedef for IrmoClient
+//
 // Revision 1.6  2003/03/07 12:17:22  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

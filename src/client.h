@@ -15,9 +15,10 @@
 #define MAX_SENDWINDOW 1024
 
 typedef enum {
-	CLIENT_CONNECTING,             /* received first syn, sent syn ack */
-	CLIENT_CONNECTED,              /* received syn ack reply, normal op */
-	CLIENT_DISCONNECTED,           /* killed with syn fin */
+	CLIENT_CONNECTING,          // received first syn, sent syn ack
+	CLIENT_CONNECTED,           // received syn ack reply, normal op
+	CLIENT_DISCONNECTED,        // killed with syn fin
+	CLIENT_DISCONNECTING,       // waiting for ack of disconnect request 
 } IrmoClientState;
 
 // client
@@ -45,6 +46,13 @@ struct _IrmoClient {
 	// time last syn/synack was sent
 	time_t _connect_time;
 	gint _connect_attempts;
+
+	// when a client remotely disconnects, keep the client object
+	// for several seconds before destroying it (if they do not
+	// receive the disconnect ack they may send another disconnect
+	// request, in which case another ack will need to be sent)
+	
+	gboolean disconnect_wait;
 
 	// send queue 
 	
@@ -96,6 +104,9 @@ void irmo_client_run_recvwindow(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/03/07 12:32:15  sdh300
+// Add missing prototype and some documentation
+//
 // Revision 1.14  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

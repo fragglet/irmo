@@ -66,6 +66,27 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	return client;
 } 
 
+void irmo_disconnect(IrmoConnection *conn)
+{
+	// keep a watch on the client and stop it being destroyed
+	
+	irmo_client_ref(conn);
+
+	// set disconnect
+	
+	irmo_client_disconnect(conn);
+	
+	// loop until we disconnect from the server (either from
+	// getting a positive disconnect reply or from timeout)
+
+	while (conn->state != CLIENT_DISCONNECTED) {
+		irmo_socket_run(conn->server->socket);
+		usleep(100);
+	}
+
+	irmo_client_unref(conn);
+}
+
 IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn)
 {
 	return conn->server->socket;
@@ -82,6 +103,9 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/17 15:45:34  sdh300
+// Remove 'IrmoConnection' object; make it into a typedef for IrmoClient
+//
 // Revision 1.11  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //
