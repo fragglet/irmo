@@ -77,13 +77,28 @@ struct _IrmoClient {
 	gboolean need_ack;
 };
 
+// create a new client, attached to a particular server
+
 IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr);
+
+// 'run' a client, called by irmo_socket_run
+
 void irmo_client_run(IrmoClient *client);
+
+// destroy client data structure
+
 void irmo_client_destroy(IrmoClient *client);
+
+// run through sendatoms waiting in the receive window
+
+void irmo_client_run_recvwindow(IrmoClient *client);
 
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/03/07 12:17:16  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.13  2003/03/06 20:15:24  sdh300
 // Initial ack code
 //
