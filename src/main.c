@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "connection.h"
-#include "if_spec.h"
-#include "universe.h"
-#include "socket.h"
-#include "server.h"
+#include "public/connection.h"
+#include "public/if_spec.h"
+#include "public/universe.h"
+#include "public/socket.h"
+#include "public/server.h"
 
 void my_callback(IrmoObject *object, gchar *variable, gpointer user_data)
 {
@@ -37,7 +37,7 @@ void my_destroy_callback_2(IrmoObject *object, gpointer user_data)
 void my_iterator_callback(IrmoObject *object, gpointer user_data)
 {
 	printf("iterator function invoked!\n");
-	printf("this is object number: %i\n", object->id);
+	printf("this is object number: %i\n", object_get_id(object));
 }
 
 void test_universe()
@@ -48,7 +48,7 @@ void test_universe()
 	
 	spec = interface_spec_new("test.if");
 	
-	printf("hash: %u\n", spec->hash);
+//	printf("hash: %u\n", spec->hash);
 
 	printf("creating universe\n");
 
@@ -142,7 +142,7 @@ void test_universe()
 	
 	printf("looking for object in universe\n");
 
-	if (universe_get_object_for_id(universe, object->id))
+	if (universe_get_object_for_id(universe, object_get_id(object)))
 		printf("successful!\n");
 	else
 		printf("failed!\n");
@@ -232,6 +232,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2003/02/11 19:19:02  sdh300
+// Test code for connection
+//
 // Revision 1.18  2002/11/26 16:38:17  sdh300
 // some tests for the socket and server constructor functions
 //

@@ -4,6 +4,8 @@
 
 #include "callback.h"
 #include "if_spec.h"
+#include "object.h"
+#include "universe.h"
 
 // add a callback function to a list
 
@@ -438,6 +440,9 @@ void object_unwatch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2002/11/21 13:08:09  sdh300
+// printf should be to stderr
+//
 // Revision 1.14  2002/11/12 23:25:47  sdh300
 // more clarity (missed this in previous commit)
 //
