@@ -1,4 +1,5 @@
-
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 
 #include "packet.h"
@@ -102,24 +103,29 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	
 	packet_writei16(packet, (client->sendwindow_start + start) & 0xffff);
 
+	//printf("-- build_packet: range %i-%i\n", start,end);
 	// add all sendatoms in the range specified
 
-	for (i=start; i<end;) {
+	for (i=start; i<=end;) {
 
-		// group up to 33 sendatoms of the same type together
-		// 33 because we send the number of EXTRA sendatoms after
+		// group up to 32 sendatoms of the same type together
+		// we send the number of EXTRA sendatoms after
 		// the starting one: the first one is implied. after that
-		// we can specify up to 32 of the same type that follow
+		// we can specify up to 31 of the same type that follow
 		
-		for (n=0; i+n+1<end && n<32; ++n)
-			if (client->sendwindow[i+n+1]->type
+		for (n=1; i+n<=end && n<=32; ++n)
+			if (client->sendwindow[i+n]->type
 			 != client->sendwindow[i]->type)
 				break;
-		
+
+		//printf("-- build_packet: group length %i, type %i\n",
+		//n, client->sendwindow[i]->type);
+		       
+
 		// store extra count in the low bits, type in the high bits
 
 		packet_writei8(packet,
-			       (client->sendwindow[i]->type << 5) | n);
+			       (client->sendwindow[i]->type << 5) | (n-1));
 
 		// add atoms
 
@@ -135,4 +141,139 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	return packet;
 }
 
+static inline int timeval_cmp(struct timeval *a, struct timeval *b)
+{
+	if (a->tv_sec == b->tv_sec) {
+		return a->tv_usec < b->tv_usec ? -1 :
+			a->tv_usec > b->tv_usec ? 1 : 0;
+	}
+	
+	return a->tv_sec < b->tv_sec ? -1 : 1;
+}
+
+// data gets pumped into the sendwindow until it passes this threshold
+// size, then no more is added
+
+// this is currently static. TODO: modify based on network conditions
+// (eg. bigger for high bandwidth connections, smaller for low bandwidth)
+
+#define SENDWINDOW_THRESHOLD 4096
+
+static void proto_pump_client(IrmoClient *client)
+{
+	int current_size = 0;
+	int i;
+	
+	// if queue is already empty, this is a nonissue
+	
+	if (g_queue_is_empty(client->sendq))
+		return;
+
+	for (i=0; i<client->sendwindow_size; ++i)
+		current_size += client->sendwindow[i]->len;
+
+	// adding things in until we run out of space or atoms to add
+	
+	while (current_size < SENDWINDOW_THRESHOLD
+	       && !g_queue_is_empty(client->sendq)
+	       && client->sendwindow_size < MAX_SENDWINDOW) {
+		IrmoSendAtom *atom;
+
+		// pop another from the sendq and add to the sendwindow
+
+		atom = client_sendq_pop(client);		
+		atom->sendtime.tv_sec = 0;
+		
+		client->sendwindow[client->sendwindow_size++] = atom;
+
+		// keep track of size
+		
+		current_size += atom->len;
+	}
+}
+
+// size of each packet; when size of atoms passes this threshold
+// no more atoms are added to it
+
+#define PACKET_THRESHOLD 1024
+
+// time before packets time out and are resent (in seconds)
+// this is currently static; TODO: calculate the optimum timeout
+// time from the average round trip time (jacobsons algorithm)
+
+#define TIMEOUT_LENGTH 2
+
+void proto_run_client(IrmoClient *client)
+{
+	struct timeval timeout_time;
+	int i;
+	
+	proto_pump_client(client);
+
+	gettimeofday(&timeout_time, NULL);
+	timeout_time.tv_sec -= TIMEOUT_LENGTH;
+
+	//printf("-- %i\n", timeout_time.tv_sec);
+
+	//for (i=0; i<client->sendwindow_size; ++i) {
+	//printf("%i: %i\n", i, client->sendwindow[i]->sendtime.tv_sec);
+	//}
+
+	for (i=0; i<client->sendwindow_size; ) {
+		IrmoPacket *packet;
+		int len;
+		int start;
+
+		//printf("find start\n");
+		
+		// search forward until we find the start of a block
+
+		while (i<client->sendwindow_size
+		       && timeval_cmp(&client->sendwindow[i]->sendtime,
+				      &timeout_time) > 0) {
+			//printf("atom %i not expired yet\n", i);
+			++i;
+		}
+
+		// no more atoms?
+		
+		if (i >= client->sendwindow_size)
+			break;
+
+		//printf("find end\n");
+		
+		start = i;
+		
+		while (i<client->sendwindow_size
+		       && timeval_cmp(&client->sendwindow[i]->sendtime,
+				      &timeout_time) <= 0
+		       && len < PACKET_THRESHOLD) {
+			//printf("atom %i out of date\n", i);
+			len += client->sendwindow[i]->len;
+			++i;
+		}
+
+		//printf("packet %i->%i\n", start, i-1);
+		// build a packet 
+
+		packet = proto_build_packet(client, start, i-1);
+
+		//printf("sendpacket\n");
+		
+		socket_sendpacket(client->server->socket,
+				  client->addr,
+				  packet);
+
+		//printf("free packet\n");
+		
+		// finished using packet
+		
+		packet_free(packet);
+	}
+	//printf("finished\n");
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/03/02 02:12:28  sdh300
+// Initial packet building code
+//

@@ -160,6 +160,7 @@ void client_run(IrmoClient *client)
 		client_run_connecting(client);
 		break;
 	case CLIENT_CONNECTED:
+		proto_run_client(client);
 		break;
 	}
 }
@@ -170,6 +171,11 @@ IrmoUniverse *client_get_universe(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.8  2003/02/23 00:45:39  sdh300
 // Add universe access functions for client, connection
 //
