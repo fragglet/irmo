@@ -45,3 +45,5 @@ gboolean packet_readi32(IrmoPacket *packet, guint32 *l)
 
 	return TRUE;
 }
+
+// $Log: not supported by cvs2svn $

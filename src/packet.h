@@ -20,3 +20,5 @@ gboolean packet_readi16(IrmoPacket *packet, guint16 *s);
 gboolean packet_readi32(IrmoPacket *packet, guint32 *l);
 
 #endif /* #ifndef IRMO_PACKET_H */
+
+// $Log: not supported by cvs2svn $
