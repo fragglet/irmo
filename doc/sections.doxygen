@@ -9,6 +9,19 @@
  */
 
 /*!
+ * \defgroup if_spec Interface Specification
+ *
+ * An \ref InterfaceSpec object defines an interface specification 
+ * comprising specification for several object classes and methods.
+ * The specification can then be used to create an \ref IrmoUniverse
+ * where the classes can be instantiated as \ref IrmoObject objects.
+ *
+ * The InterfaceSpec is defined in a seperate file. This has a C-like
+ * syntax and is quite simple. The file is loaded with the 
+ * \ref interface_spec_new function.
+ */
+
+/*!
  * \defgroup universe Irmo Universe
  *
  * An IrmoUniverse defines a data structure which implements an Interface
@@ -33,4 +46,7 @@
  */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/11/17 20:38:31  sdh300
+// add cvs tags
+//
 

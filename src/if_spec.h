@@ -3,7 +3,13 @@
 
 #include <glib.h>
 
+/*!
+ * \brief An InterfaceSpec object
+ * \ingroup if_spec
+ */
+
 typedef struct _InterfaceSpec InterfaceSpec;
+
 typedef struct _ClassSpec ClassSpec;
 typedef struct _ClassVarSpec ClassVarSpec;
 typedef struct _MethodSpec MethodSpec;
@@ -89,21 +95,55 @@ struct _InterfaceSpec {
 	guint hash;
 };
 
-// create a new interface from a specification file
+/*!
+ * \addtogroup if_spec
+ * \{
+ */
+
+/*!
+ * \brief Create a new InterfaceSpec object
+ *
+ * A file is parsed with the interface described in a simple
+ * C-style syntax.
+ *
+ * \param filename	The filename of the specification file
+ * \return		A new InterfaceSpec object or NULL for failure
+ */
 
 InterfaceSpec *interface_spec_new(char *filename);
 
-// add a reference
+/*!
+ * \brief Add a reference to an InterfaceSpec object
+ *
+ * Reference counting is implemented for InterfaceSpec objects. Every time 
+ * a new reference is kept, call this to increment the reference count.
+ * When a reference is removed, call \ref interface_spec_unref. The 
+ * reference count starts at 1. When the reference count reaches 0, the
+ * object is destroyed.
+ *
+ * \param spec		The object to reference
+ */
 
 void interface_spec_ref(InterfaceSpec *spec);
 
-// remove a reference
+/*!
+ * \brief Remove a reference to an InterfaceSpec object
+ *
+ * See \ref interface_spec_ref
+ *
+ * \param spec		The object to unreference
+ */
 
 void interface_spec_unref(InterfaceSpec *spec);
+
+//! \}
 
 #endif /* #ifndef IFSPEC_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/11/13 13:56:24  sdh300
+// add some documentation
+//
 // Revision 1.3  2002/10/29 15:58:26  sdh300
 // add index entry for ClassSpec, use "index" instead of n for index
 // member name
