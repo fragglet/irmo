@@ -10,9 +10,10 @@ typedef struct _IrmoSocket IrmoSocket;
 
 struct _IrmoSocket {
 
-	// domain and socket
+	// domain/port and socket
 
 	int domain;
+	int port;
 	int sock;
 
 	// attached servers hashed by name
@@ -46,3 +47,6 @@ IrmoSocket *socket_new(int domain, int port);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/11/26 15:23:50  sdh300
+// Initial network code
+//

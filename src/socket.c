@@ -145,6 +145,7 @@ IrmoSocket *socket_new(int domain, int port)
 	irmosock = g_new0(IrmoSocket, 1);
 	irmosock->domain = domain;
 	irmosock->sock = sock;
+	irmosock->port = port;
 	irmosock->servers = g_hash_table_new(g_str_hash, g_str_equal);
 	irmosock->clients = g_hash_table_new((GHashFunc) sockaddr_hash,
 					     (GCompareFunc) sockaddr_cmp);
@@ -153,3 +154,6 @@ IrmoSocket *socket_new(int domain, int port)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/11/26 15:23:50  sdh300
+// Initial network code
+//
