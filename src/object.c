@@ -113,6 +113,8 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 	ClassSpec *spec;
 	gint id;
 
+	g_return_val_if_fail(universe->remote == FALSE, NULL);
+	
 	spec = g_hash_table_lookup(universe->spec->class_hash, typename);
 
 	if (!spec) {
@@ -182,6 +184,8 @@ void object_internal_destroy(IrmoObject *object,
 
 void object_destroy(IrmoObject *object)
 {
+	g_return_if_fail(object->universe->remote == FALSE);
+	
 	// destroy object
 	// notify callbacks and remove from universe
 	
@@ -238,7 +242,9 @@ void object_set_raise(IrmoObject *object, int variable)
 void object_set_int(IrmoObject *object, gchar *variable, gint value)
 {
 	ClassVarSpec *spec;
-
+	
+	g_return_if_fail(object->universe->remote == FALSE);
+	
 	spec = g_hash_table_lookup(object->objclass->variable_hash,
 				   variable);
 
@@ -277,6 +283,8 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 {
 	ClassVarSpec *spec;
 
+	g_return_if_fail(object->universe->remote == FALSE);
+		
 	spec = g_hash_table_lookup(object->objclass->variable_hash,
 				   variable);
 
@@ -372,6 +380,10 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2003/03/06 19:21:25  sdh300
+// Split off some of the constructor/destructor/change code into
+// seperate functions that can be reused elsewhere
+//
 // Revision 1.16  2003/02/23 01:01:01  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split

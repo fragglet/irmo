@@ -309,9 +309,14 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 		// create the remote universe object
 
-		if (packet->client->server->client_spec)
+		if (packet->client->server->client_spec) {
 			packet->client->universe
 			  = universe_new(packet->client->server->client_spec);
+
+			// mark this as a remote universe
+			
+			packet->client->universe->remote = TRUE;
+		}
 	}
 
 	// if we are the client receiving this from the server,
@@ -476,6 +481,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.25  2003/03/05 17:37:52  sdh300
+// Add initial packet parsing code
+//
 // Revision 1.24  2003/02/23 01:01:01  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split

@@ -21,6 +21,7 @@ IrmoUniverse *universe_new(IrmoInterfaceSpec *spec)
 	universe->refcount = 1;
 	universe->lastid = 0;
 	universe->servers = g_ptr_array_new();
+	universe->remote = FALSE;
 	
 	interface_spec_ref(spec);
 
@@ -143,6 +144,9 @@ void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/06 19:33:51  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.11  2003/03/06 19:22:17  sdh300
 // Split off some of the constructor/destructor/change code into
 // seperate functions that can be reused elsewhere
