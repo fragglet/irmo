@@ -102,11 +102,37 @@ void irmo_socket_unref(IrmoSocket *sock);
 
 void irmo_socket_run(IrmoSocket *sock);
 
+/*! 
+ * \brief Block on a set of sockets
+ *
+ * This function blocks on an array of sockets, returning when data 
+ * arrives at any of the sockets.
+ *
+ * \param 	sockets		An array of sockets to block on
+ * \param	nsockets	Number of sockets in the array
+ */
+
+void irmo_socket_block_set(IrmoSocket **sockets, int nsockets);
+
+/*!
+ * \brief Block on a single socket
+ *
+ * This is the same as \ref irmo_socket_block, except it blocks on
+ * a single socket.
+ *
+ * \param 	socket		The socket to block on
+ */
+
+void irmo_socket_block(IrmoSocket *sock);
+
 //! \}
 
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.6  2003/09/01 18:52:51  fraggle
+// Blocking functions for IrmoSocket
+//
 // Revision 1.5  2003/09/01 17:03:39  fraggle
 // Fix documentation
 //

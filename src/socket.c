@@ -624,7 +624,40 @@ void irmo_socket_run(IrmoSocket *sock)
 				    (GHRFunc) socket_run_client, NULL);
 }
 
+void irmo_socket_block_set(IrmoSocket **sockets, int nsockets)
+{
+	fd_set set;
+	int result;
+	int max;
+	int i;
+	
+	g_return_if_fail(sockets != NULL);
+	g_return_if_fail(nsockets >= 0);
+	
+	FD_ZERO(&set);
+
+	for (max=0,i=0; i<nsockets; ++i) {
+		FD_SET(sockets[i]->sock, &set);
+		if (max < sockets[i]->sock)
+			max = sockets[i]->sock;
+	}
+	
+	result = select(max+1, &set, NULL, NULL, NULL);
+
+	g_return_if_fail(result >= 0);
+}
+
+void irmo_socket_block(IrmoSocket *socket)
+{
+	g_return_if_fail(socket != NULL);
+
+	irmo_socket_block_set(&socket, 1);
+}
+
 // $Log$
+// Revision 1.9  2003/09/01 18:52:51  fraggle
+// Blocking functions for IrmoSocket
+//
 // Revision 1.8  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
