@@ -14,13 +14,14 @@
 
 guint sockaddr_in_hash(struct sockaddr_in *addr)
 {
-	return addr->sin_addr.s_addr;
+	return addr->sin_addr.s_addr ^ addr->sin_port;
 }
 
 gint sockaddr_in_cmp(struct sockaddr_in *a,
 		     struct sockaddr_in *b)
 {
-	return a->sin_addr.s_addr == b->sin_addr.s_addr;
+	return a->sin_addr.s_addr == b->sin_addr.s_addr
+	    && a->sin_port == b->sin_port;
 }
 
 #ifdef USE_IPV6
@@ -29,7 +30,7 @@ guint sockaddr_in6_hash(struct sockaddr_in6 *addr)
 {
 	guint *a = addr->sin6_addr.in6_u.u6_addr32;
 	
-	return a[0] ^ a[1] ^ a[2] ^ a[3];
+	return a[0] ^ a[1] ^ a[2] ^ a[3] ^ addr->sin6_port;
 }
 
 gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
@@ -39,7 +40,8 @@ gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
 	guint *ba = b->sin6_addr.in6_u.u6_addr32;
 
 	return aa[0] == ba[0] && aa[1] == ba[1]
-	    && aa[2] == ba[2] && aa[3] == ba[3];
+	    && aa[2] == ba[2] && aa[3] == ba[3]
+	    && a->sin6_port == b->sin6_port;
 }
 
 #endif /* #ifdef USE_IPV6 */
@@ -75,3 +77,6 @@ gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/11/26 16:23:27  sdh300
+// Split off sockaddr hash functions to a seperate netlib module
+//
