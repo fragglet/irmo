@@ -1,0 +1,34 @@
+
+// Documentation for sections
+
+/*!
+ * \mainpage Irmo
+ * \section intro Introduction
+ *
+ * Irmo is an abstract library designed for Multiplayer Computer Gaming.
+ */
+
+/*!
+ * \defgroup universe Irmo Universe
+ *
+ * An IrmoUniverse defines a data structure which implements an Interface
+ * Specification. Inside an IrmoUniverse, objects (see \ref IrmoObject)
+ * of classes defined within that specification can be created. These 
+ * objects can be used to hold data of various types.
+ *
+ * Callback functions can be set to be called automatically when particular
+ * objects change within the Universe.
+ */
+
+/*!
+ * \defgroup object Irmo Objects
+ *
+ * Irmo Objects exist within a Universe (see \ref IrmoUniverse). They 
+ * have a class which defines member variables which hold data. The
+ * classes are defined by the InterfaceSpec which the Universe
+ * is using. The object member variables can hold several different 
+ * types of data (int, string) and the values of the variables can
+ * be changed and retrieved. Callback functions can be set to watch
+ * when the values of these variables change.
+ */
+
