@@ -77,6 +77,8 @@ IrmoSocket *socket_new(int domain, int port)
 		return NULL;
 	}
 
+	free(addr);
+	
 	// wrap it all up in an IrmoSocket object
 
 	irmosock = g_new0(IrmoSocket, 1);
@@ -91,6 +93,9 @@ IrmoSocket *socket_new(int domain, int port)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/11/26 16:23:28  sdh300
+// Split off sockaddr hash functions to a seperate netlib module
+//
 // Revision 1.2  2002/11/26 15:32:11  sdh300
 // store port number in IrmoSocket objects as well
 //
