@@ -60,7 +60,7 @@ typedef enum {
  * Create a new socket listening on a particular port. Servers can then
  * be attached to the socket to serve worlds on different vhosts.
  *
- * \param type    The type of socket to create (see \ref IrmoSocketDomain)
+ * \param domain  The type of socket to create (see \ref IrmoSocketDomain)
  * \param port    The port number to listen on
  * \return        A new IrmoSocket or NULL if the new socket could
  *                not be created.
@@ -107,6 +107,9 @@ void irmo_socket_run(IrmoSocket *sock);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.5  2003/09/01 17:03:39  fraggle
+// Fix documentation
+//
 // Revision 1.4  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
