@@ -3,9 +3,19 @@
 
 typedef struct _IrmoSendAtom IrmoSendAtom;
 
+typedef enum {
+	ATOM_NULL,               // null atom for nullified changes
+	ATOM_NEW,                // new object 
+	ATOM_CHANGE,             // modified object 
+	ATOM_DESTROY,            // object destroyed 
+	ATOM_METHOD,             // method call
+} IrmoSendAtomType;
+
 #include <sys/time.h>
 
 #include "client.h"
+#include "if_spec.h"
+#include "object.h"
 
 // queue object
 
@@ -13,13 +23,7 @@ struct _IrmoSendAtom {
 	struct timeval sendtime;        // time this atom was last sent
 	
 	int len;			// length in packet
-	enum {
-		ATOM_NULL,               // null atom for nullified changes
-		ATOM_NEW,                // new object 
-		ATOM_CHANGE,             // modified object 
-		ATOM_DESTROY,            // object destroyed 
-		ATOM_METHOD,             // method call
-	} type;
+	IrmoSendAtomType type;
 
 	union {
 		struct {
@@ -64,6 +68,9 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/05 15:28:14  sdh300
+// Add receive window and extra data for sendatoms in the receive window.
+//
 // Revision 1.5  2003/03/02 02:10:16  sdh300
 // Store send time in atoms
 //
