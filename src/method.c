@@ -63,6 +63,29 @@ static void method_invoke_foreach(IrmoCallback *data,
 
 void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 {
+	int i;
+	
+	// check all the arguments for sanity
+	
+	for (i=0; i<data->spec->narguments; ++i) {
+		IrmoMethodArg *arg = data->spec->arguments[i];
+		IrmoValue *value = &data->args[i];
+
+		switch (arg->type) {
+		case IRMO_TYPE_INT8:
+			g_return_if_fail(value->i >= 0 && value->i <= 0xff);
+			break;
+		case IRMO_TYPE_INT16:
+			g_return_if_fail(value->i >= 0 && value->i <= 0xffff);
+			break;
+		case IRMO_TYPE_INT32:
+			break;
+		case IRMO_TYPE_STRING:
+			g_return_if_fail(value->s != NULL);
+			break;
+		}
+	}
+	
 	// send to source
 
 	if (world->remote) {
@@ -128,7 +151,7 @@ void irmo_world_method_call(IrmoWorld *world, gchar *method, ...)
 
 
 void irmo_world_method_call2(IrmoWorld *world, gchar *method,
-				IrmoValue *arguments)
+			     IrmoValue *arguments)
 {
 	IrmoMethodData method_data;
 	IrmoMethod *spec;
@@ -215,6 +238,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.10  2003/09/20 15:44:48  fraggle
+// Sanity checking on method arguments
+//
 // Revision 1.9  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
