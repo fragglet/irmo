@@ -111,7 +111,7 @@ in a lower level language. For this reason, a language binding
 already exists for the Ruby scripting language. Bindings are
 planned for other high-level languages.
 
-@node API Notes, , Overview, Top
+@node API Notes, World Representation, Overview, Top
 @chapter API Notes
 
 @section Compiling
@@ -157,7 +157,7 @@ about Doxygen can be found from the website:
 
 http://www.doxygen.org/
 
-@node World Representation, Index, , Top
+@node World Representation, Index, API Notes, Top
 @chapter World Representation
 
 Irmo requires the programmer to describe the game world; this is 
