@@ -143,6 +143,10 @@ struct _IrmoClient {
 	
 	int local_sendwindow_max;
 	int remote_sendwindow_max;
+
+	// connection error
+
+	gchar *connection_error;
 };
 
 // create a new client, attached to a particular server
@@ -172,6 +176,10 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
+// Revision 1.4  2003/10/18 01:34:45  fraggle
+// Better error reporting for connecting, allow server to send back an
+// error message when refusing connections
+//
 // Revision 1.3  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

@@ -259,6 +259,34 @@ IrmoSocket *irmo_socket_new(IrmoSocketDomain domain, int port)
 	return sock;
 }
 
+// send a connection refused SYN-FIN packet
+
+static void socket_send_refuse(IrmoSocket *sock,
+			       struct sockaddr *addr,
+			       gchar *s, ...)
+{
+	IrmoPacket *packet;
+	gchar *message;
+	va_list args;
+
+	va_start(args, s);
+
+	message = g_strdup_printf(s, args);
+
+	va_end(args);
+
+	packet = irmo_packet_new();
+
+	irmo_packet_writei16(packet, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
+	irmo_packet_writestring(packet, message);
+
+	irmo_socket_sendpacket(sock, addr, packet);
+		
+	irmo_packet_free(packet);
+
+	free(message);
+}
+
 static void socket_run_syn(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
@@ -306,6 +334,9 @@ static void socket_run_syn(IrmoPacket *packet)
 		return;
 
 	if (protocol_version != IRMO_PROTOCOL_VERSION) {
+		socket_send_refuse(packet->sock, packet->src,
+				   "client and server side protocol versions "
+				   "do not match");
 		return;
 	}
 
@@ -334,55 +365,55 @@ static void socket_run_syn(IrmoPacket *packet)
 		server = packet->sock->default_server;
 	}
 
-	if (server) {
-		// if there is a server, get the hashes for the interface
-		// specs
-
-		local_hash_expected 
-			= server->client_spec ? server->client_spec->hash : 0;
-		server_hash_expected 
-			= server->world ? server->world->spec->hash : 0;
+	if (!server) {
+		socket_send_refuse(packet->sock, packet->src,
+				   "server not found");
+		return;
 	}
 
-	if (!server || local_hash != local_hash_expected
-	    || server_hash != server_hash_expected) {
-		// server not found, or invalid parameters (spec hashes
-		// are wrong)
-		// send a refusal
+	// if there is a server, get the hashes for the interface
+	// specs
 
-		sendpacket = irmo_packet_new();
+	local_hash_expected 
+		= server->client_spec ? server->client_spec->hash : 0;
+	server_hash_expected 
+		= server->world ? server->world->spec->hash : 0;
 
-		irmo_packet_writei16(sendpacket, 
-				     PACKET_FLAG_SYN|PACKET_FLAG_FIN);
-
-		irmo_socket_sendpacket(packet->sock,
-				       packet->src,
-				       sendpacket);
-		
-		irmo_packet_free(sendpacket);
-	} else {
-		// valid syn
-		
-		// if this is the first syn we have received,
-		// create a new client object
-
-		if (!client) {
-			client = irmo_client_new(server, packet->src);
-		}
-		
-		// send a reply
-
-		sendpacket = irmo_packet_new();
-
-		irmo_packet_writei16(sendpacket, 
-				     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
-
-		irmo_socket_sendpacket(packet->sock,
-				       packet->src,
-				       sendpacket);
-		
-		irmo_packet_free(sendpacket);
+	if (local_hash != local_hash_expected) {
+		socket_send_refuse(packet->sock, packet->src,
+				   "client side and server side client "
+				   "interface specifications do not match");
+		return;
 	}
+
+	if (server_hash != server_hash_expected) {
+		socket_send_refuse(packet->sock, packet->src,
+				   "client side and server side server "
+				   "interface specifications do not match");
+		return;
+	}
+
+	// valid syn
+		
+	// if this is the first syn we have received,
+	// create a new client object
+
+	if (!client) {
+		client = irmo_client_new(server, packet->src);
+	}
+		
+	// send a reply
+
+	sendpacket = irmo_packet_new();
+
+	irmo_packet_writei16(sendpacket, 
+			     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+
+	irmo_socket_sendpacket(packet->sock,
+			       packet->src,
+			       sendpacket);
+		
+	irmo_packet_free(sendpacket);
 }
 
 // handle syn-ack connection acknowledgements
@@ -454,6 +485,17 @@ static void socket_run_synfin(IrmoPacket *packet)
 	// connection refused?
 	
 	if (client->state == CLIENT_CONNECTING) {
+		gchar *message;
+
+		// read the reason message
+
+		message = irmo_packet_readstring(packet);
+
+		if (message)
+			irmo_connection_error(client, "connection refused (%s)", message);
+		else
+			irmo_connection_error(client, "connection refused");
+
 		client->state = CLIENT_DISCONNECTED;
 	}
 
@@ -672,6 +714,10 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.15  2003/10/18 01:34:45  fraggle
+// Better error reporting for connecting, allow server to send back an
+// error message when refusing connections
+//
 // Revision 1.14  2003/10/17 23:33:05  fraggle
 // protocol version checking
 //

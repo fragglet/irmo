@@ -103,14 +103,15 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 	}
 
 	if (client->state == CLIENT_DISCONNECTED) {
+
+		irmo_error_report("irmo_connect", "%s", 
+				  client->connection_error);
+		
 		// connection failed
 		// delete client object
 		
 		irmo_client_unref(client);
 
-		irmo_error_report("irmo_connect",
-				  "connection failed");
-		
 		return NULL;
 	}
 
@@ -175,7 +176,25 @@ void irmo_connection_unref(IrmoConnection *conn)
 	irmo_client_unref(conn);
 }
 
+void irmo_connection_error(IrmoConnection *conn, char *s, ...)
+{
+	va_list args;
+
+	if (conn->connection_error)
+		free(conn->connection_error);
+
+	va_start(args, s);
+
+	conn->connection_error = g_strdup_vprintf(s, args);
+
+	va_end(args);
+}
+
 // $Log$
+// Revision 1.10  2003/10/18 01:34:45  fraggle
+// Better error reporting for connecting, allow server to send back an
+// error message when refusing connections
+//
 // Revision 1.9  2003/09/13 15:21:31  fraggle
 // Make sure we resolve a name properly before trying to connect
 //

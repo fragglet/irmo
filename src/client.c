@@ -145,6 +145,9 @@ static void irmo_client_destroy(IrmoClient *client)
 
 	if (client->world)
 		irmo_world_unref(client->world);
+
+	if (client->connection_error)
+		free(client->connection_error);
 	
 	free(client->addr);
 	free(client);
@@ -180,6 +183,7 @@ static void client_run_connecting(IrmoClient *client)
 
 		if (client->connect_attempts <= 0) {
 			client->state = CLIENT_DISCONNECTED;
+			irmo_connection_error(client, "attempt to connect timed out");
 			return;
 		}
 		
@@ -352,6 +356,10 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.12  2003/10/18 01:34:45  fraggle
+// Better error reporting for connecting, allow server to send back an
+// error message when refusing connections
+//
 // Revision 1.11  2003/10/17 23:33:05  fraggle
 // protocol version checking
 //

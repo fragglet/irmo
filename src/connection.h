@@ -32,9 +32,15 @@
 #include "server.h"
 #include "world.h"
 
+void irmo_connection_error(IrmoConnection *conn, char *s, ...);
+
 #endif /* #ifndef IRMO_INTERNAL_CONNECTION_H */
 
 // $Log$
+// Revision 1.3  2003/10/18 01:34:45  fraggle
+// Better error reporting for connecting, allow server to send back an
+// error message when refusing connections
+//
 // Revision 1.2  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
