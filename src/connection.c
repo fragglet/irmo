@@ -13,7 +13,7 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 
 	// create a socket
 	
-	sock = _socket_new_unbound(domain);
+	sock = socket_new_unbound(domain);
 	
 	if (!sock)
 		return NULL;
@@ -31,7 +31,7 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	// create a client object, also representing the servers
 	// connection to us
 
-	client = _client_new(server, addr);
+	client = client_new(server, addr);
 	client_ref(client);
 	
 	// now initiate the connection
@@ -87,6 +87,9 @@ IrmoUniverse *connection_get_universe(IrmoConnection *conn)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/02/23 00:45:39  sdh300
+// Add universe access functions for client, connection
+//
 // Revision 1.6  2003/02/23 00:26:46  sdh300
 // Add some documentation and helper functions for IrmoConnection
 //

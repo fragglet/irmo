@@ -80,7 +80,7 @@ static gboolean server_unref_client_foreach(gpointer key, IrmoClient *client,
 
 	// destroy
 
-	_client_destroy(client);
+	client_destroy(client);
 	
 	// remove from server list
 	
@@ -129,6 +129,9 @@ void server_unref(IrmoServer *server)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/02/18 18:39:54  sdh300
+// store list of attached servers in universe
+//
 // Revision 1.7  2003/02/18 17:41:01  sdh300
 // fix reference counting (refcount not initialised properly,
 // 	object not freed)

@@ -14,7 +14,7 @@
 
 // create a new client (used internally)
 
-IrmoClient * _client_new(IrmoServer *server, struct sockaddr *addr)
+IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr)
 {
 	IrmoClient *client;
 
@@ -72,7 +72,7 @@ void client_unref(IrmoClient *client)
 	server_unref(client->server);	
 }
 
-void _client_destroy(IrmoClient *client)
+void client_destroy(IrmoClient *client)
 {
 	// clear send queue
 
@@ -137,9 +137,9 @@ static void client_run_connecting(IrmoClient *client)
 					PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 		}
 		
-		_socket_sendpacket(client->server->socket,
-				   client->addr,
-				   packet);
+		socket_sendpacket(client->server->socket,
+				  client->addr,
+				  packet);
 
 		packet_free(packet);		
 		
@@ -151,7 +151,7 @@ static void client_run_connecting(IrmoClient *client)
 
 // called by socket_run for each client connected
 
-void _client_run(IrmoClient *client)
+void client_run(IrmoClient *client)
 {
 	switch (client->state) {
 	case CLIENT_DISCONNECTED:
@@ -170,6 +170,9 @@ IrmoUniverse *client_get_universe(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/02/23 00:45:39  sdh300
+// Add universe access functions for client, connection
+//
 // Revision 1.7  2003/02/20 18:24:59  sdh300
 // Use GQueue instead of a GPtrArray for the send queue
 // Initial change/destroy code

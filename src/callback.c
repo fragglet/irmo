@@ -72,7 +72,7 @@ static gboolean callbacklist_remove(GSList **list,
 
 // create a new callbackdata object for watching an object or class
 
-IrmoCallbackData *_callbackdata_new(ClassSpec *objclass)
+IrmoCallbackData *callbackdata_new(ClassSpec *objclass)
 {
 	IrmoCallbackData *data;
 
@@ -88,33 +88,33 @@ IrmoCallbackData *_callbackdata_new(ClassSpec *objclass)
 	return data;
 }
 
-static void _callbackdata_free_foreach(IrmoCallbackFuncData *callback,
+static void callbackdata_free_foreach(IrmoCallbackFuncData *callback,
 				       gpointer user_data)
 {
 	free(callback);
 }
 
-void _callbackdata_free(IrmoCallbackData *data)
+void callbackdata_free(IrmoCallbackData *data)
 {
 	int i;
 	
 	// free all class callbacks
 
 	g_slist_foreach(data->class_callbacks,
-			(GFunc) _callbackdata_free_foreach, NULL);
+			(GFunc) callbackdata_free_foreach, NULL);
 	g_slist_free(data->class_callbacks);
 
 	// free destroy callbacks
 
 	g_slist_foreach(data->destroy_callbacks,
-			(GFunc) _callbackdata_free_foreach, NULL);
+			(GFunc) callbackdata_free_foreach, NULL);
 	g_slist_free(data->destroy_callbacks);
 	
 	// free all variable callbacks
 
 	for (i=0; i<data->objclass->nvariables; ++i) {
 		g_slist_foreach(data->variable_callbacks[i],
-				(GFunc) _callbackdata_free_foreach, NULL);
+				(GFunc) callbackdata_free_foreach, NULL);
 		g_slist_free(data->variable_callbacks[i]);
 	}
 
@@ -128,14 +128,14 @@ struct raise_data {
 	gchar *variable;
 };
 
-static void _callbackdata_raise_foreach(IrmoCallbackFuncData *callback, 
+static void callbackdata_raise_foreach(IrmoCallbackFuncData *callback, 
 					struct raise_data *raise_data)
 {
 	callback->func.var(raise_data->object, raise_data->variable,
 			   callback->user_data);
 }
 
-void _callbackdata_raise(IrmoCallbackData *data,
+void callbackdata_raise(IrmoCallbackData *data,
 			 IrmoObject *object, gint variable_index)
 {
 	struct raise_data raise_data = {
@@ -146,23 +146,23 @@ void _callbackdata_raise(IrmoCallbackData *data,
 	// call class callbacks
 	
 	g_slist_foreach(data->class_callbacks,
-			(GFunc) _callbackdata_raise_foreach,
+			(GFunc) callbackdata_raise_foreach,
 			&raise_data);
 
 	// variable callbacks
 
 	g_slist_foreach(data->variable_callbacks[variable_index],
-			(GFunc) _callbackdata_raise_foreach,
+			(GFunc) callbackdata_raise_foreach,
 			&raise_data);
 }
 
-static void _callbackdata_raise_destroy_foreach(IrmoCallbackFuncData *callback,
+static void callbackdata_raise_destroy_foreach(IrmoCallbackFuncData *callback,
 						struct raise_data *raise_data)
 {
 	callback->func.obj(raise_data->object, callback->user_data);
 }
 
-void _callbackdata_raise_destroy(IrmoCallbackData *data,
+void callbackdata_raise_destroy(IrmoCallbackData *data,
 				 IrmoObject *object)
 {
 	struct raise_data raise_data = {
@@ -170,18 +170,18 @@ void _callbackdata_raise_destroy(IrmoCallbackData *data,
 	};
 
 	g_slist_foreach(data->destroy_callbacks,
-			(GFunc) _callbackdata_raise_destroy_foreach,
+			(GFunc) callbackdata_raise_destroy_foreach,
 			&raise_data);
 }
 
-void _callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
+void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 {
 	struct raise_data raise_data = {
 		object: object,
 	};
 
 	g_slist_foreach(data->new_callbacks,
-			(GFunc) _callbackdata_raise_destroy_foreach,
+			(GFunc) callbackdata_raise_destroy_foreach,
 			&raise_data);
 }
 
@@ -440,6 +440,9 @@ void object_unwatch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/02/23 00:05:02  sdh300
+// Fix compile after header changes
+//
 // Revision 1.15  2002/11/21 13:08:09  sdh300
 // printf should be to stderr
 //

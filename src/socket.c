@@ -25,8 +25,8 @@
 
 // socket send function
 
-void _socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
-			IrmoPacket *packet)
+void socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
+		       IrmoPacket *packet)
 {
 	int result;
 
@@ -39,7 +39,7 @@ void _socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 
 	if (result < 0) {
 		fprintf(stderr,
-			"_socket_sendpacket: Error sending packet (%s)\n",
+			"socket_sendpacket: Error sending packet (%s)\n",
 			strerror(errno));
 	}
 }
@@ -144,7 +144,7 @@ void socket_unref(IrmoSocket *sock)
 
 // create a socket for clients, unbound
 
-IrmoSocket *_socket_new_unbound(int domain)
+IrmoSocket *socket_new_unbound(int domain)
 {
 	IrmoSocket *sock = _socket_new(domain);
 
@@ -269,9 +269,9 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
-		_socket_sendpacket(packet->sock,
-				   packet->src,
-				   sendpacket);
+		socket_sendpacket(packet->sock,
+				  packet->src,
+				  sendpacket);
 		
 		packet_free(sendpacket);
 	} else {
@@ -281,7 +281,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 		// create a new client object
 
 		if (!client) {
-			client = _client_new(server, packet->src);
+			client = client_new(server, packet->src);
 		}
 		
 		// send a reply
@@ -290,9 +290,9 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		_socket_sendpacket(packet->sock,
-				   packet->src,
-				   sendpacket);
+		socket_sendpacket(packet->sock,
+				  packet->src,
+				  sendpacket);
 		
 		packet_free(sendpacket);
 	}
@@ -323,9 +323,9 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		_socket_sendpacket(packet->sock,
-				   packet->src,
-				   sendpacket);
+		socket_sendpacket(packet->sock,
+				  packet->src,
+				  sendpacket);
 
 		packet_free(sendpacket);
 	}
@@ -397,7 +397,7 @@ static inline void socket_run_packet(IrmoPacket *packet)
 static gboolean socket_run_client(gpointer key, IrmoClient *client,
 				  gpointer user_data)
 {
-	_client_run(client);
+	client_run(client);
 
 	// if this client is dead and nothing is watching it,
 	// garbage collect
@@ -412,7 +412,7 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 
 		// destroy client object
 
-		_client_destroy(client);
+		client_destroy(client);
 		
 		// remove from socket list: return TRUE
 		
@@ -472,6 +472,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.23  2003/02/18 20:04:40  sdh300
+// Automatically increase size of packets when writing
+//
 // Revision 1.22  2003/02/18 17:49:17  sdh300
 // understand SYN FIN responses (connection refused on connect)
 //

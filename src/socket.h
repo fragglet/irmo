@@ -46,13 +46,17 @@ struct _IrmoSocket {
 	GHashTable *clients;
 };
 
-IrmoSocket *_socket_new_unbound(int domain);
-void _socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
-			IrmoPacket *packet);
+IrmoSocket *socket_new_unbound(int domain);
+void socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
+		       IrmoPacket *packet);
 
 #endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/02/23 00:00:04  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.6  2003/02/11 19:18:43  sdh300
 // Initial working connection code!
 //

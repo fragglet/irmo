@@ -28,11 +28,15 @@ struct _IrmoObject {
 	IrmoVariable *variables;
 };
 
-void __object_destroy(IrmoObject *object);
+void object_internal_destroy(IrmoObject *object);
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/02/23 00:00:03  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.11  2002/11/17 20:37:15  sdh300
 // initial doxygen documentation
 //

@@ -43,16 +43,20 @@ struct _IrmoCallbackData {
 	GSList *destroy_callbacks;
 };
 
-IrmoCallbackData *_callbackdata_new(ClassSpec *objclass);
-void _callbackdata_free(IrmoCallbackData *data);
-void _callbackdata_raise(IrmoCallbackData *data,
+IrmoCallbackData *callbackdata_new(ClassSpec *objclass);
+void callbackdata_free(IrmoCallbackData *data);
+void callbackdata_raise(IrmoCallbackData *data,
 			 IrmoObject *object, gint variable_index);
-void _callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
-void _callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
+void callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
+void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/02/23 00:00:03  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.11  2002/11/17 20:37:14  sdh300
 // initial doxygen documentation
 //

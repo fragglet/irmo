@@ -51,13 +51,17 @@ struct _IrmoClient {
 	GHashTable *sendq_hashtable;
 };
 
-IrmoClient *_client_new(IrmoServer *server, struct sockaddr *addr);
-void _client_run(IrmoClient *client);
-void _client_destroy(IrmoClient *client);
+IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr);
+void client_run(IrmoClient *client);
+void client_destroy(IrmoClient *client);
 
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/02/23 00:00:03  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.8  2003/02/20 18:24:59  sdh300
 // Use GQueue instead of a GPtrArray for the send queue
 // Initial change/destroy code

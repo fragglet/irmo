@@ -29,7 +29,7 @@ IrmoUniverse *universe_new(InterfaceSpec *spec)
 	universe->callbacks = g_new0(IrmoCallbackData *, spec->nclasses);
 
 	for (i=0; i<spec->nclasses; ++i) {
-		universe->callbacks[i] = _callbackdata_new(spec->classes[i]);
+		universe->callbacks[i] = callbackdata_new(spec->classes[i]);
 	}
 	
 	return universe;
@@ -43,7 +43,7 @@ void universe_ref(IrmoUniverse *universe)
 static void universe_unref_foreach(irmo_objid_t id, IrmoObject *object,
 				   gpointer user_data)
 {
-	__object_destroy(object);
+	object_internal_destroy(object);
 }
 
 void universe_unref(IrmoUniverse *universe)
@@ -67,7 +67,7 @@ void universe_unref(IrmoUniverse *universe)
 		// delete callbacks
 		
 		for (i=0; i<universe->spec->nclasses; ++i)
-			_callbackdata_free(universe->callbacks[i]);
+			callbackdata_free(universe->callbacks[i]);
 		
 		free(universe->callbacks);
 
@@ -139,6 +139,9 @@ void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/02/18 18:39:54  sdh300
+// store list of attached servers in universe
+//
 // Revision 1.8  2002/11/13 14:14:46  sdh300
 // object iterator function
 //

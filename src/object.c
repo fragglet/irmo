@@ -102,7 +102,7 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 	object->id = id;
 	object->objclass = spec;
 	object->universe = universe;
-	object->callbacks = _callbackdata_new(spec);
+	object->callbacks = callbackdata_new(spec);
 	
 	// member variables:
 
@@ -114,7 +114,7 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 
 	// raise callback functions for new object creation
 
-	_callbackdata_raise_new(universe->callbacks[spec->index],
+	callbackdata_raise_new(universe->callbacks[spec->index],
 				object);
 
 	// notify attached clients
@@ -127,7 +127,7 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 
 // internal object destroy function
 
-void __object_destroy(IrmoObject *object)
+void object_internal_destroy(IrmoObject *object)
 {
 	int i;
 
@@ -140,7 +140,7 @@ void __object_destroy(IrmoObject *object)
 	}
 
 	free(object->variables);
-	_callbackdata_free(object->callbacks);
+	callbackdata_free(object->callbacks);
 	
 	// done
 	
@@ -151,8 +151,8 @@ void object_destroy(IrmoObject *object)
 {
 	// raise destroy callbacks
 
-	_callbackdata_raise_destroy(object->callbacks, object);
-	_callbackdata_raise_destroy(object->universe->callbacks
+	callbackdata_raise_destroy(object->callbacks, object);
+	callbackdata_raise_destroy(object->universe->callbacks
 				    [object->objclass->index],
 				    object);
 
@@ -168,7 +168,7 @@ void object_destroy(IrmoObject *object)
 
 	// destroy object
 	
-	__object_destroy(object);
+	object_internal_destroy(object);
 }
 
 irmo_objid_t object_get_id(IrmoObject *object)
@@ -243,9 +243,9 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 
 	// callback functions for change
 
-	_callbackdata_raise(object->callbacks, object, spec->index);
-	_callbackdata_raise(object->universe->callbacks[object->objclass->index],
-			    object, spec->index);
+	callbackdata_raise(object->callbacks, object, spec->index);
+	callbackdata_raise(object->universe->callbacks[object->objclass->index],
+			   object, spec->index);
 
 	// notify attached clients
 
@@ -284,9 +284,9 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 	// callback functions
 
-	_callbackdata_raise(object->callbacks, object, spec->index);
-	_callbackdata_raise(object->universe->callbacks[object->objclass->index],
-			    object, spec->index);
+	callbackdata_raise(object->callbacks, object, spec->index);
+	callbackdata_raise(object->universe->callbacks[object->objclass->index],
+			   object, spec->index);
 
 	// notify attached clients
 
@@ -359,6 +359,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/02/18 20:26:42  sdh300
+// Initial send queue building/notification code
+//
 // Revision 1.14  2002/11/13 15:12:33  sdh300
 // object_get_id to get identifier
 //
