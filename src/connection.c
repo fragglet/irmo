@@ -104,6 +104,9 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 		// delete client object
 		
 		irmo_client_unref(client);
+
+		irmo_error_report("irmo_connect",
+				  "connection failed");
 		
 		return NULL;
 	}
@@ -156,6 +159,9 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
 }
 
 // $Log$
+// Revision 1.3  2003/08/16 14:06:22  fraggle
+// Report an error when failing to connect
+//
 // Revision 1.2  2003/08/06 16:15:18  fraggle
 // IPv6 support
 //
