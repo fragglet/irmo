@@ -100,9 +100,9 @@ multiplayer games and easily extended.
 Another common theme in many modern games is that of extension
 languages. Many games use a high level extension language to describe
 the game logic while using a lower level language such as C
-to perform operations such as graphical rendering. Examples of
-this are Quake's ``QuakeC'' language and the AisleRiot solitaire
-game's use of the Guile extension language.
+to perform computationally intensive operations like graphical 
+rendering. Examples of this are Quake's ``QuakeC'' language and 
+the AisleRiot solitaire game's use of the Guile extension language.
 
 While providing client-server functionality, Irmo also aims to
 provide cross-language abstraction such that the server can
@@ -121,7 +121,7 @@ planned for other high-level languages.
 
 Irmo uses the @code{pkg-config} system to store information about
 the library and allow programs which use it to be built more 
-easily. To find out more about @code{pkg-config}. Typically 
+easily. Typically 
 all that needs to be done is to add to the @code{CFLAGS}
 and @code{LDFLAGS} variables of the @code{Makefile}:
 
@@ -129,6 +129,10 @@ and @code{LDFLAGS} variables of the @code{Makefile}:
 	CFLAGS += `pkg-config --cflags irmo`
 	LDFLAGS += `pkg-config --libs irmo`
 @end example
+
+Macros are also available to set the @code{CFLAGS} and 
+@code{LDFLAGS} variables under the GNU autotools (autoconf
+and automake) system.
 
 @section GLib
 
@@ -189,14 +193,14 @@ This is done by writing an Interface Specification File.
 
 @cindex Interface Specification File
 
+The Interface Specification Files have a C++-like syntax.
 The following is an example of an Interface Specification file:
 
 @example
 // Irmo interface specification file for astro
 
 class Object @{
-        int16 x;
-        int16 y;
+        int16 x, y;
         int16 angle;
         int16 scale;
 @}
@@ -225,7 +229,7 @@ Here a number of classes are defined. These define the types of object
 which can exist within the game world. A base class is defined named
 ``Object'' for all objects within the game world which the player sees.
 These objects all have a number of common properties: in this case,
-a pair of x,y coordinates, an angle and a scale (size). 
+a pair of x,y coordinates, an angle and a scale (size).
 
 A number of subclasses are made of this class using the `:' operator
 for the particular different types of object.  Some of these subclasses
