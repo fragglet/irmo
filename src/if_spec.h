@@ -89,13 +89,25 @@ struct _InterfaceSpec {
 	guint hash;
 };
 
+// create a new interface from a specification file
+
 InterfaceSpec *interface_spec_new(char *filename);
+
+// add a reference
+
 void interface_spec_ref(InterfaceSpec *spec);
+
+// remove a reference
+
 void interface_spec_unref(InterfaceSpec *spec);
 
 #endif /* #ifndef IFSPEC_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/29 15:58:26  sdh300
+// add index entry for ClassSpec, use "index" instead of n for index
+// member name
+//
 // Revision 1.2  2002/10/21 15:32:34  sdh300
 // variable value setting
 //

@@ -25,15 +25,29 @@ struct _IrmoUniverse {
 	int refcount;
 };
 
+// create a new universe from an interface spec
+
 IrmoUniverse *universe_new(InterfaceSpec *spec);
+
+// find an object in the universe
+
 IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
 				       irmo_objid_t id);
+
+// add reference
+
 void universe_ref(IrmoUniverse *universe);
+
+// remove reference
+
 void universe_unref(IrmoUniverse *universe);
 
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/10/29 16:09:11  sdh300
+// initial callback code
+//
 // Revision 1.5  2002/10/21 14:58:07  sdh300
 // split off object code to a seperate module
 //

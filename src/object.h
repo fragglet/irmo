@@ -25,14 +25,30 @@ struct _IrmoObject {
 	IrmoVariable *variables;
 };
 
+// create a new object of a particular class
+
 IrmoObject *object_new(IrmoUniverse *universe, char *typename);
+
+// destroy an object
+
 void object_destroy(IrmoObject *object);
 
+// set the value of an object variable (int type)
+
 void object_set_int(IrmoObject *object, gchar *variable, int value);
+
+// set the value of an object variable (string type)
+
 void object_set_string(IrmoObject *object, gchar *variable, gchar *value);
 
+// get the value of an object variable (int type)
+
 gint object_get_int(IrmoObject *object, gchar *variable);
+
+// get the value of an object variable (string type)
+
 gchar *object_get_string(IrmoObject *object, gchar *variable);
+
 
 // internal:
 
@@ -41,6 +57,9 @@ void __object_destroy(IrmoObject *object);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/10/29 16:09:11  sdh300
+// initial callback code
+//
 // Revision 1.5  2002/10/29 14:48:16  sdh300
 // variable value retrieval
 //
