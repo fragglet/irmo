@@ -52,22 +52,49 @@ void _callbackdata_raise(IrmoCallbackData *data,
 void _callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
 void _callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 
+// watch creation of new objects of particular classes
+
 void universe_watch_new(IrmoUniverse *universe, gchar *classname,
 			IrmoObjCallback func, gpointer user_data);
+void universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
+			  IrmoObjCallback func, gpointer user_data);
+
+// watch variables of a particular class
+
 void universe_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
 			  IrmoVarCallback func, gpointer user_data);
+void universe_unwatch_class(IrmoUniverse *universe,
+			    gchar *classname, gchar *variable,
+			    IrmoVarCallback func, gpointer user_data);
+
+// watch object destruction
+
 void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
 			    IrmoObjCallback func, gpointer user_data);
+void universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
+			      IrmoObjCallback func, gpointer user_data);
+
+// watch variables of a particular object
 
 void object_watch(IrmoObject *object, gchar *variable,
 		  IrmoVarCallback func, gpointer user_data);
+void object_unwatch(IrmoObject *object, gchar *variable,
+		    IrmoVarCallback func, gpointer user_data);
+
+// watch destruction of a particular object
+
 void object_watch_destroy(IrmoObject *object,
-			  IrmoObjCallback, gpointer user_data);
+			  IrmoObjCallback func, gpointer user_data);
+void object_unwatch_destroy(IrmoObject *object,
+			    IrmoObjCallback func, gpointer user_data);
 
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2002/11/05 22:33:26  sdh300
+// more name changes
+//
 // Revision 1.7  2002/11/05 16:28:10  sdh300
 // new object callbacks
 //

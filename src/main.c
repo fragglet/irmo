@@ -18,6 +18,18 @@ void my_destroy_callback(IrmoObject *object, gpointer user_data)
 	printf("destroy callback invoked! message: %s\n", (char *) user_data);
 }
 
+void my_callback_2(IrmoObject *object, gchar *variable, gpointer user_data)
+{
+	puts("this should never be called!");
+	exit(-1);
+}
+
+void my_destroy_callback_2(IrmoObject *object, gpointer user_data)
+{
+	puts("this should never be called!");
+	exit(-1);
+}
+
 int main(int argc, char *argv[])
 {
 	InterfaceSpec *spec;
@@ -82,6 +94,32 @@ int main(int argc, char *argv[])
 
 	object_watch_destroy(object,
 			     my_destroy_callback, "object destroy callback");
+
+	printf("trying to set and remove some callbacks\n");
+
+	printf("\tnew: \n");
+	universe_watch_new(universe, "my_class", my_destroy_callback_2, NULL);
+	universe_unwatch_new(universe, "my_class", my_destroy_callback_2, NULL);	universe_unwatch_new(universe, "my_class", my_destroy_callback_2, NULL);
+	printf("\tdestroy: \n");
+	universe_watch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
+	universe_unwatch_destroy(universe, "my_class", my_destroy_callback_2, NULL);	universe_unwatch_destroy(universe, "my_class", my_destroy_callback_2, NULL);
+	printf("\tvariable watch:\n");
+	universe_watch_class(universe, "my_class", "my_int",
+			     my_callback_2, NULL);
+	universe_unwatch_class(universe, "my_class", "my_int",
+			       my_callback_2, NULL);
+	universe_unwatch_class(universe, "my_class", "my_int",
+			       my_callback_2, NULL);
+			     
+	printf("\tobject destroy: \n");
+	object_watch_destroy(object, my_destroy_callback_2, NULL);
+	object_unwatch_destroy(object, my_destroy_callback_2, NULL);
+	object_unwatch_destroy(object, my_destroy_callback_2, NULL);
+
+	printf("\tobject variable watch:\n");
+	object_watch(object, "my_int", my_callback_2, NULL);
+	object_unwatch(object, "my_int", my_callback_2, NULL);
+	object_unwatch(object, "my_int", my_callback_2, NULL);
 	
 	printf("looking for object in universe\n");
 
@@ -127,6 +165,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2002/11/05 16:28:10  sdh300
+// new object callbacks
+//
 // Revision 1.13  2002/11/05 15:55:13  sdh300
 // object destroy callbacks
 //
