@@ -30,6 +30,12 @@
 #ifndef IRMO_OBJECT_H
 #define IRMO_OBJECT_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup object
  *
@@ -37,38 +43,14 @@
  */
 
 /*!
- * \brief A union structure that can hold an integer or a string pointer
- */
-
-typedef union {
-	unsigned int i;
-	char *s;
-} IrmoValue;
-
-//! An Irmo Object
-
-typedef struct _IrmoObject IrmoObject;
-
-//! Callback functions for operations on variables
-
-typedef void (*IrmoVarCallback) (IrmoObject *object, char *variable,
-				 void *user_data);
-
-//! Callback functions for operations on objects
-
-typedef void (*IrmoObjCallback) (IrmoObject *object, void *user_data);
-
-#include "world.h"
-
-/*!
  * \brief create a new object of a particular class
  *
  * \param world World to create the object within
- * \param typename The name of the class of object to create
+ * \param type_name The name of the class of object to create
  * \return 	   The created object or NULL for failure
  */
 
-IrmoObject *irmo_object_new(IrmoWorld *world, char *typename);
+IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name);
 
 /*!
  * \brief Destroy an object
@@ -211,11 +193,58 @@ unsigned int irmo_object_is_a(IrmoObject *object, char *classname);
 
 unsigned int irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
 
+/*!
+ * \brief Watch for modification of an object
+ *
+ * Whenever a particular object is modified, a function will be called.
+ * The function can be set to be called only when a particular variable
+ * is modified, or when any variable in the object is modified.
+ *
+ * \param object	The object to watch
+ * \param variable	The name of the variable to watch. To make the 
+ * 			function call whenever any variable in the object
+ * 			is modified, pass NULL for this value.
+ * \param func		The function to call.
+ * \param user_data	Extra data to pass to the function when it is called.
+ *
+ * \return an \ref IrmoCallback object representing the watch
+ */
+
+IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
+				IrmoVarCallback func, void *user_data);
+
+/*!
+ * \brief Watch for object destruction
+ *
+ * Before a particular object is about to be destroyed, a function will 
+ * be called.
+ *
+ * \param object	The object to watch
+ * \param func		Callback function to call
+ * \param user_data	Extra data to pass to the function when called.
+ * \sa irmo_object_unwatch_destroy
+ *
+ * \return an \ref IrmoCallback object representing the watch
+ */
+
+IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
+					IrmoObjCallback func, 
+					void *user_data);
+
 //! \}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.10  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.9  2003/11/17 00:32:28  fraggle
 // Rename irmo_objid_t to IrmoObjectID for consistency with other types
 //

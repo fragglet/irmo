@@ -26,33 +26,16 @@
 #ifndef IRMO_SOCKET_H
 #define IRMO_SOCKET_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup socket
  * \{
  */
-
-
-/*!
- * \brief an IrmoSocket object.
- */
-
-typedef struct _IrmoSocket IrmoSocket;
-
-#include "client.h"
-#include "server.h"
-
-/*!
- * \brief Socket domain
- * 
- * When creating a new socket, it is neccessary to specify the type
- * of socket to be created, IPv4 or IPv6.
- */
-
-typedef enum {
-	IRMO_SOCKET_AUTO,
-	IRMO_SOCKET_IPV4,
-	IRMO_SOCKET_IPV6,
-} IrmoSocketDomain;
 
 /*!
  * \brief Create a new socket
@@ -131,9 +114,18 @@ void irmo_socket_block(IrmoSocket *sock, int timeout);
 
 //! \}
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.8  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.7  2003/09/01 18:59:28  fraggle
 // Add a timeout parameter for blocking on sockets. Use block function
 // internally.

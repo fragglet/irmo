@@ -26,40 +26,16 @@
 #ifndef IRMO_METHOD_H
 #define IRMO_METHOD_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup method
  * \{
  */
-
-/*!
- * \brief Method Callback Data
- *
- * When a callback function attached to a method is invoked, it is passed
- * an object of this type containing data relevant to the method. For
- * example, the object can be used to retrieve the values of method
- * arguments, and the client which invoked the method.
- */
-
-typedef struct _IrmoMethodData IrmoMethodData;
-
-#include "client.h"
-#include "object.h"
-
-/*!
- * \brief Callback function for methods
- *
- * When a method invocation is received from a client, a callback function
- * of this type is invoked.
- *
- * \param data      A \ref IrmoMethodData object holding data about the
- *                  invoked method.
- * \param user_data A pointer to user defined piece of memory specified in
- *                  the \ref irmo_world_method_watch call used to set
- *                  the callback.
- */
-
-typedef void (*IrmoInvokeCallback)(IrmoMethodData *data, 
-				   void *user_data);
 
 /*!
  * \brief Set a callback function to be invoked when a method is called
@@ -146,9 +122,18 @@ void irmo_world_method_call2(IrmoWorld *world, char *method,
 
 //! \}
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log$
+// Revision 1.7  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.6  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

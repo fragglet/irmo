@@ -30,23 +30,16 @@
 #ifndef IRMO_CALLBACK_H
 #define IRMO_CALLBACK_H
 
-#include "world.h"
-#include "object.h"
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*!
  * \addtogroup callback
  * \{
  */
-
-/*!
- * \brief Callback object
- * 
- * When a new callback watch is created, an IrmoCallback object is
- * returned representing the watch. The watch can be unset with
- * \ref irmo_callback_unset
- */
-
-typedef struct _IrmoCallback IrmoCallback;
 
 /*!
  * \brief Unset a callback watch
@@ -61,131 +54,18 @@ void irmo_callback_unset(IrmoCallback *callback);
 
 //! \}
 
-
-/*!
- * \addtogroup world
- * \{
- */
-
-/*!
- * \brief Watch for creation of new objects.
- *
- * Watch for creation of new objects in a World. Every time objects
- * of a particular class are created, a callback function will be
- * called.
- *
- * \param world	World to watch in.
- * \param classname	The object class to watch. Specify NULL to watch
- *                      for creation of all objects.
- * \param func		The function to call when new objects are
- * 			created.
- * \param user_data	Some extra data to pass to the callback function.
- *
- *
- * \return an \ref IrmoCallback object representing the watch
- */
-
-IrmoCallback *irmo_world_watch_new(IrmoWorld *world, 
-				   char *classname,
-				   IrmoObjCallback func, 
-				   void *user_data);
-
-/*!
- * \brief Watch for modification of objects of a particular class.
- * 
- * Whenever objects of a particular class are modified, a callback
- * function will be called. The watch can be set to be called when
- * a particular variable is changed, or when any variable is
- * changed.
- *
- * \param world	The world to watch in.
- * \param classname	The class to watch. Specify NULL to watch for
- *                      changes to objects of all classes.
- * \param variable	The variable name to watch. Specify NULL to
- *                      watch for changes to all variables.
- * 			pass NULL for this value.
- * \param func		A function to call.
- * \param user_data	Some extra data to pass to the callback function.
- *
- * \return an \ref IrmoCallback object representing the watch
- */
-
-IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
-				     char *classname, char *variable,
-				     IrmoVarCallback func, 
-				     void *user_data);
-
-/*!
- * \brief Watch for object destruction.
- *
- * Whenever any object of a particular class is about to be destroyed,
- * a callback function will first be called.
- *
- * \param world	The world to watch in.
- * \param classname	The name of the class of object to watch. Specify
- *                      NULL to watch for destruction of objects of all
- * 		        classes.
- * \param func		The function to call.
- * \param user_data	Some extra data to pass to the callback function.
- *
- * \return an \ref IrmoCallback object representing the watch
- */
-
-IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world, 
-				       char *classname,
-				       IrmoObjCallback func, 
-				       void *user_data);
-
-//! \}
-
-/*!
- * \addtogroup object
- * \{
- */
-
-/*!
- * \brief Watch for modification of an object
- *
- * Whenever a particular object is modified, a function will be called.
- * The function can be set to be called only when a particular variable
- * is modified, or when any variable in the object is modified.
- *
- * \param object	The object to watch
- * \param variable	The name of the variable to watch. To make the 
- * 			function call whenever any variable in the object
- * 			is modified, pass NULL for this value.
- * \param func		The function to call.
- * \param user_data	Extra data to pass to the function when it is called.
- *
- * \return an \ref IrmoCallback object representing the watch
- */
-
-IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
-				IrmoVarCallback func, void *user_data);
-
-/*!
- * \brief Watch for object destruction
- *
- * Before a particular object is about to be destroyed, a function will 
- * be called.
- *
- * \param object	The object to watch
- * \param func		Callback function to call
- * \param user_data	Extra data to pass to the function when called.
- * \sa irmo_object_unwatch_destroy
- *
- * \return an \ref IrmoCallback object representing the watch
- */
-
-IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
-					IrmoObjCallback func, 
-					void *user_data);
-
-//! \}
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
+// Revision 1.6  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.5  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

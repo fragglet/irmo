@@ -154,20 +154,20 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 }
 				
 
-IrmoObject *irmo_object_new(IrmoWorld *world, char *typename)
+IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 {
 	IrmoClass *spec;
 	gint id;
 
 	g_return_val_if_fail(world != NULL, NULL);
-	g_return_val_if_fail(typename != NULL, NULL);
+	g_return_val_if_fail(type_name != NULL, NULL);
 	g_return_val_if_fail(world->remote == FALSE, NULL);
 	
-	spec = irmo_interface_spec_get_class(world->spec, typename);
+	spec = irmo_interface_spec_get_class(world->spec, type_name);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_new", 
-				  "unknown type '%s'", typename);
+				  "unknown type '%s'", type_name);
 		return NULL;
 	}
 
@@ -491,6 +491,11 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.17  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.16  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //

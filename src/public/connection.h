@@ -26,27 +26,16 @@
 #ifndef IRMO_CONNECTION_H
 #define IRMO_CONNECTION_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup connection
  * \{
  */
-
-#include "if_spec.h"
-#include "client.h"
-#include "server.h"
-#include "world.h"
-
-/*!
- * \brief An IrmoConnection object 
- *
- * This represents a connection to a \ref IrmoServer server running
- * on a remote machine.
- *
- * This is exactly the same as an \ref IrmoClient. Internally the remote
- * server is seen as a client connected back to the local machine.
- */
-
-typedef IrmoClient IrmoConnection;
 
 /*!
  * \brief Establish a new connection to a server
@@ -147,11 +136,20 @@ void irmo_connection_ref(IrmoConnection *conn);
 
 void irmo_connection_unref(IrmoConnection *conn);
 
+#ifdef __cplusplus
+}
+#endif
+
 //! \}
 
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log$
+// Revision 1.6  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.5  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

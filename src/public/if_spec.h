@@ -26,59 +26,16 @@
 #ifndef IRMO_IF_SPEC_H
 #define IRMO_IF_SPEC_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup if_spec
  * \{
  */
-
-/*!
- * \brief Variable types
- */
-
-typedef enum {
-	IRMO_TYPE_UNKNOWN,
-	IRMO_TYPE_INT8,
-	IRMO_TYPE_INT16,
-	IRMO_TYPE_INT32,
-	IRMO_TYPE_STRING,
-	IRMO_NUM_TYPES,
-} IrmoValueType;
-
-/*!
- * \brief An object representing a class in an interface
- */
-
-typedef struct _IrmoClass IrmoClass;
-
-/*!
- * \brief An object representing a variable in a class
- */
-
-typedef struct _IrmoClassVar IrmoClassVar;
-
-/*!
- * \brief An object representing a method in an interface
- */
-
-typedef struct _IrmoMethod IrmoMethod;
-
-/*!
- * \brief An object representing an argument to a method
- */ 
-
-typedef struct _IrmoMethodArg IrmoMethodArg;
-
-/*!
- * \brief An IrmoInterfaceSpec object
- * \ingroup if_spec
- */
-
-typedef struct _IrmoInterfaceSpec IrmoInterfaceSpec;
-
-typedef void (*IrmoClassCallback)(IrmoClass *klass, void *user_data);
-typedef void (*IrmoClassVarCallback)(IrmoClassVar *var, void *user_data);
-typedef void (*IrmoMethodCallback)(IrmoMethod *method, void *user_data);
-typedef void (*IrmoMethodArgCallback)(IrmoMethodArg *arg, void *user_data);
 
 /*!
  * \brief Create a new IrmoInterfaceSpec object
@@ -335,9 +292,18 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 
 //! \}
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.14  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.13  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

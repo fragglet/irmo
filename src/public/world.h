@@ -30,29 +30,16 @@
 #ifndef IRMO_WORLD_H
 #define IRMO_WORLD_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup world
  * \{
  */
-
-//! An Irmo World.
-
-typedef struct _IrmoWorld IrmoWorld;
-
-/*!
- * \brief A numerical object identifier
- *
- * All objects in a \ref IrmoWorld have a unique number assigned to
- * them. This can be used to refer to objects by their number. You can
- * search for an object by number using the 
- * \ref irmo_world_get_object_for_id function.
- */
-
-typedef unsigned int IrmoObjectID;
-
-#include "callback.h"
-#include "if_spec.h"
-#include "object.h"
 
 /*!
  * \brief Create a new World
@@ -138,11 +125,89 @@ void irmo_world_ref(IrmoWorld *world);
 
 void irmo_world_unref(IrmoWorld *world);
 
+/*!
+ * \brief Watch for creation of new objects.
+ *
+ * Watch for creation of new objects in a World. Every time objects
+ * of a particular class are created, a callback function will be
+ * called.
+ *
+ * \param world	World to watch in.
+ * \param classname	The object class to watch. Specify NULL to watch
+ *                      for creation of all objects.
+ * \param func		The function to call when new objects are
+ * 			created.
+ * \param user_data	Some extra data to pass to the callback function.
+ *
+ *
+ * \return an \ref IrmoCallback object representing the watch
+ */
+
+IrmoCallback *irmo_world_watch_new(IrmoWorld *world, 
+				   char *classname,
+				   IrmoObjCallback func, 
+				   void *user_data);
+
+/*!
+ * \brief Watch for modification of objects of a particular class.
+ * 
+ * Whenever objects of a particular class are modified, a callback
+ * function will be called. The watch can be set to be called when
+ * a particular variable is changed, or when any variable is
+ * changed.
+ *
+ * \param world	The world to watch in.
+ * \param classname	The class to watch. Specify NULL to watch for
+ *                      changes to objects of all classes.
+ * \param variable	The variable name to watch. Specify NULL to
+ *                      watch for changes to all variables.
+ * 			pass NULL for this value.
+ * \param func		A function to call.
+ * \param user_data	Some extra data to pass to the callback function.
+ *
+ * \return an \ref IrmoCallback object representing the watch
+ */
+
+IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
+				     char *classname, char *variable,
+				     IrmoVarCallback func, 
+				     void *user_data);
+
+/*!
+ * \brief Watch for object destruction.
+ *
+ * Whenever any object of a particular class is about to be destroyed,
+ * a callback function will first be called.
+ *
+ * \param world	The world to watch in.
+ * \param classname	The name of the class of object to watch. Specify
+ *                      NULL to watch for destruction of objects of all
+ * 		        classes.
+ * \param func		The function to call.
+ * \param user_data	Some extra data to pass to the callback function.
+ *
+ * \return an \ref IrmoCallback object representing the watch
+ */
+
+IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world, 
+				       char *classname,
+				       IrmoObjCallback func, 
+				       void *user_data);
+
 //! \}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* #ifndef IRMO_WORLD_H */
 
 // $Log$
+// Revision 1.4  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.3  2003/11/17 00:32:28  fraggle
 // Rename irmo_objid_t to IrmoObjectID for consistency with other types
 //

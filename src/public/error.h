@@ -26,6 +26,10 @@
 #ifndef IRMO_ERROR_H
 #define IRMO_ERROR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup error
  * \{
@@ -45,9 +49,18 @@ char *irmo_error_get(void);
 
 //! \}
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* #ifndef IRMO_ERROR_H */
 
 // $Log$
+// Revision 1.3  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.2  2003/08/13 18:32:40  fraggle
 // Convert () in function definitions to the more explicit (void)
 //

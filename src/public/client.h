@@ -26,30 +26,16 @@
 #ifndef IRMO_CLIENT_H
 #define IRMO_CLIENT_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup client
  * \{
  */
-
-/*!
- * \brief An IrmoClient object
- *
- * This represents a client connected to a \ref IrmoServer server.
- */
-
-typedef struct _IrmoClient IrmoClient;
-
-/*! 
- * \brief Callback function for client actions.
- *
- * Functions of this type are used for client disconnect callbacks.
- */
-
-typedef void (*IrmoClientCallback) (IrmoClient *client, void *user_data);
-
-#include "server.h"
-#include "socket.h"
-#include "world.h"
 
 /*!
  * \brief Add a reference to a client
@@ -160,9 +146,18 @@ const char *irmo_client_get_addr(IrmoClient *client);
 
 //! \}
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log$
+// Revision 1.6  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.5  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

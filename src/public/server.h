@@ -26,21 +26,16 @@
 #ifndef IRMO_SERVER_H
 #define IRMO_SERVER_H
 
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * \addtogroup server
  * \{
  */
-
-/*!
- * \brief An IrmoServer object
- */
-
-typedef struct _IrmoServer IrmoServer;
-
-#include "if_spec.h"
-#include "client.h"
-#include "socket.h"
-#include "world.h"
 
 /*!
  * \brief Create a new server
@@ -134,9 +129,18 @@ void irmo_server_shutdown(IrmoServer *server);
 
 //! \}
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.7  2003/11/21 17:46:18  fraggle
+// Restructure header files: move type definitions into "types.h"; move
+// callback prototypes into their appropriate headers instead of
+// callback.h; make headers C++-safe
+//
 // Revision 1.6  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //
