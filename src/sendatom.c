@@ -5,20 +5,43 @@
 #include "object.h"
 #include "sendatom.h"
 
+static inline void sendatom_change_free_data(IrmoSendAtom *atom)
+{
+	int i;
+
+	if (atom->data.change.newvalues) {
+		ClassSpec *objclass = atom->data.change.objclass;
+		
+		for (i=0; i<objclass->nvariables; ++i) {
+			// only changed values are stored
+			
+			if (!atom->data.change.changed[i])
+				continue;
+
+			// free strings
+			
+			if (objclass->variables[i]->type == TYPE_STRING)
+				free(atom->data.change.newvalues[i].s);
+		}
+
+		free(atom->data.change.newvalues);
+	}
+	
+	free(atom->data.change.changed);
+}
+
 void sendatom_free(IrmoSendAtom *atom)
 {
-	if (atom->type == ATOM_CHANGE) {
-		free(atom->data.change.changed);
-	}
+	if (atom->type == ATOM_CHANGE)
+		sendatom_change_free_data(atom);
 	
 	free(atom);
 }
 
 static void sendatom_nullify(IrmoSendAtom *atom)
 {
-	if (atom->type == ATOM_CHANGE) {
-		free(atom->data.change.changed);
-	}
+	if (atom->type == ATOM_CHANGE)
+		sendatom_change_free_data(atom);
 
 	atom->type = ATOM_NULL;
 }
@@ -178,6 +201,9 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/03 21:03:45  sdh300
+// Fix bug in client_sendq_pop
+//
 // Revision 1.5  2003/02/27 02:26:39  sdh300
 // Fix compile errors
 //

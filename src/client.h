@@ -63,6 +63,13 @@ struct _IrmoClient {
 
 	IrmoSendAtom *sendwindow[MAX_SENDWINDOW];
 	int sendwindow_size;
+
+	// receive window
+
+	int recvwindow_start;
+
+	IrmoSendAtom **recvwindow;
+	int recvwindow_size;
 };
 
 IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr);
@@ -72,6 +79,9 @@ void client_destroy(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/03 21:03:06  sdh300
+// Initial packet building code
+//
 // Revision 1.10  2003/02/23 01:01:01  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split

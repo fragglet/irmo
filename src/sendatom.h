@@ -30,6 +30,16 @@ struct _IrmoSendAtom {
 			irmo_objid_t id;
 			IrmoObject *object;
 			gboolean *changed;  // array saying which have changed
+
+			// class of the object being changed. this is only
+			// used for the receive window.
+
+			ClassSpec *objclass;
+
+			// array of the new values. this is only used for the
+			// receive window. for the send window this is NULL
+			
+			IrmoVariable *newvalues;
 		} change;
 		struct {
 			irmo_objid_t id;
@@ -54,6 +64,9 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/02 02:10:16  sdh300
+// Store send time in atoms
+//
 // Revision 1.4  2003/02/27 02:07:56  sdh300
 // Store sendatom size in structure
 // Add 'pop' function to remove atoms from sendq head
