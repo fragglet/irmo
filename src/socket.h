@@ -79,9 +79,25 @@ void socket_unref(IrmoSocket *sock);
 
 IrmoSocket *_socket_new_unbound(int domain);
 
+/*!
+ * \brief Run socket
+ *
+ * This function must be called periodically to check for new packets
+ * received by the socket and send new packets required by the network
+ * protocol.
+ *
+ * \param sock   The socket to update
+ */
+
+void socket_run(IrmoSocket *sock);
+
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/06 00:59:26  sdh300
+// Split up socket constructor function, so that unbound sockets can
+// be created for clients
+//
 // Revision 1.3  2002/12/02 21:32:51  sdh300
 // reference counting for IrmoSockets
 //
