@@ -192,7 +192,39 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 	irmo_client_callback_raise(server->connect_callbacks, client);
 }
 
+struct server_foreach_data {
+	IrmoClientCallback func;
+	gpointer user_data;	
+};
+
+static void server_foreach_foreach(gpointer key,
+				   IrmoClient *client,
+				   struct server_foreach_data *data)
+{
+	if (client->state == CLIENT_CONNECTED)
+		data->func(client, data->user_data);
+}
+
+void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
+				gpointer user_data)
+{
+	struct server_foreach_data foreach_data = {
+		callback,
+		user_data
+	};
+
+	g_return_if_fail(server != NULL);
+	g_return_if_fail(callback != NULL);
+
+	g_hash_table_foreach(server->clients, 
+			     (GHFunc) server_foreach_foreach,
+			     &foreach_data);
+}
+
 // $Log$
+// Revision 1.4  2003/08/15 15:22:42  fraggle
+// Add an iterator function to iterate over clients connected to a server.
+//
 // Revision 1.3  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

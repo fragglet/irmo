@@ -79,6 +79,23 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 					IrmoClientCallback func,
 					gpointer user_data);
 
+
+/*!
+ * Iterate over all clients connected to a server
+ * 
+ * Calls a specified function for each client currently connected to
+ * the given server.
+ *
+ * \param server	The server to iterate over
+ * \param func		The function to call
+ * \param user_data	Extra data to pass to the function
+ *
+ */
+
+void irmo_server_foreach_client(IrmoServer *server,
+				IrmoClientCallback func,
+				gpointer user_data);
+
 /*!
  * \brief Reference a server object
  *
@@ -110,6 +127,9 @@ void irmo_server_unref(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.3  2003/08/15 15:22:42  fraggle
+// Add an iterator function to iterate over clients connected to a server.
+//
 // Revision 1.2  2003/07/22 02:05:40  fraggle
 // Move callbacks to use a more object-oriented API.
 //
