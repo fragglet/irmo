@@ -81,7 +81,7 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 {
 	IrmoMethodData method_data;
 	IrmoMethod *spec;
-	IrmoVariable *args;
+	IrmoValue *args;
 	va_list arglist;
 	int i;
 
@@ -96,7 +96,7 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 		return;
 	}
 
-	args = g_new0(IrmoVariable, spec->narguments);
+	args = g_new0(IrmoValue, spec->narguments);
 
 	// read each of the arguments
 	
@@ -105,13 +105,9 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 	for (i=0; i<spec->narguments; ++i) {
 		switch (spec->arguments[i]->type) {
 		case IRMO_TYPE_INT8:
-			args[i].i8 = va_arg(arglist, int);
-			break;
 		case IRMO_TYPE_INT16:
-			args[i].i16 = va_arg(arglist, int);
-			break;
 		case IRMO_TYPE_INT32:
-			args[i].i32 = va_arg(arglist, int);
+			args[i].i = va_arg(arglist, int);
 			break;
 		case IRMO_TYPE_STRING:
 			args[i].s = va_arg(arglist, char *);
@@ -129,6 +125,32 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 
 	free(args);
 }
+
+
+void irmo_universe_method_call2(IrmoUniverse *universe, gchar *method,
+				IrmoValue *arguments)
+{
+	IrmoMethodData method_data;
+	IrmoMethod *spec;
+
+	g_return_if_fail(universe != NULL);
+	g_return_if_fail(method != NULL);
+	
+	spec = irmo_interface_spec_get_method(universe->spec, method);
+
+	if (!spec) {
+		irmo_error_report("irmo_universe_method_call2",
+				  "unknown method '%s'", method);
+		return;
+	}
+
+	method_data.spec = spec;
+	method_data.args = arguments;
+	method_data.src = NULL;
+
+	irmo_method_invoke(universe, &method_data);
+}
+
 
 IrmoClient *irmo_method_get_source(IrmoMethodData *data)
 {
@@ -181,11 +203,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 
 	switch (spec->type) {
 	case IRMO_TYPE_INT8:
-		return data->args[spec->index].i8;
 	case IRMO_TYPE_INT16:
-		return data->args[spec->index].i16;
 	case IRMO_TYPE_INT32:
-		return data->args[spec->index].i32;
+		return data->args[spec->index].i;
 	default:
 		irmo_error_report("irmo_method_arg_int",
 				  "'%s' argument for '%s' method is not an integer type",
@@ -195,6 +215,11 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.8  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.7  2003/08/29 16:28:19  fraggle
 // Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
 // to avoid name conflict.

@@ -64,7 +64,7 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom,
 {
 	IrmoObject *obj;
 	IrmoClass *objclass;
-	IrmoVariable *newvalues;
+	IrmoValue *newvalues;
 	int i;
 
 	if (atom->data.change.executed)
@@ -107,13 +107,9 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom,
 
 		switch (objclass->variables[i]->type) {
 		case IRMO_TYPE_INT8:
-			obj->variables[i].i8 = newvalues[i].i8;
-			break;
 		case IRMO_TYPE_INT16:
-			obj->variables[i].i16 = newvalues[i].i16;
-			break;
 		case IRMO_TYPE_INT32:
-			obj->variables[i].i32 = newvalues[i].i32;
+			obj->variables[i].i = newvalues[i].i;
 			break;
 		case IRMO_TYPE_STRING:
 			free(obj->variables[i].s);
@@ -240,6 +236,11 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.5  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.4  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

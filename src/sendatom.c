@@ -280,10 +280,10 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 
 	// copy arguments
 
-	atom->data.method.args = g_new0(IrmoVariable, method->narguments);
+	atom->data.method.args = g_new0(IrmoValue, method->narguments);
 	memcpy(atom->data.method.args,
 	       data->args,
-	       sizeof(IrmoVariable) * method->narguments);
+	       sizeof(IrmoValue) * method->narguments);
 
 	// find length of atom,
 
@@ -404,6 +404,11 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.5  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.4  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

@@ -30,21 +30,12 @@
 #ifndef IRMO_INTERNAL_OBJECT_H
 #define IRMO_INTERNAL_OBJECT_H
 
-typedef union _IrmoVariable IrmoVariable;
-
 #include "public/object.h"
 
 #include "callback.h"
 #include "if_spec.h"
 
 // internal stuff:
-
-union _IrmoVariable {
-	guint8 i8;
-	guint16 i16;
-	guint32 i32;
-	gchar *s;
-};
 
 struct _IrmoObject {
 
@@ -69,7 +60,7 @@ struct _IrmoObject {
 	// array of variables for this object
 	// the number of variables is specified in objclass
 	
-	IrmoVariable *variables;
+	IrmoValue *variables;
 
 	// position in stream from remote server where variable
 	// was last changed
@@ -102,6 +93,11 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.3  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.2  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

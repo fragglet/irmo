@@ -66,25 +66,31 @@ G_INLINE_FUNC int get_stream_position(int current, int low)
 }
 
 G_INLINE_FUNC void proto_parse_field(IrmoPacket *packet,
-				     IrmoVariable *value,
+				     IrmoValue *value,
 				     IrmoVarType type)
 {
+	guint8 i8;
+	guint16 i16;
+	guint32 i32;
+
 	switch (type) {
 	case IRMO_TYPE_INT8:
-		packet_readi8(packet, &value->i8);
+		packet_readi8(packet, &i8);
+		value->i = i8;
 		break;
 	case IRMO_TYPE_INT16:
-		packet_readi16(packet, &value->i16);
+		packet_readi16(packet, &i16);
+		value->i = i16;
 		break;
 	case IRMO_TYPE_INT32:
-		packet_readi32(packet, &value->i32);
+		packet_readi32(packet, &i32);
+		value->i = i32;
 		break;
 	case IRMO_TYPE_STRING:
 		value->s = strdup(packet_readstring(packet));
 		break;
 	}
 }
-				     
 
 G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 					   IrmoPacket *packet,
@@ -92,7 +98,7 @@ G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 {
 	IrmoClass *objclass;
 	gboolean *changed;
-	IrmoVariable *newvalues;
+	IrmoValue *newvalues;
 	int i, b, n;
 	guint8 i8;
 	guint16 i16;
@@ -129,7 +135,7 @@ G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 
 	// read the new values
 
-	newvalues = g_new0(IrmoVariable, objclass->nvariables);
+	newvalues = g_new0(IrmoValue, objclass->nvariables);
 	atom->data.change.newvalues = newvalues;
 
 	for (i=0; i<objclass->nvariables; ++i) {
@@ -159,7 +165,7 @@ static IrmoSendAtom *proto_parse_method_atom(IrmoClient *client,
 
 	// read arguments
 	
-	atom->data.method.args = g_new0(IrmoVariable, method->narguments);
+	atom->data.method.args = g_new0(IrmoValue, method->narguments);
 
 	for (i=0; i<method->narguments; ++i) {
 		proto_parse_field(packet, &atom->data.method.args[i],
@@ -438,6 +444,11 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.6  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.5  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

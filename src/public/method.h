@@ -43,6 +43,7 @@
 typedef struct _IrmoMethodData IrmoMethodData;
 
 #include "client.h"
+#include "object.h"
 
 /*!
  * \brief Callback function for methods
@@ -126,15 +127,33 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data);
  * 
  * \param universe  The universe object on which to invoke the method
  * \param method    The name of the method
+ *
+ * \sa irmo_universe_method_call2
  */
 
 void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...);
+
+/*!
+ * \brief Call a method
+ *
+ * Invoke a method. This is the same as \ref irmo_universe_method_call
+ * except it takes an array of \ref IrmoValue structures for the 
+ * arguments instead of using the C varargs mechanism.
+ */
+
+void irmo_universe_method_call2(IrmoUniverse *universe, gchar *method,
+				IrmoValue *arguments);
 
 //! \}
 
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log$
+// Revision 1.4  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.3  2003/08/29 16:28:19  fraggle
 // Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
 // to avoid name conflict.

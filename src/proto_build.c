@@ -81,13 +81,13 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 
 		switch (obj->objclass->variables[i]->type) {
 		case IRMO_TYPE_INT8:
-			packet_writei8(packet, obj->variables[i].i8);
+			packet_writei8(packet, obj->variables[i].i);
 			break;
 		case IRMO_TYPE_INT16:
-			packet_writei16(packet, obj->variables[i].i16);
+			packet_writei16(packet, obj->variables[i].i);
 			break;
 		case IRMO_TYPE_INT32:
-			packet_writei32(packet, obj->variables[i].i32);
+			packet_writei32(packet, obj->variables[i].i);
 			break;
 		case IRMO_TYPE_STRING:
 			packet_writestring(packet, obj->variables[i].s);
@@ -99,7 +99,7 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 static void proto_add_method_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 {
 	IrmoMethod *method = atom->data.method.spec;
-	IrmoVariable *args = atom->data.method.args;
+	IrmoValue *args = atom->data.method.args;
 	int i;
 	
 	// send method index
@@ -111,13 +111,13 @@ static void proto_add_method_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	for (i=0; i<method->narguments; ++i) {
 		switch (method->arguments[i]->type) {
 		case IRMO_TYPE_INT8:
-			packet_writei8(packet, args[i].i8);
+			packet_writei8(packet, args[i].i);
 			break;
 		case IRMO_TYPE_INT16:
-			packet_writei16(packet, args[i].i16);
+			packet_writei16(packet, args[i].i);
 			break;
 		case IRMO_TYPE_INT32:
-			packet_writei16(packet, args[i].i32);
+			packet_writei16(packet, args[i].i);
 			break;
 		case IRMO_TYPE_STRING:
 			packet_writestring(packet, args[i].s);
@@ -458,6 +458,11 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.6  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.5  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

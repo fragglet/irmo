@@ -36,6 +36,15 @@
  * \{
  */
 
+/*!
+ * \brief A union structure that can hold an integer or a string pointer
+ */
+
+typedef union {
+	guint32 i;
+	gchar *s;
+} IrmoValue;
+
 //! An Irmo Object
 
 typedef struct _IrmoObject IrmoObject;
@@ -184,6 +193,11 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *object);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.4  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.3  2003/08/31 18:20:32  fraggle
 // irmo_object_get_class_obj
 //

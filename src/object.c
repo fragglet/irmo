@@ -119,7 +119,7 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 	
 	// member variables:
 
-	object->variables = g_new0(IrmoVariable, objclass->nvariables);
+	object->variables = g_new0(IrmoValue, objclass->nvariables);
 
 	// int variables will be initialised to 0 by g_new0
 	// string values must be initialised to the empty string ("")
@@ -326,13 +326,9 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 
 	switch (spec->type) {
 	case IRMO_TYPE_INT8:
-		object->variables[spec->index].i8 = value;
-		break;
 	case IRMO_TYPE_INT16:
-		object->variables[spec->index].i16 = value;
-		break;
 	case IRMO_TYPE_INT32:
-		object->variables[spec->index].i32 = value;
+		object->variables[spec->index].i = value;
 		break;
 	default:
 		irmo_error_report("irmo_object_set_int",
@@ -400,11 +396,9 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 
 	switch (spec->type) {
 	case IRMO_TYPE_INT8:
-		return object->variables[spec->index].i8;
 	case IRMO_TYPE_INT16:
-		return object->variables[spec->index].i16;
 	case IRMO_TYPE_INT32:
-		return object->variables[spec->index].i32;
+		return object->variables[spec->index].i;
 	default:
 		irmo_error_report("irmo_object_get_int",
 				  "variable '%s' in class '%s' is not an int type",
@@ -451,6 +445,11 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
 }
 
 // $Log$
+// Revision 1.9  2003/08/31 22:51:22  fraggle
+// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
+// with a single integer field. Add irmo_universe_method_call2 to invoke
+// a method taking an array of arguments instead of using varargs
+//
 // Revision 1.8  2003/08/31 18:20:32  fraggle
 // irmo_object_get_class_obj
 //
