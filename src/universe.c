@@ -43,7 +43,11 @@ void universe_ref(IrmoUniverse *universe)
 static void universe_unref_foreach(irmo_objid_t id, IrmoObject *object,
 				   gpointer user_data)
 {
-	object_internal_destroy(object);
+	// destroy object. do not notify objects. do not remove
+	// from universe as this may upset the foreach function
+	// we are in.
+	
+	object_internal_destroy(object, FALSE, FALSE);
 }
 
 void universe_unref(IrmoUniverse *universe)
@@ -139,6 +143,11 @@ void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.9  2003/02/18 18:39:54  sdh300
 // store list of attached servers in universe
 //

@@ -71,9 +71,45 @@ static gint get_free_id(IrmoUniverse *universe)
 	return universe->lastid;
 }
 
-IrmoObject *object_new(IrmoUniverse *universe, char *typename)
+IrmoObject *object_internal_new(IrmoUniverse *universe,
+				ClassSpec *objclass,
+				irmo_objid_t id)
 {
 	IrmoObject *object;
+	
+	// make object
+	
+	object = g_new0(IrmoObject, 1);
+
+	object->id = id;
+	object->objclass = objclass;
+	object->universe = universe;
+	object->callbacks = callbackdata_new(objclass);
+	
+	// member variables:
+
+	object->variables = g_new0(IrmoVariable, objclass->nvariables);
+	
+	// add to universe
+
+	g_hash_table_insert(universe->objects, (gpointer) id, object);
+
+	// raise callback functions for new object creation
+
+	callbackdata_raise_new(universe->callbacks[objclass->index],
+			       object);
+
+	// notify attached clients
+
+	foreach_client(universe,
+		       (ClientCallback) client_sendq_add_new, object);
+
+	return object;
+}
+				
+
+IrmoObject *object_new(IrmoUniverse *universe, char *typename)
+{
 	ClassSpec *spec;
 	gint id;
 
@@ -95,42 +131,39 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 		return NULL;
 	}
 
-	// make object
-	
-	object = g_new0(IrmoObject, 1);
-
-	object->id = id;
-	object->objclass = spec;
-	object->universe = universe;
-	object->callbacks = callbackdata_new(spec);
-	
-	// member variables:
-
-	object->variables = g_new0(IrmoVariable, spec->nvariables);
-	
-	// add to universe
-
-	g_hash_table_insert(universe->objects, (gpointer) id, object);
-
-	// raise callback functions for new object creation
-
-	callbackdata_raise_new(universe->callbacks[spec->index],
-				object);
-
-	// notify attached clients
-
-	foreach_client(universe,
-		       (ClientCallback) client_sendq_add_new, object);
-	
-	return object;
+	return object_internal_new(universe, spec, id);
 }
 
 // internal object destroy function
 
-void object_internal_destroy(IrmoObject *object)
+void object_internal_destroy(IrmoObject *object,
+			     gboolean notify,
+			     gboolean remove)
 {
 	int i;
 
+	if (notify) {
+		// raise destroy callbacks
+		
+		callbackdata_raise_destroy(object->callbacks, object);
+		callbackdata_raise_destroy(object->universe->callbacks
+					   [object->objclass->index],
+					   object);
+		
+		// notify connected clients
+		
+		foreach_client(object->universe,
+			       (ClientCallback) client_sendq_add_destroy,
+			       object);
+	}	
+
+	// remove from universe
+
+	if (remove) {
+		g_hash_table_remove(object->universe->objects,
+				    (gpointer) object->id);
+	}
+	
 	// destroy member variables
 
 	for (i=0; i<object->objclass->nvariables; ++i) {
@@ -141,7 +174,7 @@ void object_internal_destroy(IrmoObject *object)
 
 	free(object->variables);
 	callbackdata_free(object->callbacks);
-	
+
 	// done
 	
 	free(object);
@@ -149,26 +182,10 @@ void object_internal_destroy(IrmoObject *object)
 
 void object_destroy(IrmoObject *object)
 {
-	// raise destroy callbacks
-
-	callbackdata_raise_destroy(object->callbacks, object);
-	callbackdata_raise_destroy(object->universe->callbacks
-				    [object->objclass->index],
-				    object);
-
-	// notify connected clients
-
-	foreach_client(object->universe,
-		       (ClientCallback) client_sendq_add_destroy,
-		       object);
-	
-	// remove from universe
-	
-	g_hash_table_remove(object->universe->objects, (gpointer) object->id);
-
 	// destroy object
+	// notify callbacks and remove from universe
 	
-	object_internal_destroy(object);
+	object_internal_destroy(object, TRUE, TRUE);
 }
 
 irmo_objid_t object_get_id(IrmoObject *object)
@@ -194,12 +211,24 @@ static void object_set_notify_foreach(IrmoClient *client,
 	client_sendq_add_change(client, data->object, data->variable);
 }
 
-static void object_set_notify(IrmoObject *object, int variable)
+// call callback functions and notify clients when a variable is changed
+
+void object_set_raise(IrmoObject *object, int variable)
 {
+	ClassSpec *objclass = object->objclass;
+	ClassVarSpec *spec = objclass->variables[variable];
 	struct set_notify_data data = {
 		object,
 		variable,
 	};
+
+	// call callback functions for change
+
+	callbackdata_raise(object->callbacks, object, spec->index);
+	callbackdata_raise(object->universe->callbacks[objclass->index],
+			   object, variable);
+	
+	// notify clients
 
 	foreach_client(object->universe,
 		       (ClientCallback) object_set_notify_foreach,
@@ -241,15 +270,7 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 		return;
 	}
 
-	// callback functions for change
-
-	callbackdata_raise(object->callbacks, object, spec->index);
-	callbackdata_raise(object->universe->callbacks[object->objclass->index],
-			   object, spec->index);
-
-	// notify attached clients
-
-	object_set_notify(object, spec->index);
+	object_set_raise(object, spec->index);
 }
 
 void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
@@ -282,15 +303,7 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 	object->variables[spec->index].s = strdup(value);
 
-	// callback functions
-
-	callbackdata_raise(object->callbacks, object, spec->index);
-	callbackdata_raise(object->universe->callbacks[object->objclass->index],
-			   object, spec->index);
-
-	// notify attached clients
-
-	object_set_notify(object, spec->index);
+	object_set_raise(object, spec->index);
 }
 
 // get int value
@@ -359,6 +372,11 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.15  2003/02/18 20:26:42  sdh300
 // Initial send queue building/notification code
 //

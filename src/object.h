@@ -8,6 +8,7 @@
 #include "public/object.h"
 
 #include "callback.h"
+#include "if_spec.h"
 
 typedef union _IrmoVariable IrmoVariable;
 
@@ -28,11 +29,36 @@ struct _IrmoObject {
 	IrmoVariable *variables;
 };
 
-void object_internal_destroy(IrmoObject *object);
+// internal function create a new object
+
+IrmoObject *object_internal_new(IrmoUniverse *universe,
+				ClassSpec *objclass,
+				irmo_objid_t id);
+
+// internal function to destroy an object. control over whether to
+// call notify routines (call callbacks, forward info to clients)
+// and whether to remove from the universe.
+
+void object_internal_destroy(IrmoObject *object, gboolean notify,
+			     gboolean remove);
+
+
+// internal function to raise notify functions for when an object
+// is modified. callback functions are called and the change forwarded
+// to connected clients. needs object and index of variable number
+// modified.
+
+void object_set_raise(IrmoObject *object, int variable);
+
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.12  2003/02/23 00:00:03  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)
