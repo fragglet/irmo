@@ -29,24 +29,10 @@ void universe_ref(IrmoUniverse *universe)
 	++universe->refcount;
 }
 
-static void object_destroy(irmo_objid_t id, IrmoObject *object,
-			   gpointer user_data)
+static void universe_unref_foreach(irmo_objid_t id, IrmoObject *object,
+				   gpointer user_data)
 {
-	int i;
-	
-	// destroy member variables
-
-	for (i=0; i<object->objclass->nvariables; ++i) {
-		if (object->objclass->variables[i]->type == TYPE_STRING
-		    && object->variables[i].s)
-			free(object->variables[i].s);
-	}
-
-	free(object->variables);
-	
-	// done
-	
-	free(object);
+	__object_destroy(object);
 }
 
 void universe_unref(IrmoUniverse *universe)
@@ -55,7 +41,7 @@ void universe_unref(IrmoUniverse *universe)
 
 	if (universe->refcount <= 0) {
 		g_hash_table_foreach(universe->objects,
-				     (GHFunc) object_destroy, NULL);
+				     (GHFunc) universe_unref_foreach, NULL);
 		g_hash_table_destroy(universe->objects);
 		interface_spec_unref(universe->spec);
 		free(universe);
@@ -73,6 +59,9 @@ IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/10/21 14:58:07  sdh300
+// split off object code to a seperate module
+//
 // Revision 1.4  2002/10/21 14:48:54  sdh300
 // oops, fix build
 //

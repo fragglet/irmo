@@ -82,4 +82,41 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 	return object;
 }
 
+// internal object destroy function
+
+void __object_destroy(IrmoObject *object)
+{
+	int i;
+	
+	// destroy member variables
+
+	for (i=0; i<object->objclass->nvariables; ++i) {
+		if (object->objclass->variables[i]->type == TYPE_STRING
+		    && object->variables[i].s)
+			free(object->variables[i].s);
+	}
+
+	free(object->variables);
+	
+	// done
+	
+	free(object);
+}
+
+void object_destroy(IrmoObject *object)
+{
+	// remove from universe
+	
+	g_hash_table_remove(object->universe->objects, (gpointer) object->id);
+
+	// destroy object
+	
+	__object_destroy(object);
+	
+	// TODO: hooks for object destruction callbacks
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/10/21 14:58:06  sdh300
+// split off object code to a seperate module
+//

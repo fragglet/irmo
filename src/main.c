@@ -38,11 +38,20 @@ int main(int argc, char *argv[])
 	else
 		printf("failed!\n");
 
+	printf("destroying object\n");
+
+	object_destroy(object);
+
+	printf("done\n");
+	
 	universe_unref(universe);
 	interface_spec_unref(spec);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/10/21 14:58:08  sdh300
+// split off object code to a seperate module
+//
 // Revision 1.3  2002/10/21 10:55:14  sdh300
 // reference checking and object deletion
 //

@@ -25,6 +25,10 @@ struct _IrmoObject {
 };
 
 IrmoObject *object_new(IrmoUniverse *universe, char *typename);
+void object_destroy(IrmoObject *object);
 
+// internal:
+
+void __object_destroy(IrmoObject *object);
 
 #endif /* #ifndef IRMO_OBJECT_H */
