@@ -5,9 +5,14 @@
 
 #include <netinet/in.h>
 
+#include "sendatom.h"
 #include "server.h"
 #include "socket.h"
 #include "universe.h"
+
+// maximum sendwindow size
+
+#define MAX_SENDWINDOW 1024
 
 typedef enum {
 	CLIENT_CONNECTING,             /* received first syn, sent syn ack */
@@ -49,6 +54,15 @@ struct _IrmoClient {
 	// new changes can be added to the existing sendatoms
 	
 	GHashTable *sendq_hashtable;
+
+	// position of start of send window in stream
+
+	int sendwindow_start;
+	
+	// send window
+
+	IrmoSendAtom *sendwindow[MAX_SENDWINDOW];
+	int sendwindow_size;
 };
 
 IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr);
@@ -58,6 +72,11 @@ void client_destroy(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.9  2003/02/23 00:00:03  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)
