@@ -192,6 +192,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	IrmoServer *server;
 	IrmoPacket *sendpacket;
 	guint32 local_hash, server_hash;
+	guint32 local_hash_expected, server_hash_expected;
 	gchar *s;
 
 	// if this is a client socket, dont let people connect
@@ -217,13 +218,23 @@ static inline void socket_run_syn(IrmoPacket *packet)
 		server = g_hash_table_lookup(packet->sock->servers,
 					     s);
 	} else {
-		// use default server
+		server = NULL;
+	}
+
+	if (!server) { 
+		// try default server if vhost not found or none 
+		// specified
 
 		server = packet->sock->default_server;
 	}
 
-	if (!server || local_hash != server->client_spec->hash
-	    || server_hash != server->universe->spec->hash) {
+	local_hash_expected 
+		= server->client_spec ? server->client_spec->hash : 0;
+	server_hash_expected 
+		= server->universe ? server->universe->spec->hash : 0;
+
+	if (!server || local_hash != server_hash_expected
+	    || server_hash != server_hash_expected) {
 		// server not found, or invalid parameters (spec hashes
 		// are wrong)
 		// send a refusal
@@ -382,6 +393,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/02/06 02:09:17  sdh300
+// Initial connection code
+//
 // Revision 1.15  2003/02/06 01:58:39  sdh300
 // Security for client sockets (dont allow connections to client sockets)
 //
