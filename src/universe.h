@@ -54,11 +54,18 @@ struct _IrmoUniverse {
 	// getting the universe state
 
 	IrmoClient *remote_client;
+
+	// method callbacks
+
+	GSList **method_callbacks;
 };
 
 #endif /* #ifndef IRMO_INTERNAL_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/03/14 16:53:46  sdh300
+// Add structure member for source client for remote universes
+//
 // Revision 1.13  2003/03/06 20:46:46  sdh300
 // Add 'remote' flag. Add documentation for IrmoUniverse data.
 //

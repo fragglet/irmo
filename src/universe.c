@@ -32,7 +32,11 @@ IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec)
 	for (i=0; i<spec->nclasses; ++i) {
 		universe->callbacks[i] = callbackdata_new(spec->classes[i]);
 	}
+
+	// method callbacks
 	
+	universe->method_callbacks = g_new0(GSList *, spec->nmethods);
+
 	return universe;
 }
 
@@ -146,6 +150,9 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/03/07 12:17:18  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.13  2003/03/06 20:53:16  sdh300
 // Checking of remote flag for universe objects
 //
