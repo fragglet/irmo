@@ -110,7 +110,7 @@ static void client_run_connecting(IrmoClient *client)
 				= client->server->universe;
 			InterfaceSpec *spec = client->server->client_spec;
 
-			packet = packet_new(128); // static: fixme
+			packet = packet_new(4); 
 
 			// this is the client making a connection to
 			// the server
@@ -160,6 +160,9 @@ void _client_run(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/18 18:25:40  sdh300
+// Initial queue object code
+//
 // Revision 1.4  2003/02/18 17:41:37  sdh300
 // Add timeout for connect (6 attempts)
 //

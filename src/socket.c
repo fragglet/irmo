@@ -32,7 +32,7 @@ void _socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 
 	result = sendto(sock->sock,
 			packet->data,
-			packet->pos,
+			packet->len,
 			0,
 			dest,
 			sockaddr_len(dest->sa_family));
@@ -472,6 +472,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.22  2003/02/18 17:49:17  sdh300
+// understand SYN FIN responses (connection refused on connect)
+//
 // Revision 1.21  2003/02/16 23:41:27  sdh300
 // Reference counting for client and server objects
 //

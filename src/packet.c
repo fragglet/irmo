@@ -25,11 +25,17 @@ void packet_free(IrmoPacket *packet)
 	free(packet);
 }
 
+static inline void packet_resize(IrmoPacket *packet, int newsize)
+{
+	packet->data = realloc(packet->data, newsize);
+	packet->len = newsize;
+}
+
 gboolean packet_writei8(IrmoPacket *packet, guchar c)
 {
 	if (packet->pos + 1 > packet->len)
-		return FALSE;
-
+		packet_resize(packet, packet->pos + 1);
+	
 	packet->data[packet->pos++] = c;
 
 	return TRUE;
@@ -38,7 +44,7 @@ gboolean packet_writei8(IrmoPacket *packet, guchar c)
 gboolean packet_writei16(IrmoPacket *packet, guint16 s)
 {
 	if (packet->pos + 2 > packet->len)
-		return FALSE;
+		packet_resize(packet, packet->pos + 2);
 
 	packet->data[packet->pos++] = (s >> 8) & 0xff;
 	packet->data[packet->pos++] = (s) & 0xff;
@@ -49,7 +55,7 @@ gboolean packet_writei16(IrmoPacket *packet, guint16 s)
 gboolean packet_writei32(IrmoPacket *packet, guint32 l)
 {
 	if (packet->pos + 4 > packet->len)
-		return FALSE;
+		packet_resize(packet, packet->pos + 4);
 
 	packet->data[packet->pos++] = (l >> 24) & 0xff;
 	packet->data[packet->pos++] = (l >> 16) & 0xff;
@@ -62,7 +68,7 @@ gboolean packet_writei32(IrmoPacket *packet, guint32 l)
 gboolean packet_writestring(IrmoPacket *packet, gchar *s)
 {
 	if (packet->pos + strlen(s) + 1 > packet->len)
-		return FALSE;
+		packet_resize(packet, packet->pos + strlen(s) + 1);
 
 	strcpy(packet->data + packet->pos, s);
 	packet->pos += strlen(s) + 1;
@@ -132,6 +138,9 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/02/11 19:10:03  sdh300
+// fix packet_writestring
+//
 // Revision 1.6  2003/02/11 19:04:07  sdh300
 // Fix another bug in packet_readstring
 //
