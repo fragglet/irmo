@@ -1,3 +1,28 @@
+// Emacs style mode select -*- C++ -*-
+//---------------------------------------------------------------------
+//
+// $Id: server.h,v 1.10 2003-06-09 21:06:52 sdh300 Exp $
+//
+// Copyright (C) 2002-2003 University of Southampton
+// Copyright (C) 2003 Simon Howard
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the
+// Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+// Boston, MA 02111-1307, USA.
+//
+//---------------------------------------------------------------------
+
 #ifndef IRMO_INTERNAL_SERVER_H
 #define IRMO_INTERNAL_SERVER_H
 
@@ -50,6 +75,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/03/17 17:33:59  sdh300
+// Fix arguments to irmo_client_callback_raise
+//
 // Revision 1.8  2003/03/17 17:16:48  sdh300
 // Generalise to invoking lists of IrmoClientCallback callbacks
 //
