@@ -1,0 +1,62 @@
+\documentclass{article}
+
+\title{The Irmo Multiplayer Game Library}
+
+\author{sdh300@zepler.net}
+\date{November 2003}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Overview}
+
+\subsection{The Peer-to-Peer model}
+
+Traditional multiplayer games have been based on a peer-to-peer model.
+In this, each player in the game acts as a ``peer''. This 
+relies on modelling the game world as a deterministic system. The
+only unpredictable input, therefore, is the input of the players into
+the game. Each peer transmits the player's input to the other peers.
+
+This has the advantage of being a very simple system to implement. However,
+it has a number of disadvantages:
+
+\begin{itemize}
+
+\item
+ 
+Random input into the game is difficult to model. Typically this
+involves using a pseudo random number generator where each node starts
+from a common random seed. This is particularly important as game AI
+typically makes heavy use of random numbers.
+
+\item
+
+Fluctuations in the network traffic can have large effects on the 
+playability of the game. Any interruption in traffic from one peer
+in the game will cause the game to freeze until the connection is
+resumed. As the probability of an interruption increases with the
+number of peers, this model does not scale well to large numbers
+of players.
+
+\item
+
+Allowing players to join a game while in progress is difficult.
+It is difficult to transmit the complete game state to a joining
+peer. This is troublesome for the players as they must prearrange
+games rather than simply joining one in progress.
+
+\end{itemize}
+
+\subsection{Client-Server Architecture}
+
+The Client-Server architecture is one which solves the problems
+inherent in the Peer-to-Peer architecture. 
+
+
+
+\end{document}
+
