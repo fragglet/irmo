@@ -23,8 +23,7 @@
 //
 //---------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <string.h>
+#include "sysheaders.h"
 
 #include "netlib.h"
 #include "packet.h"
@@ -344,6 +343,9 @@ void irmo_proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.13  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.12  2003/11/18 19:32:19  fraggle
 // Use GTimeVal instead of struct timeval
 //

@@ -23,6 +23,8 @@
 //
 //---------------------------------------------------------------------
 
+#include "sysheaders.h"
+
 #include "sendatom.h"
 
 IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
@@ -37,6 +39,9 @@ IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.13  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.12  2003/10/22 16:13:10  fraggle
 // Split off sendatom classes into separate files
 //

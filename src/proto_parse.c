@@ -31,10 +31,7 @@
 // TODO: proto_verify.c for verifification of packets before they are
 // parsed.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include "sysheaders.h"
 
 #include "error.h"
 #include "packet.h"
@@ -291,6 +288,9 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.14  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.13  2003/11/20 00:19:17  fraggle
 // Add some fixes to get compiling under windows
 //

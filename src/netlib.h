@@ -26,25 +26,7 @@
 #ifndef IRMO_NETLIB_H
 #define IRMO_NETLIB_H
 
-#ifdef _WIN32
-
-#include <WinSock.h>
-
-#else
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netdb.h>
-
-#define closesocket close
-
-#endif
-
 #include "socket.h"
-
-#include <glib.h>
 
 // various network util functions
 
@@ -82,6 +64,9 @@ void irmo_timeval_from_ms(int ms, GTimeVal *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.9  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.8  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

@@ -23,10 +23,11 @@
 //
 //---------------------------------------------------------------------
 
-#include "netlib.h"
+#include "sysheaders.h"
 
 #include "connection.h"
 #include "error.h"
+#include "netlib.h"
 #include "socket.h"
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, 
@@ -195,6 +196,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.15  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.14  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

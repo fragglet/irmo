@@ -23,6 +23,8 @@
 //
 //---------------------------------------------------------------------
 
+#include "sysheaders.h"
+
 #include "if_spec.h"
 
 //
@@ -271,6 +273,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.11  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.10  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

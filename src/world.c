@@ -27,8 +27,7 @@
 // Irmo World 
 //
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "sysheaders.h"
 
 #include "callback.h"
 #include "error.h"
@@ -204,6 +203,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.7  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.6  2003/11/18 18:14:47  fraggle
 // Get compilation under windows to work, almost
 //

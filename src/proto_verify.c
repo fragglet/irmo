@@ -26,6 +26,8 @@
 // proto_verify: Verify packets are are properly formed before
 // parsing
 
+#include "sysheaders.h"
+
 #include "packet.h"
 
 static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
@@ -101,6 +103,9 @@ gboolean irmo_proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.10  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.9  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //

@@ -25,10 +25,7 @@
 
 // Network util functions
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
+#include "sysheaders.h"
 
 #include "netlib.h"
 
@@ -229,6 +226,9 @@ void irmo_timeval_from_ms(int ms, GTimeVal *time)
 }
 
 // $Log$
+// Revision 1.8  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.7  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

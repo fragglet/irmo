@@ -28,8 +28,6 @@
 
 #include "public/if_spec.h"
 
-#include <glib.h>
-
 // these are imposed by the size restrictions
 // of the network protocol 
 
@@ -122,6 +120,9 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
+// Revision 1.8  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.7  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

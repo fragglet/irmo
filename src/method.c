@@ -23,8 +23,7 @@
 //
 //---------------------------------------------------------------------
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "sysheaders.h"
 
 #include "callback.h"
 #include "error.h"
@@ -239,6 +238,9 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 }
 
 // $Log$
+// Revision 1.13  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.12  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //

@@ -33,8 +33,6 @@
 #include "socket.h"
 #include "world.h"
 
-#include <glib.h>
-
 struct _IrmoServer {
 
 	// reference count
@@ -81,6 +79,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log$
+// Revision 1.6  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.5  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

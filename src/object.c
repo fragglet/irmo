@@ -27,9 +27,7 @@
 // Object code
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "sysheaders.h"
 
 #include "callback.h"
 #include "client.h"
@@ -37,8 +35,6 @@
 #include "object.h"
 #include "sendatom.h"
 #include "world.h"
-
-#include <glib.h>
 
 // do something for all connected clients
 
@@ -491,6 +487,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.19  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.18  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

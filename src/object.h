@@ -32,8 +32,6 @@
 
 #include "public/object.h"
 
-#include <glib.h>
-
 #include "callback.h"
 #include "if_spec.h"
 
@@ -95,6 +93,9 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.7  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.6  2003/11/17 00:32:28  fraggle
 // Rename irmo_objid_t to IrmoObjectID for consistency with other types
 //

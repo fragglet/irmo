@@ -27,16 +27,11 @@
 // Base socket code
 //
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-
-#include "netlib.h"
+#include "sysheaders.h"
 
 #include "connection.h"
 #include "error.h"
+#include "netlib.h"
 #include "packet.h"
 #include "protocol.h"
 #include "socket.h"
@@ -724,6 +719,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.22  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.21  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

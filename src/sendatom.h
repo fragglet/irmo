@@ -48,15 +48,12 @@ typedef enum {
 	NUM_SENDATOM_TYPES,
 } IrmoSendAtomType;
 
-#include "netlib.h"
-
 #include "client.h"
 #include "if_spec.h"
 #include "method.h"
+#include "netlib.h"
 #include "object.h"
 #include "packet.h"
-
-#include <glib.h>
 
 typedef gboolean (*IrmoSendAtomVerifyFunc)(IrmoPacket *packet);
 typedef IrmoSendAtom *(*IrmoSendAtomReadFunc)(IrmoPacket *packet);
@@ -201,6 +198,9 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.12  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.11  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

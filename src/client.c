@@ -23,9 +23,7 @@
 //
 //---------------------------------------------------------------------
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include "sysheaders.h"
 
 #include "client.h"
 #include "connection.h"
@@ -358,6 +356,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.15  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.14  2003/11/18 18:14:45  fraggle
 // Get compilation under windows to work, almost
 //

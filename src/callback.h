@@ -38,8 +38,6 @@ typedef struct _IrmoCallbackData IrmoCallbackData;
 #include "if_spec.h"
 #include "object.h"
 
-#include <glib.h>
-
 struct _IrmoCallback {
 	GSList **list;                 // callback list this belongs to
 	gpointer func;
@@ -97,6 +95,9 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data,
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.10  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.9  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

@@ -27,9 +27,7 @@
 // run sendatoms in receive window
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "sysheaders.h"
 
 #include "client.h"
 #include "object.h"
@@ -96,6 +94,9 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.9  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.8  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than

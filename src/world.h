@@ -37,8 +37,6 @@
 #include "if_spec.h"
 #include "object.h"
 
-#include <glib.h>
-
 // internals:
 
 // imposed by network protocol:
@@ -98,6 +96,9 @@ struct _IrmoWorld {
 #endif /* #ifndef IRMO_INTERNAL_WORLD_H */
 
 // $Log$
+// Revision 1.5  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.4  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

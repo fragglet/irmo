@@ -23,10 +23,9 @@
 //
 //---------------------------------------------------------------------
 
-#include <string.h>
+#include "sysheaders.h"
 
 #include "netlib.h"
-
 #include "object.h"
 #include "packet.h"
 
@@ -83,6 +82,9 @@ IrmoSendAtomClass irmo_null_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.3  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.2  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

@@ -28,8 +28,6 @@
 
 #include "public/client.h"
 
-#include <time.h>
-
 #include "netlib.h"
 #include "sendatom.h"
 #include "server.h"
@@ -177,6 +175,9 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
+// Revision 1.8  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.7  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

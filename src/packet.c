@@ -27,8 +27,7 @@
 // Safe packet handling code
 //
 
-#include <stdlib.h>
-#include <string.h>
+#include "sysheaders.h"
 
 #include "packet.h"
 
@@ -244,6 +243,9 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 }
 
 // $Log$
+// Revision 1.9  2003/12/01 13:07:30  fraggle
+// Split off system headers to sysheaders.h for common portability stuff
+//
 // Revision 1.8  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //
