@@ -303,36 +303,38 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 static inline void socket_run_synack(IrmoPacket *packet)
 {
-	if (packet->client->state == CLIENT_CONNECTING) {
+	IrmoClient *client;
+
+	if (client->state == CLIENT_CONNECTING) {
 		// this is the first synack we have received
 		
-		packet->client->state = CLIENT_CONNECTED;
+		client->state = CLIENT_CONNECTED;
 
 		// create the remote universe object
 
-		if (packet->client->server->client_spec) {
-			packet->client->universe
-			  = irmo_universe_new(packet->client->server->client_spec);
+		if (client->server->client_spec) {
+			client->universe
+			  = irmo_universe_new(client->server->client_spec);
 
 			// mark this as a remote universe
 			
-			packet->client->universe->remote = TRUE;
+			client->universe->remote = TRUE;
 
+			client->universe->remote_client = client;
 		}
 
 		// if we are serving a universe to the client,
 		// send the entire current universe state
 
-		if (packet->client->server->universe)
-			irmo_client_sendq_add_state(packet->client);
+		if (client->server->universe)
+			irmo_client_sendq_add_state(client);
 
 		// raise callback functions for new client
 		// do this after sending the state: it may create
 		// new objects in the callback, in which case the
 		// 'new' can be created twice
 
-		irmo_server_raise_connect(packet->client->server, 
-					  packet->client);
+		irmo_server_raise_connect(client->server, client);
 	}
 
 	// if we are the client receiving this from the server,
@@ -498,6 +500,11 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.32  2003/03/12 18:56:25  sdh300
+// Only call callback functions when existing objects have already been
+// added to sendq. This is to stop multiple news on new objects created
+// in connect callback functions
+//
 // Revision 1.31  2003/03/08 20:02:19  sdh300
 // Fix bug in compile
 //

@@ -8,6 +8,7 @@
 #include "public/universe.h"
 
 #include "callback.h"
+#include "client.h"
 #include "if_spec.h"
 #include "object.h"
 
@@ -48,11 +49,19 @@ struct _IrmoUniverse {
 	// cannot be changed
 	
 	gboolean remote;
+
+	// if this is remote, this is the client from which we are
+	// getting the universe state
+
+	IrmoClient *remote_client;
 };
 
 #endif /* #ifndef IRMO_INTERNAL_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/06 20:46:46  sdh300
+// Add 'remote' flag. Add documentation for IrmoUniverse data.
+//
 // Revision 1.12  2003/03/06 19:33:51  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //
