@@ -122,6 +122,11 @@ void object_destroy(IrmoObject *object)
 	__object_destroy(object);
 }
 
+gchar *object_get_class(IrmoObject *object)
+{
+	return object->objclass->name;
+}
+
 void object_set_int(IrmoObject *object, gchar *variable, gint value)
 {
 	ClassVarSpec *spec;
@@ -267,6 +272,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2002/11/12 23:26:38  sdh300
+// this is simpler and clearer
+//
 // Revision 1.11  2002/11/05 16:28:10  sdh300
 // new object callbacks
 //

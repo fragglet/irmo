@@ -33,6 +33,10 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename);
 
 void object_destroy(IrmoObject *object);
 
+// get the class of an object
+
+gchar *object_get_class(IrmoObject *object);
+
 // set the value of an object variable (int type)
 
 void object_set_int(IrmoObject *object, gchar *variable, int value);
@@ -57,6 +61,9 @@ void __object_destroy(IrmoObject *object);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/11/13 13:56:24  sdh300
+// add some documentation
+//
 // Revision 1.6  2002/10/29 16:09:11  sdh300
 // initial callback code
 //
