@@ -1,4 +1,5 @@
 #include "connection.h"
+#include "netlib.h"
 #include "socket.h"
 
 IrmoConnection *irmo_connect(int domain, gchar *location, int port,
@@ -15,7 +16,7 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 
 	// try to resolve the name
 
-	addr = sockaddr_for_name(location, port);
+	addr = sockaddr_for_name(domain, location, port);
 	
 	// create a server for our local universe. for accessing the
 	// local universe the server is seen as a client connecting
@@ -53,3 +54,6 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 } 
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/02/06 02:10:11  sdh300
+// Add missing CVS tags
+//
