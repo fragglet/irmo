@@ -176,14 +176,14 @@ static struct sockaddr_in6 *sockaddr_in6_for_name(gchar *name, int port)
 
 #endif
 
-struct sockaddr *sockaddr_for_name(int domain, gchar *name, int port)
+struct sockaddr *sockaddr_for_name(IrmoSocketDomain domain, gchar *name, int port)
 {
 	switch (domain) {
-	case AF_UNSPEC:
-	case AF_INET:
+	case IRMO_SOCKET_AUTO:
+	case IRMO_SOCKET_IPV4:
 		return (struct sockaddr *) sockaddr_in_for_name(name, port);
 #ifdef USE_IPV6
-	case AF_INET6:
+	case IRMO_SOCKET_IPV6:
 		return (struct sockaddr *) sockaddr_in6_for_name(name, port);
 #endif
 	}
@@ -241,6 +241,9 @@ void irmo_timeval_from_ms(int ms, struct timeval *time)
 }
 
 // $Log$
+// Revision 1.3  2003/08/26 14:57:31  fraggle
+// Remove AF_* BSD sockets dependency from Irmo API
+//
 // Revision 1.2  2003/08/06 16:15:18  fraggle
 // IPv6 support
 //

@@ -59,8 +59,9 @@ typedef IrmoClient IrmoConnection;
  * universe: their types must match those expected by the server.
  * (see \ref irmo_server_new)
  *
- * \param domain         Domain of the socket to use. Usually this will
- *                       be AF_INET.
+ * \param domain         Domain of the socket to use (see \ref IrmoSocketDomain).
+ *			 Use IRMO_SOCKET_AUTO to try to connect on both
+ *                       IPv4 and IPv6.
  * \param location       The hostname of the remote machine to connect to.
  * \param port           The port on the remote machine on which the server
  *                       is running.
@@ -74,7 +75,7 @@ typedef IrmoClient IrmoConnection;
  *                       established.
  */
 
-IrmoConnection *irmo_connect(int domain, gchar *location, int port,
+IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
                              IrmoInterfaceSpec *spec,
 			     IrmoUniverse *local_universe);
 
@@ -142,8 +143,11 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn);
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/08/26 14:57:31  fraggle
+// Remove AF_* BSD sockets dependency from Irmo API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.9  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices

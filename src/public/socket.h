@@ -42,18 +42,31 @@ typedef struct _IrmoSocket IrmoSocket;
 #include "server.h"
 
 /*!
+ * \brief Socket domain
+ * 
+ * When creating a new socket, it is neccessary to specify the type
+ * of socket to be created, IPv4 or IPv6.
+ */
+
+typedef enum {
+	IRMO_SOCKET_AUTO,
+	IRMO_SOCKET_IPV4,
+	IRMO_SOCKET_IPV6,
+} IrmoSocketDomain;
+
+/*!
  * \brief Create a new socket
  *
  * Create a new socket listening on a particular port. Servers can then
  * be attached to the socket to serve universes on different vhosts.
  *
- * \param domain  Domain to use. Normally this will be AF_INET.
+ * \param type    The type of socket to create (see \ref IrmoSocketDomain)
  * \param port    The port number to listen on
  * \return        A new IrmoSocket or NULL if the new socket could
  *                not be created.
  */
 
-IrmoSocket *irmo_socket_new(int domain, int port);
+IrmoSocket *irmo_socket_new(IrmoSocketDomain domain, int port);
 
 /*!
  * \brief Add a reference to a socket
@@ -94,6 +107,9 @@ void irmo_socket_run(IrmoSocket *sock);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.3  2003/08/26 14:57:31  fraggle
+// Remove AF_* BSD sockets dependency from Irmo API
+//
 // Revision 1.2  2003/08/16 18:13:48  fraggle
 // Remove dependency on BSD sockets API in Irmo API
 //

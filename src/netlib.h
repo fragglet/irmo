@@ -28,6 +28,7 @@
 
 #include <glib.h>
 #include <netinet/in.h>
+#include "socket.h"
 
 // various network util functions
 
@@ -46,7 +47,7 @@ gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
 
 struct sockaddr *sockaddr_copy(struct sockaddr *addr);
 
-struct sockaddr *sockaddr_for_name(int domain, gchar *name, int port);
+struct sockaddr *sockaddr_for_name(IrmoSocketDomain domain, gchar *name, int port);
 
 // time functions
 
@@ -72,8 +73,11 @@ void irmo_timeval_from_ms(int ms, struct timeval *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:24  fraggle
-// Initial revision
+// Revision 1.2  2003/08/26 14:57:31  fraggle
+// Remove AF_* BSD sockets dependency from Irmo API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:24  fraggle
+// Initial sourceforge import
 //
 // Revision 1.8  2003/06/09 21:06:51  sdh300
 // Add CVS Id tag and copyright/license notices

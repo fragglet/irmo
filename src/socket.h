@@ -53,7 +53,7 @@ struct _IrmoSocket {
 	
 	// domain/port and socket
 
-	int domain;
+	IrmoSocketDomain domain;
 	int port;
 	int sock;
 
@@ -71,15 +71,18 @@ struct _IrmoSocket {
 	GHashTable *clients;
 };
 
-IrmoSocket *irmo_socket_new_unbound(int domain);
+IrmoSocket *irmo_socket_new_unbound(IrmoSocketDomain domain);
 void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 			    IrmoPacket *packet);
 
 #endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/08/26 14:57:31  fraggle
+// Remove AF_* BSD sockets dependency from Irmo API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.10  2003/06/09 21:06:53  sdh300
 // Add CVS Id tag and copyright/license notices

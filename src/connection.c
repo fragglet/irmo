@@ -27,7 +27,7 @@
 #include "netlib.h"
 #include "socket.h"
 
-IrmoConnection *irmo_connect(int domain, gchar *location, int port,
+IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 			     IrmoInterfaceSpec *spec, 
 			     IrmoUniverse *local_universe)
 {
@@ -38,13 +38,13 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 
 	g_return_val_if_fail(location != NULL, NULL);
 
-	if (domain == AF_UNSPEC) {
+	if (domain == IRMO_SOCKET_AUTO) {
 		IrmoConnection *conn;
 
 #ifdef USE_IPV6
 		// try IPv6
 		
-		conn = irmo_connect(AF_INET6, location, port, spec,
+		conn = irmo_connect(IRMO_SOCKET_IPV6, location, port, spec,
 				    local_universe);
 
 		if (conn)
@@ -52,7 +52,7 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 #endif
 		// fall back to v4
 
-		return irmo_connect(AF_INET, location, port, spec,
+		return irmo_connect(IRMO_SOCKET_IPV4, location, port, spec,
 				    local_universe);
 	}
 	
@@ -159,6 +159,9 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
 }
 
 // $Log$
+// Revision 1.4  2003/08/26 14:57:31  fraggle
+// Remove AF_* BSD sockets dependency from Irmo API
+//
 // Revision 1.3  2003/08/16 14:06:22  fraggle
 // Report an error when failing to connect
 //

@@ -70,32 +70,51 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 	}
 }
 
+static int socket_type_to_domain(IrmoSocketDomain type)
+{
+	switch (type) {
+	case IRMO_SOCKET_AUTO:
+		return AF_UNSPEC;
+	case IRMO_SOCKET_IPV4:
+		return AF_INET;
+#ifdef USE_IPV6
+	case IRMO_SOCKET_IPV6:
+		return AF_INET6;
+#endif
+	default:
+		return -1;
+	}
+}
+
 // shared constructor
 // this does not bind to a port
 
-static IrmoSocket *_socket_new(int domain)
+static IrmoSocket *_socket_new(IrmoSocketDomain type)
 {
 	IrmoSocket *irmosock;
 	int sock;
 	int opts;
-	
-	if (domain == AF_UNSPEC)
-		domain = AF_INET;
+	int domain;
+
+	if (type == IRMO_SOCKET_AUTO)
+		type = IRMO_SOCKET_IPV4;
 
 	// check for supported domains
 
-	if (domain != AF_INET
+	if (type != IRMO_SOCKET_IPV4
 #ifdef USE_IPV6
-         && domain != AF_INET6
+         && type != IRMO_SOCKET_IPV6
 #endif
 		) {
 		irmo_error_report("irmo_socket_new",
-				  "unsupported address domain (%i)", domain);
+				  "unsupported socket type(%i)", type);
 		return NULL;
 	}
 	
 	// try to create the socket and bind to the port
 
+	domain = socket_type_to_domain(type);
+	
 	sock = socket(domain, SOCK_DGRAM, 0);
 
 	if (sock < 0) {
@@ -132,7 +151,7 @@ static IrmoSocket *_socket_new(int domain)
 
 	irmosock = g_new0(IrmoSocket, 1);
 	irmosock->refcount = 1;
-	irmosock->domain = domain;
+	irmosock->domain = type;
 	irmosock->sock = sock;
 	irmosock->servers = g_hash_table_new(g_str_hash, g_str_equal);
 	irmosock->clients = g_hash_table_new((GHashFunc) sockaddr_hash,
@@ -172,9 +191,9 @@ void irmo_socket_unref(IrmoSocket *sock)
 
 // create a socket for clients, unbound
 
-IrmoSocket *irmo_socket_new_unbound(int domain)
+IrmoSocket *irmo_socket_new_unbound(IrmoSocketDomain type)
 {
-	IrmoSocket *sock = _socket_new(domain);
+	IrmoSocket *sock = _socket_new(type);
 
 	if (!sock)
 		return NULL;
@@ -187,11 +206,12 @@ IrmoSocket *irmo_socket_new_unbound(int domain)
 
 // create a socket for servers, bound to a port
 
-IrmoSocket *irmo_socket_new(int domain, int port)
+IrmoSocket *irmo_socket_new(IrmoSocketDomain domain, int port)
 {
 	IrmoSocket *sock;
 	struct sockaddr *addr;
 	int addr_len;
+	int result;
 
 	sock = _socket_new(domain);
 	
@@ -200,17 +220,17 @@ IrmoSocket *irmo_socket_new(int domain, int port)
 	
 	// try to bind to the port
 
-	addr_len = sockaddr_len(domain);
+	addr_len = sockaddr_len(socket_type_to_domain(sock->domain));
 	addr = (struct sockaddr *) g_malloc0(addr_len);
 
-	switch (domain) {
-	case AF_INET:
+	switch (sock->domain) {
+	case IRMO_SOCKET_IPV4:
 		((struct sockaddr_in *) addr)->sin_family = AF_INET;
 		((struct sockaddr_in *) addr)->sin_addr.s_addr = INADDR_ANY;
 		((struct sockaddr_in *) addr)->sin_port = htons(port);
 		break;
 #ifdef USE_IPV6
-	case AF_INET6:
+	case IRMO_SOCKET_IPV6:
 		((struct sockaddr_in6 *) addr)->sin6_family = AF_INET6;
 		((struct sockaddr_in6 *) addr)->sin6_addr = in6addr_any;
 		((struct sockaddr_in6 *) addr)->sin6_port = htons(port);
@@ -219,15 +239,17 @@ IrmoSocket *irmo_socket_new(int domain, int port)
 #endif
 	}
 	
-	if (bind(sock->sock, addr, addr_len) < 0) {
+	result = bind(sock->sock, addr, addr_len);
+
+	free(addr);
+
+	if (result < 0) {
 		irmo_error_report("irmo_socket_new",
 				  "cannot bind socket to port %i (%s)",
 				  port, strerror(errno));
 		irmo_socket_unref(sock);
 		return NULL;
 	}
-
-	free(addr);
 
 	// bound successfully
 
@@ -546,7 +568,7 @@ void irmo_socket_run(IrmoSocket *sock)
 
 	g_return_if_fail(sock != NULL);
 	
-	addr_len = sockaddr_len(sock->domain);
+	addr_len = sockaddr_len(socket_type_to_domain(sock->domain));
 	addr = malloc(addr_len);
 	
 	while (1) {
@@ -589,6 +611,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log$
+// Revision 1.4  2003/08/26 14:57:31  fraggle
+// Remove AF_* BSD sockets dependency from Irmo API
+//
 // Revision 1.3  2003/08/18 01:23:14  fraggle
 // Use G_INLINE_FUNC instead of inline for portable inline function support
 //
