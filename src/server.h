@@ -28,7 +28,7 @@ struct _IrmoServer {
 
 	// spec for client universes
 
-	InterfaceSpec *client_spec;
+	IrmoInterfaceSpec *client_spec;
 	
 	// connected IrmoClients hashed by IP
 	
@@ -38,6 +38,10 @@ struct _IrmoServer {
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/23 00:00:04  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.4  2003/02/16 23:41:27  sdh300
 // Reference counting for client and server objects
 //

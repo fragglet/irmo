@@ -26,7 +26,7 @@ typedef struct _IrmoServer IrmoServer;
  */
 
 IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
-		       IrmoUniverse *universe, InterfaceSpec *spec);
+		       IrmoUniverse *universe, IrmoInterfaceSpec *spec);
 
 /*!
  * \brief Reference a server object
@@ -56,6 +56,9 @@ void server_unref(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/02/23 00:35:16  sdh300
+// Add some missing documentation
+//
 // Revision 1.1  2003/02/23 00:00:07  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

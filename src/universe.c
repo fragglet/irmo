@@ -9,7 +9,7 @@
 #include "if_spec.h"
 #include "universe.h"
 
-IrmoUniverse *universe_new(InterfaceSpec *spec)
+IrmoUniverse *universe_new(IrmoInterfaceSpec *spec)
 {
 	IrmoUniverse *universe;
 	int i;
@@ -143,6 +143,10 @@ void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/06 19:22:17  sdh300
+// Split off some of the constructor/destructor/change code into
+// seperate functions that can be reused elsewhere
+//
 // Revision 1.10  2003/02/23 01:01:01  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split

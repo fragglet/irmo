@@ -18,7 +18,7 @@
 #define MAX_OBJECTS 65536 
 
 struct _IrmoUniverse {
-	InterfaceSpec *spec;
+	IrmoInterfaceSpec *spec;
 	IrmoCallbackData **callbacks;
 	GHashTable *objects;
 	irmo_objid_t lastid;
@@ -29,6 +29,10 @@ struct _IrmoUniverse {
 #endif /* #ifndef IRMO_INTERNAL_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/02/23 00:00:04  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.10  2003/02/18 18:39:54  sdh300
 // store list of attached servers in universe
 //

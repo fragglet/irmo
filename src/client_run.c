@@ -13,7 +13,7 @@
 
 static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 {
-	InterfaceSpec *spec = client->universe->spec;
+	IrmoInterfaceSpec *spec = client->universe->spec;
 	ClassSpec *objclass = spec->classes[atom->data.newobj.classnum];
 	
 	// sanity check
@@ -171,3 +171,6 @@ void client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/03/06 19:23:13  sdh300
+// Add initial code to run through the atoms in the send window
+//

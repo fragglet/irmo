@@ -61,7 +61,7 @@ irmo_objid_t object_get_id(IrmoObject *object);
  * \brief Get the class of an object
  *
  * All objects have a class, which is one of the classes defined in the
- * InterfaceSpec for the Universe the object exists in. This retrieves
+ * IrmoInterfaceSpec for the Universe the object exists in. This retrieves
  * the name of the class for a particular object.
  *
  * \param object The object to query.
@@ -132,6 +132,10 @@ gchar *object_get_string(IrmoObject *object, gchar *variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/02/23 00:00:06  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.11  2002/11/17 20:37:15  sdh300
 // initial doxygen documentation
 //

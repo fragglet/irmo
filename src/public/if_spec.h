@@ -7,28 +7,28 @@
  */
 
 /*!
- * \brief An InterfaceSpec object
+ * \brief An IrmoInterfaceSpec object
  * \ingroup if_spec
  */
 
-typedef struct _InterfaceSpec InterfaceSpec;
+typedef struct _IrmoInterfaceSpec IrmoInterfaceSpec;
 
 /*!
- * \brief Create a new InterfaceSpec object
+ * \brief Create a new IrmoInterfaceSpec object
  *
  * A file is parsed with the interface described in a simple
  * C-style syntax.
  *
  * \param filename	The filename of the specification file
- * \return		A new InterfaceSpec object or NULL for failure
+ * \return		A new IrmoInterfaceSpec object or NULL for failure
  */
 
-InterfaceSpec *interface_spec_new(char *filename);
+IrmoInterfaceSpec *interface_spec_new(char *filename);
 
 /*!
- * \brief Add a reference to an InterfaceSpec object
+ * \brief Add a reference to an IrmoInterfaceSpec object
  *
- * Reference counting is implemented for InterfaceSpec objects. Every time 
+ * Reference counting is implemented for IrmoInterfaceSpec objects. Every time 
  * a new reference is kept, call this to increment the reference count.
  * When a reference is removed, call \ref interface_spec_unref. The 
  * reference count starts at 1. When the reference count reaches 0, the
@@ -37,23 +37,27 @@ InterfaceSpec *interface_spec_new(char *filename);
  * \param spec		The object to reference
  */
 
-void interface_spec_ref(InterfaceSpec *spec);
+void interface_spec_ref(IrmoInterfaceSpec *spec);
 
 /*!
- * \brief Remove a reference to an InterfaceSpec object
+ * \brief Remove a reference to an IrmoInterfaceSpec object
  *
  * See \ref interface_spec_ref
  *
  * \param spec		The object to unreference
  */
 
-void interface_spec_unref(InterfaceSpec *spec);
+void interface_spec_unref(IrmoInterfaceSpec *spec);
 
 //! \}
 
 #endif /* #ifndef IFSPEC_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/02/23 00:00:06  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.5  2002/11/17 22:01:58  sdh300
 // InterfaceSpec documentation
 //

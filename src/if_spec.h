@@ -67,7 +67,7 @@ struct _ClassSpec {
 
 // overall interface
 
-struct _InterfaceSpec {
+struct _IrmoInterfaceSpec {
 
 	int refcount;
 	
@@ -93,6 +93,10 @@ struct _InterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/02/23 00:00:03  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.5  2002/11/17 22:01:58  sdh300
 // InterfaceSpec documentation
 //

@@ -136,7 +136,7 @@ static void client_run_connecting(IrmoClient *client)
 		if (client->server->socket->type == SOCKET_CLIENT) {
 			IrmoUniverse *local_universe
 				= client->server->universe;
-			InterfaceSpec *spec = client->server->client_spec;
+			IrmoInterfaceSpec *spec = client->server->client_spec;
 
 			packet = packet_new(4); 
 
@@ -194,6 +194,10 @@ IrmoUniverse *client_get_universe(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/05 17:37:11  sdh300
+// Initialise receive window
+// Free receive window and send window in destructor
+//
 // Revision 1.10  2003/03/03 22:14:44  sdh300
 // Initial window construction and sending of packets
 //

@@ -34,7 +34,7 @@ typedef struct _IrmoConnection IrmoConnection;
  */
 
 IrmoConnection *irmo_connect(int domain, gchar *location, int port,
-                             InterfaceSpec *spec,
+                             IrmoInterfaceSpec *spec,
 			     IrmoUniverse *local_universe);
 
 /*!
@@ -79,6 +79,9 @@ IrmoUniverse *connection_get_universe(IrmoConnection *conn);
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/23 00:45:43  sdh300
+// Add universe access functions for client, connection
+//
 // Revision 1.2  2003/02/23 00:26:57  sdh300
 // Add some documentation and helper functions for IrmoConnection
 //
