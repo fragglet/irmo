@@ -14,5 +14,5 @@ SRC= \
   method.h	error.c	      error.h    if_spec_reflect.c
 
 libirmo_la_SOURCES= $(SRC)
-libirmo_la_LIBADD=$(MODULES_LIBS) -lfl
+libirmo_la_LIBADD=$(MODULES_LIBS) @LEXLIB@
 
