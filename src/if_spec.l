@@ -74,6 +74,7 @@ WHITESPACE [[:space:]]+
 "int8"		return TOKEN_INT8;
 "int16"		return TOKEN_INT16;
 "int32"		return TOKEN_INT32;
+"irmo_objid_t"  return TOKEN_INT16;
 "string"	return TOKEN_STRING;
 {ID}		return TOKEN_ID;
 ";"		return TOKEN_SEMICOLON;
@@ -469,6 +470,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/14 17:36:36  sdh300
+// Store index for method specs
+//
 // Revision 1.3  2003/03/08 20:02:07  sdh300
 // Fix namespace pollution from if_spec flex parser
 //
