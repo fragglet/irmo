@@ -1,6 +1,7 @@
 #ifndef IRMO_NETLIB_H
 #define IRMO_NETLIB_H
 
+#include <glib.h>
 #include <netinet/in.h>
 
 // various network util functions
@@ -17,3 +18,6 @@ gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/11/26 16:23:28  sdh300
+// Split off sockaddr hash functions to a seperate netlib module
+//
