@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <glib.h>
 
@@ -154,7 +155,43 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 	// TODO: value change callbacks
 }
 
+void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
+{
+	ClassVarSpec *spec;
+
+	spec = g_hash_table_lookup(object->objclass->variable_hash,
+				   variable);
+
+	if (!spec) {
+		fprintf(stderr,
+			"object_set_string: unknown variable '%s' "
+			"in class '%s'\n",
+			variable,
+			object->objclass->name);
+		
+		return;
+	}
+
+	if (spec->type != TYPE_STRING) {
+		fprintf(stderr,
+			"object_set_string: variable '%s' in class '%s' "
+			"is not string type\n",
+			variable, object->objclass->name);
+		return;
+	}
+
+	if (object->variables[spec->n].s)
+		free(object->variables[spec->n].s);
+
+	object->variables[spec->n].s = strdup(value);
+
+	// TODO: value change callbacks
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/21 15:32:35  sdh300
+// variable value setting
+//
 // Revision 1.2  2002/10/21 15:09:01  sdh300
 // object destruction
 //
