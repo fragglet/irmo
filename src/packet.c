@@ -36,7 +36,7 @@ IrmoPacket *irmo_packet_new(void)
 	IrmoPacket *packet = g_new0(IrmoPacket, 1);
 
 	packet->data_size = 256;
-	packet->data = malloc(packet->data_size);
+	packet->data = g_malloc(packet->data_size);
 	packet->len = 0;
 	packet->pos = 0;
 
@@ -45,9 +45,9 @@ IrmoPacket *irmo_packet_new(void)
 
 void irmo_packet_free(IrmoPacket *packet)
 {
-	free(packet->data);
-	free(packet->src);
-	free(packet);
+	g_free(packet->data);
+	g_free(packet->src);
+	g_free(packet);
 }
 
 G_INLINE_FUNC void irmo_packet_resize(IrmoPacket *packet)
@@ -243,6 +243,9 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 }
 
 // $Log$
+// Revision 1.10  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.9  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

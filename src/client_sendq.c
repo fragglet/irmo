@@ -83,7 +83,7 @@ void irmo_sendatom_free(IrmoSendAtom *atom)
 	if (atom->klass->destructor)
 		atom->klass->destructor(atom);
 
-	free(atom);
+	g_free(atom);
 }
 
 static void irmo_sendatom_nullify(IrmoSendAtom *atom)
@@ -305,6 +305,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.5  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.4  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

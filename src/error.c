@@ -36,7 +36,7 @@ void irmo_error_report(char *function_name, char *format, ...)
 	va_start(args, format);
 
 	if (last_error)
-		free(last_error);
+		g_free(last_error);
 
 	last_error = g_strdup_vprintf(format, args);
 
@@ -51,6 +51,9 @@ char *irmo_error_get(void)
 }
 
 // $Log$
+// Revision 1.5  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.4  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

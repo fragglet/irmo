@@ -107,7 +107,7 @@ static gboolean irmo_change_atom_verify(IrmoPacket *packet)
 		}
 	}
 	
-	free(changed);
+	g_free(changed);
 
 	return result;
 }
@@ -235,13 +235,13 @@ static void irmo_change_atom_destroy(IrmoChangeAtom *atom)
                         // free strings
                                                                                 
                         if (objclass->variables[i]->type == IRMO_TYPE_STRING)
-                                free(atom->newvalues[i].s);
+                                g_free(atom->newvalues[i].s);
                 }
                                                                                 
-                free(atom->newvalues);
+                g_free(atom->newvalues);
         }
                                                                                 
-        free(atom->changed);
+        g_free(atom->changed);
 }
 
 static void irmo_change_atom_run(IrmoChangeAtom *atom)
@@ -302,7 +302,7 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 			obj->variables[i].i = newvalues[i].i;
 			break;
 		case IRMO_TYPE_STRING:
-			free(obj->variables[i].s);
+			g_free(obj->variables[i].s);
 			obj->variables[i].s = strdup(newvalues[i].s);
 			break;
 		}
@@ -379,6 +379,9 @@ IrmoSendAtomClass irmo_change_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.5  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.4  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

@@ -140,16 +140,16 @@ static void irmo_client_destroy(IrmoClient *client)
 		if (client->recvwindow[i])
 			irmo_sendatom_free(client->recvwindow[i]);
 
-	free(client->recvwindow);
+	g_free(client->recvwindow);
 
 	if (client->world)
 		irmo_world_unref(client->world);
 
 	if (client->connection_error)
-		free(client->connection_error);
+		g_free(client->connection_error);
 	
-	free(client->addr);
-	free(client);
+	g_free(client->addr);
+	g_free(client);
 }
 
 void irmo_client_internal_unref(IrmoClient *client)
@@ -357,6 +357,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.18  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.17  2004/01/06 01:36:18  fraggle
 // Remove vhosting. Simplify the server API.
 //

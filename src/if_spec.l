@@ -160,7 +160,7 @@ static void parse_assert(int expr, char *msg, ...)
 				  yyin_filename, line_num,
 				  error_string);
 
-		free(error_string);
+		g_free(error_string);
 
 		va_end(l);
 
@@ -194,8 +194,8 @@ G_INLINE_FUNC IrmoValueType type_token_to_spec(int i)
 
 static void class_var_free(IrmoClassVar *var)
 {
-	free(var->name);
-	free(var);
+	g_free(var->name);
+	g_free(var);
 }
 
 static gboolean eat_class_var_statement(IrmoClass *klass)
@@ -270,9 +270,9 @@ static void class_free(IrmoClass *spec)
 	for (i=start; i<spec->nvariables; ++i)
 		class_var_free(spec->variables[i]);
 
-	free(spec->variables);
-	free(spec->name);
-	free(spec);
+	g_free(spec->variables);
+	g_free(spec->name);
+	g_free(spec);
 }
 
 G_INLINE_FUNC guint rotate(guint i)
@@ -313,7 +313,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 
 	klass = g_new0(IrmoClass, 1); 
 	klass->name = strdup(yytext);
-	klass->variables = malloc(sizeof(IrmoClassVar *) * MAX_VARIABLES);
+	klass->variables = g_new0(IrmoClassVar *, MAX_VARIABLES);
 	klass->nvariables = 0;
 	klass->variable_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	klass->parent = spec;
@@ -359,7 +359,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 
 	if (klass->nvariables < MAX_VARIABLES)
 		klass->variables 
-		   = realloc(klass->variables, klass->nvariables * sizeof(IrmoClassVar *));
+		   = g_realloc(klass->variables, klass->nvariables * sizeof(IrmoClassVar *));
 
 	//printf("read class: name '%s', %i variables\n", klass->name, i);
 
@@ -372,8 +372,8 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 
 static void method_arg_free(IrmoMethodArg *arg)
 {
-	free(arg->name);
-	free(arg);
+	g_free(arg->name);
+	g_free(arg);
 }
 
 static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
@@ -433,9 +433,9 @@ static void method_free(IrmoMethod *spec)
 	for (i=0; i<spec->narguments; ++i) 
 		method_arg_free(spec->arguments[i]);
 	
-	free(spec->arguments);
-	free(spec->name);
-	free(spec);
+	g_free(spec->arguments);
+	g_free(spec->name);
+	g_free(spec);
 }
 
 static guint method_hash(IrmoMethod *spec)
@@ -466,7 +466,7 @@ static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 	
 	method = g_new0(IrmoMethod, 1); 
 	method->name = strdup(yytext);
-	method->arguments = malloc(sizeof(IrmoMethodArg *) * MAX_ARGUMENTS);
+	method->arguments = g_new0(IrmoMethodArg *, MAX_ARGUMENTS);
 	method->argument_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	method->narguments = 0;
 	method->parent = spec;
@@ -479,8 +479,8 @@ static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 	while (eat_method_arg(method));
 
 	if (method->narguments < MAX_ARGUMENTS) {
-		method->arguments = realloc(method->arguments,
-					  sizeof(IrmoMethodArg) * method->narguments);
+		method->arguments = g_realloc(method->arguments,
+					      sizeof(IrmoMethodArg) * method->narguments);
 	}
 
 	parse_assert(yylex() == TOKEN_SEMICOLON,
@@ -508,13 +508,13 @@ static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
 	for (i=spec->nclasses-1; i>=0; --i)
 		class_free(spec->classes[i]);
 
-	free(spec->classes);
+	g_free(spec->classes);
 
 	for (i=0; i<spec->nmethods; ++i)
 		method_free(spec->methods[i]);
 
-	free(spec->methods);
-	free(spec);
+	g_free(spec->methods);
+	g_free(spec);
 }
 
 static guint irmo_interface_spec_hash(IrmoInterfaceSpec *spec)
@@ -540,8 +540,8 @@ static IrmoInterfaceSpec *eat_interface()
 	int token;
 
 	spec = g_new0(IrmoInterfaceSpec, 1); 
-	spec->classes = malloc(sizeof(IrmoClass *) * MAX_CLASSES);
-	spec->methods = malloc(sizeof(IrmoMethod *) * MAX_METHODS);
+	spec->classes = g_new0(IrmoClass *, MAX_CLASSES);
+	spec->methods = g_new0(IrmoMethod *, MAX_METHODS);
 	spec->nclasses = spec->nmethods = 0;
 	spec->refcount = 1;
 	
@@ -585,11 +585,11 @@ static IrmoInterfaceSpec *eat_interface()
 	}
 
 	if (spec->nclasses < MAX_METHODS)
-		spec->classes = realloc(spec->classes,
-					sizeof(IrmoClass *) * spec->nclasses);
+		spec->classes = g_realloc(spec->classes,
+					  sizeof(IrmoClass *) * spec->nclasses);
 	if (spec->nmethods < MAX_METHODS)
-		spec->methods = realloc(spec->methods,
-					sizeof(IrmoMethod *) * spec->nmethods);
+		spec->methods = g_realloc(spec->methods,
+					  sizeof(IrmoMethod *) * spec->nmethods);
 
 	spec->hash = irmo_interface_spec_hash(spec);
 
@@ -649,6 +649,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.14  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.13  2003/12/27 03:33:14  fraggle
 // Allow comma-separated variables in class definitions, rather than
 // requiring a complete separate statement for each variable

@@ -69,7 +69,7 @@ static void irmo_callback_destroy(IrmoCallback *callback)
 	// free callback data
 
 	irmo_callbacklist_free(callback->destroy_callbacks);
-	free(callback);
+	g_free(callback);
 }
 
 // unset a callback
@@ -156,10 +156,10 @@ void irmo_callbackdata_free(IrmoCallbackData *data)
 			irmo_callbacklist_free(data->variable_callbacks[i]);
 		}
 
-		free(data->variable_callbacks);
+		g_free(data->variable_callbacks);
 	}
 
-	free(data);
+	g_free(data);
 }
 
 struct raise_data {
@@ -414,6 +414,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.15  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.14  2003/12/27 19:22:25  fraggle
 // Some of the callback lists were not being destroyed properly
 //

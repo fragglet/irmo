@@ -146,7 +146,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 
 	irmo_method_invoke(world, &method_data);
 
-	free(args);
+	g_free(args);
 }
 
 
@@ -238,6 +238,9 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 }
 
 // $Log$
+// Revision 1.14  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.13  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

@@ -158,7 +158,7 @@ void irmo_server_unref(IrmoServer *server)
 		if (server->world)
 			irmo_world_unref(server->world);
 		
-		free(server);
+		g_free(server);
 	}
 }
 
@@ -260,6 +260,9 @@ void irmo_server_run(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.17  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.16  2004/01/06 02:07:10  fraggle
 // Add irmo_server_run utility function
 //

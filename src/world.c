@@ -122,20 +122,20 @@ void irmo_world_unref(IrmoWorld *world)
 
 		irmo_callbackdata_free(world->callbacks_all);
 		
-		free(world->callbacks);
+		g_free(world->callbacks);
 
 		// method callbacks
 		
 		for (i=0; i<world->spec->nmethods; ++i)
 			irmo_callbacklist_free(world->method_callbacks[i]);
 
-		free(world->method_callbacks);
+		g_free(world->method_callbacks);
 
 		// no longer using the interface spec
 		
 		irmo_interface_spec_unref(world->spec);
 		
-		free(world);
+		g_free(world);
 	}
 }
 
@@ -210,6 +210,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.9  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.8  2003/12/27 19:22:25  fraggle
 // Some of the callback lists were not being destroyed properly
 //

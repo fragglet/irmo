@@ -106,7 +106,7 @@ gint irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr)
 {
 	int len = irmo_sockaddr_len(addr->sa_family);
-	struct sockaddr *cp = malloc(len);
+	struct sockaddr *cp = g_malloc(len);
 
 	memcpy(cp, addr, len);
 
@@ -226,6 +226,9 @@ void irmo_timeval_from_ms(int ms, GTimeVal *time)
 }
 
 // $Log$
+// Revision 1.9  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.8  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

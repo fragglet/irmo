@@ -133,10 +133,10 @@ static void irmo_method_atom_destroy(IrmoMethodAtom *atom)
  
         for (i=0; i<method->narguments; ++i) {
                 if (method->arguments[i]->type == IRMO_TYPE_STRING)
-                        free(atom->method.args[i].s);
+                        g_free(atom->method.args[i].s);
         }
  
-        free(atom->method.args);
+        g_free(atom->method.args);
 }
 
 static gsize irmo_method_atom_length(IrmoMethodAtom *atom)
@@ -189,6 +189,9 @@ IrmoSendAtomClass irmo_method_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.5  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.4  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

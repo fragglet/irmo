@@ -216,20 +216,20 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	for (i=0; i<object->objclass->nvariables; ++i) {
 		if (object->objclass->variables[i]->type == IRMO_TYPE_STRING
 		    && object->variables[i].s)
-			free(object->variables[i].s);
+			g_free(object->variables[i].s);
 	}
 
-	free(object->variables);
+	g_free(object->variables);
 	irmo_callbackdata_free(object->callbacks);
 
 	// free variable time array
 
 	if (object->variable_time)
-		free(object->variable_time);
+		g_free(object->variable_time);
 	
 	// done
 	
-	free(object);
+	g_free(object);
 }
 
 void irmo_object_destroy(IrmoObject *object)
@@ -374,7 +374,7 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 		return;
 	}
 
-	free(object->variables[spec->index].s);
+	g_free(object->variables[spec->index].s);
 
 	object->variables[spec->index].s = strdup(value);
 
@@ -487,6 +487,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.20  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.19  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

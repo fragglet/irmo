@@ -188,7 +188,7 @@ void irmo_socket_unref(IrmoSocket *sock)
 		if (!sock->shutdown)
 			irmo_socket_shutdown(sock);
 
-		free(sock);
+		g_free(sock);
 	}
 }
 
@@ -244,7 +244,7 @@ IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port)
 	
 	result = bind(sock->sock, addr, addr_len);
 
-	free(addr);
+	g_free(addr);
 
 	if (result < 0) {
 		irmo_error_report("irmo_socket_new",
@@ -287,7 +287,7 @@ static void socket_send_refuse(IrmoSocket *sock,
 		
 	irmo_packet_free(packet);
 
-	free(message);
+	g_free(message);
 }
 
 static void socket_run_syn(IrmoPacket *packet)
@@ -611,7 +611,7 @@ void irmo_socket_run(IrmoSocket *sock)
 	g_return_if_fail(sock != NULL);
 	
 	addr_len = irmo_sockaddr_len(socket_type_to_domain(sock->domain));
-	addr = malloc(addr_len);
+	addr = g_malloc(addr_len);
 	
 	while (1) {
 		IrmoPacket packet;
@@ -644,7 +644,7 @@ void irmo_socket_run(IrmoSocket *sock)
 		socket_run_packet(&packet);
       	}
 
-	free(addr);
+	g_free(addr);
 
 	// run each of the clients
 	
@@ -692,6 +692,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.25  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.24  2004/04/17 22:02:35  fraggle
 // Fix crash on disconnect from multiple delete
 //

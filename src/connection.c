@@ -186,7 +186,7 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 	va_list args;
 
 	if (conn->connection_error)
-		free(conn->connection_error);
+		g_free(conn->connection_error);
 
 	va_start(args, s);
 
@@ -196,6 +196,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.17  2004/04/17 22:19:57  fraggle
+// Use glib memory management functions where possible
+//
 // Revision 1.16  2004/01/06 01:36:18  fraggle
 // Remove vhosting. Simplify the server API.
 //
