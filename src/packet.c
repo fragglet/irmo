@@ -65,7 +65,7 @@ gboolean packet_writestring(IrmoPacket *packet, gchar *s)
 		return FALSE;
 
 	strcpy(packet->data + packet->pos, s);
-	packet->pos += strlen(s);
+	packet->pos += strlen(s) + 1;
 
 	return TRUE;
 }
@@ -132,6 +132,9 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/02/11 19:04:07  sdh300
+// Fix another bug in packet_readstring
+//
 // Revision 1.5  2003/02/11 19:02:03  sdh300
 // fix packet_readstring bug
 //
