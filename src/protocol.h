@@ -29,6 +29,10 @@
 #include "client.h"
 #include "packet.h"
 
+// protocol version number, bumped every time the protocol changes
+
+#define IRMO_PROTOCOL_VERSION 2
+
 // verifying integrity of received packets before parsing
 
 gboolean irmo_proto_verify_packet(IrmoPacket *packet);
@@ -48,6 +52,9 @@ int irmo_proto_client_timeout_time(IrmoClient *client);
 #endif /* #ifndef IRMO_PROTO_H */
 
 // $Log$
+// Revision 1.3  2003/10/17 23:33:05  fraggle
+// protocol version checking
+//
 // Revision 1.2  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

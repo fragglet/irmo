@@ -265,6 +265,7 @@ static void socket_run_syn(IrmoPacket *packet)
 	IrmoServer *server;
 	IrmoPacket *sendpacket;
 	guint local_hash, server_hash;
+	guint protocol_version;
 	guint local_hash_expected=0, server_hash_expected=0;
 	gchar *s;
 
@@ -301,6 +302,13 @@ static void socket_run_syn(IrmoPacket *packet)
 	
 	// read packet data
 	
+	if (!irmo_packet_readi16(packet, &protocol_version))
+		return;
+
+	if (protocol_version != IRMO_PROTOCOL_VERSION) {
+		return;
+	}
+
 	if (!irmo_packet_readi32(packet, &local_hash)
 	 || !irmo_packet_readi32(packet, &server_hash)) {
 		// no hashes - drop
@@ -664,6 +672,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.14  2003/10/17 23:33:05  fraggle
+// protocol version checking
+//
 // Revision 1.13  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than

@@ -196,6 +196,7 @@ static void client_run_connecting(IrmoClient *client)
 			// the server
 
 			irmo_packet_writei16(packet, PACKET_FLAG_SYN);
+			irmo_packet_writei16(packet, IRMO_PROTOCOL_VERSION);
 			irmo_packet_writei32(packet,
 					     local_world ?
 					     local_world->spec->hash : 0);
@@ -351,6 +352,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.11  2003/10/17 23:33:05  fraggle
+// protocol version checking
+//
 // Revision 1.10  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //
