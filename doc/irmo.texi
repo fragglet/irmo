@@ -126,11 +126,12 @@ and @code{LDFLAGS} variables of the @code{Makefile}:
 
 Irmo makes use of the GLib library. GLib provides implementations of
 a number of common and useful data structures and algorithms, as well
-as standardised type definitions for portability. It is not 
-neccessary to have in depth knowledge of GLib to use the Irmo library, 
-but the programmer may find it useful to understand the basic
-types defined by the GLib library. More information can be found 
-in the GLib manual:
+as standardised type definitions for portability. 
+
+While the API does not use the GLib library (the interface is plain 
+C), a copy of the library is required to be installed to compile 
+Irmo. You may also wish to use GLib in your own programs. More
+information can be found in the GLib manual:
 
 http://developer.gnome.org/doc/API/2.0/glib/
 
