@@ -1,4 +1,21 @@
 
+	* Beginnings of a texinfo manual
+	* Now uses a more object oriented model internally for the
+	  network protocol code.
+	* Protocol version numbering
+	* Better error reporting when connecting to servers
+	* You can now have multiple variable declarations separated
+	  by commas in interface definition files
+	* Now runs on NetBSD
+	* Compiles under MSVC, though doesnt all quite work properly
+	  yet
+
+	API:
+
+	* Header files are now C++-safe
+	* Header files no longer depend on glib (glib is still used
+	  internally, but there is no need to install the glib headers)
+
 v1.1.0
 
 	* Completed IPv6 support
