@@ -1,7 +1,7 @@
 PKGS=glib-2.0
 CFLAGS=-Wall `pkg-config --cflags $(PKGS)` -DUSE_IPV6
 LDFLAGS = `pkg-config --libs $(PKGS)` -lfl
-OBJS=if_spec.o main.o universe.o object.o callback.o socket.o server.o netlib.o
+OBJS=if_spec.o main.o universe.o object.o callback.o socket.o server.o netlib.o packet.o
 
 irmo: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
@@ -13,6 +13,9 @@ irmo: $(OBJS)
 	flex -o$@ $<
 
 # $Log: not supported by cvs2svn $
+# Revision 1.9  2002/11/26 16:37:23  sdh300
+# add USE_IPV6 to makefile CFLAGS
+#
 # Revision 1.8  2002/11/26 16:23:27  sdh300
 # Split off sockaddr hash functions to a seperate netlib module
 #
