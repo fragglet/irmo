@@ -75,7 +75,14 @@ struct _IrmoClassVar {
 // class
 
 struct _IrmoClass {
+
+	// parent object
+
 	IrmoInterfaceSpec *parent;
+
+	// parent class or NULL for base class
+	
+	IrmoClass *parent_class;
 
 	int index;                      // index in class list
 
@@ -115,6 +122,9 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
+// Revision 1.5  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.4  2003/08/31 18:32:10  fraggle
 // refcounting functions for the InterfaceSpec internals
 //

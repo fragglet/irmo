@@ -52,6 +52,10 @@ struct _IrmoCallbackData {
 
 	IrmoClass *objclass;
 
+	// callback data object for the parent class
+	
+	IrmoCallbackData *parent_data;
+
 	// callbacks for watching for creations of new objects
 	// this is only for the class callbackdata - redundant
 	// in object callbacks
@@ -78,7 +82,7 @@ IrmoCallback *irmo_callbacklist_add(GSList **list, gpointer func,
 				    gpointer user_data);
 void irmo_callbacklist_free(GSList *list);
 
-IrmoCallbackData *callbackdata_new(IrmoClass *objclass);
+IrmoCallbackData *callbackdata_new(IrmoClass *objclass, IrmoCallbackData *parent_data);
 void callbackdata_free(IrmoCallbackData *data);
 void callbackdata_raise(IrmoCallbackData *data,
 			 IrmoObject *object, gint variable_index);
@@ -88,6 +92,9 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.6  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.5  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

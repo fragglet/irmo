@@ -115,7 +115,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	object->id = id;
 	object->objclass = objclass;
 	object->world = world;
-	object->callbacks = callbackdata_new(objclass);
+	object->callbacks = callbackdata_new(objclass, NULL);
 	
 	// member variables:
 
@@ -444,7 +444,45 @@ IrmoWorld *irmo_object_get_world(IrmoObject *obj)
 	return obj->world;
 }
 
+gboolean irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
+{
+	IrmoClass *c;
+	
+	g_return_val_if_fail(obj != NULL, FALSE);
+	g_return_val_if_fail(klass != NULL, FALSE);
+
+	// search through all parent classes
+
+	for (c=obj->objclass; c; c=c->parent_class) {
+		if (c == klass)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+gboolean irmo_object_is_a(IrmoObject *obj, gchar *classname)
+{
+	IrmoClass *klass;
+
+	g_return_val_if_fail(obj != NULL, FALSE);
+	g_return_val_if_fail(classname != NULL, FALSE);
+
+	klass = irmo_interface_spec_get_class(obj->world->spec, classname);
+
+	if (!klass) {
+		irmo_error_report("irmo_object_is_a",
+				  "unknown class name '%s'", classname);
+		return FALSE;
+	}
+
+	return irmo_object_is_a2(obj, klass);
+}
+
 // $Log$
+// Revision 1.11  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.10  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

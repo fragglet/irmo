@@ -77,7 +77,7 @@ void irmo_callbacklist_free(GSList *list)
 
 // create a new callbackdata object for watching an object or class
 
-IrmoCallbackData *callbackdata_new(IrmoClass *objclass)
+IrmoCallbackData *callbackdata_new(IrmoClass *objclass, IrmoCallbackData *parent)
 {
 	IrmoCallbackData *data;
 
@@ -88,6 +88,8 @@ IrmoCallbackData *callbackdata_new(IrmoClass *objclass)
 	data->new_callbacks = NULL;
 	data->class_callbacks = NULL;
 	data->destroy_callbacks = NULL;
+
+	data->parent_data = parent;
 
 	if (objclass)
 		data->variable_callbacks 
@@ -157,6 +159,15 @@ void callbackdata_raise(IrmoCallbackData *data,
 				(GFunc) callbackdata_raise_foreach,
 				&raise_data);
 	}
+
+	// recurse through superclass watches
+	// but not if this is a variable that isnt in the superclass
+
+	if (data->parent_data
+	 && variable_index < data->parent_data->objclass->nvariables) {
+		callbackdata_raise(data->parent_data, object, 
+				   variable_index);
+	}
 }
 
 static void callbackdata_raise_destroy_foreach(IrmoCallback *callback,
@@ -177,6 +188,11 @@ void callbackdata_raise_destroy(IrmoCallbackData *data,
 	g_slist_foreach(data->destroy_callbacks,
 			(GFunc) callbackdata_raise_destroy_foreach,
 			&raise_data);
+
+	// recurse through superclass watches
+
+	if (data->parent_data)
+		callbackdata_raise_destroy(data->parent_data, object);
 }
 
 void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
@@ -188,6 +204,11 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 	g_slist_foreach(data->new_callbacks,
 			(GFunc) callbackdata_raise_destroy_foreach,
 			&raise_data);
+
+	// recurse through superclass watches
+
+	if (data->parent_data)
+		callbackdata_raise_new(data->parent_data, object);
 }
 
 static GSList **find_variable(IrmoCallbackData *data, gchar *variable)
@@ -355,6 +376,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.8  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.7  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

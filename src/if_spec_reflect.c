@@ -113,6 +113,13 @@ void irmo_class_foreach_variable(IrmoClass *klass,
 		func(klass->variables[i], user_data);
 }
 
+IrmoClass *irmo_class_parent_class(IrmoClass *klass)
+{
+	g_return_val_if_fail(klass != NULL, NULL);
+
+	return klass->parent_class;
+}
+
 void irmo_class_ref(IrmoClass *klass)
 {
 	g_return_if_fail(klass != NULL);
@@ -246,6 +253,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.6  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.5  2003/08/31 18:32:10  fraggle
 // refcounting functions for the InterfaceSpec internals
 //

@@ -57,10 +57,18 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 	world->callbacks = g_new0(IrmoCallbackData *, spec->nclasses);
 
 	for (i=0; i<spec->nclasses; ++i) {
-		world->callbacks[i] = callbackdata_new(spec->classes[i]);
+		IrmoCallbackData *parent_data;
+
+		if (spec->classes[i]->parent_class)
+			parent_data = world->callbacks[spec->classes[i]->parent_class->index];
+		else
+			parent_data = NULL;
+		
+		world->callbacks[i] = callbackdata_new(spec->classes[i],
+						       parent_data);
 	}
 
-	world->callbacks_all = callbackdata_new(NULL);
+	world->callbacks_all = callbackdata_new(NULL, NULL);
 
 	// method callbacks
 	
@@ -149,7 +157,7 @@ static void world_foreach_foreach(gint key,
 	// only call callback if this is of the particular class
 	// or if no class was specified
 	
-	if (!data->spec || object->objclass == data->spec) {
+	if (!data->spec || irmo_object_is_a2(object, data->spec)) {
 		data->func(object, data->user_data);
 	}
 }
@@ -194,6 +202,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.2  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.1  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

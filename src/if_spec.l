@@ -59,6 +59,7 @@ typedef enum {
 	TOKEN_RPAREN,
 	TOKEN_LCURLY,
 	TOKEN_RCURLY,
+	TOKEN_COLON,
 	TOKEN_SEMICOLON,
 	TOKEN_COMMA,
 } token_t;
@@ -113,6 +114,7 @@ WHITESPACE [[:space:]]+
 "irmo_objid_t"  return TOKEN_INT16;
 "string"	return TOKEN_STRING;
 {ID}		return TOKEN_ID;
+":"		return TOKEN_COLON;
 ";"		return TOKEN_SEMICOLON;
 ","		return TOKEN_COMMA;
 "("		return TOKEN_LPAREN;
@@ -254,10 +256,19 @@ static IrmoClassVar *eat_class_var(IrmoClass *klass)
 static void class_free(IrmoClass *spec)
 {
 	int i;
+	int start;
 
 	g_hash_table_destroy(spec->variable_hash);
+
+	// find the start of the range of variables to free
+	// (dont free variables from parent class)
+
+	if (spec->parent_class)
+		start = spec->parent_class->nvariables;
+	else
+		start = 0;
 	
-	for (i=0; i<spec->nvariables; ++i)
+	for (i=start; i<spec->nvariables; ++i)
 		class_var_free(spec->variables[i]);
 
 	free(spec->variables);
@@ -282,12 +293,16 @@ static guint class_hash(IrmoClass *spec)
 	}
 
 	hash ^= g_str_hash(spec->name);
+
+	if (spec->parent_class)
+		hash = rotate(hash) ^ spec->parent_class->index;
 	
 	return hash;
 }
 
 static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 {
+	token_t token;
 	IrmoClass *klass;
 	int i;
 
@@ -305,8 +320,41 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 	klass->parent = spec;
 
 	cleanup_push(class_free, klass);
+
+	token = yylex();
+
+	// subclassing
+
+	if (token == TOKEN_COLON) {
+		IrmoClass *parent_class;
+
+		token = yylex();
+
+		parse_assert(token == TOKEN_ID, "name of parent class expected");
+
+		parent_class = irmo_interface_spec_get_class(spec, yytext);
+
+		parse_assert(parent_class != NULL,
+			     "unknown class '%s'", yytext);
+
+		klass->parent_class = parent_class;
+
+		// copy all variables
+
+		for (i=0; i<parent_class->nvariables; ++i) {
+			IrmoClassVar *var = parent_class->variables[i];
+
+			klass->variables[klass->nvariables++] = var;
+			g_hash_table_insert(klass->variable_hash, 
+					    var->name, var);
+		}
+
+		// continue where we left off
+
+		token = yylex();
+	}
 	
-	parse_assert(yylex() == TOKEN_LCURLY, "expected '{' open parentheses");
+	parse_assert(token == TOKEN_LCURLY, "expected '{' open parentheses");
 
 	while (eat_class_var(klass));
 
@@ -454,7 +502,11 @@ static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
 	g_hash_table_destroy(spec->class_hash);
 	g_hash_table_destroy(spec->method_hash);
 
-	for (i=0; i<spec->nclasses; ++i)
+	// free classes.
+	// this must be done in reverse order, so classes lower in the
+	// hierarchy are freed first
+
+	for (i=spec->nclasses-1; i>=0; --i)
 		class_free(spec->classes[i]);
 
 	free(spec->classes);
@@ -598,6 +650,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.10  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.9  2003/08/31 18:32:10  fraggle
 // refcounting functions for the InterfaceSpec internals
 //

@@ -178,6 +178,15 @@ gchar *irmo_class_get_name(IrmoClass *klass);
 gint irmo_class_num_variables(IrmoClass *klass);
 
 /*!
+ * \brief Get the parent class of a class
+ *
+ * \return The parent class, or NULL if the class is not a subclass
+ *
+ */
+
+IrmoClass *irmo_class_parent_class(IrmoClass *klass);
+
+/*!
  * \brief Get the \ref IrmoClassVar object representing a particular class
  *        variable
  *
@@ -314,6 +323,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.9  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.8  2003/08/31 22:24:26  fraggle
 // Add missing prototypes to headers
 //

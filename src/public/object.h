@@ -188,11 +188,37 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable);
 
 IrmoWorld *irmo_object_get_world(IrmoObject *object);
 
+/*!
+ * \brief Find if an object is an instance of a particular class
+ *
+ * Returns TRUE if the object is an instance of the class specified 
+ * or any of its subclasses.
+ *
+ * \param object	The object
+ * \param classname	The name of the class
+ */
+
+gboolean irmo_object_is_a(IrmoObject *object, char *classname);
+
+/*!
+ * \brief Find if an object is an instance of a particular class
+ *
+ * This is the same as \ref irmo_object_is_a, except takes a 
+ * reference to an \ref IrmoClass object instead of a class name.
+ *
+ */
+
+gboolean irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
+
+
 //! \}
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.6  2003/09/02 20:33:55  fraggle
+// Subclassing in interfaces
+//
 // Revision 1.5  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
