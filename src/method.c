@@ -54,7 +54,7 @@ static void method_invoke_foreach(IrmoCallbackFuncData *data,
 {
 	IrmoMethodCallback func = (IrmoMethodCallback) data->func;
 
-	func(data, data->user_data);
+	func(method_data, data->user_data);
 }
 
 void irmo_universe_method_invoke(IrmoUniverse *universe,
@@ -180,3 +180,6 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/03/15 02:21:16  sdh300
+// Initial method code
+//
