@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "connection.h"
 #include "if_spec.h"
 #include "universe.h"
 #include "socket.h"
@@ -38,12 +40,11 @@ void my_iterator_callback(IrmoObject *object, gpointer user_data)
 	printf("this is object number: %i\n", object->id);
 }
 
-int main(int argc, char *argv[])
+void test_universe()
 {
 	InterfaceSpec *spec;
 	IrmoUniverse *universe;
 	IrmoObject *object;
-	IrmoSocket *sock, *sock2;
 	
 	spec = interface_spec_new("test.if");
 	
@@ -186,25 +187,54 @@ int main(int argc, char *argv[])
 
 	printf("done\n");
 
-	printf("create an ipv4 socket:\n");
-
-	sock = socket_new(AF_INET, 2000);
-
-	printf("create an ipv6 socket:\n");
-
-	sock2 = socket_new(AF_INET6, 2000);
-
-	printf("create a new server\n");
-	
-	server_new(sock, NULL, universe, spec);
-	
 	universe_unref(universe);
 	interface_spec_unref(spec);
+}
 
-	return 0;
+#define TEST_PORT 7000
+
+int main(int argc, char *argv[])
+{
+	if (argc < 2) {
+		printf("usage: %s [client|server]\n", argv[0]);
+		exit(0);
+	}
+
+	if (!strcmp(argv[1], "client")) {
+		InterfaceSpec *spec;
+		IrmoConnection *conn;
+
+		spec = interface_spec_new("test.if");
+		
+		conn = irmo_connect(AF_INET, "localhost", TEST_PORT,
+				    spec, NULL);
+
+		printf("connected to server!\n");
+	} else if (!strcmp(argv[1], "server")) {
+		InterfaceSpec *spec;
+		IrmoUniverse *universe;
+		IrmoSocket *socket;
+		IrmoServer *server;
+
+		spec = interface_spec_new("test.if");
+
+		universe = universe_new(spec);
+
+		socket = socket_new(AF_INET, TEST_PORT);
+
+		server = server_new(socket, NULL, universe, NULL);
+
+		while (1) {
+			socket_run(socket);
+			usleep(100);
+		}
+	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2002/11/26 16:38:17  sdh300
+// some tests for the socket and server constructor functions
+//
 // Revision 1.17  2002/11/13 14:14:46  sdh300
 // object iterator function
 //
