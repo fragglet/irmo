@@ -100,7 +100,7 @@ void irmo_client_destroy(IrmoClient *client)
 	for (i=0; i<client->sendwindow_size; ++i)
 		sendatom_free(client->sendwindow[i]);
 
-	free(client->sendwindow);
+	//free(client->sendwindow);
 
 	// destroy receive window and all data in it
 	
@@ -195,6 +195,9 @@ IrmoUniverse *irmo_client_get_universe(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/03/07 12:31:50  sdh300
+// Add protocol.h
+//
 // Revision 1.13  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //
