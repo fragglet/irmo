@@ -250,6 +250,7 @@ void proto_run_client(IrmoClient *client)
 		//printf("find end\n");
 		
 		start = i;
+		len = 0;
 		
 		while (i<client->sendwindow_size
 		       && timeval_cmp(&client->sendwindow[i]->sendtime,
@@ -265,7 +266,7 @@ void proto_run_client(IrmoClient *client)
 
 		packet = proto_build_packet(client, start, i-1);
 
-		//printf("sendpacket\n");
+		//printf("sendpacket: %i->%i\n", start, i-1);
 		
 		socket_sendpacket(client->server->socket,
 				  client->addr,
@@ -281,6 +282,10 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/03/05 15:32:21  sdh300
+// Add object class to change atoms to make their coding in packets
+// unambiguous.
+//
 // Revision 1.2  2003/03/03 22:14:44  sdh300
 // Initial window construction and sending of packets
 //
