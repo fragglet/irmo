@@ -15,6 +15,8 @@ typedef enum {
 	CLIENT_DISCONNECTED,           /* killed with syn fin */
 } IrmoClientState;
 
+// client
+
 struct _IrmoClient {
 
 	int refcount;
@@ -38,6 +40,7 @@ struct _IrmoClient {
 	// time last syn/synack was sent
 	time_t _connect_time;
 	gint _connect_attempts;
+	GPtrArray *sendq;
 };
 
 IrmoClient *_client_new(IrmoServer *server, struct sockaddr *addr);
@@ -59,6 +62,9 @@ void client_disconnect(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/16 23:41:26  sdh300
+// Reference counting for client and server objects
+//
 // Revision 1.4  2003/02/11 19:18:43  sdh300
 // Initial working connection code!
 //

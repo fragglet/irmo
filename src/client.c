@@ -4,6 +4,7 @@
 #include "client.h"
 #include "netlib.h"
 #include "packet.h"
+#include "sendatom.h"
 
 // number of seconds between sending SYN (for client) and SYN ACK (for server)
 // on connect
@@ -25,6 +26,10 @@ IrmoClient * _client_new(IrmoServer *server, struct sockaddr *addr)
 	client->_connect_time = 0;
 	client->_connect_attempts = CLIENT_CONNECT_ATTEMPTS;
 
+	// send queue
+
+	client->sendq = g_ptr_array_new();
+	
 	// note on refcounts for clients:
 	// reference counting is different for client objects.
 	// in the server, when a client is disconnected it goes into
@@ -67,6 +72,17 @@ void client_unref(IrmoClient *client)
 
 void _client_destroy(IrmoClient *client)
 {
+	int i;
+	
+	// clear send queue
+
+	for (i=0; i<client->sendq->len; ++i)
+		sendatom_free((IrmoSendAtom *) client->sendq->pdata[i]);
+
+	g_ptr_array_free(client->sendq, 0);
+	
+	// destroy send queue
+	
 	free(client->addr);
 	free(client);
 }
@@ -144,6 +160,9 @@ void _client_run(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/18 17:41:37  sdh300
+// Add timeout for connect (6 attempts)
+//
 // Revision 1.3  2003/02/16 23:41:26  sdh300
 // Reference counting for client and server objects
 //
