@@ -29,6 +29,7 @@ multiplayer games
 				the concepts of multiplayer gaming
 * API Notes::			Notes on using the library
 * World Representation::	How the game world data is represented
+* Network API::                 How to use the network API
 * Index::			Index of concepts
 @end menu
 
@@ -161,7 +162,7 @@ about Doxygen can be found from the website:
 
 http://www.doxygen.org/
 
-@node World Representation, Index, API Notes, Top
+@node World Representation, Network API, API Notes, Top
 @chapter World Representation
 
 Irmo requires the programmer to describe the game world; this is 
@@ -516,7 +517,102 @@ function:
 	@}
 @end example
 
-@node Index, , World Representation, Top
+@node Network API, Index, World Representation, Top
+
+@chapter Network API
+
+Once the game world data has been represented in an IrmoWorld
+object, the world can be shared over a network connection
+by the server. The clients then connect to the server and
+can access a replica of the world data. As the world data 
+changes, these changes are propagated to the clients.
+
+The network interface is symmetrical; while clients connect
+to a server in order to access a world object shared by the
+server, similarly the clients can share a world object to
+be accessed by the server. This is useful for providing 
+input to the server.
+
+@menu
+
+* Server API::          Creating a server
+* Client API::          Client interface to connect to a running server
+
+@end menu
+
+@node Server API, Client API, Network API, Network API
+
+@chapter Server API
+
+@section Starting a server
+
+@cindex IrmoServer
+@cindex irmo_server_new
+
+To start a server, an @code{IrmoServer} object is created. This listens
+on a network port for connections and shares a world object to
+clients which connect.  The @code{irmo_server_new} function
+is used to start a server. The socket domain (whether to
+use IPv4 or IPv6) and UDP port number to listen on must be 
+specified.
+
+@example
+	IrmoServer *server, *server2;
+
+	// start a new IPv4 server on port 8282
+
+	server = irmo_server_new(IRMO_SOCKET_IPV4, 8282,
+				 world, NULL);
+
+	// start a new IPv6 server on port 2814
+
+	server2 = irmo_server_new(IRMO_SOCKET_IPV6, 2814, 
+				  world, NULL);
+@end example
+
+If the server is created successfully, a new @code{IrmoServer}
+is returned. In the event of a failure, @code{NULL} is returned.
+
+@example
+	if (server == NULL) @{
+		printf("Error starting server: %s\n", irmo_error_get());
+	@}
+@end example
+
+@section Running a server
+
+@cindex irmo_server_run
+
+Periodically it is necessary to run the @code{irmo_server_run} function.
+This checks for new data received from the network. This can be 
+added in as part of the controlling program's main event loop.
+
+@example
+	// check for new data
+
+	irmo_server_run(server);
+@end example
+
+@section Shutting down a server
+
+@cindex irmo_server_shutdown
+
+To shut down a server, the @code{irmo_server_shutdown} function is
+used. For example:
+
+@example
+	// shut down the server
+
+	irmo_server_shutdown(server);
+@end example
+
+@node Client API, , Server API, Network API
+
+@chapter Client API
+
+This section has not yet been written.
+
+@node Index, , Network API, Top
 @unnumbered Index
 @printindex cp
 
