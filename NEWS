@@ -1,4 +1,16 @@
+
+	* Completed IPv6 support
+	* Segfault in building packets fixed
+	
+	API:
+
+	* Error reporting API 
+	* Reflection API
+	* Proper object-oriented API for callbacks
+	* Less dependency on BSD sockets API in the Irmo API.
+	* Various useful utility functions
+
 v1.0.0
 
-Initial release.
+	Initial release.
 
