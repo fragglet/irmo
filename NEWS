@@ -2,7 +2,8 @@
 	* Completed IPv6 support
 	* Segfault in building packets fixed
 	* Fix bug on immediate reconnect after a disconnect
-	
+	* Subclassing in the interface specification files
+
 	API:
 
 	* Error reporting API 
@@ -10,6 +11,7 @@
 	* Proper object-oriented API for callbacks
 	* Less dependency on BSD sockets API in the Irmo API.
 	* Various useful utility functions
+	* IrmoUniverse renamed to IrmoWorld
 
 v1.0.0
 
