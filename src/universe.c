@@ -31,7 +31,19 @@ void universe_ref(IrmoUniverse *universe)
 static void object_destroy(irmo_objid_t id, IrmoObject *object,
 			   gpointer user_data)
 {
-	// TODO: destroy member variables etc.
+	int i;
+	
+	// destroy member variables
+
+	for (i=0; i<object->spec->nvariables; ++i) {
+		if (object->spec->variables[i]->type == TYPE_STRING
+		    && object->variables[i])
+			free(object->variables[i]);
+	}
+
+	free(object->variables);
+	
+	// done
 	
 	free(object);
 }
@@ -85,6 +97,7 @@ IrmoObject *universe_object_new(IrmoUniverse *universe, char *typename)
 	IrmoObject *object;
 	ClassSpec *spec;
 	gint id;
+	int i;
 
 	spec = g_hash_table_lookup(universe->spec->class_hash, typename);
 
@@ -112,7 +125,14 @@ IrmoObject *universe_object_new(IrmoUniverse *universe, char *typename)
 	object->objclass = spec;
 	object->universe = universe;
 
-	// TODO: member variables
+	// member variables:
+
+	object->variables = malloc(sizeof(IrmoVariable) * spec->nvariables);
+
+	// initialisation
+
+	for (i=0; i<spec->nvariables; ++i)
+		object->variables[i].i32 = 0;
 	
 	// add to universe
 
@@ -124,6 +144,9 @@ IrmoObject *universe_object_new(IrmoUniverse *universe, char *typename)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/10/21 10:55:14  sdh300
+// reference checking and object deletion
+//
 // Revision 1.1  2002/10/21 10:43:31  sdh300
 // initial universe code
 //

@@ -7,6 +7,7 @@
 
 typedef struct _IrmoUniverse IrmoUniverse;
 typedef struct _IrmoObject IrmoObject;
+typedef union _IrmoVariable IrmoVariable;
 typedef guint irmo_objid_t;
 
 #include <glib.h>
@@ -16,10 +17,18 @@ typedef guint irmo_objid_t;
 
 #define MAX_OBJECTS 65536 
 
+union _IrmoVariable {
+	guint8 i8;
+	guint16 i16;
+	guint32 i32;
+	gchar *string;
+};
+
 struct _IrmoObject {
 	IrmoUniverse *universe;
 	ClassSpec *objclass;
 	irmo_objid_t id;
+	IrmoVariable *variables;
 };
 
 struct _IrmoUniverse {
@@ -39,6 +48,9 @@ void universe_unref(IrmoUniverse *universe);
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/10/21 10:55:14  sdh300
+// reference checking and object deletion
+//
 // Revision 1.1  2002/10/21 10:43:31  sdh300
 // initial universe code
 //
