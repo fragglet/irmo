@@ -82,6 +82,33 @@ in a lower level language. For this reason, a language binding
 already exists for the Ruby scripting language. Bindings are
 planned for other high-level languages.
 
+\section{API Notes}
+
+\subsection{Compiling}
+
+Irmo uses the \texttt{pkg-config} system to store information about
+the library and allow programs which use it to be built more 
+easily. To find out more about \texttt{pkg-config}. Typically 
+all that needs to be done is to add to the \texttt{CFLAGS}
+and \texttt{LDFLAGS} variables of the \texttt{Makefile}:
+
+\begin{quote}\begin{verbatim}
+	CFLAGS += `pkg-config --cflags irmo`
+	LDFLAGS += `pkg-config --libs irmo`
+\end{verbatim}\end{quote}
+
+\subsection{GLib}
+
+Irmo makes use of the GLib library. GLib provides implementations of
+a number of common and useful data structures and algorithms, as well
+as standardised type definitions for portability. It is not 
+neccessary to have in depth knowledge of GLib to use the Irmo library, 
+but the programmer may find it useful to understand the basic
+types defined by the GLib library. More information can be found 
+in the GLib manual:
+
+\begin{quote}http://developer.gnome.org/doc/API/2.0/glib/\end{quote}
+
 \section{Interface Specification}
 
 Irmo allows the programmer to describe the game world.  It is 
@@ -188,6 +215,67 @@ includes a parser which parses the file given and returns a
 
 If an error occurs during parsing an error message is printed
 to \texttt{STDERR} and the function returns \texttt{NULL}.
+
+\section{World Representation}
+
+\subsection{IrmoWorld}
+
+Having defined the interface and types of object which can be 
+created in the game world, Irmo then allows the programmer
+to create these objects.
+
+All objects are created belonging to a ``container'' object, of
+type \texttt{IrmoWorld}. A new \texttt{IrmoWorld} object is 
+created using the
+\texttt{irmo\_world\_new} function call. For example:
+
+\begin{quote}\begin{verbatim}
+	IrmoWorld *world;
+
+	world = irmo_world_new(spec);
+\end{verbatim}\end{quote}
+
+Creating a world object requires giving an interface specification,
+as described in the previous section. \texttt{irmo\_world\_new} 
+returns a pointer to the new world object.
+
+Having created a world object, objects can be created belonging to the
+world with the types defined in the Interface Specification. Each object
+in the world has a unique numeric identifier. A reference to the object
+can be found from its ID using the \texttt{irmo\_world\_get\_object\_for\_id}
+function call. For example:
+
+\begin{quote}\begin{verbatim}
+	IrmoObject *object;
+
+	// search for object 55
+
+	object = irmo_world_get_object_for_id(world, 55);
+\end{verbatim}\end{quote}
+
+If there is no object in the world with the identifier given, the function
+returns NULL.
+
+Similarly, it is possible to iterate over objects in an 
+\texttt{IrmoWorld} using the \texttt{irmo\_world\_foreach\_object}
+function. This is performed by passing a pointer to a function to 
+call for each object. For example:
+
+\begin{quote}\begin{verbatim}
+	void my_object_callback(IrmoObject *object, gpointer user_data)
+	{
+		// ... perform operation for each object ...
+	}
+
+	...
+
+	irmo_world_foreach_object(world, NULL, my_object_callback, NULL);
+\end{verbatim}\end{quote}
+
+The function allows the programmer to specify the name of a class: this
+allows the iterator to iterate over only objects of a particular class.
+If the class has subclasses, these are included as well.
+In the above example, NULL is passed to specify all objects of any class.
 
 \end{document}
 
