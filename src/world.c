@@ -85,7 +85,7 @@ void irmo_world_ref(IrmoWorld *world)
 }
 
 static void irmo_world_unref_foreach(irmo_objid_t id, IrmoObject *object,
-					gpointer user_data)
+				     gpointer user_data)
 {
 	// destroy object. do not notify objects. do not remove
 	// from world as this may upset the foreach function
@@ -133,7 +133,7 @@ void irmo_world_unref(IrmoWorld *world)
 }
 
 IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
-					    irmo_objid_t id)
+					 irmo_objid_t id)
 {
 	IrmoObject *object;
 
@@ -151,8 +151,8 @@ struct world_foreach_data {
 };
 
 static void world_foreach_foreach(gint key,
-				     IrmoObject *object,
-				     struct world_foreach_data *data)
+				  IrmoObject *object,
+				  struct world_foreach_data *data)
 {
 	// only call callback if this is of the particular class
 	// or if no class was specified
@@ -163,8 +163,8 @@ static void world_foreach_foreach(gint key,
 }
 					    
 
-void irmo_world_foreach_object(IrmoWorld *world, gchar *classname,
-				  IrmoObjCallback func, gpointer user_data)
+void irmo_world_foreach_object(IrmoWorld *world, char *classname,
+			       IrmoObjCallback func, void *user_data)
 {
 	IrmoClass *spec;
 	struct world_foreach_data data = {
@@ -202,6 +202,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.4  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.3  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

@@ -265,8 +265,8 @@ static IrmoCallbackData *find_callback_class(IrmoWorld *world, gchar *classname)
 
 // watch creation of new objects of a particular class
 
-IrmoCallback *irmo_world_watch_new(IrmoWorld *world, gchar *classname,
-				      IrmoObjCallback func, gpointer user_data)
+IrmoCallback *irmo_world_watch_new(IrmoWorld *world, char *classname,
+				   IrmoObjCallback func, void *user_data)
 {
 	IrmoCallbackData *data;
 
@@ -288,9 +288,9 @@ IrmoCallback *irmo_world_watch_new(IrmoWorld *world, gchar *classname,
 }
 
 IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
-					gchar *classname, gchar *variable,
-					IrmoVarCallback func, 
-					gpointer user_data)
+				     char *classname, char *variable,
+				     IrmoVarCallback func, 
+				     void *user_data)
 {
 	IrmoCallbackData *data;
 	IrmoCallback *callback = NULL;
@@ -322,9 +322,9 @@ IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
 }
 
 IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world, 
-					  gchar *classname,
-					  IrmoObjCallback func, 
-					  gpointer user_data)
+				       char *classname,
+				       IrmoObjCallback func, 
+				       void *user_data)
 {
 	IrmoCallbackData *data;
 	IrmoCallback *callback = NULL;
@@ -345,8 +345,8 @@ IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world,
 	return callback;
 }
 
-IrmoCallback *irmo_object_watch(IrmoObject *object, gchar *variable,
-				IrmoVarCallback func, gpointer user_data)
+IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
+				IrmoVarCallback func, void *user_data)
 {
         IrmoCallback *callback;
 
@@ -367,7 +367,7 @@ IrmoCallback *irmo_object_watch(IrmoObject *object, gchar *variable,
 
 IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 					IrmoObjCallback func, 
-					gpointer user_data)
+					void *user_data)
 {
 	g_return_val_if_fail(object != NULL, NULL);
 	g_return_val_if_fail(func != NULL, NULL);
@@ -377,6 +377,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.10  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.9  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

@@ -28,6 +28,8 @@
 
 #include "public/server.h"
 
+#include <glib.h>
+
 #include "if_spec.h"
 #include "client.h"
 #include "socket.h"
@@ -79,6 +81,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log$
+// Revision 1.4  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.3  2003/09/01 18:41:55  fraggle
 // irmo_server_shutdown
 //

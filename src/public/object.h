@@ -41,8 +41,8 @@
  */
 
 typedef union {
-	guint32 i;
-	gchar *s;
+	unsigned int i;
+	char *s;
 } IrmoValue;
 
 //! An Irmo Object
@@ -51,12 +51,12 @@ typedef struct _IrmoObject IrmoObject;
 
 //! Callback functions for operations on variables
 
-typedef void (*IrmoVarCallback) (IrmoObject *object, gchar *variable,
-				 gpointer user_data);
+typedef void (*IrmoVarCallback) (IrmoObject *object, char *variable,
+				 void *user_data);
 
 //! Callback functions for operations on objects
 
-typedef void (*IrmoObjCallback) (IrmoObject *object, gpointer user_data);
+typedef void (*IrmoObjCallback) (IrmoObject *object, void *user_data);
 
 #include "world.h"
 
@@ -104,7 +104,7 @@ irmo_objid_t irmo_object_get_id(IrmoObject *object);
  * \sa irmo_object_get_class_obj
  */
 
-gchar *irmo_object_get_class(IrmoObject *object);
+char *irmo_object_get_class(IrmoObject *object);
 
 /*!
  * \brief Get the class object representing the class of an object
@@ -130,7 +130,8 @@ IrmoClass *irmo_object_get_class_obj(IrmoObject *object);
  * \param value    The new value for the variable
  */
 
-void irmo_object_set_int(IrmoObject *object, gchar *variable, guint value);
+void irmo_object_set_int(IrmoObject *object, char *variable, 
+			 unsigned int value);
 
 /*!
  * \brief Set the value of an object variable (string type)
@@ -143,7 +144,7 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, guint value);
  * \param value    The new value for the variable
  */
 
-void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value);
+void irmo_object_set_string(IrmoObject *object, char *variable, char *value);
 
 /*!
  * \brief Get the value of an object variable(int type)
@@ -157,7 +158,7 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value);
  * \return         The value of the member variable
  */
 
-gint irmo_object_get_int(IrmoObject *object, gchar *variable);
+unsigned int irmo_object_get_int(IrmoObject *object, char *variable);
 
 /*!
  * \brief Get the value of an object variable(string type)
@@ -174,7 +175,7 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable);
  * \return         The value of the member variable
  */
 
-gchar *irmo_object_get_string(IrmoObject *object, gchar *variable);
+char *irmo_object_get_string(IrmoObject *object, char *variable);
 
 /*!
  * \brief Get the world an object belongs to
@@ -198,7 +199,7 @@ IrmoWorld *irmo_object_get_world(IrmoObject *object);
  * \param classname	The name of the class
  */
 
-gboolean irmo_object_is_a(IrmoObject *object, char *classname);
+unsigned int irmo_object_is_a(IrmoObject *object, char *classname);
 
 /*!
  * \brief Find if an object is an instance of a particular class
@@ -208,14 +209,16 @@ gboolean irmo_object_is_a(IrmoObject *object, char *classname);
  *
  */
 
-gboolean irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
-
+unsigned int irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
 
 //! \}
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.8  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.7  2003/09/13 16:11:49  fraggle
 // Guard against overflows when setting int values
 //

@@ -31,9 +31,9 @@
 #include "world.h"
 
 IrmoCallback *irmo_world_method_watch(IrmoWorld *world, 
-					 gchar *method_name,
-					 IrmoInvokeCallback method, 
-					 gpointer user_data)
+				      char *method_name,
+				      IrmoInvokeCallback method, 
+				      void *user_data)
 {
 	IrmoMethod *spec;
 
@@ -100,7 +100,7 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 			data);
 }
 
-void irmo_world_method_call(IrmoWorld *world, gchar *method, ...)
+void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 {
 	IrmoMethodData method_data;
 	IrmoMethod *spec;
@@ -150,7 +150,7 @@ void irmo_world_method_call(IrmoWorld *world, gchar *method, ...)
 }
 
 
-void irmo_world_method_call2(IrmoWorld *world, gchar *method,
+void irmo_world_method_call2(IrmoWorld *world, char *method,
 			     IrmoValue *arguments)
 {
 	IrmoMethodData method_data;
@@ -182,7 +182,7 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data)
 	return data->src;
 }
 
-gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
+char *irmo_method_arg_string(IrmoMethodData *data, char *argname)
 {
 	IrmoMethodArg *spec;
 
@@ -208,7 +208,7 @@ gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
 	return data->args[spec->index].s;		
 }
 
-guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
+unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 {
 	IrmoMethodArg *spec;
 
@@ -238,6 +238,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.11  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.10  2003/09/20 15:44:48  fraggle
 // Sanity checking on method arguments
 //

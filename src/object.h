@@ -32,6 +32,8 @@
 
 #include "public/object.h"
 
+#include <glib.h>
+
 #include "callback.h"
 #include "if_spec.h"
 
@@ -93,6 +95,9 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.5  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.4  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

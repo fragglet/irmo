@@ -30,7 +30,7 @@
 //
 
 IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec, 
-					 gchar *class_name)
+					 char *class_name)
 {
 	g_return_val_if_fail(spec != NULL, NULL);
 	g_return_val_if_fail(class_name != NULL, NULL);
@@ -39,7 +39,7 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
 }
 
 IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
-					   gchar *method_name)
+					   char *method_name)
 {
 	g_return_val_if_fail(spec != NULL, NULL);
 	g_return_val_if_fail(method_name != NULL, NULL);
@@ -49,7 +49,7 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
 
 void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec, 
 				       IrmoClassCallback func, 
-				       gpointer user_data)
+				       void *user_data)
 {
 	int i;
 
@@ -62,7 +62,7 @@ void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec,
 
 void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec, 
 					IrmoMethodCallback func, 
-					gpointer user_data)
+					void *user_data)
 {
 	int i;
 
@@ -78,14 +78,14 @@ void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec,
 // IrmoClass
 //
 
-gchar *irmo_class_get_name(IrmoClass *klass)
+char *irmo_class_get_name(IrmoClass *klass)
 {
 	g_return_val_if_fail(klass != NULL, NULL);
 
 	return klass->name;
 }
 
-gint irmo_class_num_variables(IrmoClass *klass)
+int irmo_class_num_variables(IrmoClass *klass)
 {
 	g_return_val_if_fail(klass != NULL, -1);
 
@@ -95,7 +95,7 @@ gint irmo_class_num_variables(IrmoClass *klass)
 		return klass->nvariables;
 }
 
-IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name)
+IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name)
 {
 	g_return_val_if_fail(klass != NULL, NULL);
 	g_return_val_if_fail(var_name != NULL, NULL);
@@ -105,7 +105,7 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name)
 
 void irmo_class_foreach_variable(IrmoClass *klass, 
 				 IrmoClassVarCallback func, 
-				 gpointer user_data)
+				 void *user_data)
 {
 	int i;
 	int start;
@@ -148,7 +148,7 @@ void irmo_class_unref(IrmoClass *klass)
 // IrmoClassVar
 //
 
-gchar *irmo_class_var_get_name(IrmoClassVar *var)
+char *irmo_class_var_get_name(IrmoClassVar *var)
 {
 	g_return_val_if_fail(var != NULL, NULL);
 
@@ -180,21 +180,21 @@ void irmo_class_var_unref(IrmoClassVar *var)
 // IrmoMethod
 //
 
-gchar *irmo_method_get_name(IrmoMethod *method)
+char *irmo_method_get_name(IrmoMethod *method)
 {
 	g_return_val_if_fail(method != NULL, NULL);
 
 	return method->name;
 }
 
-gint irmo_method_num_arguments(IrmoMethod *method)
+int irmo_method_num_arguments(IrmoMethod *method)
 {
 	g_return_val_if_fail(method != NULL, -1);
 
 	return method->narguments;
 }
 
-IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name)
+IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, char *arg_name)
 {
 	g_return_val_if_fail(method != NULL, NULL);
 	g_return_val_if_fail(arg_name != NULL, NULL);
@@ -202,7 +202,7 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name)
 	return g_hash_table_lookup(method->argument_hash, arg_name);
 }
 
-IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, gint arg_number)
+IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number)
 {
 	g_return_val_if_fail(method != NULL, NULL);
 	g_return_val_if_fail(arg_number >= 0 && arg_number < method->narguments,
@@ -213,7 +213,7 @@ IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, gint arg_number)
 
 void irmo_method_foreach_argument(IrmoMethod *method,
 				  IrmoMethodArgCallback func, 
-				  gpointer user_data)
+				  void *user_data)
 {
 	int i;
 
@@ -242,7 +242,7 @@ void irmo_method_unref(IrmoMethod *method)
 // IrmoMethodArg
 //
 
-gchar *irmo_method_arg_get_name(IrmoMethodArg *arg)
+char *irmo_method_arg_get_name(IrmoMethodArg *arg)
 {
 	g_return_val_if_fail(arg != NULL, NULL);
 
@@ -271,6 +271,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.10  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.9  2003/09/12 11:38:19  fraggle
 // Make it possible to get method arguments by argument number
 //

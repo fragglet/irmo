@@ -34,6 +34,8 @@ typedef struct _IrmoCallbackData IrmoCallbackData;
 
 #include "public/callback.h"
 
+#include <glib.h>
+
 #include "client.h"
 #include "if_spec.h"
 #include "object.h"
@@ -95,6 +97,9 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data,
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.8  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.7  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

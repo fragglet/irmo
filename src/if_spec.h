@@ -26,9 +26,9 @@
 #ifndef IRMO_INTERNAL_IF_SPEC_H
 #define IRMO_INTERNAL_IF_SPEC_H
 
-#include <glib.h>
-
 #include "public/if_spec.h"
+
+#include <glib.h>
 
 // these are imposed by the size restrictions
 // of the network protocol 
@@ -122,6 +122,9 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
+// Revision 1.7  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.6  2003/09/12 11:30:25  fraggle
 // Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
 //

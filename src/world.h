@@ -32,6 +32,8 @@
 
 #include "public/world.h"
 
+#include <glib.h>
+
 #include "callback.h"
 #include "client.h"
 #include "if_spec.h"
@@ -96,6 +98,9 @@ struct _IrmoWorld {
 #endif /* #ifndef IRMO_INTERNAL_WORLD_H */
 
 // $Log$
+// Revision 1.2  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.1  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

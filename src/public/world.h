@@ -30,8 +30,6 @@
 #ifndef IRMO_WORLD_H
 #define IRMO_WORLD_H
 
-#include <glib.h>
-
 /*!
  * \addtogroup world
  * \{
@@ -50,7 +48,7 @@ typedef struct _IrmoWorld IrmoWorld;
  * \ref irmo_world_get_object_for_id function.
  */
 
-typedef guint irmo_objid_t;
+typedef unsigned int irmo_objid_t;
 
 #include "callback.h"
 #include "if_spec.h"
@@ -82,7 +80,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec);
  */
 
 IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
-					    irmo_objid_t id);
+					 irmo_objid_t id);
 
 /*!
  * \brief Iterate over objects in a World
@@ -101,8 +99,8 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
  * 			are called.
  */
 
-void irmo_world_foreach_object(IrmoWorld *world, gchar *classname,
-				  IrmoObjCallback func, gpointer user_data);
+void irmo_world_foreach_object(IrmoWorld *world, char *classname,
+			       IrmoObjCallback func, void *user_data);
 
 /*!
  * \brief	Get the specification for a World
@@ -145,6 +143,9 @@ void irmo_world_unref(IrmoWorld *world);
 #endif /* #ifndef IRMO_WORLD_H */
 
 // $Log$
+// Revision 1.2  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.1  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

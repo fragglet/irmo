@@ -30,7 +30,7 @@
 #include "netlib.h"
 #include "server.h"
 
-IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
+IrmoServer *irmo_server_new(IrmoSocket *sock, char *hostname,
 			    IrmoWorld *world, IrmoInterfaceSpec *spec)
 {
 	IrmoServer *server;
@@ -176,7 +176,7 @@ void irmo_server_unref(IrmoServer *server)
 
 IrmoCallback *irmo_server_watch_connect(IrmoServer *server, 
 					IrmoClientCallback func,
-					gpointer user_data)
+					void *user_data)
 {
 	g_return_if_fail(server != NULL);
 	g_return_if_fail(func != NULL);
@@ -219,7 +219,7 @@ static void server_foreach_foreach(gpointer key,
 }
 
 void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
-				gpointer user_data)
+				void *user_data)
 {
 	struct server_foreach_data foreach_data = {
 		callback,
@@ -258,6 +258,9 @@ void irmo_server_shutdown(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.11  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.10  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

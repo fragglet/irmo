@@ -86,9 +86,9 @@ void irmo_callback_unset(IrmoCallback *callback);
  */
 
 IrmoCallback *irmo_world_watch_new(IrmoWorld *world, 
-				      gchar *classname,
-				      IrmoObjCallback func, 
-				      gpointer user_data);
+				   char *classname,
+				   IrmoObjCallback func, 
+				   void *user_data);
 
 /*!
  * \brief Watch for modification of objects of a particular class.
@@ -111,9 +111,9 @@ IrmoCallback *irmo_world_watch_new(IrmoWorld *world,
  */
 
 IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
-					gchar *classname, gchar *variable,
-					IrmoVarCallback func, 
-					gpointer user_data);
+				     char *classname, char *variable,
+				     IrmoVarCallback func, 
+				     void *user_data);
 
 /*!
  * \brief Watch for object destruction.
@@ -132,9 +132,9 @@ IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
  */
 
 IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world, 
-					  gchar *classname,
-					  IrmoObjCallback func, 
-					  gpointer user_data);
+				       char *classname,
+				       IrmoObjCallback func, 
+				       void *user_data);
 
 //! \}
 
@@ -160,8 +160,8 @@ IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world,
  * \return an \ref IrmoCallback object representing the watch
  */
 
-IrmoCallback *irmo_object_watch(IrmoObject *object, gchar *variable,
-				IrmoVarCallback func, gpointer user_data);
+IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
+				IrmoVarCallback func, void *user_data);
 
 /*!
  * \brief Watch for object destruction
@@ -179,13 +179,16 @@ IrmoCallback *irmo_object_watch(IrmoObject *object, gchar *variable,
 
 IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 					IrmoObjCallback func, 
-					gpointer user_data);
+					void *user_data);
 
 //! \}
 
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
+// Revision 1.5  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.4  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

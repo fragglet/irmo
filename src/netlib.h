@@ -26,9 +26,10 @@
 #ifndef IRMO_NETLIB_H
 #define IRMO_NETLIB_H
 
+#include "socket.h"
+
 #include <glib.h>
 #include <netinet/in.h>
-#include "socket.h"
 
 // various network util functions
 
@@ -66,6 +67,9 @@ void irmo_timeval_from_ms(int ms, struct timeval *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.4  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.3  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

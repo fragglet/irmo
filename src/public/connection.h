@@ -75,7 +75,7 @@ typedef IrmoClient IrmoConnection;
  *                       established.
  */
 
-IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
+IrmoConnection *irmo_connect(IrmoSocketDomain domain, char *location, int port,
                              IrmoInterfaceSpec *spec,
 			     IrmoWorld *local_world);
 
@@ -152,6 +152,9 @@ void irmo_connection_unref(IrmoConnection *conn);
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log$
+// Revision 1.5  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.4  2003/09/01 17:02:59  fraggle
 // Turn irmo_connection_[un]ref into real functions
 //

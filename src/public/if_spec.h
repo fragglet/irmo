@@ -26,8 +26,6 @@
 #ifndef IRMO_IF_SPEC_H
 #define IRMO_IF_SPEC_H
 
-#include <glib.h>
-
 /*!
  * \addtogroup if_spec
  * \{
@@ -77,10 +75,10 @@ typedef struct _IrmoMethodArg IrmoMethodArg;
 
 typedef struct _IrmoInterfaceSpec IrmoInterfaceSpec;
 
-typedef void (*IrmoClassCallback)(IrmoClass *klass, gpointer user_data);
-typedef void (*IrmoClassVarCallback)(IrmoClassVar *var, gpointer user_data);
-typedef void (*IrmoMethodCallback)(IrmoMethod *method, gpointer user_data);
-typedef void (*IrmoMethodArgCallback)(IrmoMethodArg *arg, gpointer user_data);
+typedef void (*IrmoClassCallback)(IrmoClass *klass, void *user_data);
+typedef void (*IrmoClassVarCallback)(IrmoClassVar *var, void *user_data);
+typedef void (*IrmoMethodCallback)(IrmoMethod *method, void *user_data);
+typedef void (*IrmoMethodArgCallback)(IrmoMethodArg *arg, void *user_data);
 
 /*!
  * \brief Create a new IrmoInterfaceSpec object
@@ -128,7 +126,7 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec);
  */
 
 IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec, 
-					 gchar *class_name);
+					 char *class_name);
 
 /*!
  * \brief Iterate over all classes in a specification
@@ -140,7 +138,7 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
 
 void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec, 
 				       IrmoClassCallback func, 
-				       gpointer user_data);
+				       void *user_data);
 /*!
  * \brief Get the \ref IrmoMethod object representing a particular method
  *
@@ -151,7 +149,7 @@ void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec,
  */
 
 IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
-					   gchar *method_name);
+					   char *method_name);
 
 /*!
  * \brief Iterate over all methods in a specification
@@ -163,13 +161,13 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
 
 void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec, 
 					IrmoMethodCallback func, 
-					gpointer user_data);
+					void *user_data);
 
 /*! 
  * \brief Get the name of a \ref IrmoClass object
  */
 
-gchar *irmo_class_get_name(IrmoClass *klass);
+char *irmo_class_get_name(IrmoClass *klass);
 
 /*!
  * \brief Get the number of member variables in an \ref IrmoClass
@@ -178,7 +176,7 @@ gchar *irmo_class_get_name(IrmoClass *klass);
  * inherited from parent classes are not included.
  */
 
-gint irmo_class_num_variables(IrmoClass *klass);
+int irmo_class_num_variables(IrmoClass *klass);
 
 /*!
  * \brief Get the parent class of a class
@@ -199,7 +197,7 @@ IrmoClass *irmo_class_parent_class(IrmoClass *klass);
  * \return 		A pointer to the object or NULL if it does not exist
  */
 
-IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name);
+IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name);
 
 /*!
  * \brief Add a reference to a \ref IrmoClass object
@@ -227,13 +225,13 @@ void irmo_class_unref(IrmoClass *klass);
 
 void irmo_class_foreach_variable(IrmoClass *klass, 
 				 IrmoClassVarCallback func, 
-				 gpointer user_data);
+				 void *user_data);
 
 /*!
  * \brief Get the name of a \ref IrmoClassVar object
  */
 
-gchar *irmo_class_var_get_name(IrmoClassVar *var);
+char *irmo_class_var_get_name(IrmoClassVar *var);
 
 /*!
  * \brief Get the type of a \ref IrmoClassVar object 
@@ -257,13 +255,13 @@ void irmo_class_var_unref(IrmoClassVar *var);
  * \brief Get the name of a \ref IrmoMethod
  */
 
-gchar *irmo_method_get_name(IrmoMethod *method);
+char *irmo_method_get_name(IrmoMethod *method);
 
 /*!
  * \brief Get the number of arguments to the method
  */
 
-gint irmo_method_num_arguments(IrmoMethod *method);
+int irmo_method_num_arguments(IrmoMethod *method);
 
 /*!
  * \brief Get the \ref IrmoMethodArg object representing a particular 
@@ -275,7 +273,7 @@ gint irmo_method_num_arguments(IrmoMethod *method);
  * \return 		A pointer to the object or NULL if it does not exist
  */
 
-IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name);
+IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, char *arg_name);
 
 /*!
  * \brief Get the \ref IrmoMethodArg object representing a particular 
@@ -285,7 +283,7 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name);
  * by the number of the argument.
  */
 
-IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, gint arg_number);
+IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number);
 
 /*!
  * \brief Iterate over all arguments to a method
@@ -297,7 +295,7 @@ IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, gint arg_number);
 
 void irmo_method_foreach_argument(IrmoMethod *method,
 				  IrmoMethodArgCallback func, 
-				  gpointer user_data);
+				  void *user_data);
 
 /*!
  * \brief Add a reference to an \ref IrmoMethod object
@@ -315,7 +313,7 @@ void irmo_method_unref(IrmoMethod *method);
  * \brief Get the name of a method argument
  */
 
-gchar *irmo_method_arg_get_name(IrmoMethodArg *arg);
+char *irmo_method_arg_get_name(IrmoMethodArg *arg);
 
 /*! 
  * \brief Get the type of a method argument
@@ -340,6 +338,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.13  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.12  2003/09/12 11:38:19  fraggle
 // Make it possible to get method arguments by argument number
 //

@@ -28,6 +28,7 @@
 
 #include "public/client.h"
 
+#include <glib.h>
 #include <netinet/in.h>
 
 #include "sendatom.h"
@@ -176,6 +177,9 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
+// Revision 1.5  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.4  2003/10/18 01:34:45  fraggle
 // Better error reporting for connecting, allow server to send back an
 // error message when refusing connections

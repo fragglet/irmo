@@ -253,7 +253,7 @@ irmo_objid_t irmo_object_get_id(IrmoObject *object)
 	return object->id;
 }
 
-gchar *irmo_object_get_class(IrmoObject *object)
+char *irmo_object_get_class(IrmoObject *object)
 {
 	g_return_val_if_fail(object != NULL, NULL);
 	
@@ -306,7 +306,8 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 		       &data);
 }
 
-void irmo_object_set_int(IrmoObject *object, gchar *variable, guint value)
+void irmo_object_set_int(IrmoObject *object, char *variable, 
+			 unsigned int value)
 {
 	IrmoClassVar *spec;
 	IrmoValue *obj_var;
@@ -349,7 +350,7 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, guint value)
 	irmo_object_set_raise(object, spec->index);
 }
 
-void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
+void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 {
 	IrmoClassVar *spec;
 
@@ -385,7 +386,7 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 // get int value
 
-gint irmo_object_get_int(IrmoObject *object, gchar *variable)
+unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 {
 	IrmoClassVar *spec;
 
@@ -418,7 +419,7 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 
 // get int value
 
-gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
+char *irmo_object_get_string(IrmoObject *object, char *variable)
 {
 	IrmoClassVar *spec;
 
@@ -453,7 +454,7 @@ IrmoWorld *irmo_object_get_world(IrmoObject *obj)
 	return obj->world;
 }
 
-gboolean irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
+unsigned int irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
 {
 	IrmoClass *c;
 	
@@ -470,7 +471,7 @@ gboolean irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
 	return FALSE;
 }
 
-gboolean irmo_object_is_a(IrmoObject *obj, gchar *classname)
+unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 {
 	IrmoClass *klass;
 
@@ -489,6 +490,9 @@ gboolean irmo_object_is_a(IrmoObject *obj, gchar *classname)
 }
 
 // $Log$
+// Revision 1.14  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.13  2003/09/13 16:11:48  fraggle
 // Guard against overflows when setting int values
 //

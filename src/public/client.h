@@ -26,8 +26,6 @@
 #ifndef IRMO_CLIENT_H
 #define IRMO_CLIENT_H
 
-#include <glib.h>
-
 /*!
  * \addtogroup client
  * \{
@@ -47,7 +45,7 @@ typedef struct _IrmoClient IrmoClient;
  * Functions of this type are used for client disconnect callbacks.
  */
 
-typedef void (*IrmoClientCallback) (IrmoClient *client, gpointer user_data);
+typedef void (*IrmoClientCallback) (IrmoClient *client, void *user_data);
 
 #include "server.h"
 #include "socket.h"
@@ -117,7 +115,7 @@ IrmoWorld *irmo_client_get_world(IrmoClient *client);
 
 IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
 					   IrmoClientCallback func, 
-					   gpointer user_data);
+					   void *user_data);
 
 /*!
  * \brief Get the ping time for a client
@@ -165,6 +163,9 @@ const char *irmo_client_get_addr(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log$
+// Revision 1.5  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.4  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

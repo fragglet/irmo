@@ -59,7 +59,7 @@ typedef struct _IrmoServer IrmoServer;
  * \return          A new IrmoServer or NULL if the function fails.
  */
 
-IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
+IrmoServer *irmo_server_new(IrmoSocket *sock, char *hostname,
 			    IrmoWorld *world, IrmoInterfaceSpec *spec);
 
 /*!
@@ -77,7 +77,7 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 
 IrmoCallback *irmo_server_watch_connect(IrmoServer *server, 
 					IrmoClientCallback func,
-					gpointer user_data);
+					void *user_data);
 
 
 /*!
@@ -94,7 +94,7 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 
 void irmo_server_foreach_client(IrmoServer *server,
 				IrmoClientCallback func,
-				gpointer user_data);
+				void *user_data);
 
 /*!
  * \brief Reference a server object
@@ -137,6 +137,9 @@ void irmo_server_shutdown(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.6  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.5  2003/09/01 18:41:55  fraggle
 // irmo_server_shutdown
 //

@@ -304,7 +304,7 @@ void irmo_client_disconnect(IrmoClient *client)
 
 IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
 					   IrmoClientCallback func,
-					   gpointer user_data)
+					   void *user_data)
 {
 	g_return_if_fail(client != NULL);
 	g_return_if_fail(func != NULL);
@@ -356,6 +356,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.13  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.12  2003/10/18 01:34:45  fraggle
 // Better error reporting for connecting, allow server to send back an
 // error message when refusing connections

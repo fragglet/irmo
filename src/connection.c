@@ -27,7 +27,8 @@
 #include "netlib.h"
 #include "socket.h"
 
-IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
+IrmoConnection *irmo_connect(IrmoSocketDomain domain, 
+			     char *location, int port,
 			     IrmoInterfaceSpec *spec, 
 			     IrmoWorld *local_world)
 {
@@ -191,6 +192,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.11  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.10  2003/10/18 01:34:45  fraggle
 // Better error reporting for connecting, allow server to send back an
 // error message when refusing connections

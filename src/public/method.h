@@ -59,7 +59,7 @@ typedef struct _IrmoMethodData IrmoMethodData;
  */
 
 typedef void (*IrmoInvokeCallback)(IrmoMethodData *data, 
-				   gpointer user_data);
+				   void *user_data);
 
 /*!
  * \brief Set a callback function to be invoked when a method is called
@@ -73,9 +73,9 @@ typedef void (*IrmoInvokeCallback)(IrmoMethodData *data,
  */
 
 IrmoCallback *irmo_world_method_watch(IrmoWorld *world, 
-					 gchar *method_name,
-					 IrmoInvokeCallback method, 
-					 gpointer user_data);
+				      char *method_name,
+				      IrmoInvokeCallback method, 
+				      void *user_data);
 
 /*!
  * \brief Retrieve a method argument
@@ -89,7 +89,7 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
  * \return        The value of the method argument (constant string)
  */
 
-gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname);
+char *irmo_method_arg_string(IrmoMethodData *data, char *argname);
 
 /*!
  * \brief Retrieve a method argument
@@ -103,7 +103,7 @@ gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname);
  * \return        The value of the method argument
  */
 
-guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname);
+unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname);
 
 /*!
  * \brief Find the client which invoked a method
@@ -131,7 +131,7 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data);
  * \sa irmo_world_method_call2
  */
 
-void irmo_world_method_call(IrmoWorld *world, gchar *method, ...);
+void irmo_world_method_call(IrmoWorld *world, char *method, ...);
 
 /*!
  * \brief Call a method
@@ -141,14 +141,17 @@ void irmo_world_method_call(IrmoWorld *world, gchar *method, ...);
  * arguments instead of using the C varargs mechanism.
  */
 
-void irmo_world_method_call2(IrmoWorld *world, gchar *method,
-				IrmoValue *arguments);
+void irmo_world_method_call2(IrmoWorld *world, char *method,
+			     IrmoValue *arguments);
 
 //! \}
 
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log$
+// Revision 1.6  2003/11/17 00:27:34  fraggle
+// Remove glib dependency in API
+//
 // Revision 1.5  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
