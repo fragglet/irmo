@@ -9,14 +9,14 @@
 
 // add a callback function to a list
 
-static void callbacklist_add(GSList **list,
-			     IrmoVarCallback func,
-			     gpointer user_data)
+void irmo_callbacklist_add(GSList **list,
+			   gpointer func,
+			   gpointer user_data)
 {
 	IrmoCallbackFuncData *callback;
 	
 	callback = g_new0(IrmoCallbackFuncData, 1);
-	callback->func.var = func;
+	callback->func = func;
 	callback->user_data = user_data;
 
 	*list = g_slist_append(*list, callback);
@@ -25,33 +25,27 @@ static void callbacklist_add(GSList **list,
 // search a list and remove an entry from a list of IrmoCallbackFuncData
 // objects
 
-struct callbacklist_remove_data {
-	IrmoVarCallback func;
-	gpointer user_data;
-};
-
 static gint callbacklist_remove_search(IrmoCallbackFuncData *func_data,
-				       struct callbacklist_remove_data *data)
+				       IrmoCallbackFuncData *data)
 {
-	return func_data->func.var != data->func
+	return func_data->func != data->func
 	    || func_data->user_data != data->user_data;
 }
 
-static gboolean callbacklist_remove(GSList **list,
-				    IrmoVarCallback func,
-				    gpointer user_data)
+gboolean irmo_callbacklist_remove(GSList **list,
+				  gpointer func,
+				  gpointer user_data)
 {
-	GSList *result;
 	IrmoCallbackFuncData *func_data;
-	
-	struct callbacklist_remove_data data = {
+	GSList *result;
+	IrmoCallbackFuncData search_data = {
 		func: func,
 		user_data: user_data,
 	};
 
 	// search for function in list
 	
-	result = g_slist_find_custom(*list, &data,
+	result = g_slist_find_custom(*list, &search_data,
 				     (GCompareFunc) callbacklist_remove_search);
 
 	if (result) {
@@ -129,10 +123,12 @@ struct raise_data {
 };
 
 static void callbackdata_raise_foreach(IrmoCallbackFuncData *callback, 
-					struct raise_data *raise_data)
+				       struct raise_data *raise_data)
 {
-	callback->func.var(raise_data->object, raise_data->variable,
-			   callback->user_data);
+	IrmoVarCallback func = (IrmoVarCallback) callback->func;
+
+	func(raise_data->object, raise_data->variable,
+	     callback->user_data);
 }
 
 void callbackdata_raise(IrmoCallbackData *data,
@@ -159,7 +155,9 @@ void callbackdata_raise(IrmoCallbackData *data,
 static void callbackdata_raise_destroy_foreach(IrmoCallbackFuncData *callback,
 						struct raise_data *raise_data)
 {
-	callback->func.obj(raise_data->object, callback->user_data);
+	IrmoObjCallback func = (IrmoObjCallback) callback->func;
+	
+	func(raise_data->object, callback->user_data);
 }
 
 void callbackdata_raise_destroy(IrmoCallbackData *data,
@@ -211,7 +209,7 @@ static gboolean callbackdata_watch(IrmoCallbackData *data,
 	if (!list)
 		return FALSE;
 
-	callbacklist_add(list, func, user_data);
+	irmo_callbacklist_add(list, func, user_data);
 
 	return TRUE;
 }
@@ -227,7 +225,7 @@ static gboolean callbackdata_unwatch(IrmoCallbackData *data,
 	if (!list)
 		return FALSE;
 
-	return callbacklist_remove(list, func, user_data);
+	return irmo_callbacklist_remove(list, func, user_data);
 }
 
 // watch creation of new objects of a particular class
@@ -249,9 +247,8 @@ void irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
 	} else {
 		data = universe->callbacks[spec->index];
 		
-		callbacklist_add(&data->new_callbacks,
-				 (IrmoVarCallback) func,
-				 user_data);
+		irmo_callbacklist_add(&data->new_callbacks,
+				      func, user_data);
 	}
 }
 
@@ -276,9 +273,8 @@ void irmo_universe_unwatch_new(IrmoUniverse *universe, gchar *classname,
 		
 		// remove from new callbacks list for class
 		
-		if (!callbacklist_remove(&data->new_callbacks,
-					 (IrmoVarCallback) func,
-					 user_data)) {
+		if (!irmo_callbacklist_remove(&data->new_callbacks,
+					      func, user_data)) {
 			fprintf(stderr,
 				"irmo_universe_unwatch_new: watch not "
 				"found for new objects of class '%s'\n",
@@ -358,9 +354,8 @@ void irmo_universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
 	} else {
 		data = universe->callbacks[spec->index];
 		
-		callbacklist_add(&data->destroy_callbacks,
-				 (IrmoVarCallback) func,
-				 user_data);
+		irmo_callbacklist_add(&data->destroy_callbacks,
+				      func, user_data);
 	}
 }
 
@@ -379,9 +374,8 @@ void irmo_universe_unwatch_destroy(IrmoUniverse *universe, gchar *classname,
 	} else {
 		data = universe->callbacks[spec->index];
 		
-		if (!callbacklist_remove(&data->destroy_callbacks,
-					 (IrmoVarCallback) func,
-					 user_data)) {
+		if (!irmo_callbacklist_remove(&data->destroy_callbacks,
+					      func, user_data)) {
 			fprintf(stderr,
 				"irmo_universe_unwatch_destroy: watch not "
 				"found for destroy in class '%s'\n", 
@@ -425,16 +419,15 @@ void irmo_object_unwatch(IrmoObject *object, gchar *variable,
 void irmo_object_watch_destroy(IrmoObject *object,
 			       IrmoObjCallback func, gpointer user_data)
 {
-	callbacklist_add(&object->callbacks->destroy_callbacks,
-			 (IrmoVarCallback) func,
-			 user_data);
+	irmo_callbacklist_add(&object->callbacks->destroy_callbacks,
+			      func, user_data);
 }
 
 void irmo_object_unwatch_destroy(IrmoObject *object,
 				 IrmoObjCallback func, gpointer user_data)
 {
-	if (!callbacklist_remove(&object->callbacks->destroy_callbacks,
-				 (IrmoVarCallback) func, user_data)) {
+	if (!irmo_callbacklist_remove(&object->callbacks->destroy_callbacks,
+				      (IrmoVarCallback) func, user_data)) {
 		fprintf(stderr,
 			"irmo_object_unwatch_destroy: watch not found "
 			"for destroy in class '%s'\n",
@@ -442,93 +435,10 @@ void irmo_object_unwatch_destroy(IrmoObject *object,
 	}
 }
 
-//========================================================================
-//
-// This is for client watches
-// (watching new connections to servers, watching when clients disconnect,
-//  etc)
-//
-//========================================================================
-
-typedef struct {
-	IrmoClientCallback func;
-	gpointer user_data;
-} IrmoClientCallbackData; 
-
-void client_callback_add(GSList **list, IrmoClientCallback func,
-			 gpointer user_data)
-{
-        IrmoClientCallbackData *data;
-
-	data = g_new0(IrmoClientCallbackData, 1);
-	data->func = func;
-	data->user_data = user_data;
-
-	*list = g_slist_append(*list, data);
-}
-
-gint client_callback_remove_search(IrmoClientCallbackData *d1,
-				   IrmoClientCallbackData *d2)
-{
-	return d1->func != d2->func || d1->user_data != d2->user_data;
-}
-
-gboolean client_callback_remove(GSList **list, IrmoClientCallback func,
-				gpointer user_data)
-{
-	IrmoClientCallbackData data;
-	IrmoClientCallbackData *data2;
-	GSList *result;
-
-	data.func = func;
-	data.user_data = user_data;
-
-	result = g_slist_find_custom(*list, &data,
-				     (GCompareFunc)
-				     client_callback_remove_search);
-
-	if (result) {
-		data2 = g_slist_nth_data(result, 0);
-
-		// remove from list
-
-		*list = g_slist_remove(*list, data2);
-
-		free(data2);
-
-		return TRUE;
-	} else {
-		return FALSE;
-	}
-}
-
-static void client_callback_destroy_foreach(IrmoClientCallbackData *data,
-					    gpointer user_data)
-{
-	free(data);
-}
-
-void client_callback_destroy(GSList *list)
-{
-	g_slist_foreach(list, (GFunc) client_callback_destroy_foreach,
-			NULL);
-
-	g_slist_free(list);
-}
-
-static void client_callback_raise_foreach(IrmoClientCallbackData *data,
-					  IrmoClient *client)
-{
-	data->func(client, data->user_data);
-}
-
-void client_callback_raise(GSList *list, IrmoClient *client)
-{
-	g_slist_foreach(list, (GFunc) client_callback_raise_foreach,
-			client);
-}
-
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2003/03/07 14:31:18  sdh300
+// Callback functions for watching new client connects
+//
 // Revision 1.18  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

@@ -135,27 +135,40 @@ void irmo_server_unref(IrmoServer *server)
 void irmo_server_watch_connect(IrmoServer *server, IrmoClientCallback func,
 			       gpointer user_data)
 {
-	client_callback_add(&server->connect_callbacks, func, user_data);
+	irmo_callbacklist_add(&server->connect_callbacks, func, user_data);
 }
 
 void irmo_server_unwatch_connect(IrmoServer *server, IrmoClientCallback func,
 				 gpointer user_data)
 {
 
-	if (!client_callback_remove(&server->connect_callbacks, 
-				    func, user_data)) {
+	if (!irmo_callbacklist_remove(&server->connect_callbacks, 
+				      func, user_data)) {
 		fprintf(stderr,
 			"irmo_server_unwatch_connect: "
 			"watch not found on server\n");
 	}
 }
 
+static void server_raise_connect_foreach(IrmoCallbackFuncData *data,
+					 IrmoClient *client)
+{
+	IrmoClientCallback func = (IrmoClientCallback) data->func;
+
+	func(client, data->user_data);
+}
+
 void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 {
-	client_callback_raise(server->connect_callbacks, client);
+	g_slist_foreach(server->connect_callbacks,
+			(GFunc) server_raise_connect_foreach,
+			client);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/07 14:31:19  sdh300
+// Callback functions for watching new client connects
+//
 // Revision 1.11  2003/03/07 12:17:17  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

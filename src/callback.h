@@ -7,7 +7,6 @@
 
 typedef struct _IrmoCallbackData IrmoCallbackData;
 typedef struct _IrmoCallbackFuncData IrmoCallbackFuncData;
-
 #include "public/callback.h"
 
 #include "client.h"
@@ -15,11 +14,8 @@ typedef struct _IrmoCallbackFuncData IrmoCallbackFuncData;
 #include "object.h"
 
 struct _IrmoCallbackFuncData {
-	union {
-		IrmoVarCallback var;
-		IrmoObjCallback obj;
-	} func;
-	gpointer user_data;
+	gpointer func;
+        gpointer user_data;
 };
 
 struct _IrmoCallbackData {
@@ -44,6 +40,12 @@ struct _IrmoCallbackData {
 	GSList *destroy_callbacks;
 };
 
+// generalised callback list functions
+
+void irmo_callbacklist_add(GSList **list, gpointer func, gpointer user_data);
+gboolean irmo_callbacklist_remove(GSList **list,
+				  gpointer func, gpointer user_data);
+
 IrmoCallbackData *callbackdata_new(ClassSpec *objclass);
 void callbackdata_free(IrmoCallbackData *data);
 void callbackdata_raise(IrmoCallbackData *data,
@@ -51,16 +53,12 @@ void callbackdata_raise(IrmoCallbackData *data,
 void callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
 void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 
-void client_callback_add(GSList **list, IrmoClientCallback func,
-			 gpointer user_data);
-gboolean client_callback_remove(GSList **list, IrmoClientCallback func,
-				gpointer user_data);
-void client_callback_destroy(GSList *list);
-void client_callback_raise(GSList *list, IrmoClient *client);
-
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/03/07 14:31:18  sdh300
+// Callback functions for watching new client connects
+//
 // Revision 1.13  2003/02/23 01:01:00  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split
