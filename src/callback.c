@@ -329,8 +329,12 @@ void universe_unwatch_class(IrmoUniverse *universe,
 					  func, user_data)) {
 			fprintf(stderr,
 				"universe_unwatch_class: watch not found for "
-				"variable '%s' in class '%s'\n",
-				variable, classname);
+				"class '%s' ",
+				classname);
+			if (variable)
+				printf("(variable '%s')\n", variable);
+			else
+				printf("\n");
 		}
 	}
 }
@@ -434,6 +438,9 @@ void object_unwatch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2002/11/12 23:13:04  sdh300
+// add some clarity
+//
 // Revision 1.12  2002/11/12 23:04:30  sdh300
 // callback removal, and code cleanup/generalisation
 //
