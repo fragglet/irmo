@@ -12,7 +12,9 @@ SRC= \
   client_run.c  packet.c      sendatom.h world.c			\
   world.h       protocol.h    proto_verify.c            method.c	\
   method.h	error.c	      error.h    if_spec_reflect.c	        \
-  client_sendq.c
+  client_sendq.c							\
+  sendatom_change.c   sendatom_method.c     sendatom_null.c		\
+  sendatom_destroy.c  sendatom_newobject.c  sendatom_sendwindow.c
 
 libirmo_la_SOURCES= $(SRC)
 libirmo_la_LIBADD=$(MODULES_LIBS) @LEXLIB@

@@ -23,39 +23,69 @@
 //
 //---------------------------------------------------------------------
 
-#include "sendatom.h"
+#include <glib.h>
+#include <string.h>
 
-IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
-	&irmo_null_atom,
-	&irmo_newobject_atom,
-	&irmo_change_atom,
-	&irmo_destroy_atom,
-	&irmo_method_atom,
-	&irmo_sendwindow_atom,
+#include "object.h"
+#include "packet.h"
+
+//
+// Null atom.
+//
+// does nothing.
+//
+// format:
+// 
+//  (empty)
+//
+
+static gboolean irmo_null_atom_verify(IrmoPacket *packet)
+{
+	return TRUE;
+}
+
+static IrmoSendAtom *irmo_null_atom_read(IrmoPacket *packet)
+{
+	IrmoSendAtom *atom;
+	
+	atom = g_new0(IrmoSendAtom, 1);
+	atom->klass = &irmo_null_atom;
+
+	return atom;
+}
+
+static void irmo_null_atom_write(IrmoSendAtom *atom, IrmoPacket *packet)
+{
+	return;
+}
+
+static gsize irmo_null_atom_length(IrmoSendAtom *atom)
+{
+	return 0;
+}
+
+static void irmo_null_atom_run(IrmoSendAtom *atom)
+{
+	// does nothing
+}
+
+IrmoSendAtomClass irmo_null_atom = {
+	ATOM_NULL,
+	irmo_null_atom_verify,
+	irmo_null_atom_read,
+	irmo_null_atom_write,
+	irmo_null_atom_run,
+	irmo_null_atom_length,
+	NULL,
 };
 
 //---------------------------------------------------------------------
 //
 // $Log$
-// Revision 1.12  2003/10/22 16:13:10  fraggle
+// Revision 1.1  2003/10/22 16:13:10  fraggle
 // Split off sendatom classes into separate files
-//
-// Revision 1.11  2003/10/22 16:05:01  fraggle
-// Move field reading routines into packet.c
-//
-// Revision 1.10  2003/10/22 15:32:20  fraggle
-// Some documentation
-//
-// Revision 1.9  2003/10/14 22:12:50  fraggle
-// Major internal refactoring:
-//  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
-//  - What was sendatom.c is now client_sendq.c.
-//  - IrmoSendAtoms are now in an object oriented model. Functions
-//    to do with particular "classes" of sendatom are now grouped together
-//    in (the new) sendatom.c. This groups things together that seem to
-//    logically belong together and cleans up the code a lot.
 //
 //
 //---------------------------------------------------------------------
+
 
