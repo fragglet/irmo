@@ -303,8 +303,8 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 static inline void socket_run_synack(IrmoPacket *packet)
 {
-	IrmoClient *client;
-
+	IrmoClient *client = packet->client;
+	
 	if (client->state == CLIENT_CONNECTING) {
 		// this is the first synack we have received
 		
@@ -500,6 +500,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.33  2003/03/14 16:53:45  sdh300
+// Add structure member for source client for remote universes
+//
 // Revision 1.32  2003/03/12 18:56:25  sdh300
 // Only call callback functions when existing objects have already been
 // added to sendq. This is to stop multiple news on new objects created
