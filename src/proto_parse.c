@@ -50,6 +50,7 @@ static inline void proto_parse_change_atom(IrmoClient *client,
 
 	printf("object class number: %i\n", i8);
 	objclass = client->universe->spec->classes[i8];
+	atom->data.change.objclass = objclass;
 
 	// read object id
 	
@@ -93,7 +94,7 @@ static inline void proto_parse_change_atom(IrmoClient *client,
 			packet_readi32(packet, &newvalues[i].i32);
 			break;
 		case TYPE_STRING:
-			newvalues[i].s = packet_readstring(packet);
+			newvalues[i].s = strdup(packet_readstring(packet));
 			break;
 		}
 	}
@@ -304,6 +305,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/06 20:15:25  sdh300
+// Initial ack code
+//
 // Revision 1.3  2003/03/06 19:23:14  sdh300
 // Add initial code to run through the atoms in the send window
 //
