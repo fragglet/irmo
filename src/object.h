@@ -32,3 +32,5 @@ void object_destroy(IrmoObject *object);
 void __object_destroy(IrmoObject *object);
 
 #endif /* #ifndef IRMO_OBJECT_H */
+
+// $Log: not supported by cvs2svn $
