@@ -224,7 +224,7 @@ static ClassSpec *eat_class()
 		spec->variables 
 		   = realloc(spec->variables, i * sizeof(ClassVarSpec *));
 
-	printf("read class: name '%s', %i variables\n", spec->name, i);
+	//printf("read class: name '%s', %i variables\n", spec->name, i);
 
 	return spec;
 }
@@ -323,7 +323,7 @@ static MethodSpec *eat_method()
 	parse_assert(yylex() == TOKEN_SEMICOLON,
 		     "expecting semicolon at end of function prototype");
 
-	printf("read method: name '%s', %i arguments\n", spec->name, i);
+	//printf("read method: name '%s', %i arguments\n", spec->name, i);
 	return spec;
 }
 
@@ -470,6 +470,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/16 02:08:01  sdh300
+// Add irmo_objid_t type to lexer
+//
 // Revision 1.4  2003/03/14 17:36:36  sdh300
 // Store index for method specs
 //

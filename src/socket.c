@@ -389,7 +389,6 @@ static inline void socket_run_synfin(IrmoPacket *packet)
 		
 		// send a syn/fin/ack to reply
 
-		printf("send synfinack reply\n");
 		sendpacket = packet_new(2);
 		packet_writei16(sendpacket,
 				PACKET_FLAG_SYN | PACKET_FLAG_FIN
@@ -411,7 +410,6 @@ static inline void socket_run_synfinack(IrmoPacket *packet)
 		client->state = CLIENT_DISCONNECTED;
 		irmo_client_callback_raise(client->disconnect_callbacks,
 					   client);
-		printf("disconnected client ok\n");
 	}
 }
 
@@ -436,8 +434,6 @@ static inline void socket_run_packet(IrmoPacket *packet)
 
 	packet->flags = flags;
 
-	printf("packet flags: %04x\n", flags);
-	
 	// check for syn
 
 	if (flags == PACKET_FLAG_SYN) {
@@ -466,8 +462,6 @@ static inline void socket_run_packet(IrmoPacket *packet)
 	}
 
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_FIN|PACKET_FLAG_ACK)) {
-
-		printf("synfinack\n");
 		socket_run_synfinack(packet);
 		return;
 	}
@@ -565,6 +559,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.37  2003/03/17 17:34:27  sdh300
+// Add disconnect callbacks for clients
+//
 // Revision 1.36  2003/03/17 16:48:23  sdh300
 // Add ability to disconnect from servers and to disconnect clients
 //
