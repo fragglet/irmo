@@ -595,11 +595,6 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 	    && time(NULL) - client->connect_time < 10)
 		return FALSE;
 	
-	// remove from server list
-	
-	g_hash_table_remove(client->server->clients,
-			    key);
-	
 	irmo_client_internal_unref(client);
 
 	// remove from socket list: return TRUE
@@ -697,6 +692,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.24  2004/04/17 22:02:35  fraggle
+// Fix crash on disconnect from multiple delete
+//
 // Revision 1.23  2004/01/06 01:36:18  fraggle
 // Remove vhosting. Simplify the server API.
 //
