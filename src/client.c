@@ -94,6 +94,8 @@ void irmo_client_destroy(IrmoClient *client)
 	}
 
 	g_queue_free(client->sendq);
+
+	g_hash_table_destroy(client->sendq_hashtable);
 	
 	// destroy sendwindow and all data in it
 	
@@ -109,8 +111,9 @@ void irmo_client_destroy(IrmoClient *client)
 			sendatom_free(client->recvwindow[i]);
 
 	free(client->recvwindow);
-	
-	// destroy send queue
+
+	if (client->universe)
+		irmo_universe_unref(client->universe);
 	
 	free(client->addr);
 	free(client);
@@ -245,6 +248,9 @@ void irmo_client_disconnect(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/03/17 16:48:22  sdh300
+// Add ability to disconnect from servers and to disconnect clients
+//
 // Revision 1.15  2003/03/14 17:33:08  sdh300
 // Fix crash on trying to free sendwindow
 //
