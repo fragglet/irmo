@@ -383,7 +383,25 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 {
 	_client_run(client);
 
-	// eventually, do timeout stuff to remove dead clients
+	// if this client is dead and nothing is watching it,
+	// garbage collect
+	
+	if (client->state == CLIENT_DISCONNECTED
+	 && client->refcount == 0) {
+
+		// remove from server list
+
+		g_hash_table_remove(client->server->clients,
+				    key);
+
+		// destroy client object
+
+		_client_destroy(client);
+		
+		// remove from socket list: return TRUE
+		
+		return TRUE;
+	}
 	
 	return FALSE;
 }
@@ -438,6 +456,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.20  2003/02/16 23:37:28  sdh300
+// Fix bug lookup up hashes when server not found
+//
 // Revision 1.19  2003/02/11 19:18:43  sdh300
 // Initial working connection code!
 //

@@ -17,6 +17,8 @@ typedef enum {
 
 struct _IrmoClient {
 
+	int refcount;
+	
 	IrmoClientState state;
 	
 	// server client is connected to
@@ -40,6 +42,10 @@ struct _IrmoClient {
 
 IrmoClient *_client_new(IrmoServer *server, struct sockaddr *addr);
 void _client_run(IrmoClient *client);
+void _client_destroy(IrmoClient *client);
+
+void client_ref(IrmoClient *client);
+void client_unref(IrmoClient *client);
 
 /*!
  * \brief Forcibly disconnect a client
@@ -53,6 +59,9 @@ void client_disconnect(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/11 19:18:43  sdh300
+// Initial working connection code!
+//
 // Revision 1.3  2003/02/06 02:41:25  sdh300
 // Add CLIENT_DISCONNECTED for disconnected clients
 //

@@ -10,6 +10,10 @@ typedef struct _IrmoServer IrmoServer;
 
 struct _IrmoServer {
 
+	// reference count
+	
+	int refcount;
+	
 	// vhost hostname
 
 	gchar *hostname;
@@ -52,9 +56,16 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 		       IrmoUniverse *universe, InterfaceSpec *spec);
 
 
+void server_ref(IrmoServer *server);
+
+void server_unref(IrmoServer *server);
+
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/11/26 15:46:41  sdh300
+// Fix compile and possible namespace conflicts with the "socket" function
+//
 // Revision 1.2  2002/11/26 15:43:05  sdh300
 // Initial IrmoServer code
 //
