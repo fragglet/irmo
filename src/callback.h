@@ -6,19 +6,19 @@
 #define IRMO_CALLBACK_H
 
 typedef struct _IrmoCallbackData IrmoCallbackData;
-typedef struct _IrmoVarCallbackData IrmoVarCallbackData;
+typedef struct _IrmoCallbackFuncData IrmoCallbackFuncData;
 
 #include "if_spec.h"
 #include "object.h"
 
-typedef void (*IrmoCallback) (IrmoObject *object, gchar *variable,
-			      gpointer user_data);
-typedef void (*IrmoDestroyCallback) (IrmoObject *object, gpointer user_data);
+typedef void (*IrmoVarCallback) (IrmoObject *object, gchar *variable,
+				 gpointer user_data);
+typedef void (*IrmoObjCallback) (IrmoObject *object, gpointer user_data);
 
-struct _IrmoVarCallbackData {
+struct _IrmoCallbackFuncData {
 	union {
-		IrmoCallback var;
-		IrmoDestroyCallback destroy;
+		IrmoVarCallback var;
+		IrmoObjCallback obj;
 	} func;
 	gpointer user_data;
 };
@@ -53,21 +53,24 @@ void _callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
 void _callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 
 void universe_watch_new(IrmoUniverse *universe, gchar *classname,
-			IrmoDestroyCallback func, gpointer user_data);
+			IrmoObjCallback func, gpointer user_data);
 void universe_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
-			  IrmoCallback func, gpointer user_data);
+			  IrmoVarCallback func, gpointer user_data);
 void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
-			    IrmoDestroyCallback func, gpointer user_data);
+			    IrmoObjCallback func, gpointer user_data);
 
 void object_watch(IrmoObject *object, gchar *variable,
-		  IrmoCallback func, gpointer user_data);
+		  IrmoVarCallback func, gpointer user_data);
 void object_watch_destroy(IrmoObject *object,
-			  IrmoDestroyCallback, gpointer user_data);
+			  IrmoObjCallback, gpointer user_data);
 
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/11/05 16:28:10  sdh300
+// new object callbacks
+//
 // Revision 1.6  2002/11/05 15:55:12  sdh300
 // object destroy callbacks
 //

@@ -21,7 +21,7 @@ IrmoCallbackData *_callbackdata_new(ClassSpec *objclass)
 	return data;
 }
 
-static void _callbackdata_free_foreach(IrmoVarCallbackData *callback,
+static void _callbackdata_free_foreach(IrmoCallbackFuncData *callback,
 				       gpointer user_data)
 {
 	free(callback);
@@ -61,7 +61,7 @@ struct raise_data {
 	gchar *variable;
 };
 
-static void _callbackdata_raise_foreach(IrmoVarCallbackData *callback, 
+static void _callbackdata_raise_foreach(IrmoCallbackFuncData *callback, 
 					struct raise_data *raise_data)
 {
 	callback->func.var(raise_data->object, raise_data->variable,
@@ -89,10 +89,10 @@ void _callbackdata_raise(IrmoCallbackData *data,
 			&raise_data);
 }
 
-static void _callbackdata_raise_destroy_foreach(IrmoVarCallbackData *callback,
+static void _callbackdata_raise_destroy_foreach(IrmoCallbackFuncData *callback,
 						struct raise_data *raise_data)
 {
-	callback->func.destroy(raise_data->object, callback->user_data);
+	callback->func.obj(raise_data->object, callback->user_data);
 }
 
 void _callbackdata_raise_destroy(IrmoCallbackData *data,
@@ -120,10 +120,10 @@ void _callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 
 static void callbackdata_watch(IrmoCallbackData *data,
 			       gchar *variable,
-			       IrmoCallback func, gpointer user_data)
+			       IrmoVarCallback func, gpointer user_data)
 {
 	GSList **list;
-	IrmoVarCallbackData *callback;
+	IrmoCallbackFuncData *callback;
 	
 	if (variable) {
 		ClassVarSpec *varspec
@@ -143,7 +143,7 @@ static void callbackdata_watch(IrmoCallbackData *data,
 		list = &data->class_callbacks;
 	}
 
-	callback = g_new0(IrmoVarCallbackData, 1);
+	callback = g_new0(IrmoCallbackFuncData, 1);
 	callback->func.var = func;
 	callback->user_data = user_data;
 
@@ -151,13 +151,13 @@ static void callbackdata_watch(IrmoCallbackData *data,
 }
 
 static void callbackdata_watch_destroy(IrmoCallbackData *data,
-				       IrmoDestroyCallback func,
+				       IrmoObjCallback func,
 				       gpointer user_data)
 {
-	IrmoVarCallbackData *callback;
+	IrmoCallbackFuncData *callback;
 	
-	callback = g_new0(IrmoVarCallbackData, 1);
-	callback->func.destroy = func;
+	callback = g_new0(IrmoCallbackFuncData, 1);
+	callback->func.obj = func;
 	callback->user_data = user_data;
 
 	data->destroy_callbacks = g_slist_append(data->destroy_callbacks,
@@ -165,10 +165,10 @@ static void callbackdata_watch_destroy(IrmoCallbackData *data,
 }
 
 void universe_watch_new(IrmoUniverse *universe, gchar *classname,
-			IrmoDestroyCallback func, gpointer user_data)
+			IrmoObjCallback func, gpointer user_data)
 {
 	IrmoCallbackData *data;
-	IrmoVarCallbackData *callback;
+	IrmoCallbackFuncData *callback;
 	ClassSpec *spec;
 	
 	// find the class
@@ -181,8 +181,8 @@ void universe_watch_new(IrmoUniverse *universe, gchar *classname,
 		return;
 	}
 	
-	callback = g_new0(IrmoVarCallbackData, 1);
-	callback->func.destroy = func;
+	callback = g_new0(IrmoCallbackFuncData, 1);
+	callback->func.obj = func;
 	callback->user_data = user_data;
 
 	data = universe->callbacks[spec->index];
@@ -192,7 +192,7 @@ void universe_watch_new(IrmoUniverse *universe, gchar *classname,
 
 void universe_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
-			  IrmoCallback func, gpointer user_data)
+			  IrmoVarCallback func, gpointer user_data)
 {
 	ClassSpec *spec;
 	
@@ -212,7 +212,7 @@ void universe_watch_class(IrmoUniverse *universe,
 }
 
 void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
-			    IrmoDestroyCallback func, gpointer user_data)
+			    IrmoObjCallback func, gpointer user_data)
 {
 	ClassSpec *spec;
 
@@ -230,20 +230,23 @@ void universe_watch_destroy(IrmoUniverse *universe, gchar *classname,
 }
 
 void object_watch(IrmoObject *object, gchar *variable,
-		  IrmoCallback func, gpointer user_data)
+		  IrmoVarCallback func, gpointer user_data)
 {
 	callbackdata_watch(object->callbacks, variable,
 			   func, user_data);
 }
 
 void object_watch_destroy(IrmoObject *object,
-			  IrmoDestroyCallback func, gpointer user_data)
+			  IrmoObjCallback func, gpointer user_data)
 {
 	callbackdata_watch_destroy(object->callbacks,
 				   func, user_data);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2002/11/05 22:20:44  sdh300
+// oops
+//
 // Revision 1.9  2002/11/05 16:28:10  sdh300
 // new object callbacks
 //
