@@ -127,7 +127,6 @@ void irmo_socket_unref(IrmoSocket *sock)
 	--sock->refcount;
 
 	if (sock->refcount <= 0) {
-		
 		// close socket
 
 		close(sock->sock);
@@ -221,6 +220,11 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	// to us!
 
 	if (packet->sock->type == SOCKET_CLIENT)
+		return;
+
+	// once client is connected, do not allow more SYNs
+
+	if (client && client->state != CLIENT_CONNECTING)
 		return;
 	
 	// read packet data
@@ -416,6 +420,9 @@ static inline void socket_run_packet(IrmoPacket *packet)
 		return;
 	}
 
+	if (client->state != CLIENT_CONNECTED)
+		return;
+	
 	// pass it to the protocol parsing code
 	
 	proto_parse_packet(packet);
@@ -500,6 +507,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.34  2003/03/14 17:33:25  sdh300
+// Fix bug caused by changes in previous commit
+//
 // Revision 1.33  2003/03/14 16:53:45  sdh300
 // Add structure member for source client for remote universes
 //
