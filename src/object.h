@@ -22,10 +22,28 @@ union _IrmoVariable {
 };
 
 struct _IrmoObject {
+
+	// universe this object is attached to
+
 	IrmoUniverse *universe;
+
+	// callback data for this object
+	
 	IrmoCallbackData *callbacks;
+
+	// the class of this object, one of the classes specified
+	// in the interface spec for the universe this object exists
+	// in.
+	
 	ClassSpec *objclass;
+
+	// numerical id reference for this object in the universe
+	
 	irmo_objid_t id;
+
+	// array of variables for this object
+	// the number of variables is specified in objclass
+	
 	IrmoVariable *variables;
 };
 
@@ -54,6 +72,10 @@ void object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/03/06 19:21:26  sdh300
+// Split off some of the constructor/destructor/change code into
+// seperate functions that can be reused elsewhere
+//
 // Revision 1.13  2003/02/23 01:01:01  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split
