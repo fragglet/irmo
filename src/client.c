@@ -65,18 +65,10 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 	client->recvwindow_start = 0;
 	client->recvwindow_size = 64;
 	client->recvwindow = g_new0(IrmoSendAtom *, client->recvwindow_size);
-	
-	// note on refcounts for clients:
-	// reference counting is different for client objects.
-	// in the server, when a client is disconnected it goes into
-	// the CLIENT_DISCONNECTED state, but is kept in the server's
-	// clients list. the server removes disconnected clients
-	// in its pass through the list in irmo_socket_run. however, it
-	// only removes clients if their refcount == 0. this allows
-	// 'hooks' to be kept on particular clients the user may be
-	// watching.
-	
-	client->refcount = 0;
+
+	// start at one ref, from the server this is part of 
+
+	client->refcount = 1;
 
 	// initial rtt mean/stddev
 
@@ -125,6 +117,9 @@ void irmo_client_unref(IrmoClient *client)
 	--client->refcount;
 	
 	irmo_server_unref(client->server);	
+
+	if (client->refcount <= 0) 
+		irmo_client_destroy(client);
 }
 
 void irmo_client_destroy(IrmoClient *client)
@@ -351,6 +346,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.6  2003/08/26 16:15:40  fraggle
+// fix bug with reconnect immediately after a disconnect
+//
 // Revision 1.5  2003/08/21 15:11:53  fraggle
 // Fix compile errors
 //

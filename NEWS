@@ -1,6 +1,7 @@
 
 	* Completed IPv6 support
 	* Segfault in building packets fixed
+	* Fix bug on immediate reconnect after a disconnect
 	
 	API:
 

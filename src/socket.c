@@ -274,6 +274,29 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 	if (packet->sock->type == SOCKET_CLIENT)
 		return;
 
+	if (client && client->state == CLIENT_DISCONNECTED) {
+
+		// there was previously a client connected from the
+		// same port. possibly the the player disconnected
+		// and reconnected and the OS gave the same random
+		// port. remove the old client and destroy it, so
+		// that we can start a new one.
+
+		// remove from hash tables
+
+		g_hash_table_remove(client->server->socket->clients,
+				    client->addr);
+		g_hash_table_remove(client->server->clients,
+				    client->addr);
+
+		--client->refcount;
+
+		if (client->refcount <= 0)
+			irmo_client_destroy(client);		
+
+		client = NULL;
+	}
+
 	// once client is connected, do not allow more SYNs
 
 	if (client && client->state != CLIENT_CONNECTING)
@@ -530,13 +553,9 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 {
 	irmo_client_run(client);
 
-	// if this client is dead and nothing is watching it,
-	// garbage collect
+	// dont remove clients which arent disconnected
 
 	if (client->state != CLIENT_DISCONNECTED)
-		return FALSE;
-
-	if (client->refcount > 0)
 		return FALSE;
 
 	// if this is a client remotely disconnecting,
@@ -551,9 +570,13 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 	g_hash_table_remove(client->server->clients,
 			    key);
 	
-	// destroy client object
+	--client->refcount;
+
+	// destroy client object if no references
 	
-	irmo_client_destroy(client);
+	if (client->refcount <= 0) {
+		irmo_client_destroy(client);
+	}
 	
 	// remove from socket list: return TRUE
 	
@@ -611,6 +634,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log$
+// Revision 1.5  2003/08/26 16:15:40  fraggle
+// fix bug with reconnect immediately after a disconnect
+//
 // Revision 1.4  2003/08/26 14:57:31  fraggle
 // Remove AF_* BSD sockets dependency from Irmo API
 //
