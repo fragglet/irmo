@@ -2,6 +2,11 @@
 #define IRMO_METHOD_H
 
 /*!
+ * \addtogroup method
+ * \{
+ */
+
+/*!
  * \brief Method Callback Data
  *
  * When a callback function attached to a method is invoked, it is passed
@@ -108,6 +113,11 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data);
 
 void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...);
 
+//! \}
+
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/03/15 02:21:19  sdh300
+// Initial method code
+//

@@ -46,6 +46,16 @@
  */
 
 /*!
+ * \defgroup method Irmo Method Call Interface
+ *
+ * Method calls can be defined and invoked on \ref IrmoUniverse objects.
+ * Callback functions can be set to be called when methods are invoked.
+ * The methods and their arguments are declared in the Interface 
+ * Specification for the Universe.
+ *
+ */
+
+/*!
  * \defgroup socket Irmo Socket
  *
  * Socket objects listen on a particular UDP port. Servers (see
@@ -104,6 +114,9 @@
  */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/07 12:21:07  sdh300
+// Add irmo_ prefix to public function names
+//
 // Revision 1.7  2003/03/07 12:16:56  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //
