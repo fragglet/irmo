@@ -188,7 +188,8 @@ static ClassSpec *eat_class()
 		token = yylex();
 		parse_assert(token == TOKEN_ID, "variable name expected");
 
-		parse_assert(g_hash_table_lookup(spec->variable_hash, yytext) == NULL,
+		parse_assert(g_hash_table_lookup(spec->variable_hash, yytext)
+			     == NULL,
 			     "multiple definitions of '%s'", yytext);
 		
 		var->name = strdup(yytext);
@@ -257,7 +258,8 @@ static MethodSpec *eat_method()
 
 	spec->argument_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	
-	parse_assert(yylex() == TOKEN_LPAREN, "expecting '(' open parentheses");
+	parse_assert(yylex() == TOKEN_LPAREN,
+		     "expecting '(' open parentheses");
 
 	for (i=0;; ++i) {
 		token_t token = yylex();
@@ -284,7 +286,8 @@ static MethodSpec *eat_method()
 
 		parse_assert(yylex() == TOKEN_ID, "expecting argument name");
 
-		parse_assert(g_hash_table_lookup(spec->argument_hash, yytext) == NULL,
+		parse_assert(g_hash_table_lookup(spec->argument_hash, yytext)
+			     == NULL,
 			     "multiple definitions of '%s'", yytext);
 		
 		arg->name = strdup(yytext);
@@ -364,10 +367,12 @@ static InterfaceSpec *eat_interface()
 			class = eat_class();
 
 			if (g_hash_table_lookup(spec->class_hash, class->name))
-				parse_assert(0, "multiple definitions of '%s'", class->name);
+				parse_assert(0, "multiple definitions of '%s'",
+					     class->name);
 			
 			spec->classes[spec->nclasses++] = class;
-			g_hash_table_insert(spec->class_hash, class->name, class);
+			g_hash_table_insert(spec->class_hash, class->name,
+					    class);
 
 		} else if (token == TOKEN_FUNC) {
 			MethodSpec *method;
@@ -376,11 +381,14 @@ static InterfaceSpec *eat_interface()
 
 			method = eat_method();
 			
-			if (g_hash_table_lookup(spec->method_hash, method->name))
-				parse_assert(0, "multiple definitions of '%s'", method->name);
+			if (g_hash_table_lookup(spec->method_hash,
+						method->name))
+				parse_assert(0, "multiple definitions of '%s'",
+					     method->name);
 			
 			spec->methods[spec->nmethods++] = method;
-			g_hash_table_insert(spec->method_hash, method->name, method);
+			g_hash_table_insert(spec->method_hash, method->name,
+					    method);
 		} else {
 			parse_assert(0, "expecting class or method definiton");
 		}
@@ -405,7 +413,8 @@ InterfaceSpec *interface_spec_new(char *filename)
 	yyin = fopen(filename, "r");
 
 	if (!yyin) {
-		fprintf(stderr, "interface_spec_new: cant open '%s'", filename);
+		fprintf(stderr, "interface_spec_new: cant open '%s'",
+			filename);
 		exit(-1);
 	}
 
@@ -433,6 +442,9 @@ void interface_spec_unref(InterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/10/19 18:57:23  sdh300
+// recognise "method" as well as "func"
+//
 // Revision 1.1.1.1  2002/10/19 18:53:23  sdh300
 // initial import
 //
