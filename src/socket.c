@@ -318,10 +318,6 @@ static inline void socket_run_synack(IrmoPacket *packet)
 			
 			packet->client->universe->remote = TRUE;
 
-			// raise callback functions for new client
-
-			irmo_server_raise_connect(packet->client->server, 
-						  packet->client);
 		}
 
 		// if we are serving a universe to the client,
@@ -329,6 +325,14 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 		if (packet->client->server->universe)
 			irmo_client_sendq_add_state(packet->client);
+
+		// raise callback functions for new client
+		// do this after sending the state: it may create
+		// new objects in the callback, in which case the
+		// 'new' can be created twice
+
+		irmo_server_raise_connect(packet->client->server, 
+					  packet->client);
 	}
 
 	// if we are the client receiving this from the server,
@@ -494,6 +498,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.31  2003/03/08 20:02:19  sdh300
+// Fix bug in compile
+//
 // Revision 1.30  2003/03/07 14:31:19  sdh300
 // Callback functions for watching new client connects
 //
