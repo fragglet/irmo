@@ -1,0 +1,28 @@
+
+About
+
+Irmo is an abstracted multiplayer engine, in a library form. You can
+use Irmo to add client-server multiplayer support to games quickly and
+easily.
+
+Irmo requires glib2, pkg-config and flex: you can get these here:
+
+  http://www.glib.org/
+  http://www.gnu.org/software/flex/
+  http://www.freedesktop.org/software/pkgconfig/
+
+It may work with other lexers, but has not been tested.
+
+Irmo is documented using Doxygen: you can use doxygen to generate a 
+full API reference. You can get doxygen here:
+
+  http://www.doxygen.org/
+
+The irmo homepage is at:
+
+  http://irmo.sourceforge.net/
+
+If you use Irmo for something, please email me!
+  
+Simon Howard <sdh300@zepler.net>
+
