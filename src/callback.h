@@ -10,6 +10,7 @@ typedef struct _IrmoCallbackFuncData IrmoCallbackFuncData;
 
 #include "public/callback.h"
 
+#include "client.h"
 #include "if_spec.h"
 #include "object.h"
 
@@ -50,9 +51,21 @@ void callbackdata_raise(IrmoCallbackData *data,
 void callbackdata_raise_destroy(IrmoCallbackData *data, IrmoObject *object);
 void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 
+void client_callback_add(GSList **list, IrmoClientCallback func,
+			 gpointer user_data);
+gboolean client_callback_remove(GSList **list, IrmoClientCallback func,
+				gpointer user_data);
+void client_callback_destroy(GSList *list);
+void client_callback_raise(GSList *list, IrmoClient *client);
+
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/02/23 01:01:00  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.12  2003/02/23 00:00:03  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

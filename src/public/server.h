@@ -17,6 +17,8 @@ typedef struct _IrmoServer IrmoServer;
 #include "socket.h"
 #include "universe.h"
 
+typedef void (*IrmoClientCallback) (IrmoClient *client, gpointer user_data);
+
 /*!
  * \brief Create a new server
  *
@@ -36,6 +38,33 @@ typedef struct _IrmoServer IrmoServer;
 
 IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 			    IrmoUniverse *universe, IrmoInterfaceSpec *spec);
+
+/*!
+ * \brief Watch new connections to a server
+ *
+ * Add a new watch on a server. Whenever a new client connects to
+ * the server, a callback function will be invoked.
+ *
+ * \param server     The server to watch
+ * \param func       The function to call
+ * \param user_data  Some extra data to pass to the callback function
+ *
+ * \sa irmo_server_unwatch_connect
+ */
+
+void irmo_server_watch_connect(IrmoServer *server, IrmoClientCallback func,
+			       gpointer user_data);
+
+/*!
+ * \brief Remove a watch on a server
+ *
+ * This removes a watch set on a server with \ref irmo_serv_watch_connect.
+ * All parameters must be the same as those used to set the watch initially.
+ *
+ */
+
+void irmo_server_unwatch_connect(IrmoServer *server, IrmoClientCallback func,
+				 gpointer user_data);
 
 /*!
  * \brief Reference a server object
@@ -68,6 +97,9 @@ void irmo_server_unref(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/03/07 12:17:22  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.4  2003/03/07 10:48:08  sdh300
 // Add new sections to documentation
 //

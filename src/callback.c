@@ -442,7 +442,96 @@ void irmo_object_unwatch_destroy(IrmoObject *object,
 	}
 }
 
+//========================================================================
+//
+// This is for client watches
+// (watching new connections to servers, watching when clients disconnect,
+//  etc)
+//
+//========================================================================
+
+typedef struct {
+	IrmoClientCallback func;
+	gpointer user_data;
+} IrmoClientCallbackData; 
+
+void client_callback_add(GSList **list, IrmoClientCallback func,
+			 gpointer user_data)
+{
+        IrmoClientCallbackData *data;
+
+	data = g_new0(IrmoClientCallbackData, 1);
+	data->func = func;
+	data->user_data = user_data;
+
+	*list = g_slist_append(*list, data);
+}
+
+gint client_callback_remove_search(IrmoClientCallbackData *d1,
+				   IrmoClientCallbackData *d2)
+{
+	return d1->func != d2->func || d1->user_data != d2->user_data;
+}
+
+gboolean client_callback_remove(GSList **list, IrmoClientCallback func,
+				gpointer user_data)
+{
+	IrmoClientCallbackData data;
+	IrmoClientCallbackData *data2;
+	GSList *result;
+
+	data.func = func;
+	data.user_data = user_data;
+
+	result = g_slist_find_custom(*list, &data,
+				     (GCompareFunc)
+				     client_callback_remove_search);
+
+	if (result) {
+		data2 = g_slist_nth_data(result, 0);
+
+		// remove from list
+
+		*list = g_slist_remove(*list, data2);
+
+		free(data2);
+
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
+static void client_callback_destroy_foreach(IrmoClientCallbackData *data,
+					    gpointer user_data)
+{
+	free(data);
+}
+
+void client_callback_destroy(GSList *list)
+{
+	g_slist_foreach(list, (GFunc) client_callback_destroy_foreach,
+			NULL);
+
+	g_slist_free(list);
+}
+
+static void client_callback_raise_foreach(IrmoClientCallbackData *data,
+					  IrmoClient *client)
+{
+	data->func(client, data->user_data);
+}
+
+void client_callback_raise(GSList *list, IrmoClient *client)
+{
+	g_slist_foreach(list, (GFunc) client_callback_raise_foreach,
+			client);
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2003/03/07 12:17:16  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.17  2003/02/23 01:01:00  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split

@@ -93,6 +93,10 @@ void irmo_server_unref(IrmoServer *server)
 
 	if (server->refcount <= 0) {
 
+		// destroy callbacks
+
+		client_callback_destroy(server->connect_callbacks);
+
 		// remove clients
 
 		g_hash_table_foreach_remove(server->clients,
@@ -128,7 +132,33 @@ void irmo_server_unref(IrmoServer *server)
 	}
 }
 
+void irmo_server_watch_connect(IrmoServer *server, IrmoClientCallback func,
+			       gpointer user_data)
+{
+	client_callback_add(&server->connect_callbacks, func, user_data);
+}
+
+void irmo_server_unwatch_connect(IrmoServer *server, IrmoClientCallback func,
+				 gpointer user_data)
+{
+
+	if (!client_callback_remove(&server->connect_callbacks, 
+				    func, user_data)) {
+		fprintf(stderr,
+			"irmo_server_unwatch_connect: "
+			"watch not found on server\n");
+	}
+}
+
+void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
+{
+	client_callback_raise(server->connect_callbacks, client);
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/07 12:17:17  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.10  2003/03/06 19:33:50  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //

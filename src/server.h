@@ -33,11 +33,22 @@ struct _IrmoServer {
 	// connected IrmoClients hashed by IP
 	
 	GHashTable *clients;
+
+	// callback functions for new connections
+
+	GSList *connect_callbacks;
 };
+
+// raise callback functions on new client connect
+
+void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/06 19:33:51  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.5  2003/02/23 00:00:04  sdh300
 // Split off public parts of headers into seperate files in the 'public'
 // directory (objects now totally opaque)

@@ -317,6 +317,10 @@ static inline void socket_run_synack(IrmoPacket *packet)
 			// mark this as a remote universe
 			
 			packet->client->universe->remote = TRUE;
+
+			// raise callback functions for new client
+
+			irmo_server_raise_connect(server, client);
 		}
 
 		// if we are serving a universe to the client,
@@ -489,6 +493,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.29  2003/03/07 12:31:50  sdh300
+// Add protocol.h
+//
 // Revision 1.28  2003/03/07 12:17:18  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //
