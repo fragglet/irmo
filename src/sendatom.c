@@ -295,6 +295,21 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 	g_queue_push_tail(client->sendq, atom);
 }
 
+// send a send window upper limit
+
+void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max)
+{
+	IrmoSendAtom *atom;
+
+	atom = g_new0(IrmoSendAtom, 1);
+	atom->type = ATOM_SENDWINDOW;
+	atom->data.sendwindow.max = max;
+
+	atom->len = 2;
+
+	g_queue_push_tail(client->sendq, atom);
+}
+
 IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 {
 	IrmoSendAtom *atom;
@@ -364,6 +379,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/04/25 01:32:39  sdh300
+// Remove useless debug code left in from previous commit
+//
 // Revision 1.14  2003/04/25 00:40:50  sdh300
 // Nullifying of change atoms for out-of-date data in the send window
 //

@@ -156,6 +156,10 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 		case ATOM_METHOD:
 			client_run_method(client, atom);
 			break;
+		case ATOM_SENDWINDOW:
+			client->remote_sendwindow_max
+				= atom->data.sendwindow.max;
+			break;
 		}
 
 		sendatom_free(atom);
@@ -176,6 +180,9 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/17 16:49:44  sdh300
+// Always include source as IrmoConnections are now IrmoClients
+//
 // Revision 1.6  2003/03/16 17:38:45  sdh300
 // Fix bug with receive window spuriously advancing, caused by
 // improperly clearing the end of the recvwindow when advancing it

@@ -153,6 +153,13 @@ static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 			return FALSE;
 		
 		break;
+	case ATOM_SENDWINDOW:
+		// set maximum sendwindow size
+
+		if (!packet_readi16(packet, &i16))
+			return FALSE;
+
+		break;
 	}
 
 	return TRUE;
@@ -184,7 +191,8 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 
 		if (atomtype != ATOM_NULL && atomtype != ATOM_NEW
 		    && atomtype != ATOM_CHANGE && atomtype != ATOM_DESTROY
-		    && atomtype != ATOM_METHOD) {
+		    && atomtype != ATOM_METHOD
+		    && atomtype != ATOM_SENDWINDOW) {
 			//printf("invalid atom type (%i)\n", atomtype);
 			return FALSE;
 		}
@@ -249,6 +257,9 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/16 01:59:21  sdh300
+// Security checks incase of changes/method calls to nonexistent universes
+//
 // Revision 1.3  2003/03/16 01:54:24  sdh300
 // Method calls over network protocol
 //

@@ -112,6 +112,12 @@ struct _IrmoClient {
 	// do congestion avoidance.
 
 	int ssthresh;
+
+	// user specified sendwindow limits
+	// if these are 0, they are unset
+	
+	int local_sendwindow_max;
+	int remote_sendwindow_max;
 };
 
 // create a new client, attached to a particular server
@@ -137,6 +143,9 @@ int irmo_client_timeout_time(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.20  2003/04/25 00:17:28  sdh300
+// Remove unneccesary leading underscores from variables in IrmoClient
+//
 // Revision 1.19  2003/04/21 18:10:53  sdh300
 // Fix sending of unneccesary acks
 // Slow start/Congestion avoidance

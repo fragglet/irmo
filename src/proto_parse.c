@@ -178,6 +178,13 @@ static IrmoSendAtom *proto_parse_atom(IrmoClient *client, IrmoPacket *packet,
 	case ATOM_METHOD:
 		proto_parse_method_atom(client, packet, atom);
 		break;
+	case ATOM_SENDWINDOW:
+		// read window advertisement
+
+		packet_readi16(packet, &i16);
+		atom->data.sendwindow.max = i16;
+
+		break;
 	default:
 		atom->type = ATOM_NULL;
 		break;
@@ -402,6 +409,10 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/04/21 18:10:54  sdh300
+// Fix sending of unneccesary acks
+// Slow start/Congestion avoidance
+//
 // Revision 1.12  2003/03/21 17:21:45  sdh300
 // Round Trip Time estimatation and adaptive timeout times
 //

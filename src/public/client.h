@@ -111,11 +111,29 @@ void irmo_client_unwatch_disconnect(IrmoClient *client,
 
 int irmo_client_ping_time(IrmoClient *client);
 
+/*!
+ * \brief Set the maximum send window size
+ *
+ * This sets the maximum send window size for network transfer. This
+ * is dependent on the bandwidth of the network connection. If the
+ * maximum send window size is not set manually, the library will
+ * attempt to determine an upper bound using congestion avoidance
+ * algorithms, which may produce poor performance.
+ *
+ * \param client   The client to set the value on
+ * \param max      The maximum send window size (in bytes)
+ */
+
+void irmo_client_set_max_sendwindow(IrmoClient *client, int max);
+
 //! \}
 
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/04/21 20:10:22  sdh300
+// Add a function to the API to get the RTT for a client
+//
 // Revision 1.6  2003/03/17 17:35:15  sdh300
 // Add disconnect callbacks for clients
 // Move IrmoClientCallback to client.h

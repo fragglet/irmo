@@ -119,6 +119,9 @@ static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 		break;
 	case ATOM_NULL:
 		break;
+	case ATOM_SENDWINDOW:
+		packet_writei16(packet, atom->data.sendwindow.max);
+		break;
 	}
 }
 
@@ -233,6 +236,7 @@ static void proto_pump_client(IrmoClient *client)
 {
 	int current_size = 0;
 	int i;
+	int sendwindow_max;
 	
 	// if queue is already empty, this is a nonissue
 	
@@ -242,9 +246,29 @@ static void proto_pump_client(IrmoClient *client)
 	for (i=0; i<client->sendwindow_size; ++i)
 		current_size += client->sendwindow[i]->len;
 
+	// determine the maximum send window size
+	// if no maximum size has been provided, try to determine
+	// one automatically from congestion avoidance algorithms.
+	// otherwise, use the minimum of those provided to the
+	// server and client
+
+	if (client->local_sendwindow_max) {
+		if (client->remote_sendwindow_max
+		 && client->remote_sendwindow_max
+		         < client->local_sendwindow_max)
+			sendwindow_max = client->remote_sendwindow_max;
+		else
+			sendwindow_max = client->local_sendwindow_max;
+	} else {
+		if (client->remote_sendwindow_max)
+			sendwindow_max = client->remote_sendwindow_max;
+		else
+			sendwindow_max = client->cwnd;
+	}
+
 	// adding things in until we run out of space or atoms to add
 	
-	while (current_size < client->cwnd
+	while (current_size < sendwindow_max
 	       && !g_queue_is_empty(client->sendq)
 	       && client->sendwindow_size < MAX_SENDWINDOW) {
 		IrmoSendAtom *atom;
@@ -389,6 +413,10 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/04/21 18:10:54  sdh300
+// Fix sending of unneccesary acks
+// Slow start/Congestion avoidance
+//
 // Revision 1.13  2003/03/26 16:15:34  sdh300
 // Disconnect clients after too long a timeout
 //

@@ -67,7 +67,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 	client->cwnd = PACKET_THRESHOLD;
 	client->ssthresh = 65535;
-	
+
 	// insert into server hashtable and socket hashtable
 	
 	g_hash_table_insert(server->clients,
@@ -310,7 +310,19 @@ int irmo_client_ping_time(IrmoClient *client)
 	return (int) client->rtt;
 }
 
+void irmo_client_set_max_sendwindow(IrmoClient *client, int max)
+{
+	client->local_sendwindow_max = max;
+
+	// send to remote machine
+	
+	irmo_client_sendq_add_sendwindow(client, max);
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.23  2003/04/25 01:26:18  sdh300
+// Add glib assertations to all public API functions
+//
 // Revision 1.22  2003/04/25 00:17:28  sdh300
 // Remove unneccesary leading underscores from variables in IrmoClient
 //

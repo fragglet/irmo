@@ -9,6 +9,7 @@ typedef enum {
 	ATOM_CHANGE,             // modified object 
 	ATOM_DESTROY,            // object destroyed 
 	ATOM_METHOD,             // method call
+	ATOM_SENDWINDOW,         // set maximum sendwindow size
 } IrmoSendAtomType;
 
 #include <sys/time.h>
@@ -56,6 +57,9 @@ struct _IrmoSendAtom {
 		struct {
 			irmo_objid_t id;
 		} destroy;
+		struct {
+			int max;
+		} sendwindow;
 		IrmoMethodData method;
 	} data;
 };
@@ -69,6 +73,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 			          IrmoObject *object, int variable);
 void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
 void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data);
+void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max);
 
 IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client);
 
@@ -79,6 +84,9 @@ void irmo_client_sendq_add_state(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/04/25 00:40:50  sdh300
+// Nullifying of change atoms for out-of-date data in the send window
+//
 // Revision 1.11  2003/03/18 20:55:47  sdh300
 // Initial round trip time measurement
 //
