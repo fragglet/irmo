@@ -3,4 +3,5 @@
 	* Server querying
 	* Priority Queueing for sendatoms
 	* File transfers
+	* Global variables, etc in interface spec files
 
