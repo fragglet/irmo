@@ -62,6 +62,7 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 	server->socket = sock;
 	server->world = world;
 	server->client_spec = spec;
+	server->running = TRUE;
 
 	irmo_socket_ref(sock);
 
@@ -98,8 +99,8 @@ void irmo_server_ref(IrmoServer *server)
 	++server->refcount;
 }
 
-static gboolean server_unref_client_foreach(gpointer key, IrmoClient *client,
-					    gpointer user_data)
+static gboolean remove_each_client(gpointer key, IrmoClient *client,
+				   gpointer user_data)
 {
 	// remove from the socket list
 	
@@ -114,6 +115,38 @@ static gboolean server_unref_client_foreach(gpointer key, IrmoClient *client,
 	return TRUE;
 }
 
+// remove ourselves from the socket
+
+static void irmo_server_internal_shutdown(IrmoServer *server)
+{
+	if (!server->running)
+		return;
+
+	// remove clients
+
+	g_hash_table_foreach_remove(server->clients,
+				    (GHRFunc) remove_each_client,
+				    NULL);
+		
+	// delink from the server
+		
+	if (server->hostname) {
+		g_hash_table_remove(server->socket->servers,
+				    server->hostname);
+		free(server->hostname);
+	} else {
+		server->socket->default_server = NULL;
+	}
+
+	// remove from list of attached servers
+			
+	if (server->world)
+		g_ptr_array_remove(server->world->servers, server);
+
+	server->running = FALSE;
+			
+}
+
 void irmo_server_unref(IrmoServer *server)
 {
 	g_return_if_fail(server != NULL);
@@ -121,41 +154,21 @@ void irmo_server_unref(IrmoServer *server)
 	--server->refcount;
 
 	if (server->refcount <= 0) {
+		
+		irmo_server_internal_shudown(server);
+		g_hash_table_destroy(server->clients);
 
 		// destroy callbacks
 
 		irmo_callbacklist_free(server->connect_callbacks);
 
-		// remove clients
-
-		g_hash_table_foreach_remove(server->clients,
-					    (GHRFunc)
-					      server_unref_client_foreach,
-					    NULL);
-		g_hash_table_destroy(server->clients);
-		
-		// delink from the server
-		
-		if (server->hostname) {
-			g_hash_table_remove(server->socket->servers,
-					    server->hostname);
-			free(server->hostname);
-		} else {
-			server->socket->default_server = NULL;
-		}
-
 		irmo_socket_unref(server->socket);
 		
 		if (server->client_spec)
 			irmo_interface_spec_unref(server->client_spec);
-		if (server->world) {
-			// remove from list of attached servers
-			
-			g_ptr_array_remove(server->world->servers,
-					   server);
-			
+
+		if (server->world)
 			irmo_world_unref(server->world);
-		}
 		
 		free(server);
 	}
@@ -221,7 +234,33 @@ void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
 			     &foreach_data);
 }
 
+static void server_shutdown_foreach(IrmoClient *client, gpointer user_data)
+{
+	irmo_client_disconnect(client);
+}
+
+void irmo_server_shutdown(IrmoServer *server)
+{
+	g_return_if_fail(server != NULL);
+
+	// disconnect all clients
+
+	irmo_server_foreach_client(server, server_shutdown_foreach, NULL);
+
+	// run the socket until all clients are disconnected
+	
+	while (g_hash_table_size(server->clients)) {
+		irmo_socket_run(server->socket);
+		usleep(100);
+	}
+	
+	irmo_server_internal_shutdown(server);
+}
+
 // $Log$
+// Revision 1.7  2003/09/01 18:41:55  fraggle
+// irmo_server_shutdown
+//
 // Revision 1.6  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

@@ -122,11 +122,24 @@ void irmo_server_ref(IrmoServer *server);
 
 void irmo_server_unref(IrmoServer *server);
 
+/*!
+ * \brief Shutdown a server
+ *
+ * This shuts down a server, blocking until all clients are disconnected.
+ *
+ * \param server	The server to shutdown
+ */
+
+void irmo_server_shutdown(IrmoServer *server);
+
 //! \}
 
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.5  2003/09/01 18:41:55  fraggle
+// irmo_server_shutdown
+//
 // Revision 1.4  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

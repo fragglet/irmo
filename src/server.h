@@ -38,6 +38,10 @@ struct _IrmoServer {
 	// reference count
 	
 	int refcount;
+
+	// server running?
+	
+	gboolean running;
 	
 	// vhost hostname
 
@@ -75,6 +79,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log$
+// Revision 1.3  2003/09/01 18:41:55  fraggle
+// irmo_server_shutdown
+//
 // Revision 1.2  2003/09/01 14:21:20  fraggle
 // Use "world" instead of "universe". Rename everything.
 //
