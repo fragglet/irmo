@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "if_spec.h"
 #include "object.h"
@@ -170,13 +171,17 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 
 	if (atom->type == ATOM_CHANGE) {
 		g_hash_table_remove(client->sendq_hashtable,
-				    (gpointer) object->id);
+				    (gpointer) atom->data.change.object->id);
 	}
 
 	return atom;
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/27 02:07:56  sdh300
+// Store sendatom size in structure
+// Add 'pop' function to remove atoms from sendq head
+//
 // Revision 1.3  2003/02/20 18:24:59  sdh300
 // Use GQueue instead of a GPtrArray for the send queue
 // Initial change/destroy code
