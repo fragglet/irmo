@@ -341,13 +341,18 @@ const char *irmo_client_get_addr(IrmoClient *client)
 		struct sockaddr_in *addr = (struct sockaddr_in *) client->addr;
 		return inet_ntoa(addr->sin_addr.s_addr);
 	}
+#ifdef USE_IPV6
 	case AF_INET6: {
 		return inet_ntop(AF_INET6, client->addr, buf, sizeof(buf)-1);
 	}
+#endif
 	}
 }
 
 // $Log$
+// Revision 1.4  2003/08/16 18:17:39  fraggle
+// Add missing USE_IPV6 #ifdef
+//
 // Revision 1.3  2003/08/16 18:13:48  fraggle
 // Remove dependency on BSD sockets API in Irmo API
 //
