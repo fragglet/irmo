@@ -7,7 +7,29 @@ typedef struct _IrmoClient IrmoClient;
 #include "socket.h"
 #include "universe.h"
 
+/*!
+ * \brief Add a reference to a client
+ *
+ * When clients are disconnected from the server their client objects
+ * get automatically deleted after a while. You can add a reference
+ * to a IrmoClient object to notify that you are using the object and
+ * it will not be deleted.
+ *
+ * \param client  The client object to reference
+ * \sa client_unref
+ */
+
 void client_ref(IrmoClient *client);
+
+/*!
+ * \brief Unreference a client object 
+ *
+ * Specify that you are no longer referencing a client object
+ *
+ * \param client   The client object to unreference
+ * \sa client_ref
+ */
+
 void client_unref(IrmoClient *client);
 
 /*!
@@ -22,6 +44,10 @@ void client_disconnect(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/02/23 00:00:06  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.8  2003/02/20 18:24:59  sdh300
 // Use GQueue instead of a GPtrArray for the send queue
 // Initial change/destroy code

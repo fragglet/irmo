@@ -28,13 +28,38 @@ typedef struct _IrmoServer IrmoServer;
 IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 		       IrmoUniverse *universe, InterfaceSpec *spec);
 
+/*!
+ * \brief Reference a server object
+ *
+ * Add a reference to a server object. When a server is created its 
+ * reference count is set to 1. References can be added with server_ref
+ * and removed with \ref server_unref. When the reference count reaches
+ * 0 the server is automatically shut down and destroyed.
+ *
+ * \param server   The server object to reference.
+ * \sa server_unref
+ *
+ */
+
 void server_ref(IrmoServer *server);
+
+/*!
+ * \brief  Unreference a server object
+ * 
+ * \param server   The server object to unreference
+ * \sa server_ref
+ *
+ */
 
 void server_unref(IrmoServer *server);
 
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/02/23 00:00:07  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.4  2003/02/16 23:41:27  sdh300
 // Reference counting for client and server objects
 //
