@@ -193,6 +193,7 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 				
 				if (i == 0) {
 					client->backoff *= 2;
+					//printf("backoff now %i\n", client->backoff);
 				}
 			}
 			
@@ -251,23 +252,34 @@ static void proto_pump_client(IrmoClient *client)
 
 #define PACKET_THRESHOLD 1024
 
-// time before packets time out and are resent (in seconds)
-// this is currently static; TODO: calculate the optimum timeout
-// time from the average round trip time (jacobsons algorithm)
+// maximum timeout length (ms)
+// beyond this length, the backoff has got too high and the client is
+// disconnected
 
-#define TIMEOUT_LENGTH 2
+#define MAX_TIMEOUT 40000
 
 void proto_run_client(IrmoClient *client)
 {
 	struct timeval nowtime, timeout_time, timeout_length;
 	int timeout_length_ms;
 	int i;
+
+	// if we have been trying to resend for too long, give up and
+	// time out
+
+	timeout_length_ms = irmo_client_timeout_time(client) * client->backoff;
+
+	if (timeout_length_ms > MAX_TIMEOUT) {
+		client->state = CLIENT_DISCONNECTED;
+		irmo_client_callback_raise(client->disconnect_callbacks,
+					   client);
+	}
+	
+	// pump new atoms to send window
 	
 	proto_pump_client(client);
 
 	gettimeofday(&nowtime, NULL);
-
-	timeout_length_ms = irmo_client_timeout_time(client) * client->backoff;
 	
 	irmo_timeval_from_ms(timeout_length_ms, &timeout_length);
 
@@ -367,6 +379,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/21 17:21:45  sdh300
+// Round Trip Time estimatation and adaptive timeout times
+//
 // Revision 1.11  2003/03/18 20:55:46  sdh300
 // Initial round trip time measurement
 //
