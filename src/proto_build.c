@@ -31,125 +31,6 @@
 #include "protocol.h"
 #include "sendatom.h"
 
-static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
-{
-	IrmoObject *obj = atom->data.change.object;
-	int bitmap_size;
-	int i, j;
-
-	// include the object class number
-	// this is neccesary otherwise the packet can be ambiguous to
-	// decode (if we receive a change atom for an object which has
-	// not yet been received, for example)
-
-	irmo_packet_writei8(packet, obj->objclass->index);
-	
-	// send object id
-	
-	irmo_packet_writei16(packet, obj->id);
-
-	// build and send bitmap
-
-	bitmap_size = (obj->objclass->nvariables + 7) / 8;
-
-	for (i=0; i<bitmap_size; ++i) {
-		guint8 b;
-
-		// build a byte at a time
-
-		b = 0;
-		
-		for (j=0; j<8 && i*8+j<obj->objclass->nvariables; ++j) {
-			if (atom->data.change.changed[i*8 + j]) {
-				b |= 1 << j;
-			}
-		}
-
-		irmo_packet_writei8(packet, b);
-	}
-
-	// send variables
-
-	for (i=0; i<obj->objclass->nvariables; ++i) {
-
-		// check we are sending this variable
-
-		if (!atom->data.change.changed[i])
-			continue;
-
-		// todo
-
-		switch (obj->objclass->variables[i]->type) {
-		case IRMO_TYPE_INT8:
-			irmo_packet_writei8(packet, obj->variables[i].i);
-			break;
-		case IRMO_TYPE_INT16:
-			irmo_packet_writei16(packet, obj->variables[i].i);
-			break;
-		case IRMO_TYPE_INT32:
-			irmo_packet_writei32(packet, obj->variables[i].i);
-			break;
-		case IRMO_TYPE_STRING:
-			irmo_packet_writestring(packet, obj->variables[i].s);
-			break;
-		}
-	}
-}
-
-static void proto_add_method_atom(IrmoPacket *packet, IrmoSendAtom *atom)
-{
-	IrmoMethod *method = atom->data.method.spec;
-	IrmoValue *args = atom->data.method.args;
-	int i;
-	
-	// send method index
-	
-	irmo_packet_writei8(packet, method->index);
-
-	// send arguments
-
-	for (i=0; i<method->narguments; ++i) {
-		switch (method->arguments[i]->type) {
-		case IRMO_TYPE_INT8:
-			irmo_packet_writei8(packet, args[i].i);
-			break;
-		case IRMO_TYPE_INT16:
-			irmo_packet_writei16(packet, args[i].i);
-			break;
-		case IRMO_TYPE_INT32:
-			irmo_packet_writei16(packet, args[i].i);
-			break;
-		case IRMO_TYPE_STRING:
-			irmo_packet_writestring(packet, args[i].s);
-			break;
-		}
-	}
-}
-
-static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
-{
-	switch (atom->type) {
-	case ATOM_NEW:
-		irmo_packet_writei16(packet, atom->data.newobj.id);
-		irmo_packet_writei8(packet, atom->data.newobj.classnum);
-		break;
-	case ATOM_CHANGE:
-		proto_add_change_atom(packet, atom);
-		break;
-	case ATOM_DESTROY:
-		irmo_packet_writei16(packet, atom->data.destroy.id);
-		break;
-	case ATOM_METHOD:
-		proto_add_method_atom(packet, atom);
-		break;
-	case ATOM_NULL:
-		break;
-	case ATOM_SENDWINDOW:
-		irmo_packet_writei16(packet, atom->data.sendwindow.max);
-		break;
-	}
-}
-
 static void proto_atom_resent(IrmoClient *client, int i)
 {
 	// set resent flag
@@ -216,7 +97,7 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	for (backstart=start; 
 	     backstart > 0 
 		&& client->sendwindow[backstart-1]
-		&& client->sendwindow[backstart-1]->type==ATOM_NULL;
+		&& client->sendwindow[backstart-1]->klass==&irmo_null_atom;
 	     --backstart);
 	
 	// start position in stream
@@ -228,6 +109,9 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	// add all sendatoms in the range specified
 
 	for (i=backstart; i<=end;) {
+		IrmoSendAtomClass *klass;
+
+		klass = client->sendwindow[i]->klass;
 
 		// group up to 32 sendatoms of the same type together
 		// we send the number of EXTRA sendatoms after
@@ -235,8 +119,7 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 		// we can specify up to 31 of the same type that follow
 		
 		for (n=1; i+n<=end && n<32; ++n)
-			if (client->sendwindow[i+n]->type
-			 != client->sendwindow[i]->type)
+			if (klass != client->sendwindow[i+n]->klass)
 				break;
 
 		//printf("-- build_packet: group length %i, type %i\n",
@@ -245,13 +128,12 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 
 		// store extra count in the low bits, type in the high bits
 
-		irmo_packet_writei8(packet,
-			            (client->sendwindow[i]->type << 5) | (n-1));
+		irmo_packet_writei8(packet, (klass->type << 5) | (n-1));
 
 		// add atoms
 
 		for (; n>0; --n, ++i) {
-			proto_add_atom(packet, client->sendwindow[i]);
+			klass->write(client->sendwindow[i], packet);
 
 			// if this is a prefixed NULL atom, ignore the
 			// resend code. we are resending deliberately
@@ -323,8 +205,12 @@ static void proto_pump_client(IrmoClient *client)
 		atom = irmo_client_sendq_pop(client);		
 		atom->sendtime.tv_sec = 0;
 		
-		client->sendwindow[client->sendwindow_size++] = atom;
-
+		client->sendwindow[client->sendwindow_size] = atom;
+		atom->seqnum = client->sendwindow_start
+			     + client->sendwindow_size;
+		
+		++client->sendwindow_size;
+		
 		// keep track of size
 		
 		current_size += atom->len;
@@ -458,6 +344,16 @@ void irmo_proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.10  2003/10/14 22:12:49  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
+//
 // Revision 1.9  2003/10/14 00:53:43  fraggle
 // Remove pointless inlinings
 //

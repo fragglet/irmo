@@ -36,125 +36,6 @@
 #include "sendatom.h"
 #include "world.h"
 
-static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
-{
-	IrmoInterfaceSpec *spec = client->world->spec;
-	IrmoClass *objclass = spec->classes[atom->data.newobj.classnum];
-	
-	// sanity check
-
-	if (irmo_world_get_object_for_id(client->world,
-					    atom->data.newobj.id)) {
-		irmo_error_report("client_run_new",
-				  "new object id of %i but an object with "
-				  "that id already exists!",
-				  atom->data.newobj.id);
-		return;
-	}
-
-	// create new object
-							  
-	irmo_object_internal_new(client->world, objclass,
-				 atom->data.newobj.id);
-	
-}
-
-static void client_run_change(IrmoClient *client, IrmoSendAtom *atom,
-			      int seq)
-{
-	IrmoObject *obj;
-	IrmoClass *objclass;
-	IrmoValue *newvalues;
-	int i;
-
-	if (atom->data.change.executed)
-		return;
-	
-	// sanity checks
-
-	obj = irmo_world_get_object_for_id(client->world,
-					      atom->data.change.id);
-
-	// if these fail, it is possibly because of dependencies on
-	// previous atoms in the stream
-	
-	if (!obj)
-		return;
-	if (obj->objclass != atom->data.change.objclass)
-		return;	       
-
-	objclass = obj->objclass;
-	newvalues = atom->data.change.newvalues;
-	
-	// run through variables and apply changes
-	
-	for (i=0; i<obj->objclass->nvariables; ++i) {
-
-		// not changed?
-		
-		if (!atom->data.change.changed[i])
-			continue;
-
-		// check if a newer change to this atom has been run
-		// do not apply older changes
-		// dont run the same atom twice (could conceivably
-		// happen with resends)
-		
-		if (seq <= obj->variable_time[i])
-			continue;
-		
-		// apply change
-
-		switch (objclass->variables[i]->type) {
-		case IRMO_TYPE_INT8:
-		case IRMO_TYPE_INT16:
-		case IRMO_TYPE_INT32:
-			obj->variables[i].i = newvalues[i].i;
-			break;
-		case IRMO_TYPE_STRING:
-			free(obj->variables[i].s);
-			obj->variables[i].s = strdup(newvalues[i].s);
-			break;
-		}
-
-		irmo_object_set_raise(obj, i);
-
-		obj->variable_time[i] = seq;
-	}
-
-	// mark as executed
-	
-	atom->data.change.executed = TRUE;
-}
-
-static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
-{
-	IrmoObject *obj;
-
-	// sanity check
-
-	obj = irmo_world_get_object_for_id(client->world,
-					      atom->data.destroy.id);
-
-	if (!obj) {
-		irmo_error_report("client_run_destroy",
-				  "destroy object %i, but object does not exist",
-				  atom->data.destroy.id);
-		return;
-	}
-
-	// destroy object. remove from world and call notify functions
-	
-	irmo_object_internal_destroy(obj, TRUE, TRUE);
-}
-
-static void client_run_method(IrmoClient *client, IrmoSendAtom *atom)
-{
-	atom->data.method.src = client;
-	
-	irmo_method_invoke(client->server->world, &atom->data.method);
-}
-
 // preexec receive window, run change atoms where possible,
 // asyncronously
 
@@ -172,9 +53,8 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end)
 
 		// only run change atoms
 		
-		if (atom && atom->type == ATOM_CHANGE)
-			client_run_change(client, atom,
-					  client->recvwindow_start + i);
+		if (atom && atom->klass == &irmo_change_atom)
+			irmo_change_atom.run(atom);
 	}
 }
 
@@ -196,27 +76,7 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 	     ++i) {
 		IrmoSendAtom *atom = client->recvwindow[i];
 
-		switch (atom->type) {
-		case ATOM_NULL:
-			break;
-		case ATOM_NEW:
-			client_run_new(client, atom);
-			break;
-		case ATOM_CHANGE:
-			client_run_change(client, atom,
-					  client->recvwindow_start + i);
-			break;
-		case ATOM_DESTROY:
-			client_run_destroy(client, atom);
-			break;
-		case ATOM_METHOD:
-			client_run_method(client, atom);
-			break;
-		case ATOM_SENDWINDOW:
-			client->remote_sendwindow_max
-				= atom->data.sendwindow.max;
-			break;
-		}
+		atom->klass->run(atom);
 
 		irmo_sendatom_free(atom);
 	}
@@ -236,6 +96,16 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.8  2003/10/14 22:12:49  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
+//
 // Revision 1.7  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

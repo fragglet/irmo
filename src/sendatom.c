@@ -23,467 +23,856 @@
 //
 //---------------------------------------------------------------------
 
-#include <stdlib.h>
+#include <glib.h>
 #include <string.h>
 
-#include "if_spec.h"
 #include "object.h"
-#include "sendatom.h"
+#include "packet.h"
 
-static void irmo_sendatom_change_free_data(IrmoSendAtom *atom)
+G_INLINE_FUNC gboolean verify_field(IrmoPacket *packet,
+				    IrmoValueType type)
 {
-	int i;
-
-	if (atom->data.change.newvalues) {
-		IrmoClass *objclass = atom->data.change.objclass;
-
-		for (i=0; i<objclass->nvariables; ++i) {
-			// only changed values are stored
-			
-			if (!atom->data.change.changed[i])
-				continue;
-			
-			// free strings
-			
-			if (objclass->variables[i]->type == IRMO_TYPE_STRING)
-				free(atom->data.change.newvalues[i].s);
-		}
-
-		free(atom->data.change.newvalues);
+	guint i;
+	
+	switch (type) {
+	case IRMO_TYPE_INT8:
+		return irmo_packet_readi8(packet, &i);
+	case IRMO_TYPE_INT16:
+		return irmo_packet_readi16(packet, &i);
+	case IRMO_TYPE_INT32:
+		return irmo_packet_readi32(packet, &i);
+	case IRMO_TYPE_STRING:
+		return irmo_packet_readstring(packet) != NULL;
 	}
-	
-	free(atom->data.change.changed);
 }
 
-static void irmo_sendatom_method_free_data(IrmoSendAtom *atom)
+G_INLINE_FUNC void read_field(IrmoPacket *packet,
+			      IrmoValue *value,
+			      IrmoValueType type)
 {
-	IrmoMethod *method = atom->data.method.spec;
-	int i;
-
-	for (i=0; i<method->narguments; ++i) {
-		if (method->arguments[i]->type == IRMO_TYPE_STRING)
-			free(atom->data.method.args[i].s);
+	switch (type) {
+	case IRMO_TYPE_INT8:
+		irmo_packet_readi8(packet, &value->i);
+		break;
+	case IRMO_TYPE_INT16:
+		irmo_packet_readi16(packet, &value->i);
+		break;
+	case IRMO_TYPE_INT32:
+		irmo_packet_readi32(packet, &value->i);
+		break;
+	case IRMO_TYPE_STRING:
+		value->s = strdup(irmo_packet_readstring(packet));
+		break;
 	}
-
-	free(atom->data.method.args);
 }
 
-void irmo_sendatom_free(IrmoSendAtom *atom)
+G_INLINE_FUNC void write_field(IrmoPacket *packet, IrmoValue *value, 
+			       IrmoValueType type)
 {
-	if (atom->type == ATOM_CHANGE)
-		irmo_sendatom_change_free_data(atom);
-	if (atom->type == ATOM_METHOD)
-		irmo_sendatom_method_free_data(atom);
-	
-	free(atom);
-}
-
-static void irmo_sendatom_nullify(IrmoSendAtom *atom)
-{
-	if (atom->type == ATOM_CHANGE)
-		irmo_sendatom_change_free_data(atom);
-
-	atom->type = ATOM_NULL;
-}
-
-static int irmo_sendatom_change_len(IrmoSendAtom *atom)
-{
-	IrmoObject *obj = atom->data.change.object;
-	IrmoClass *spec = obj->objclass;
-	int len;
-	int i;
-
-	len = 0;
-
-	// object class
-
-	len += 1;
-	
-	// object id
-
-	len += 2;
-	
-	// leading bitmap
-	
-	len += (spec->nvariables + 7) / 8;
-
-	// add up sizes of variables
-	
-	for (i=0; i<spec->nvariables; ++i) {
-
-		// only variables which have changed
-		
-		if (!atom->data.change.changed[i])
-			continue;
-		
-		switch (spec->variables[i]->type) {
-		case IRMO_TYPE_INT8:
-			len += 1;
-			break;
-		case IRMO_TYPE_INT16:
-			len += 2;
-			break;
-		case IRMO_TYPE_INT32:
-			len += 4;
-			break;
-		case IRMO_TYPE_STRING:
-			len += strlen(obj->variables[i].s) + 1;
-			break;
-		}
+	switch (type) {
+	case IRMO_TYPE_INT8:
+		irmo_packet_writei8(packet, value->i);
+		break;
+	case IRMO_TYPE_INT16:
+		irmo_packet_writei16(packet, value->i);
+		break;
+	case IRMO_TYPE_INT32:
+		irmo_packet_writei32(packet, value->i);
+		break;
+	case IRMO_TYPE_STRING:
+		irmo_packet_writestring(packet, value->s);
+		break;
 	}
-
-	return len;
 }
 
-void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
+//
+// NULL atom
+//
+
+static gboolean irmo_null_atom_verify(IrmoPacket *packet)
+{
+	return TRUE;
+}
+
+static IrmoSendAtom *irmo_null_atom_read(IrmoPacket *packet)
 {
 	IrmoSendAtom *atom;
-
-	atom = g_new0(IrmoSendAtom, 1);
-
-	atom->type = ATOM_NEW;
-	atom->data.newobj.id = object->id;
-	atom->data.newobj.classnum = object->objclass->index;
-
-	//   1 byte for class number
-	// + 2 bytes for object id
-	
-	atom->len = 1 + 2;
-
-	g_queue_push_tail(client->sendq, atom);
-}
-
-void irmo_client_sendq_add_change(IrmoClient *client,
-				  IrmoObject *object, int variable)
-{
-	IrmoSendAtom *atom;
-	int i, n;
-	
-	// search the send window and nullify this variable if there
-	// is an existing change for it waiting to be acked
-
-	for (i=0; i<client->sendwindow_size; ++i) {
-		atom = client->sendwindow[i];
-
-		// check this is a change atom for this variable in
-		// this object
-		
-		if (atom->type == ATOM_CHANGE
-		 && atom->data.change.object == object
-		 && atom->data.change.changed[variable]) {
-
-			// unset the change in the atom. update
-			// change count
-			
-			atom->data.change.changed[variable] = FALSE;
-			--atom->data.change.nchanged;
-
-			// if there are no more changes, replace the atom
-			// with a NULL
-
-			if (atom->data.change.nchanged <= 0) {
-				irmo_sendatom_nullify(atom);
-			}
-			
-			// there can only be one change atom for a
-			// variable in the send window. stop searching
-			
-			break;
-		}
-	}
-	
-	// check if there is an existing atom for this object in
-	// the send queue
-	
-	atom = g_hash_table_lookup(client->sendq_hashtable,
-				   (gpointer) object->id);
-
-	if (!atom) {
-		atom = g_new0(IrmoSendAtom, 1);
-		atom->type = ATOM_CHANGE;
-		atom->data.change.id = object->id;
-		atom->data.change.object = object;
-		atom->data.change.changed
-			= g_new0(gboolean, object->objclass->nvariables);
-		atom->data.change.nchanged = 0;
-		
-		g_queue_push_tail(client->sendq, atom);
-		g_hash_table_insert(client->sendq_hashtable,
-				    (gpointer) object->id,
-				    atom);
-	}
-
-	// set the change in the atom and update the change count
-
-	if (!atom->data.change.changed[variable]) {
-		atom->data.change.changed[variable] = TRUE;
-		++atom->data.change.nchanged;
-	}
-	
-	// need to recalculate atom size
-
-	atom->len = irmo_sendatom_change_len(atom);
-}
-
-void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
-{
-	IrmoSendAtom *atom;
-	int i;
-	
-	// check for any changeatoms referring to this object
-
-	atom = g_hash_table_lookup(client->sendq_hashtable,
-				   (gpointer) object->id);
-
-	// convert to a ATOM_NULL atom
-	
-	if (atom) {
-		irmo_sendatom_nullify(atom);
-		g_hash_table_remove(client->sendq_hashtable,
-				    (gpointer) object->id);
-	}
-
-	// nullify atoms in send window too
-	
-	for (i=0; i<client->sendwindow_size; ++i) {
-		if (client->sendwindow[i]->type == ATOM_CHANGE
-		    && object == client->sendwindow[i]->data.change.object) {
-			irmo_sendatom_nullify(client->sendwindow[i]);
-		}
-	}
-	
-	// create a destroy atom
-
-	atom = g_new0(IrmoSendAtom, 1);
-
-	atom->type = ATOM_DESTROY;
-	atom->data.destroy.id = object->id;
-
-	// 2 bytes for object id to destroy
-	
-	atom->len = 2;
-
-	g_queue_push_tail(client->sendq, atom);
-}
-
-void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
-{
-	IrmoMethod *method = data->spec;
-	IrmoSendAtom *atom;
-	int i;
-	
-	// create a new method atom
 	
 	atom = g_new0(IrmoSendAtom, 1);
-	atom->type = ATOM_METHOD;
-	atom->data.method.spec = data->spec;
-
-	// copy arguments
-
-	atom->data.method.args = g_new0(IrmoValue, method->narguments);
-	memcpy(atom->data.method.args,
-	       data->args,
-	       sizeof(IrmoValue) * method->narguments);
-
-	// find length of atom,
-
-	atom->len = 0;
-
-	// method number
-	
-	atom->len += 1;
-
-	// find length of arguments
-	// copy strings while we are here
-	
-	for (i=0; i<method->narguments; ++i) {
-		switch (method->arguments[i]->type) {
-		case IRMO_TYPE_INT8:
-			atom->len += 1;
-			break;
-		case IRMO_TYPE_INT16:
-			atom->len += 2;
-			break;
-		case IRMO_TYPE_INT32:
-			atom->len += 4;
-			break;
-		case IRMO_TYPE_STRING:
-			atom->data.method.args[i].s
-				= strdup(atom->data.method.args[i].s);
-			atom->len += strlen(atom->data.method.args[i].s) + 1;
-			break;
-		}
-	}
-
-	// add to queue
-
-	g_queue_push_tail(client->sendq, atom);
-}
-
-// send a send window upper limit
-
-void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max)
-{
-	IrmoSendAtom *atom;
-
-	atom = g_new0(IrmoSendAtom, 1);
-	atom->type = ATOM_SENDWINDOW;
-	atom->data.sendwindow.max = max;
-
-	atom->len = 2;
-
-	g_queue_push_tail(client->sendq, atom);
-}
-
-IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
-{
-	IrmoSendAtom *atom;
-
-	while (1) {
-	
-		atom = (IrmoSendAtom *) g_queue_pop_head(client->sendq);
-		
-		if (!atom)
-			return NULL;
-
-		// automatically ignore and delete NULL atoms that
-		// are in the sendq
-		
-		if (atom->type != ATOM_NULL)
-			break;
-		
-		irmo_sendatom_free(atom);
-	} 
-
-	// if a change, remove from the change hash
-
-	if (atom->type == ATOM_CHANGE) {
-		g_hash_table_remove(client->sendq_hashtable,
-				    (gpointer) atom->data.change.object->id);
-	}
+	atom->klass = &irmo_null_atom;
 
 	return atom;
 }
 
-// queue up the entire current world state in the client send queue
-// this is used for when new clients connect to retrieve the entire
-// current world state
-
-static void client_sendq_add_objects(IrmoObject *object, IrmoClient *client)
+static void irmo_null_atom_write(IrmoSendAtom *atom, IrmoPacket *packet)
 {
-	irmo_client_sendq_add_new(client, object);
+	return;
 }
 
-static void client_sendq_add_variables(IrmoObject *object, 
-				       IrmoClient *client)
+static gsize irmo_null_atom_length(IrmoSendAtom *atom)
 {
+	return 0;
+}
+
+static void irmo_null_atom_run(IrmoSendAtom *atom)
+{
+	// does nothing
+}
+
+IrmoSendAtomClass irmo_null_atom = {
+	ATOM_NULL,
+	irmo_null_atom_verify,
+	irmo_null_atom_read,
+	irmo_null_atom_write,
+	irmo_null_atom_run,
+	irmo_null_atom_length,
+	NULL,
+};
+
+//
+// IrmoNewObjectAtom
+//
+
+static gboolean irmo_newobject_atom_verify(IrmoPacket *packet)
+{
+	guint i;
+
+	if (!packet->client->world)
+		return FALSE;
+
+	// object id
+
+	if (!irmo_packet_readi16(packet, &i))
+		return FALSE;
+
+	// class of new object
+
+	if (!irmo_packet_readi8(packet, &i))
+		return FALSE;
+
+	// check valid class
+	
+	if (i >= packet->client->world->spec->nclasses)
+		return FALSE;
+
+	return TRUE;
+}
+
+static IrmoSendAtom *irmo_newobject_atom_read(IrmoPacket *packet)
+{
+	IrmoNewObjectAtom *atom;
+
+	atom = g_new0(IrmoNewObjectAtom, 1);
+	atom->sendatom.klass = &irmo_newobject_atom;
+
+	// object id of new object
+		
+	irmo_packet_readi16(packet, &atom->id);
+
+	// class of new object
+		
+	irmo_packet_readi8(packet, &atom->classnum);
+
+	return IRMO_SENDATOM(atom);
+}
+
+static void irmo_newobject_atom_write(IrmoSendAtom *_atom, 
+				      IrmoPacket *packet)
+{
+	IrmoNewObjectAtom *atom = (IrmoNewObjectAtom *) _atom;
+
+	irmo_packet_writei16(packet, atom->id);
+	irmo_packet_writei8(packet, atom->classnum);
+}
+
+static void irmo_newobject_atom_run(IrmoSendAtom *_atom)
+{
+	IrmoNewObjectAtom *atom = (IrmoNewObjectAtom *) _atom;
+	IrmoClient *client = atom->sendatom.client;
+	IrmoInterfaceSpec *spec = client->world->spec;
+	IrmoClass *objclass = spec->classes[atom->classnum];
+	
+	// sanity check
+
+	if (irmo_world_get_object_for_id(client->world,
+					 atom->id)) {
+		irmo_error_report("client_run_new",
+				  "new object id of %i but an object with "
+				  "that id already exists!",
+				  atom->id);
+		return;
+	}
+
+	// create new object
+							  
+	irmo_object_internal_new(client->world, objclass, atom->id);
+}
+
+static gsize irmo_newobject_atom_length(IrmoSendAtom *atom)
+{
+	// object id, class number
+
+	return 2 + 1;
+}
+
+
+IrmoSendAtomClass irmo_newobject_atom = {
+	ATOM_NEW,
+	irmo_newobject_atom_verify,
+	irmo_newobject_atom_read,
+	irmo_newobject_atom_write,
+	irmo_newobject_atom_run,
+	irmo_newobject_atom_length,
+	NULL,
+};
+
+//
+// IrmoChangeAtom
+//
+
+static gboolean irmo_change_atom_verify(IrmoPacket *packet)
+{
+	IrmoClient *client = packet->client;
+	IrmoClass *objclass;
+	int i, n, b;
+	gboolean result;
+	gboolean *changed;
+	
+	if (!client->world)
+		return FALSE;
+
+	// class
+
+	if (!irmo_packet_readi8(packet, &i))
+		return FALSE;
+
+	if (i >= client->world->spec->nclasses)
+		return FALSE;
+
+	objclass = client->world->spec->classes[i];
+	
+	// object id
+
+	if (!irmo_packet_readi16(packet, &i))
+		return FALSE;
+
+	// read object changed bitmap
+	
+	result = TRUE;
+
+	changed = g_new0(gboolean, objclass->nvariables);
+
+	for (i=0, n=0; result && i<(objclass->nvariables+7) / 8; ++i) {
+		guint byte;
+
+		if (!irmo_packet_readi8(packet, &byte)) {
+			result = FALSE;
+			break;
+		}
+
+		for (b=0; b<8 && n<objclass->nvariables; ++b, ++n)
+			if (byte & (1 << b))
+				changed[n] = TRUE;			
+	}
+
+	// check new variable values
+
+	if (result) {
+		for (i=0; i<objclass->nvariables; ++i) {
+			if (!changed[i])
+				continue;
+			
+			if (!verify_field(packet,
+					  objclass->variables[i]->type)) {
+				result = FALSE;
+				break;
+			}
+		}
+	}
+	
+	free(changed);
+
+	return result;
+}
+
+static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
+{
+	IrmoChangeAtom *atom;
+	IrmoClient *client = packet->client;
+	IrmoClass *objclass;
+	gboolean *changed;
+	IrmoValue *newvalues;
+	int i, b, n;
+
+	atom = g_new0(IrmoChangeAtom, 1);
+	atom->sendatom.klass = &irmo_change_atom;
+
+	// read class
+	
+	irmo_packet_readi8(packet, &i);
+
+	objclass = client->world->spec->classes[i];
+	atom->objclass = objclass;
+
+	// read object id
+	
+	irmo_packet_readi16(packet, &atom->id);
+	
+	// read the changed object bitmap
+
+	changed = g_new0(gboolean, objclass->nvariables);
+	atom->changed = changed;
+	
+	for (i=0, n=0; i<(objclass->nvariables+7) / 8; ++i) {
+		guint byte;
+
+		// read the bits out of this byte in the bitmap into the
+		// changed array
+		
+		irmo_packet_readi8(packet, &byte);
+
+		for (b=0; b<8 && n<objclass->nvariables; ++b,++n)
+			if (byte & (1 << b))
+				changed[n] = TRUE;
+	}
+
+	// read the new values
+
+	newvalues = g_new0(IrmoValue, objclass->nvariables);
+	atom->newvalues = newvalues;
+
+	for (i=0; i<objclass->nvariables; ++i) {
+		if (!changed[i])
+			continue;
+
+		read_field(packet, &newvalues[i],
+			   objclass->variables[i]->type);
+	}
+
+	return IRMO_SENDATOM(atom);
+}
+
+static void irmo_change_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
+{
+	IrmoChangeAtom *atom = (IrmoChangeAtom *) _atom;
+	IrmoObject *obj = atom->object;
+	int bitmap_size;
+	int i, j;
+
+	// include the object class number
+	// this is neccesary otherwise the packet can be ambiguous to
+	// decode (if we receive a change atom for an object which has
+	// not yet been received, for example)
+
+	irmo_packet_writei8(packet, obj->objclass->index);
+	
+	// send object id
+	
+	irmo_packet_writei16(packet, obj->id);
+
+	// build and send bitmap
+
+	bitmap_size = (obj->objclass->nvariables + 7) / 8;
+
+	for (i=0; i<bitmap_size; ++i) {
+		guint8 b;
+
+		// build a byte at a time
+
+		b = 0;
+		
+		for (j=0; j<8 && i*8+j<obj->objclass->nvariables; ++j) {
+			if (atom->changed[i*8 + j]) {
+				b |= 1 << j;
+			}
+		}
+
+		irmo_packet_writei8(packet, b);
+	}
+
+	// send variables
+
+	for (i=0; i<obj->objclass->nvariables; ++i) {
+
+		// check we are sending this variable
+
+		if (atom->changed[i])
+			write_field(packet, &obj->variables[i], 
+				    obj->objclass->variables[i]->type);
+	}
+}
+
+static void irmo_change_atom_destroy(IrmoSendAtom *_atom)
+{
+	IrmoChangeAtom *atom = (IrmoChangeAtom *) _atom;
+        int i;
+                                                                                
+        if (atom->newvalues) {
+                IrmoClass *objclass = atom->objclass;
+                                                                                
+                for (i=0; i<objclass->nvariables; ++i) {
+                        // only changed values are stored
+                                                                                
+                        if (!atom->changed[i])
+                                continue;
+                                                                                
+                        // free strings
+                                                                                
+                        if (objclass->variables[i]->type == IRMO_TYPE_STRING)
+                                free(atom->newvalues[i].s);
+                }
+                                                                                
+                free(atom->newvalues);
+        }
+                                                                                
+        free(atom->changed);
+}
+
+static void irmo_change_atom_run(IrmoSendAtom *_atom)
+{
+	IrmoChangeAtom *atom = (IrmoChangeAtom *) _atom;
+	IrmoClient *client = atom->sendatom.client;
+	IrmoObject *obj;
+	IrmoClass *objclass;
+	IrmoValue *newvalues;
+	int i;
+	int seq;
+
+	if (atom->executed)
+		return;
+	
+	// sanity checks
+
+	obj = irmo_world_get_object_for_id(client->world,
+					   atom->id);
+
+	// if these fail, it is possibly because of dependencies on
+	// previous atoms in the stream
+	
+	if (!obj)
+		return;
+	if (obj->objclass != atom->objclass)
+		return;	       
+
+	objclass = obj->objclass;
+	newvalues = atom->newvalues;
+
+	// sequence number of this atom
+	
+	seq = atom->sendatom.seqnum;
+	
+	// run through variables and apply changes
+	
+	for (i=0; i<obj->objclass->nvariables; ++i) {
+
+		// not changed?
+		
+		if (!atom->changed[i])
+			continue;
+
+		// check if a newer change to this atom has been run
+		// do not apply older changes
+		// dont run the same atom twice (could conceivably
+		// happen with resends)
+		
+		if (seq <= obj->variable_time[i])
+			continue;
+		
+		// apply change
+
+		switch (objclass->variables[i]->type) {
+		case IRMO_TYPE_INT8:
+		case IRMO_TYPE_INT16:
+		case IRMO_TYPE_INT32:
+			obj->variables[i].i = newvalues[i].i;
+			break;
+		case IRMO_TYPE_STRING:
+			free(obj->variables[i].s);
+			obj->variables[i].s = strdup(newvalues[i].s);
+			break;
+		}
+
+		irmo_object_set_raise(obj, i);
+
+		obj->variable_time[i] = seq;
+	}
+
+	// mark as executed
+	
+	atom->executed = TRUE;
+}
+
+static gsize irmo_change_atom_length(IrmoSendAtom *_atom)
+{
+	IrmoChangeAtom *atom = (IrmoChangeAtom *) _atom;
+        IrmoObject *obj = atom->object;
+        IrmoClass *spec = obj->objclass;
+        gsize len;
+        int i;
+ 
+        len = 0;
+ 
+        // object class
+ 
+        len += 1;
+         
+        // object id
+ 
+        len += 2;
+         
+        // leading bitmap
+         
+        len += (spec->nvariables + 7) / 8;
+ 
+        // add up sizes of variables
+         
+        for (i=0; i<spec->nvariables; ++i) {
+                                                                                
+                // only variables which have changed
+                 
+                if (!atom->changed[i])
+                        continue;
+                 
+                switch (spec->variables[i]->type) {
+                case IRMO_TYPE_INT8:
+                        len += 1;
+                        break;
+                case IRMO_TYPE_INT16:
+                        len += 2;
+                        break;
+                case IRMO_TYPE_INT32:
+                        len += 4;
+                        break;
+                case IRMO_TYPE_STRING:
+                        len += strlen(obj->variables[i].s) + 1;
+                        break;
+                }
+        }
+ 
+        return len;
+}
+
+IrmoSendAtomClass irmo_change_atom = {
+	ATOM_CHANGE,
+	irmo_change_atom_verify,
+	irmo_change_atom_read,
+	irmo_change_atom_write,
+	irmo_change_atom_run,
+	irmo_change_atom_length,
+	irmo_change_atom_destroy,
+};
+
+//
+// IrmoMethodAtom
+//
+
+static gboolean irmo_method_atom_verify(IrmoPacket *packet)
+{
+	IrmoClient *client = packet->client;
+	IrmoMethod *method;
 	int i;
 
-	// queue up variables
+	if (!client->server->world)
+		return FALSE;
 
-	for (i=0; i<object->objclass->nvariables; ++i)
-		irmo_client_sendq_add_change(client, object, i);
+	// read method index
+
+	if (!irmo_packet_readi8(packet, &i))
+		return FALSE;
+
+	// sanity check method index
+
+	if (i >= client->server->world->spec->nmethods)
+		return FALSE;
+
+	method = client->server->world->spec->methods[i];
+
+	// read arguments
+
+	for (i=0; i<method->narguments; ++i) {
+		if (!verify_field(packet, method->arguments[i]->type))
+			return FALSE;
+	}
+
+	return TRUE;
 }
 
-void irmo_client_sendq_add_state(IrmoClient *client)
+static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 {
-	// create all the objects first
-	// this is done all together and seperately from sending the
-	// variable state, as the rle encoding in the packets will
-	// better compress the atoms this way
+	IrmoMethodAtom *atom;
+	IrmoMethod *method;
+	int i;
 
-	irmo_world_foreach_object(client->server->world, NULL,
-				     (IrmoObjCallback) client_sendq_add_objects,
-				     client);
+	atom = g_new0(IrmoMethodAtom, 1);
+	atom->sendatom.klass = &irmo_method_atom;
+	
+	// read method number
+	
+	irmo_packet_readi8(packet, &i);
+	atom->method.spec = method 
+		= packet->client->server->world->spec->methods[i];
 
-	// send variable states
+	// read arguments
+	
+	atom->method.args = g_new0(IrmoValue, method->narguments);
 
-	irmo_world_foreach_object(client->server->world, NULL,
-				     (IrmoObjCallback) client_sendq_add_variables,
-				     client);
+	for (i=0; i<method->narguments; ++i) {
+		read_field(packet, &atom->method.args[i],
+			   method->arguments[i]->type);
+	}
+
+	return IRMO_SENDATOM(atom);
 }
 
+static void irmo_method_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
+{
+	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
+	IrmoMethod *method = atom->method.spec;
+	IrmoValue *args = atom->method.args;
+	int i;
+	
+	// send method index
+	
+	irmo_packet_writei8(packet, method->index);
+
+	// send arguments
+
+	for (i=0; i<method->narguments; ++i)
+		write_field(packet, &args[i],
+			    method->arguments[i]->type);
+}
+
+static void irmo_method_atom_run(IrmoSendAtom *_atom)
+{
+	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
+	IrmoClient *client = atom->sendatom.client;
+
+	atom->method.src = client;
+	
+	irmo_method_invoke(client->server->world, &atom->method);
+}
+
+static void irmo_method_atom_destroy(IrmoSendAtom *_atom)
+{
+	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
+        IrmoMethod *method = atom->method.spec;
+        int i;
+ 
+        for (i=0; i<method->narguments; ++i) {
+                if (method->arguments[i]->type == IRMO_TYPE_STRING)
+                        free(atom->method.args[i].s);
+        }
+ 
+        free(atom->method.args);
+}
+
+static gsize irmo_method_atom_length(IrmoSendAtom *_atom)
+{
+	IrmoMethodAtom *atom = (IrmoMethodAtom *) _atom;
+	IrmoMethod *method = atom->method.spec;
+	int i;
+	gsize len;
+
+        // find length of atom,
+ 
+        len = 0;
+ 
+        // method number
+         
+        len += 1;
+ 
+        // find length of arguments
+        // copy strings while we are here
+         
+        for (i=0; i<method->narguments; ++i) {
+                switch (method->arguments[i]->type) {
+                case IRMO_TYPE_INT8:
+                        len += 1;
+                        break;
+                case IRMO_TYPE_INT16:
+                        len += 2;
+                        break;
+                case IRMO_TYPE_INT32:
+                        len += 4;
+                        break;
+                case IRMO_TYPE_STRING:
+                        len += strlen(atom->method.args[i].s) + 1;
+                        break;
+                }
+        }
+
+	return len;
+}
+
+IrmoSendAtomClass irmo_method_atom = {
+	ATOM_METHOD,
+	irmo_method_atom_verify,
+	irmo_method_atom_read,
+	irmo_method_atom_write,
+	irmo_method_atom_run,
+	irmo_method_atom_length,
+	irmo_method_atom_destroy,
+};
+
+//
+// IrmoDestroyAtom
+//
+
+static gboolean irmo_destroy_atom_verify(IrmoPacket *packet)
+{
+	guint i;
+
+	if (!packet->client->world)
+		return FALSE;
+
+	// object id
+
+	if (!irmo_packet_readi16(packet, &i))
+		return FALSE;
+		
+	return TRUE;
+}
+
+static IrmoSendAtom *irmo_destroy_atom_read(IrmoPacket *packet)
+{
+	IrmoDestroyAtom *atom;
+	guint i;
+
+	atom = g_new0(IrmoDestroyAtom, 1);
+	atom->sendatom.klass = &irmo_destroy_atom;
+
+	// object id to destroy
+
+	irmo_packet_readi16(packet, &atom->id);
+
+	return IRMO_SENDATOM(atom);
+}
+
+static void irmo_destroy_atom_write(IrmoSendAtom *_atom, IrmoPacket *packet)
+{
+	IrmoDestroyAtom *atom = (IrmoDestroyAtom *) _atom;
+
+	irmo_packet_writei16(packet, atom->id);
+}
+
+static void irmo_destroy_atom_run(IrmoSendAtom *_atom)
+{
+	IrmoDestroyAtom *atom = (IrmoDestroyAtom *) _atom;
+	IrmoClient *client = atom->sendatom.client;
+	IrmoObject *obj;
+
+	// sanity check
+
+	obj = irmo_world_get_object_for_id(client->world, atom->id);
+
+	if (!obj) {
+		irmo_error_report("client_run_destroy",
+				  "destroy object %i, but object does not exist",
+				  atom->id);
+		return;
+	}
+
+	// destroy object. remove from world and call notify functions
+	
+	irmo_object_internal_destroy(obj, TRUE, TRUE);
+}
+
+static gsize irmo_destroy_atom_length(IrmoSendAtom *atom)
+{
+	return 2;
+}
+
+IrmoSendAtomClass irmo_destroy_atom = {
+	ATOM_DESTROY,
+	irmo_destroy_atom_verify,
+	irmo_destroy_atom_read,
+	irmo_destroy_atom_write,
+	irmo_destroy_atom_run,
+	irmo_destroy_atom_length,
+	NULL,
+};
+
+//
+// IrmoSendWindowAtom
+//
+
+static gboolean irmo_sendwindow_atom_verify(IrmoPacket *packet)
+{
+	guint i;
+
+	// set maximum sendwindow size
+
+	return irmo_packet_readi16(packet, &i);
+}
+
+static IrmoSendAtom *irmo_sendwindow_atom_read(IrmoPacket *packet)
+{
+	IrmoSendWindowAtom *atom;
+	guint i;
+
+	atom = g_new0(IrmoSendWindowAtom, 1);
+	atom->sendatom.klass = &irmo_sendwindow_atom;
+	
+	// read window advertisement
+
+	irmo_packet_readi16(packet, &atom->max);
+
+	return IRMO_SENDATOM(atom);
+}
+
+static void irmo_sendwindow_atom_write(IrmoSendAtom *_atom, 
+				       IrmoPacket *packet)
+{
+	IrmoSendWindowAtom *atom = (IrmoSendWindowAtom *) _atom;
+
+	irmo_packet_writei16(packet, atom->max);
+}
+
+static void irmo_sendwindow_atom_run(IrmoSendAtom *_atom)
+{
+	IrmoSendWindowAtom *atom = (IrmoSendWindowAtom *) _atom;
+	IrmoClient *client = atom->sendatom.client;
+
+	client->remote_sendwindow_max = atom->max;
+}
+
+static gsize irmo_sendwindow_atom_length(IrmoSendAtom *atom)
+{
+	return 2;
+}
+
+IrmoSendAtomClass irmo_sendwindow_atom = {
+	ATOM_SENDWINDOW,
+	irmo_sendwindow_atom_verify,
+	irmo_sendwindow_atom_read,
+	irmo_sendwindow_atom_write,
+	irmo_sendwindow_atom_run,
+	irmo_sendwindow_atom_length,
+	NULL,
+};
+
+IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
+	&irmo_null_atom,
+	&irmo_newobject_atom,
+	&irmo_change_atom,
+	&irmo_destroy_atom,
+	&irmo_method_atom,
+	&irmo_sendwindow_atom,
+};
+
+//---------------------------------------------------------------------
+//
 // $Log$
-// Revision 1.8  2003/10/14 00:53:43  fraggle
-// Remove pointless inlinings
+// Revision 1.9  2003/10/14 22:12:50  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
 //
-// Revision 1.7  2003/09/03 15:28:30  fraggle
-// Add irmo_ prefix to all internal global functions (namespacing)
 //
-// Revision 1.6  2003/09/01 14:21:20  fraggle
-// Use "world" instead of "universe". Rename everything.
-//
-// Revision 1.5  2003/08/31 22:51:22  fraggle
-// Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
-// with a single integer field. Add irmo_universe_method_call2 to invoke
-// a method taking an array of arguments instead of using varargs
-//
-// Revision 1.4  2003/08/28 15:24:02  fraggle
-// Make types for object system part of the public API.
-// *Spec renamed -> Irmo*.
-// More complete reflection API and better structured.
-//
-// Revision 1.3  2003/08/21 14:21:25  fraggle
-// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
-// accessible.
-//
-// Revision 1.2  2003/08/18 01:23:14  fraggle
-// Use G_INLINE_FUNC instead of inline for portable inline function support
-//
-// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
-// Initial sourceforge import
-//
-// Revision 1.17  2003/06/09 21:06:52  sdh300
-// Add CVS Id tag and copyright/license notices
-//
-// Revision 1.16  2003/05/04 00:28:14  sdh300
-// Add ability to manually set the maximum sendwindow size
-//
-// Revision 1.15  2003/04/25 01:32:39  sdh300
-// Remove useless debug code left in from previous commit
-//
-// Revision 1.14  2003/04/25 00:40:50  sdh300
-// Nullifying of change atoms for out-of-date data in the send window
-//
-// Revision 1.13  2003/03/16 01:54:24  sdh300
-// Method calls over network protocol
-//
-// Revision 1.12  2003/03/12 18:59:26  sdh300
-// Remove/comment out some debug messages
-//
-// Revision 1.11  2003/03/07 12:17:17  sdh300
-// Add irmo_ prefix to public function names (namespacing)
-//
-// Revision 1.10  2003/03/06 21:29:05  sdh300
-// On connect, send the entire universe state to the client
-//
-// Revision 1.9  2003/03/06 20:43:11  sdh300
-// Nullify sendatoms in the send window as well as the send queue
-//
-// Revision 1.8  2003/03/05 15:32:21  sdh300
-// Add object class to change atoms to make their coding in packets
-// unambiguous.
-//
-// Revision 1.7  2003/03/05 15:28:13  sdh300
-// Add receive window and extra data for sendatoms in the receive window.
-//
-// Revision 1.6  2003/03/03 21:03:45  sdh300
-// Fix bug in client_sendq_pop
-//
-// Revision 1.5  2003/02/27 02:26:39  sdh300
-// Fix compile errors
-//
-// Revision 1.4  2003/02/27 02:07:56  sdh300
-// Store sendatom size in structure
-// Add 'pop' function to remove atoms from sendq head
-//
-// Revision 1.3  2003/02/20 18:24:59  sdh300
-// Use GQueue instead of a GPtrArray for the send queue
-// Initial change/destroy code
-//
-// Revision 1.2  2003/02/18 20:26:42  sdh300
-// Initial send queue building/notification code
-//
-// Revision 1.1  2003/02/18 18:25:40  sdh300
-// Initial queue object code
-//
+//---------------------------------------------------------------------
+

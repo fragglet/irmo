@@ -65,166 +65,6 @@ static int get_stream_position(int current, int low)
 	return newpos;
 }
 
-G_INLINE_FUNC void proto_parse_field(IrmoPacket *packet,
-				     IrmoValue *value,
-				     IrmoValueType type)
-{
-	guint8 i8;
-	guint16 i16;
-	guint32 i32;
-
-	switch (type) {
-	case IRMO_TYPE_INT8:
-		irmo_packet_readi8(packet, &i8);
-		value->i = i8;
-		break;
-	case IRMO_TYPE_INT16:
-		irmo_packet_readi16(packet, &i16);
-		value->i = i16;
-		break;
-	case IRMO_TYPE_INT32:
-		irmo_packet_readi32(packet, &i32);
-		value->i = i32;
-		break;
-	case IRMO_TYPE_STRING:
-		value->s = strdup(irmo_packet_readstring(packet));
-		break;
-	}
-}
-
-G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
-					   IrmoPacket *packet,
-					   IrmoSendAtom *atom)
-{
-	IrmoClass *objclass;
-	gboolean *changed;
-	IrmoValue *newvalues;
-	int i, b, n;
-	guint8 i8;
-	guint16 i16;
-
-	// read class
-	
-	irmo_packet_readi8(packet, &i8);
-
-	objclass = client->world->spec->classes[i8];
-	atom->data.change.objclass = objclass;
-
-	// read object id
-	
-	irmo_packet_readi16(packet, &i16);
-
-	atom->data.change.id = i16;
-	
-	// read the changed object bitmap
-
-	changed = g_new0(gboolean, objclass->nvariables);
-	atom->data.change.changed = changed;
-	
-	for (i=0, n=0; i<(objclass->nvariables+7) / 8; ++i) {
-
-		// read the bits out of this byte in the bitmap into the
-		// changed array
-		
-		irmo_packet_readi8(packet, &i8);
-
-		for (b=0; b<8 && n<objclass->nvariables; ++b,++n)
-			if (i8 & (1 << b))
-				changed[n] = TRUE;
-	}
-
-	// read the new values
-
-	newvalues = g_new0(IrmoValue, objclass->nvariables);
-	atom->data.change.newvalues = newvalues;
-
-	for (i=0; i<objclass->nvariables; ++i) {
-		if (!changed[i])
-			continue;
-
-		proto_parse_field(packet, &newvalues[i],
-				  objclass->variables[i]->type);
-	}
-
-}
-
-static IrmoSendAtom *proto_parse_method_atom(IrmoClient *client,
-					     IrmoPacket *packet,
-					     IrmoSendAtom *atom)
-{
-	IrmoMethod *method;
-	guint8 i8;
-	int i;
-	
-	// read method number
-	
-	irmo_packet_readi8(packet, &i8);
-	method = client->server->world->spec->methods[i8];
-	
-	atom->data.method.spec = method;
-
-	// read arguments
-	
-	atom->data.method.args = g_new0(IrmoValue, method->narguments);
-
-	for (i=0; i<method->narguments; ++i) {
-		proto_parse_field(packet, &atom->data.method.args[i],
-				  method->arguments[i]->type);
-	}
-}
-
-static IrmoSendAtom *proto_parse_atom(IrmoClient *client, IrmoPacket *packet,
-				      IrmoSendAtomType type)
-{
-	IrmoSendAtom *atom;
-	guint8 i8;
-	guint16 i16;
-
-	atom = g_new0(IrmoSendAtom, 1);
-	atom->type = type;
-
-	switch (type) {
-	case ATOM_NULL:
-		break;
-	case ATOM_NEW:
-		// object id of new object
-		
-		irmo_packet_readi16(packet, &i16);
-		atom->data.newobj.id = i16;
-
-		// class of new object
-		
-		irmo_packet_readi8(packet, &i8);
-		atom->data.newobj.classnum = i8;
-		break;
-
-	case ATOM_CHANGE:
-		proto_parse_change_atom(client, packet, atom);
-		break;
-	case ATOM_DESTROY:
-		// object id to destroy
-
-		irmo_packet_readi16(packet, &i16);
-		atom->data.destroy.id = i16;
-
-		break;
-	case ATOM_METHOD:
-		proto_parse_method_atom(client, packet, atom);
-		break;
-	case ATOM_SENDWINDOW:
-		// read window advertisement
-
-		irmo_packet_readi16(packet, &i16);
-		atom->data.sendwindow.max = i16;
-
-		break;
-	default:
-		atom->type = ATOM_NULL;
-		break;
-	}
-
-	return atom;
-}
 
 static void proto_parse_insert_atom(IrmoClient *client,
 				    IrmoSendAtom *atom,
@@ -260,38 +100,43 @@ static void proto_parse_insert_atom(IrmoClient *client,
 
 static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 {
-	guint8 i8;
-	guint16 i16;
-	int i, seq;
+	guint i;
+	int seq;
 	int start;
 	
 	// get the start position
 	
-	irmo_packet_readi16(packet, &i16);
+	irmo_packet_readi16(packet, &i);
 
-	start = get_stream_position(client->recvwindow_start, i16);
+	start = get_stream_position(client->recvwindow_start, i);
 
-	//printf("stream position: %i->%i\n", i16, start);
+	//printf("stream position: %i->%i\n", i, start);
 	
 	for (seq=start;;) {
+		IrmoSendAtomClass *klass;
 		IrmoSendAtomType atomtype;
 		int natoms;
+		guint byte;
 		
 		// read type/count byte
 		// if none, end of packet
 		
-		if (!irmo_packet_readi8(packet, &i8))
+		if (!irmo_packet_readi8(packet, &byte))
 			break;
 
-		atomtype = (i8 >> 5) & 0x07;
-		natoms = (i8 & 0x1f) + 1;
+		atomtype = (byte >> 5) & 0x07;
+		natoms = (byte & 0x1f) + 1;
+
+		klass = irmo_sendatom_types[atomtype];
 
 		//printf("%i atoms, type %i\n", natoms, atomtype);
 		
 		for (i=0; i<natoms; ++i, ++seq) {
 			IrmoSendAtom *atom;
 
-			atom = proto_parse_atom(client, packet, atomtype);
+			atom = klass->read(packet);
+			atom->client = client;
+			atom->seqnum = seq;
 
 			// set the need_ack flag if this is at the start
 			// or before the start of the recvwindow. We only
@@ -429,11 +274,11 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 	// read ack field if there is one
 
 	if (packet->flags & PACKET_FLAG_ACK) {
-		guint16 i16;
+		guint i;
 
-		irmo_packet_readi16(packet, &i16);
+		irmo_packet_readi16(packet, &i);
 
-		proto_parse_ack(client, i16);
+		proto_parse_ack(client, i);
 	}
 
 	if (packet->flags & PACKET_FLAG_DTA) {
@@ -444,6 +289,16 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.11  2003/10/14 22:12:50  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
+//
 // Revision 1.10  2003/10/14 00:53:43  fraggle
 // Remove pointless inlinings
 //

@@ -26,7 +26,17 @@
 #ifndef IRMO_SENDATOM_H
 #define IRMO_SENDATOM_H
 
+#define IRMO_SENDATOM(x) ((IrmoSendAtom *) (x))
+
+typedef struct _IrmoSendAtomClass IrmoSendAtomClass;
+
 typedef struct _IrmoSendAtom IrmoSendAtom;
+
+typedef struct _IrmoNewObjectAtom IrmoNewObjectAtom;
+typedef struct _IrmoChangeAtom IrmoChangeAtom;
+typedef struct _IrmoDestroyAtom IrmoDestroyAtom;
+typedef struct _IrmoMethodAtom IrmoMethodAtom;
+typedef struct _IrmoSendWindowAtom IrmoSendWindowAtom;
 
 typedef enum {
 	ATOM_NULL,               // null atom for nullified changes
@@ -35,59 +45,121 @@ typedef enum {
 	ATOM_DESTROY,            // object destroyed 
 	ATOM_METHOD,             // method call
 	ATOM_SENDWINDOW,         // set maximum sendwindow size
+	NUM_SENDATOM_TYPES,
 } IrmoSendAtomType;
 
+#include <glib.h>
 #include <sys/time.h>
 
 #include "client.h"
 #include "if_spec.h"
 #include "method.h"
 #include "object.h"
+#include "packet.h"
+
+struct _IrmoSendAtomClass {
+	IrmoSendAtomType type;
+
+	// verify an atom of this type can be read from a packet
+	
+	gboolean (*verify)(IrmoPacket *packet);
+
+	// read a new atom of this type from a packet
+
+	IrmoSendAtom *(*read)(IrmoPacket *packet);
+
+	// write an atom of this type to a packet
+
+	void (*write)(IrmoSendAtom *atom, IrmoPacket *packet);
+
+	// run an atom to apply its effects
+	
+	void (*run)(IrmoSendAtom *atom);
+
+	// calculate the length of an atom
+	
+	gsize (*length)(IrmoSendAtom *atom);
+
+	// destroy an atom of this type
+
+	void (*destructor)(IrmoSendAtom *atom);
+};
 
 // queue object
 
 struct _IrmoSendAtom {
-	struct timeval sendtime;        // time this atom was last sent
-	gboolean resent;                // this atom was resent
-	int len;			// length in packet
-	IrmoSendAtomType type;
+	IrmoSendAtomClass *klass;
+
+	// client this atom belongs to
+
+	IrmoClient *client;  
+
+	// time atom was last sent
+
+	struct timeval sendtime;
+
+	// true if this atom was resent
+
+	gboolean resent;
+
+	// length of atom in bytes
+
+	int len;
+
+	// number of this atom in the sequence
 	
-	union {
-		struct {
-			irmo_objid_t id;
-			guint classnum;
-		} newobj;
-		struct {
-			gboolean executed;           // atom has been executed
-			irmo_objid_t id;
-			IrmoObject *object;
+	int seqnum;
+};
 
-			// count of number of changed variables in this atom
-			
-			int nchanged;
-			
-			// array saying which have changed
-			
-			gboolean *changed;
+struct _IrmoNewObjectAtom {
+	IrmoSendAtom sendatom;
 
-			// class of the object being changed. this is only
-			// used for the receive window.
+	irmo_objid_t id;
+	guint classnum;
+};
 
-			IrmoClass *objclass;
+struct _IrmoChangeAtom {
+	IrmoSendAtom sendatom;
 
-			// array of the new values. this is only used for the
-			// receive window. for the send window this is NULL
+	gboolean executed;           // atom has been executed
+	irmo_objid_t id;
+	IrmoObject *object;
+
+	// count of number of changed variables in this atom
 			
-			IrmoValue *newvalues;
-		} change;
-		struct {
-			irmo_objid_t id;
-		} destroy;
-		struct {
-			int max;
-		} sendwindow;
-		IrmoMethodData method;
-	} data;
+	int nchanged;
+			
+	// array saying which have changed
+	
+	gboolean *changed;
+
+	// class of the object being changed. this is only
+	// used for the receive window.
+
+	IrmoClass *objclass;
+
+	// array of the new values. this is only used for the
+	// receive window. for the send window this is NULL
+			
+	IrmoValue *newvalues;
+};
+
+struct _IrmoDestroyAtom {
+	IrmoSendAtom sendatom;
+
+	irmo_objid_t id;
+};
+
+struct _IrmoSendWindowAtom {
+	IrmoSendAtom sendatom;
+
+	guint max;
+};
+
+struct _IrmoMethodAtom {
+	IrmoSendAtom sendatom;
+
+	IrmoMethodData method;
 };
 
 void irmo_sendatom_free(IrmoSendAtom *atom);
@@ -107,9 +179,30 @@ IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client);
 
 void irmo_client_sendq_add_state(IrmoClient *client);
 
+// atom classes
+
+extern IrmoSendAtomClass irmo_null_atom;
+extern IrmoSendAtomClass irmo_newobject_atom;
+extern IrmoSendAtomClass irmo_change_atom;
+extern IrmoSendAtomClass irmo_destroy_atom;
+extern IrmoSendAtomClass irmo_method_atom;
+extern IrmoSendAtomClass irmo_sendwindow_atom;
+
+extern IrmoSendAtomClass *irmo_sendatom_types[];
+
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.6  2003/10/14 22:12:50  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
+//
 // Revision 1.5  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

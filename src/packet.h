@@ -50,25 +50,35 @@ struct _IrmoPacket {
 	gsize len;              // length of used data in the buffer
 	guint pos;              // current position in packet
 	IrmoClient *client;     // client implied by address (or NULL if none)
-	guint16 flags;          // flags from header
+	guint flags;            // flags from header
 };
 
 IrmoPacket *irmo_packet_new(void);
 void irmo_packet_free(IrmoPacket *packet);
 
-gboolean irmo_packet_writei8(IrmoPacket *packet, guchar c);
-gboolean irmo_packet_writei16(IrmoPacket *packet, guint16 s);
-gboolean irmo_packet_writei32(IrmoPacket *packet, guint32 l);
+gboolean irmo_packet_writei8(IrmoPacket *packet, guint i);
+gboolean irmo_packet_writei16(IrmoPacket *packet, guint i);
+gboolean irmo_packet_writei32(IrmoPacket *packet, guint i);
 gboolean irmo_packet_writestring(IrmoPacket *packet, gchar *s);
 
-gboolean irmo_packet_readi8(IrmoPacket *packet, guchar *c);
-gboolean irmo_packet_readi16(IrmoPacket *packet, guint16 *s);
-gboolean irmo_packet_readi32(IrmoPacket *packet, guint32 *l);
+gboolean irmo_packet_readi8(IrmoPacket *packet, guint *i);
+gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i);
+gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i);
 gchar *irmo_packet_readstring(IrmoPacket *packet);
 
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log$
+// Revision 1.4  2003/10/14 22:12:49  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
+//
 // Revision 1.3  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

@@ -264,8 +264,8 @@ static void socket_run_syn(IrmoPacket *packet)
 	IrmoClient *client = packet->client;
 	IrmoServer *server;
 	IrmoPacket *sendpacket;
-	guint32 local_hash, server_hash;
-	guint32 local_hash_expected=0, server_hash_expected=0;
+	guint local_hash, server_hash;
+	guint local_hash_expected=0, server_hash_expected=0;
 	gchar *s;
 
 	// if this is a client socket, dont let people connect
@@ -490,7 +490,7 @@ static void socket_run_synfinack(IrmoPacket *packet)
 
 static void socket_run_packet(IrmoPacket *packet)
 {
-	guint16 flags;
+	guint flags;
 	IrmoClient *client;
 
 	// find a client from the socket hashtable
@@ -664,6 +664,16 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.13  2003/10/14 22:12:50  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
+//
 // Revision 1.12  2003/10/14 00:53:43  fraggle
 // Remove pointless inlinings
 //

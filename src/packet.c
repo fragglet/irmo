@@ -65,40 +65,40 @@ G_INLINE_FUNC void irmo_packet_update_len(IrmoPacket *packet)
 		packet->len = packet->pos;
 }
 
-gboolean irmo_packet_writei8(IrmoPacket *packet, guchar c)
+gboolean irmo_packet_writei8(IrmoPacket *packet, guint i)
 {
 	if (packet->pos + 1 > packet->data_size)
 		irmo_packet_resize(packet);
 	
-	packet->data[packet->pos++] = c;
+	packet->data[packet->pos++] = i;
 
 	irmo_packet_update_len(packet);
 
 	return TRUE;
 }
 
-gboolean irmo_packet_writei16(IrmoPacket *packet, guint16 s)
+gboolean irmo_packet_writei16(IrmoPacket *packet, guint i)
 {
 	if (packet->pos + 2 > packet->data_size)
 		irmo_packet_resize(packet);
 
-	packet->data[packet->pos++] = (s >> 8) & 0xff;
-	packet->data[packet->pos++] = (s) & 0xff;
+	packet->data[packet->pos++] = (i >> 8) & 0xff;
+	packet->data[packet->pos++] = (i) & 0xff;
 
 	irmo_packet_update_len(packet);
 
 	return TRUE;
 }
 
-gboolean irmo_packet_writei32(IrmoPacket *packet, guint32 l)
+gboolean irmo_packet_writei32(IrmoPacket *packet, guint i)
 {
 	if (packet->pos + 4 > packet->data_size)
 		irmo_packet_resize(packet);
 
-	packet->data[packet->pos++] = (l >> 24) & 0xff;
-	packet->data[packet->pos++] = (l >> 16) & 0xff;
-	packet->data[packet->pos++] = (l >> 8) & 0xff;
-	packet->data[packet->pos++] = (l) & 0xff;
+	packet->data[packet->pos++] = (i >> 24) & 0xff;
+	packet->data[packet->pos++] = (i >> 16) & 0xff;
+	packet->data[packet->pos++] = (i >> 8) & 0xff;
+	packet->data[packet->pos++] = (i) & 0xff;
 
 	irmo_packet_update_len(packet);
 
@@ -118,17 +118,17 @@ gboolean irmo_packet_writestring(IrmoPacket *packet, gchar *s)
 	return TRUE;
 }
 
-gboolean irmo_packet_readi8(IrmoPacket *packet, guchar *c)
+gboolean irmo_packet_readi8(IrmoPacket *packet, guint *i)
 {
 	if (packet->pos + 1 > packet->len)
 		return FALSE;
 
-	*c = packet->data[packet->pos++];
+	*i = packet->data[packet->pos++];
 
 	return TRUE;
 }
 
-gboolean irmo_packet_readi16(IrmoPacket *packet, guint16 *s)
+gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i)
 {
 	guchar *data;
 	
@@ -137,14 +137,14 @@ gboolean irmo_packet_readi16(IrmoPacket *packet, guint16 *s)
 
 	data = packet->data + packet->pos;
 	
-	*s = (data[0] << 8) + data[1];
+	*i = (data[0] << 8) + data[1];
 	
 	packet->pos += 2;
 
 	return TRUE;
 }
 
-gboolean irmo_packet_readi32(IrmoPacket *packet, guint32 *l)
+gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i)
 {
 	guchar *data;
 
@@ -153,7 +153,7 @@ gboolean irmo_packet_readi32(IrmoPacket *packet, guint32 *l)
 		
 	data = packet->data + packet->pos;
 
-	*l = (data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3];
+	*i = (data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3];
 
 	packet->pos += 4;
 
@@ -180,6 +180,16 @@ gchar *irmo_packet_readstring(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.5  2003/10/14 22:12:49  fraggle
+// Major internal refactoring:
+//  - API for packet functions now uses straight integers rather than
+//    guint8/guint16/guint32/etc.
+//  - What was sendatom.c is now client_sendq.c.
+//  - IrmoSendAtoms are now in an object oriented model. Functions
+//    to do with particular "classes" of sendatom are now grouped together
+//    in (the new) sendatom.c. This groups things together that seem to
+//    logically belong together and cleans up the code a lot.
+//
 // Revision 1.4  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //
