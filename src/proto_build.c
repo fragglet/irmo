@@ -158,6 +158,7 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	struct timeval nowtime;
 	IrmoPacket *packet;
 	int i, n;
+	int backstart;
 
 	gettimeofday(&nowtime, NULL);
 	
@@ -178,15 +179,28 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	
 	packet_writei16(packet, client->recvwindow_start & 0xffff);
 	client->need_ack = FALSE;
+
+	// move the start back to cover all null atoms that prefix this
+	// data segment. in running games we typically repeatedly change 
+	// the same objects on a clock. each clock, the previous changes
+	// are then nullified. this means in sending new data we typically
+	// have lots of NULL atoms before the start of our new data.
+	// as NULL atoms compress very well and take up very little room,
+	// include these as it may reduce the need for retransmissions.
+	
+	for (backstart=start; 
+	     backstart > 0 && client->recvwindow[backstart-1]->type==ATOM_NULL;
+	     --backstart);
 	
 	// start position in stream
 	
-	packet_writei16(packet, (client->sendwindow_start + start) & 0xffff);
+	packet_writei16(packet, 
+			(client->sendwindow_start + backstart) & 0xffff);
 
 	//printf("-- build_packet: range %i-%i\n", start,end);
 	// add all sendatoms in the range specified
 
-	for (i=start; i<=end;) {
+	for (i=backstart; i<=end;) {
 
 		// group up to 32 sendatoms of the same type together
 		// we send the number of EXTRA sendatoms after
@@ -212,7 +226,11 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 		for (; n>0; --n, ++i) {
 			proto_add_atom(packet, client->sendwindow[i]);
 
-			if (client->sendwindow[i]->sendtime.tv_sec)
+			// if this is a prefixed NULL atom, ignore the
+			// resend code. we are resending deliberately
+
+			if (client->sendwindow[i]->sendtime.tv_sec
+			 && i >= start)
 				proto_atom_resent(client, i);
 			
 			// store send time in atoms
@@ -413,6 +431,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/05/04 00:28:14  sdh300
+// Add ability to manually set the maximum sendwindow size
+//
 // Revision 1.14  2003/04/21 18:10:54  sdh300
 // Fix sending of unneccesary acks
 // Slow start/Congestion avoidance
