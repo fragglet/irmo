@@ -33,6 +33,7 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 	// create new server
 	
 	server = g_new0(IrmoServer, 1);
+	server->refcount = 1;
 	server->socket = sock;
 	server->universe = universe;
 	server->client_spec = spec;
@@ -115,10 +116,15 @@ void server_unref(IrmoServer *server)
 			interface_spec_unref(server->client_spec);
 		if (server->universe)
 			universe_unref(server->universe);
+
+		free(server);
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/02/16 23:41:26  sdh300
+// Reference counting for client and server objects
+//
 // Revision 1.5  2003/02/06 01:17:15  sdh300
 // Allow servers that do not serve a universe
 //
