@@ -279,7 +279,16 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 static inline void socket_run_synack(IrmoPacket *packet)
 {
-	packet->client->state = CLIENT_CONNECTED;
+	if (packet->client->state == CLIENT_CONNECTING) {
+		// this is the first synack we have received
+		
+		packet->client->state = CLIENT_CONNECTED;
+
+		// create the remote universe object
+
+		packet->client->universe
+			= universe_new(packet->client->server->client_spec);
+	}
 
 	// if we are the client receiving this from the server,
 	// we need to send a syn ack back so it can complete
@@ -393,6 +402,12 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2003/02/06 02:42:38  sdh300
+// Before checking hashes on connect, check for no universe served
+//
+// If the host we are connecting to is not found in the server hashtable,
+// try the default server if there is one
+//
 // Revision 1.16  2003/02/06 02:09:17  sdh300
 // Initial connection code
 //
