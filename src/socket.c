@@ -194,6 +194,14 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	guint32 local_hash, server_hash;
 	gchar *s;
 
+	// if this is a client socket, dont let people connect
+	// to us!
+
+	if (packet->sock->type == SOCKET_CLIENT)
+		return;
+	
+	// read packet data
+	
 	if (!packet_readi32(packet, &local_hash)
 	 && !packet_readi32(packet, &server_hash)) {
 		// no hashes - drop
@@ -341,6 +349,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/02/06 01:01:59  sdh300
+// remove test code accidentally left in
+//
 // Revision 1.13  2003/02/06 00:59:25  sdh300
 // Split up socket constructor function, so that unbound sockets can
 // be created for clients
