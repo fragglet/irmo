@@ -6,6 +6,10 @@
 // TODO: proto_verify.c for verifification of packets before they are
 // parsed.
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "packet.h"
 #include "sendatom.h"
 
@@ -179,7 +183,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 	guint16 i16;
 	int i, seq;
 	int start;
-
+	
 	// get the start position
 	
 	packet_readi16(packet, &i16);
@@ -222,20 +226,87 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 	}
 }
 
+static void proto_parse_ack(IrmoClient *client, int ack)
+{
+	int seq;
+	int relative;
+	int i;
+
+	printf("got an ack: %i\n", ack);
+	
+	// extrapolate the high bits from the low 16 bits
+
+	seq = get_stream_position(client->sendwindow_start, ack);
+
+	// get position in sendwindow array, relative to the start
+
+	relative = seq - client->sendwindow_start;
+
+	if (relative <= 0) {
+		// already acked this far
+
+		return;
+	}
+
+	if (relative > client->sendwindow_size) {
+		// bogus ack
+		// we havent even sent this far in the stream yet
+
+		fprintf(stderr, "proto_parse_ack: bogus ack (%i < %i < %i)\n",
+			client->sendwindow_start, seq,
+			client->sendwindow_start + client->sendwindow_size);
+		return;
+	}
+	
+	// need to move the sendwindow along
+	// destroy the atoms in the area acked
+	
+	for (i=0; i<relative; ++i)
+		sendatom_free(client->sendwindow[i]);
+
+	memcpy(client->sendwindow,
+	       client->sendwindow + relative,
+	       sizeof(*client->sendwindow)
+	         * (client->sendwindow_size - relative));
+
+	client->sendwindow_start += relative;
+	client->sendwindow_size -= relative;
+}
+
 void proto_parse_packet(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 
 	printf("parse packet\n");
 	
-	// todo: parse ack field
+	// read ack field if there is one
 
-	proto_parse_packet_cluster(client, packet);
+	if (packet->flags & PACKET_FLAG_ACK) {
+		guint16 i16;
 
-	client_run_recvwindow(client);
+		packet_readi16(packet, &i16);
+
+		proto_parse_ack(client, i16);
+	}
+
+	if (packet->flags & PACKET_FLAG_DTA) {
+		proto_parse_packet_cluster(client, packet);
+
+		client_run_recvwindow(client);
+
+		// need to send an ack
+		// do this even if we already got the data received, incase
+		// the ack was lost and this is why the client is
+		// retransmitting
+		
+		client->need_ack = TRUE;
+	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/03/06 19:23:14  sdh300
+// Add initial code to run through the atoms in the send window
+//
 // Revision 1.2  2003/03/06 18:08:14  sdh300
 // Add missing cvs log tag
 //

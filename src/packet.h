@@ -15,6 +15,7 @@ typedef struct _IrmoPacket IrmoPacket;
 #define	PACKET_FLAG_SYN 0x01
 #define	PACKET_FLAG_ACK 0x02
 #define	PACKET_FLAG_FIN 0x04
+#define PACKET_FLAG_DTA 0x08
 
 struct _IrmoPacket {
 	IrmoSocket *sock;       // socket this came from
@@ -42,6 +43,9 @@ gchar *packet_readstring(IrmoPacket *packet);
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/03 22:22:30  sdh300
+// Change header flag defines as I changed my plans for the protocol
+//
 // Revision 1.7  2003/03/02 02:11:30  sdh300
 // Add missing packet_writestring prototype
 //

@@ -103,9 +103,19 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	packet = packet_new(5);
 
 	// header
-
-	packet_writei16(packet, 0);
-
+	// always send last-acked point 
+	
+	packet_writei16(packet, PACKET_FLAG_ACK|PACKET_FLAG_DTA);
+	
+	// in sending stream positions we only send the low 16
+	// bits. the higher bits can be implied by their current
+	// position
+	
+	// last acked point
+	
+	packet_writei16(packet, client->recvwindow_start & 0xffff);
+	client->need_ack = FALSE;
+	
 	// start position in stream
 	
 	packet_writei16(packet, (client->sendwindow_start + start) & 0xffff);
@@ -278,10 +288,40 @@ void proto_run_client(IrmoClient *client)
 		
 		packet_free(packet);
 	}
+
 	//printf("finished\n");
+
+	// possibly we need to send an ack for something we have received
+	// if we have nothing in our send window to send, we still need
+	// to send an ack back
+
+	if (client->need_ack) {
+		IrmoPacket *packet;
+
+		printf("send ack to client\n");
+
+		packet = packet_new(4);
+
+		// only ack flag is sent, not dta as there is no data
+		
+		packet_writei16(packet, PACKET_FLAG_ACK);
+		packet_writei16(packet, client->recvwindow_start & 0xffff);
+		client->need_ack = FALSE;
+
+		// send packet
+
+		socket_sendpacket(client->server->socket,
+				  client->addr,
+				  packet);
+
+		packet_free(packet);
+	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/03/05 17:33:57  sdh300
+// Fix length threshold checking (len variable was uninitialised)
+//
 // Revision 1.3  2003/03/05 15:32:21  sdh300
 // Add object class to change atoms to make their coding in packets
 // unambiguous.

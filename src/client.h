@@ -70,6 +70,11 @@ struct _IrmoClient {
 
 	IrmoSendAtom **recvwindow;
 	int recvwindow_size;
+
+	// if true, we need to send an ack to the client to acknowledge
+	// something it has sent us
+	
+	gboolean need_ack;
 };
 
 IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr);
@@ -79,6 +84,9 @@ void client_destroy(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2003/03/05 15:28:13  sdh300
+// Add receive window and extra data for sendatoms in the receive window.
+//
 // Revision 1.11  2003/03/03 21:03:06  sdh300
 // Initial packet building code
 //
