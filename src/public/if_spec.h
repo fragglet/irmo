@@ -43,6 +43,7 @@ typedef enum {
 	IRMO_TYPE_INT16,
 	IRMO_TYPE_INT32,
 	IRMO_TYPE_STRING,
+	IRMO_NUM_TYPES,
 } IrmoVarType;
 
 /*!
@@ -265,6 +266,9 @@ IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.7  2003/08/29 17:25:24  fraggle
+// IRMO_NUM_TYPES
+//
 // Revision 1.6  2003/08/29 16:46:33  fraggle
 // Use "foreach" instead of "each" for consistency
 //
