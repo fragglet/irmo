@@ -114,9 +114,11 @@ gboolean packet_readi32(IrmoPacket *packet, guint32 *l)
 
 gchar *packet_readstring(IrmoPacket *packet)
 {
-	guchar *start = packet->data + packet->pos;
+	guchar *start;
 
-	while (packet->pos < packet->len) {
+	for (start=packet->data + packet->pos;
+	     packet->pos < packet->len;
+	     ++packet->pos) {
 		if (!packet->data[packet->pos])
 			return start;
 	}
@@ -127,6 +129,9 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/03 21:12:31  sdh300
+// Fix errors
+//
 // Revision 1.3  2003/02/03 20:45:27  sdh300
 // add packet string code
 // add packet writing code
