@@ -38,6 +38,8 @@ data for each atom depends on type in start byte:
 		2 bytes for object ID
 		1 byte for object class number
 	ATOM_CHANGE:
+		1 byte for object class
+		2 bytes for object ID
 		bitfield of changed variables
 		   (length depends on number of variables/class),
 			bit on = variable changed
@@ -86,7 +88,11 @@ to be implied through only a single byte.
 
 In sending change atoms, a bit field is used to indicate which variables 
 are changed. For classes with <= 8 variables, only 1 byte is needed.
-("delta" compression)
+("delta" compression). The object class is included in the change atoms,
+even though it is already implied from the object id. This is so the 
+protocol is not ambiguous to decode. For example, consider a change
+atom received for an object which has not yet been created: it is
+therefore impossible to decode the packet.
 
 -----------------------------
 
@@ -115,6 +121,9 @@ disconnect
 	------- FIN ACK ------>
 
 $Log: not supported by cvs2svn $
+Revision 1.2  2003/03/03 22:55:12  sdh300
+Modified protocol
+
 Revision 1.1  2002/12/02 22:41:18  sdh300
 draft protocol spec
 

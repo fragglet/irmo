@@ -55,6 +55,10 @@ static int sendatom_change_len(IrmoSendAtom *atom)
 
 	len = 0;
 
+	// object class
+
+	len += 1;
+	
 	// object id
 
 	len += 2;
@@ -201,6 +205,9 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/05 15:28:13  sdh300
+// Add receive window and extra data for sendatoms in the receive window.
+//
 // Revision 1.6  2003/03/03 21:03:45  sdh300
 // Fix bug in client_sendq_pop
 //

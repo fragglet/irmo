@@ -10,6 +10,13 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	IrmoObject *obj = atom->data.change.object;
 	int bitmap_size;
 	int i, j;
+
+	// include the object class number
+	// this is neccesary otherwise the packet can be ambiguous to
+	// decode (if we receive a change atom for an object which has
+	// not yet been received, for example)
+
+	packet_writei8(packet, obj->objclass->index);
 	
 	// send object id
 	
@@ -274,6 +281,9 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/03 22:14:44  sdh300
+// Initial window construction and sending of packets
+//
 // Revision 1.1  2003/03/02 02:12:28  sdh300
 // Initial packet building code
 //
