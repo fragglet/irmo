@@ -43,7 +43,7 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 	for (;;) {
 		IrmoSendAtomClass *klass;
 		int atomtype;
-		int natoms;
+		guint natoms;
 		
 		if (!irmo_packet_readi8(packet, &i))
 			break;
@@ -101,6 +101,9 @@ gboolean irmo_proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.9  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.8  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than

@@ -31,6 +31,7 @@
 #include <stdlib.h>
 
 #include "callback.h"
+#include "error.h"
 #include "if_spec.h"
 #include "world.h"
 
@@ -137,7 +138,7 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 {
 	IrmoObject *object;
 
-	g_return_if_fail(world != NULL);
+	g_return_val_if_fail(world != NULL, NULL);
 	
 	object = g_hash_table_lookup(world->objects, (gpointer) id);
 
@@ -168,8 +169,9 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 {
 	IrmoClass *spec;
 	struct world_foreach_data data = {
-		func: func,
-		user_data: user_data,
+		NULL,
+		func,
+		user_data,
 	};
 
 	g_return_if_fail(world != NULL);
@@ -202,6 +204,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.6  2003/11/18 18:14:47  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.5  2003/11/17 00:32:28  fraggle
 // Rename irmo_objid_t to IrmoObjectID for consistency with other types
 //

@@ -26,6 +26,7 @@
 #include <glib.h>
 #include <string.h>
 
+#include "error.h"
 #include "object.h"
 #include "packet.h"
 
@@ -133,6 +134,9 @@ IrmoSendAtomClass irmo_newobject_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.3  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.2  2003/11/05 04:05:44  fraggle
 // Cast functions rather than casting arguments to functions
 //

@@ -29,8 +29,8 @@
 #include "public/socket.h"
 
 #include <glib.h>
-#include <netinet/in.h>
 
+#include "netlib.h"
 #include "client.h"
 #include "server.h"
 
@@ -78,6 +78,9 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 #endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
 
 // $Log$
+// Revision 1.3  2003/11/18 18:14:47  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.2  2003/08/26 14:57:31  fraggle
 // Remove AF_* BSD sockets dependency from Irmo API
 //

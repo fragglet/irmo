@@ -29,11 +29,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <unistd.h>
-#include <netdb.h>
-
-#include <netinet/in.h>
-#include <sys/socket.h>
 
 #include <glib.h>
 
@@ -242,6 +237,9 @@ void irmo_timeval_from_ms(int ms, struct timeval *time)
 }
 
 // $Log$
+// Revision 1.5  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.4  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

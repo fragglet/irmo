@@ -49,11 +49,11 @@ typedef enum {
 } IrmoSendAtomType;
 
 #include <glib.h>
-#include <sys/time.h>
 
 #include "client.h"
 #include "if_spec.h"
 #include "method.h"
+#include "netlib.h"
 #include "object.h"
 #include "packet.h"
 
@@ -63,7 +63,6 @@ typedef void (*IrmoSendAtomWriteFunc)(IrmoSendAtom *atom, IrmoPacket *packet);
 typedef void (*IrmoSendAtomRunFunc)(IrmoSendAtom *atom);
 typedef gsize (*IrmoSendAtomLengthFunc)(IrmoSendAtom *atom);
 typedef void (*IrmoSendAtomDestroyFunc)(IrmoSendAtom *atom);
-
 
 struct _IrmoSendAtomClass {
 	IrmoSendAtomType type;
@@ -201,6 +200,9 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.9  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.8  2003/11/17 00:32:28  fraggle
 // Rename irmo_objid_t to IrmoObjectID for consistency with other types
 //

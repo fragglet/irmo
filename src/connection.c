@@ -24,6 +24,7 @@
 //---------------------------------------------------------------------
 
 #include "connection.h"
+#include "error.h"
 #include "netlib.h"
 #include "socket.h"
 
@@ -40,7 +41,6 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 	g_return_val_if_fail(location != NULL, NULL);
 
 	if (domain == IRMO_SOCKET_AUTO) {
-		IrmoConnection *conn;
 
 #ifdef USE_IPV6
 		// try IPv6
@@ -192,6 +192,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.12  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.11  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

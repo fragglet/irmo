@@ -25,8 +25,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
 
+#include "netlib.h"
 #include "packet.h"
 #include "protocol.h"
 #include "sendatom.h"
@@ -344,6 +344,9 @@ void irmo_proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.11  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.10  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than

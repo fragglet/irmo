@@ -26,10 +26,23 @@
 #ifndef IRMO_NETLIB_H
 #define IRMO_NETLIB_H
 
-#include "socket.h"
+#ifdef _WIN32
 
-#include <glib.h>
+#include <WinSock.h>
+
+#else
+
 #include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
+
+#define closesocket close
+
+#endif
+
+#include "socket.h"
+#include <glib.h>
 
 // various network util functions
 
@@ -67,6 +80,9 @@ void irmo_timeval_from_ms(int ms, struct timeval *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.5  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.4  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

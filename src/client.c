@@ -25,10 +25,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
 #include <time.h>
 
 #include "client.h"
+#include "connection.h"
 #include "netlib.h"
 #include "packet.h"
 #include "protocol.h"
@@ -306,8 +306,8 @@ IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
 					   IrmoClientCallback func,
 					   void *user_data)
 {
-	g_return_if_fail(client != NULL);
-	g_return_if_fail(func != NULL);
+	g_return_val_if_fail(client != NULL, NULL);
+	g_return_val_if_fail(func != NULL, NULL);
 	
 	return irmo_callbacklist_add(&client->disconnect_callbacks,
 				     func, user_data);
@@ -353,9 +353,14 @@ const char *irmo_client_get_addr(IrmoClient *client)
 	}
 #endif
 	}
+
+	return NULL;
 }
 
 // $Log$
+// Revision 1.14  2003/11/18 18:14:45  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.13  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

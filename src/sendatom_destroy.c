@@ -26,6 +26,7 @@
 #include <glib.h>
 #include <string.h>
 
+#include "error.h"
 #include "object.h"
 #include "packet.h"
 
@@ -57,7 +58,6 @@ static gboolean irmo_destroy_atom_verify(IrmoPacket *packet)
 static IrmoSendAtom *irmo_destroy_atom_read(IrmoPacket *packet)
 {
 	IrmoDestroyAtom *atom;
-	guint i;
 
 	atom = g_new0(IrmoDestroyAtom, 1);
 	atom->sendatom.klass = &irmo_destroy_atom;
@@ -113,6 +113,9 @@ IrmoSendAtomClass irmo_destroy_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.3  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.2  2003/11/05 04:05:44  fraggle
 // Cast functions rather than casting arguments to functions
 //

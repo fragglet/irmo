@@ -52,7 +52,6 @@ static gboolean irmo_sendwindow_atom_verify(IrmoPacket *packet)
 static IrmoSendAtom *irmo_sendwindow_atom_read(IrmoPacket *packet)
 {
 	IrmoSendWindowAtom *atom;
-	guint i;
 
 	atom = g_new0(IrmoSendWindowAtom, 1);
 	atom->sendatom.klass = &irmo_sendwindow_atom;
@@ -95,6 +94,9 @@ IrmoSendAtomClass irmo_sendwindow_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.3  2003/11/18 18:14:47  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.2  2003/11/05 04:05:44  fraggle
 // Cast functions rather than casting arguments to functions
 //

@@ -27,6 +27,7 @@
 #include <stdlib.h>
 
 #include "callback.h"
+#include "error.h"
 #include "method.h"
 #include "world.h"
 
@@ -37,16 +38,16 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 {
 	IrmoMethod *spec;
 
-	g_return_if_fail(world != NULL);
-	g_return_if_fail(method_name != NULL);
-	g_return_if_fail(method != NULL);
+	g_return_val_if_fail(world != NULL, NULL);
+	g_return_val_if_fail(method_name != NULL, NULL);
+	g_return_val_if_fail(method != NULL, NULL);
 	
 	spec = irmo_interface_spec_get_method(world->spec, method_name);
 
 	if (!spec) {
 		irmo_error_report("irmo_world_method_watch",
 				  "unknown method '%s'", method_name);
-		return;
+		return NULL;
 	}
 
 	return irmo_callbacklist_add(&world->method_callbacks[spec->index],
@@ -238,6 +239,9 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 }
 
 // $Log$
+// Revision 1.12  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.11  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

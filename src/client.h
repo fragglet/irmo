@@ -29,8 +29,9 @@
 #include "public/client.h"
 
 #include <glib.h>
-#include <netinet/in.h>
+#include <time.h>
 
+#include "netlib.h"
 #include "sendatom.h"
 #include "server.h"
 #include "socket.h"
@@ -177,6 +178,9 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
+// Revision 1.6  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.5  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

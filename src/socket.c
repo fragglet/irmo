@@ -32,13 +32,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <unistd.h>
-
-#include <netinet/in.h>
-#include <sys/socket.h>
 
 #include <glib.h>
 
+#include "connection.h"
+#include "error.h"
 #include "netlib.h"
 #include "packet.h"
 #include "protocol.h"
@@ -93,7 +91,6 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 {
 	IrmoSocket *irmosock;
 	int sock;
-	int opts;
 	int domain;
 
 	if (type == IRMO_SOCKET_AUTO)
@@ -127,13 +124,14 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 
 	// make socket nonblocking
 
+#ifndef _WIN32
 	opts = fcntl(sock, F_GETFL);
 
 	if (opts < 0) {
 		irmo_error_report("irmo_socket_new"
 				  "cannot make socket nonblocking (%s)",
 				  strerror(errno));
-		close(sock);
+		closesocket(sock);
 		return NULL;
 	}
 
@@ -143,9 +141,10 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 		irmo_error_report("irmo_socket_new"
 				  "cannot make socket nonblocking (%s)",
 				  strerror(errno));
-		close(sock);
+		closesocket(sock);
 		return NULL;
 	}
+#endif
 	
 	// wrap it all up in an IrmoSocket object
 
@@ -176,7 +175,7 @@ void irmo_socket_unref(IrmoSocket *sock)
 	if (sock->refcount <= 0) {
 		// close socket
 
-		close(sock->sock);
+		closesocket(sock->sock);
 		
 		// if there are no references to this socket, it follows
 		// there are no servers or clients either as they
@@ -714,6 +713,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.17  2003/11/18 18:14:47  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.16  2003/11/05 02:05:41  fraggle
 // Use guint8 instead of guchar
 //

@@ -27,6 +27,7 @@
 #include <stdlib.h>
 
 #include "callback.h"
+#include "error.h"
 #include "if_spec.h"
 #include "object.h"
 #include "world.h"
@@ -143,8 +144,8 @@ void irmo_callbackdata_raise(IrmoCallbackData *data,
 			     IrmoObject *object, gint variable_index)
 {
 	struct raise_data raise_data = {
-		object: object,
-		variable: object->objclass->variables[variable_index]->name,
+		object,
+		object->objclass->variables[variable_index]->name,
 	};
 
 	// call class callbacks
@@ -183,7 +184,7 @@ void irmo_callbackdata_raise_destroy(IrmoCallbackData *data,
 				     IrmoObject *object)
 {
 	struct raise_data raise_data = {
-		object: object,
+		object,
 	};
 
 	g_slist_foreach(data->destroy_callbacks,
@@ -199,7 +200,7 @@ void irmo_callbackdata_raise_destroy(IrmoCallbackData *data,
 void irmo_callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 {
 	struct raise_data raise_data = {
-		object: object,
+		object,
 	};
 
 	g_slist_foreach(data->new_callbacks,
@@ -377,6 +378,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.11  2003/11/18 18:14:45  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.10  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

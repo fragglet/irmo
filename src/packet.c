@@ -201,6 +201,8 @@ gboolean irmo_packet_verify_value(IrmoPacket *packet,
 	case IRMO_TYPE_STRING:
 		return irmo_packet_readstring(packet) != NULL;
 	}
+
+	return FALSE;
 }
 
 void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
@@ -242,6 +244,9 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 }
 
 // $Log$
+// Revision 1.8  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.7  2003/11/05 02:05:41  fraggle
 // Use guint8 instead of guchar
 //

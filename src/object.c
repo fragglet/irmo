@@ -35,6 +35,7 @@
 
 #include "callback.h"
 #include "client.h"
+#include "error.h"
 #include "object.h"
 #include "sendatom.h"
 #include "world.h"
@@ -490,6 +491,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.16  2003/11/18 18:14:46  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.15  2003/11/17 00:32:27  fraggle
 // Rename irmo_objid_t to IrmoObjectID for consistency with other types
 //

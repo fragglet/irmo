@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
 #include "netlib.h"
 #include "server.h"
 
@@ -178,8 +179,8 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 					IrmoClientCallback func,
 					void *user_data)
 {
-	g_return_if_fail(server != NULL);
-	g_return_if_fail(func != NULL);
+	g_return_val_if_fail(server != NULL, NULL);
+	g_return_val_if_fail(func != NULL, NULL);
 	
 	return irmo_callbacklist_add(&server->connect_callbacks, 
 				     func, user_data);
@@ -258,6 +259,9 @@ void irmo_server_shutdown(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.12  2003/11/18 18:14:47  fraggle
+// Get compilation under windows to work, almost
+//
 // Revision 1.11  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //
