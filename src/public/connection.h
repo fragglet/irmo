@@ -33,6 +33,21 @@ extern "C" {
 #endif
 
 /*!
+ * This is the client side interface. \ref IrmoConnection objects
+ * represent an open connection to a remote \ref IrmoServer.
+ * The key function is \ref irmo_connect which establishes a new
+ * connection.
+ * 
+ * In using irmo_connect, the 'spec' object is used to specify the
+ * world being served by the remote server. The specification
+ * file must be identical; if the specification objects differ
+ * on the client and the server, the server will refuse the connection.
+ *
+ * The client may serve a world back to the server by setting
+ * the 'local_world' parameter to irmo_connect to point to a
+ * valid IrmoWorld object. The type here must also be identical to
+ * that expected by the server.
+ *
  * \addtogroup connection
  * \{
  */
@@ -145,6 +160,10 @@ void irmo_connection_unref(IrmoConnection *conn);
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log$
+// Revision 1.7  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.6  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

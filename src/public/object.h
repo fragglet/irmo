@@ -37,8 +37,16 @@ extern "C" {
 #endif
 
 /*!
- * \addtogroup object
  *
+ * An \ref IrmoObject exists within a World (see \ref IrmoWorld). They 
+ * have a class which defines member variables which hold data. The
+ * classes are defined by the \ref IrmoInterfaceSpec which the World
+ * is using. The object member variables can hold several different 
+ * types of data (int, string) and the values of the variables can
+ * be changed and retrieved. Callback functions can be set to watch
+ * when the values of these variables change.
+ *
+ * \addtogroup object
  * \{
  */
 
@@ -240,6 +248,10 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.11  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.10  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

@@ -33,6 +33,12 @@ extern "C" {
 #endif
 
 /*!
+ *
+ * Method calls can be defined and invoked on \ref IrmoWorld objects.
+ * Callback functions can be set to be called when methods are invoked.
+ * The methods and their arguments are declared in the Interface 
+ * Specification for the World.
+ *
  * \addtogroup method
  * \{
  */
@@ -129,6 +135,10 @@ void irmo_world_method_call2(IrmoWorld *world, char *method,
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log$
+// Revision 1.8  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.7  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

@@ -37,6 +37,12 @@ extern "C" {
 #endif
 
 /*!
+ *
+ * Various parts of the library allow callback watches to be placed 
+ * on particular events. When the event occurs, the callback function
+ * will be invoked. These watches are represented by a 
+ * \ref IrmoCallback object.
+ *
  * \addtogroup callback
  * \{
  */
@@ -61,6 +67,10 @@ void irmo_callback_unset(IrmoCallback *callback);
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
+// Revision 1.7  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.6  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

@@ -33,6 +33,15 @@ extern "C" {
 #endif
 
 /*!
+ *
+ * Socket objects listen on a particular UDP port. Servers (see
+ * \ref IrmoServer) can then be attached to the socket to allow
+ * connections. Multiple servers can listen on the same socket.
+ * Connecting clients will be connected to a different server
+ * depending on the hostname they specify. It is therefore 
+ * possible to set up a "virtual host" system through this
+ * mechanism.
+ *
  * \addtogroup socket
  * \{
  */
@@ -105,7 +114,7 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout);
  * This is the same as \ref irmo_socket_block, except it blocks on
  * a single socket.
  *
- * \param 	socket		The socket to block on
+ * \param 	sock  		The socket to block on
  * \param	timeout		Maximum time to block for, in milliseconds,
  * 				Specify 0 to block forever.
  */
@@ -121,6 +130,10 @@ void irmo_socket_block(IrmoSocket *sock, int timeout);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.9  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.8  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

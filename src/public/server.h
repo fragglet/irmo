@@ -33,6 +33,16 @@ extern "C" {
 #endif
 
 /*!
+ *
+ * Server objects are used to serve a particular \ref IrmoWorld
+ * world object on an \ref IrmoSocket socket. Clients can then
+ * connect to the server using the \ref irmo_connect function
+ * and receive information about the world being served.
+ * 
+ * The clients themselves may also serve a world back to the 
+ * server. The client world to serve is specified using the
+ * 'spec' field of the irmo_server_new constructor.
+ *
  * \addtogroup server
  * \{
  */
@@ -136,6 +146,10 @@ void irmo_server_shutdown(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.8  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.7  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

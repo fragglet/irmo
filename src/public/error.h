@@ -31,6 +31,10 @@ extern "C" {
 #endif
 
 /*!
+ * Some functions report errors. All error messages are echoed to the 
+ * standard error output (stderr) and the error message can be retrieved
+ * by the program with \ref irmo_error_get.
+ *
  * \addtogroup error
  * \{
  */
@@ -56,6 +60,10 @@ char *irmo_error_get(void);
 #endif /* #ifndef IRMO_ERROR_H */
 
 // $Log$
+// Revision 1.4  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.3  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

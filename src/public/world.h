@@ -37,6 +37,15 @@ extern "C" {
 #endif
 
 /*!
+ *
+ * An IrmoWorld defines a data structure which implements an Interface
+ * Specification. Inside an IrmoWorld, objects (see \ref IrmoObject)
+ * of classes defined within that specification can be created. These 
+ * objects can be used to hold data of various types.
+ *
+ * Callback functions can be set to be called automatically when particular
+ * objects change within the World.
+ *
  * \addtogroup world
  * \{
  */
@@ -203,6 +212,10 @@ IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world,
 #endif /* #ifndef IRMO_WORLD_H */
 
 // $Log$
+// Revision 1.5  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.4  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

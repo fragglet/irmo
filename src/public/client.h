@@ -33,6 +33,16 @@ extern "C" {
 #endif
 
 /*!
+ * The \ref IrmoClient object represents clients currently 
+ * connected to a server. For each client currently connected
+ * there is an associated IrmoClient object.
+ *
+ * Once clients are disconnected from the server, they are
+ * automatically 'garbage collected' and destroyed. However, 
+ * the \ref irmo_client_ref and \ref irmo_client_unref functions can be
+ * used to hold a reference to an IrmoClient object and prevent
+ * it from being destroyed.
+ *
  * \addtogroup client
  * \{
  */
@@ -153,6 +163,10 @@ const char *irmo_client_get_addr(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log$
+// Revision 1.7  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.6  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

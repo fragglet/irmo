@@ -35,128 +35,49 @@
 
 /*!
  * \defgroup if_spec Interface Specification
- *
- * An \ref IrmoInterfaceSpec object defines an interface specification 
- * comprising specification for several object classes and methods.
- * The specification can then be used to create an \ref IrmoWorld
- * where the classes can be instantiated as \ref IrmoObject objects.
- *
- * The InterfaceSpec is defined in a seperate file. This has a C-like
- * syntax and is quite simple. The file is loaded with the 
- * \ref irmo_interface_spec_new function.
  */
 
 /*!
  * \defgroup callback Irmo Callback
- *
- * Various parts of the library allow callback watches to be placed 
- * on particular events. When the event occurs, the callback function
- * will be invoked. These watches are represented by a 
- * \ref IrmoCallback object.
  */
 
-/*!
+/*! 
  * \defgroup world Irmo World
- *
- * An IrmoWorld defines a data structure which implements an Interface
- * Specification. Inside an IrmoWorld, objects (see \ref IrmoObject)
- * of classes defined within that specification can be created. These 
- * objects can be used to hold data of various types.
- *
- * Callback functions can be set to be called automatically when particular
- * objects change within the World.
  */
 
-/*!
+/*! 
  * \defgroup object Irmo Objects
- *
- * Irmo Objects exist within a World (see \ref IrmoWorld). They 
- * have a class which defines member variables which hold data. The
- * classes are defined by the IrmoInterfaceSpec which the World
- * is using. The object member variables can hold several different 
- * types of data (int, string) and the values of the variables can
- * be changed and retrieved. Callback functions can be set to watch
- * when the values of these variables change.
  */
 
-/*!
+/*! 
  * \defgroup method Irmo Method Call Interface
- *
- * Method calls can be defined and invoked on \ref IrmoWorld objects.
- * Callback functions can be set to be called when methods are invoked.
- * The methods and their arguments are declared in the Interface 
- * Specification for the World.
- *
  */
 
-/*!
+/*! 
  * \defgroup socket Irmo Socket
- *
- * Socket objects listen on a particular UDP port. Servers (see
- * \ref IrmoServer) can then be attached to the socket to allow
- * connections. Multiple servers can listen on the same socket.
- * Connecting clients will be connected to a different server
- * depending on the hostname they specify. It is therefore 
- * possible to set up a "virtual host" system through this
- * mechanism.
  */
 
-/*!
+/*! 
  * \defgroup server Irmo Server
- *
- * Server objects are used to serve a particular \ref IrmoWorld
- * world object on an \ref IrmoSocket socket. Clients can then
- * connect to the server using the \ref irmo_connect function
- * and receive information about the world being served.
- * 
- * The clients themselves may also serve a world back to the 
- * server. The client world to serve is specified using the
- * 'spec' field of the irmo_server_new constructor.
  */
 
-/*!
+/*! 
  * \defgroup client Irmo Client
- * 
- * The \ref IrmoClient object represents clients currently 
- * connected to a server. For each client currently connected
- * there is an associated IrmoClient object.
- *
- * Once clients are disconnected from the server, they are
- * automatically 'garbage collected' and destroyed. However, 
- * the \ref irmo_client_ref and \ref irmo_client_unref functions can be
- * used to hold a reference to an IrmoClient object and prevent
- * it from being destroyed.
  */
 
-/*!
+/*! 
  * \defgroup connection Irmo Client Interface
- *
- * This is the client side interface. \ref IrmoConnection objects
- * represent an open connection to a remote \ref IrmoServer.
- * The key function is \ref irmo_connect which establishes a new
- * connection.
- * 
- * In using irmo_connect, the 'spec' object is used to specify the
- * world being served by the remote server. The specification
- * file must be identical; if the specification objects differ
- * on the client and the server, the server will refuse the connection.
- *
- * The client may serve a world back to the server by setting
- * the 'local_world' parameter to irmo_connect to point to a
- * valid IrmoWorld object. The type here must also be identical to
- * that expected by the server.
  */
 
 /*!
  * \defgroup error Error Reporting
- *
- * Some functions report errors. All error messages are echoed to the 
- * standard error output (stderr) and the error message can be retrieved
- * by the program with \ref irmo_error_get.
- *
  */
 
 // $Log$
+// Revision 1.5  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.4  2003/09/01 14:21:19  fraggle
 // Use "world" instead of "universe". Rename everything.
 //

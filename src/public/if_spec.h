@@ -33,6 +33,16 @@ extern "C" {
 #endif
 
 /*!
+ *
+ * An \ref IrmoInterfaceSpec object defines an interface specification 
+ * comprising specification for several object classes and methods.
+ * The specification can then be used to create an \ref IrmoWorld
+ * where the classes can be instantiated as \ref IrmoObject objects.
+ *
+ * The InterfaceSpec is defined in a seperate file. This has a C-like
+ * syntax and is quite simple. The file is loaded with the 
+ * \ref irmo_interface_spec_new function.
+ *
  * \addtogroup if_spec
  * \{
  */
@@ -299,6 +309,10 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.15  2003/11/21 18:10:18  fraggle
+// Fix up doxygen documentation; move section documentation into headers
+// from 'sections.doxygen'
+//
 // Revision 1.14  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of
