@@ -57,7 +57,7 @@ struct _IrmoObject {
 
 	// numerical id reference for this object in the world
 	
-	irmo_objid_t id;
+	IrmoObjectID id;
 
 	// array of variables for this object
 	// the number of variables is specified in objclass
@@ -74,7 +74,7 @@ struct _IrmoObject {
 
 IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 				     IrmoClass *objclass,
-				     irmo_objid_t id);
+				     IrmoObjectID id);
 
 // internal function to destroy an object. control over whether to
 // call notify routines (call callbacks, forward info to clients)
@@ -95,6 +95,9 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.6  2003/11/17 00:32:28  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.5  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

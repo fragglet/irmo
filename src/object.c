@@ -82,7 +82,7 @@ static void foreach_client(IrmoWorld *world,
 
 static gint get_free_id(IrmoWorld *world)
 {
-	irmo_objid_t start = world->lastid;
+	IrmoObjectID start = world->lastid;
 
 	// keep incrementing until we find one free
 	// we increment once to start off with, since the current lastid
@@ -103,7 +103,7 @@ static gint get_free_id(IrmoWorld *world)
 
 IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 				     IrmoClass *objclass,
-				     irmo_objid_t id)
+				     IrmoObjectID id)
 {
 	IrmoObject *object;
 	int i;
@@ -246,7 +246,7 @@ void irmo_object_destroy(IrmoObject *object)
 	irmo_object_internal_destroy(object, TRUE, TRUE);
 }
 
-irmo_objid_t irmo_object_get_id(IrmoObject *object)
+IrmoObjectID irmo_object_get_id(IrmoObject *object)
 {
 	g_return_val_if_fail(object != NULL, -1);
 	
@@ -490,6 +490,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.15  2003/11/17 00:32:27  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.14  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

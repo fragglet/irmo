@@ -89,7 +89,7 @@ void irmo_object_destroy(IrmoObject *object);
  * \return 	  Object ID
  */
 
-irmo_objid_t irmo_object_get_id(IrmoObject *object);
+IrmoObjectID irmo_object_get_id(IrmoObject *object);
 
 /*!
  * \brief Get the class of an object
@@ -216,6 +216,9 @@ unsigned int irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.9  2003/11/17 00:32:28  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.8  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

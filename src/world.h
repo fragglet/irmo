@@ -70,7 +70,7 @@ struct _IrmoWorld {
 	// the id of the last object created. objects are created
 	// with sequential ids
 	
-	irmo_objid_t lastid;
+	IrmoObjectID lastid;
 
 	// servers attached to this world who are serving it.
 	
@@ -98,6 +98,9 @@ struct _IrmoWorld {
 #endif /* #ifndef IRMO_INTERNAL_WORLD_H */
 
 // $Log$
+// Revision 1.3  2003/11/17 00:32:28  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.2  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

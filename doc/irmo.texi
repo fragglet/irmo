@@ -171,7 +171,7 @@ class Object @{
 @}
 
 class PlayerObject : Object @{
-        irmo_objid_t player;
+        IrmoObjectID player;
 @}
 
 class Explosion : Object @{
@@ -184,10 +184,10 @@ class Asteroid : Object @{@}
 class Player @{
         string name;
         int16 score;
-        irmo_objid_t avatar;
+        IrmoObjectID avatar;
 @}
 
-method fire(irmo_objid_t player);
+method fire(IrmoObjectID player);
 @end example
 
 Here a number of classes are defined. These define the types of object
@@ -229,11 +229,11 @@ arguments. These are:
 @cindex int32
 
 @item 
-@code{irmo_objid_t} - A reference to an Irmo Object. All objects 
+@code{IrmoObjectID} - A reference to an Irmo Object. All objects 
 within a world have
 a number by which they can be referenced. This is a variable
 containing such an identifier.
-@cindex irmo_objid_t
+@cindex IrmoObjectID
 
 @item 
 @code{string} - A text string.

@@ -48,7 +48,7 @@ typedef struct _IrmoWorld IrmoWorld;
  * \ref irmo_world_get_object_for_id function.
  */
 
-typedef unsigned int irmo_objid_t;
+typedef unsigned int IrmoObjectID;
 
 #include "callback.h"
 #include "if_spec.h"
@@ -71,7 +71,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec);
  * \brief Find an object by its ID
  *
  * All objects within an IrmoWorld have a unique number assigned to
- * them (see \ref irmo_objid_t). This function searches for an object 
+ * them (see \ref IrmoObjectID). This function searches for an object 
  * by its identifier.
  *
  * \param world	The World to search in
@@ -80,7 +80,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec);
  */
 
 IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
-					 irmo_objid_t id);
+					 IrmoObjectID id);
 
 /*!
  * \brief Iterate over objects in a World
@@ -143,6 +143,9 @@ void irmo_world_unref(IrmoWorld *world);
 #endif /* #ifndef IRMO_WORLD_H */
 
 // $Log$
+// Revision 1.3  2003/11/17 00:32:28  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.2  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

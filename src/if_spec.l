@@ -111,7 +111,7 @@ WHITESPACE [[:space:]]+
 "int8"		return TOKEN_INT8;
 "int16"		return TOKEN_INT16;
 "int32"		return TOKEN_INT32;
-"irmo_objid_t"  return TOKEN_INT16;
+"IrmoObjectID"  return TOKEN_INT16;
 "string"	return TOKEN_STRING;
 {ID}		return TOKEN_ID;
 ":"		return TOKEN_COLON;
@@ -650,6 +650,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.12  2003/11/17 00:32:27  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.11  2003/09/12 11:30:25  fraggle
 // Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
 //

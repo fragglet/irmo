@@ -122,7 +122,7 @@ struct _IrmoSendAtom {
 struct _IrmoNewObjectAtom {
 	IrmoSendAtom sendatom;
 
-	irmo_objid_t id;
+	IrmoObjectID id;
 	guint classnum;
 };
 
@@ -130,7 +130,7 @@ struct _IrmoChangeAtom {
 	IrmoSendAtom sendatom;
 
 	gboolean executed;           // atom has been executed
-	irmo_objid_t id;
+	IrmoObjectID id;
 	IrmoObject *object;
 
 	// count of number of changed variables in this atom
@@ -155,7 +155,7 @@ struct _IrmoChangeAtom {
 struct _IrmoDestroyAtom {
 	IrmoSendAtom sendatom;
 
-	irmo_objid_t id;
+	IrmoObjectID id;
 };
 
 struct _IrmoSendWindowAtom {
@@ -201,6 +201,9 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.8  2003/11/17 00:32:28  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.7  2003/11/05 04:05:44  fraggle
 // Cast functions rather than casting arguments to functions
 //

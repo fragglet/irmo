@@ -84,7 +84,7 @@ void irmo_world_ref(IrmoWorld *world)
 	++world->refcount;
 }
 
-static void irmo_world_unref_foreach(irmo_objid_t id, IrmoObject *object,
+static void irmo_world_unref_foreach(IrmoObjectID id, IrmoObject *object,
 				     gpointer user_data)
 {
 	// destroy object. do not notify objects. do not remove
@@ -133,7 +133,7 @@ void irmo_world_unref(IrmoWorld *world)
 }
 
 IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
-					 irmo_objid_t id)
+					 IrmoObjectID id)
 {
 	IrmoObject *object;
 
@@ -202,6 +202,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.5  2003/11/17 00:32:28  fraggle
+// Rename irmo_objid_t to IrmoObjectID for consistency with other types
+//
 // Revision 1.4  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //
