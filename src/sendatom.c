@@ -86,7 +86,13 @@ G_INLINE_FUNC void write_field(IrmoPacket *packet, IrmoValue *value,
 }
 
 //
-// NULL atom
+// Null atom.
+//
+// does nothing.
+//
+// format:
+// 
+//  (empty)
 //
 
 static gboolean irmo_null_atom_verify(IrmoPacket *packet)
@@ -132,6 +138,13 @@ IrmoSendAtomClass irmo_null_atom = {
 //
 // IrmoNewObjectAtom
 //
+// Announce the creation of a new object.
+//
+// format:
+// 
+// <int16>	object id
+// <int8>	object class number
+// 
 
 static gboolean irmo_newobject_atom_verify(IrmoPacket *packet)
 {
@@ -228,6 +241,19 @@ IrmoSendAtomClass irmo_newobject_atom = {
 
 //
 // IrmoChangeAtom
+//
+// Announce a change to one or more variables in an object.
+//
+// format:
+// 
+// <int8>	object class number
+// <int16> 	object id
+// <int8>[]	bitmap; one bit for each class variable,
+// 		each bit is 1 if an update to that variable
+//		follows. low bits to high bits. enough
+// 		int8s are included for the bitfield.
+// <field>[]	a field for each changed variable.
+//		data depends on the variable type.
 //
 
 static gboolean irmo_change_atom_verify(IrmoPacket *packet)
@@ -565,6 +591,14 @@ IrmoSendAtomClass irmo_change_atom = {
 //
 // IrmoMethodAtom
 //
+// Invoke a method on the remote machine.
+//
+// format:
+//
+// <int8>	method number
+// <field>[]	a field for each method argument
+//		data depends on the argument type
+//
 
 static gboolean irmo_method_atom_verify(IrmoPacket *packet)
 {
@@ -717,6 +751,12 @@ IrmoSendAtomClass irmo_method_atom = {
 //
 // IrmoDestroyAtom
 //
+// Announce the destruction of a remote object.
+//
+// format:
+//
+// <int16>	object id of object to destroy
+//
 
 static gboolean irmo_destroy_atom_verify(IrmoPacket *packet)
 {
@@ -795,6 +835,13 @@ IrmoSendAtomClass irmo_destroy_atom = {
 //
 // IrmoSendWindowAtom
 //
+// Send a message to set the maximum send window size, to throttle
+// bandwidth
+//
+// format:
+//
+// <int16>	new send window size in bytes
+//
 
 static gboolean irmo_sendwindow_atom_verify(IrmoPacket *packet)
 {
@@ -863,6 +910,9 @@ IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.10  2003/10/22 15:32:20  fraggle
+// Some documentation
+//
 // Revision 1.9  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
