@@ -152,6 +152,114 @@ void socket_unref(IrmoSocket *sock)
 	}
 }
 
+static inline void socket_run_syn(IrmoPacket *packet)
+{
+	IrmoClient *client = packet->client;
+	IrmoServer *server;
+	IrmoPacket *sendpacket;
+	guint32 local_hash, server_hash;
+	gchar *s;
+	
+	if (!packet_readi32(packet, &local_hash)
+	 && !packet_readi32(packet, &server_hash)) {
+		// no hashes - drop
+
+		return;
+	}
+
+	// read server vhost name
+	
+	s = packet_readstring(packet);
+
+	if (s) {
+		server = g_hash_table_lookup(packet->sock->servers,
+					     s);
+	} else {
+		// use default server
+
+		server = packet->sock->default_server;
+	}
+
+	if (!server || local_hash != server->client_spec->hash
+	    || server_hash != server->universe->spec->hash) {
+		// server not found, or invalid parameters (spec hashes
+		// are wrong)
+		// send a refusal
+
+		sendpacket = packet_new(2);
+
+		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
+
+		/* todo
+		socket_sendpacket(packet->sock,
+				  packet->src,
+				  sendpacket);
+		*/
+		
+		packet_free(sendpacket);
+	} else {
+		// valid syn
+		
+		// if this is the first syn we have received,
+		// create a new client object
+		
+		if (!client) 
+			client = _client_new(server, packet->src);
+
+		// send a reply
+
+		sendpacket = packet_new(2);
+
+		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+
+		/* todo
+		   socket_sendpacket(packet->sock,
+		                     packet->src,
+				     sendpacket);
+		*/
+		
+		packet_free(sendpacket);
+	}
+}
+
+static inline void socket_run_packet(IrmoPacket *packet)
+{
+	guint16 flags;
+	IrmoClient *client;
+
+	// find a client from the socket hashtable
+
+	packet->client = client
+		= g_hash_table_lookup(packet->sock->clients, packet->src);
+
+	// read packet header
+	
+	if (!packet_readi16(packet, &flags)) {
+		// cant read header
+		// drop packet
+		
+		return;
+	}
+
+	packet->flags = flags;
+
+	// check for syn
+
+	if (flags == PACKET_FLAG_SYN) {
+		socket_run_syn(packet);
+
+		return;
+	}
+
+	if (!client) {
+		// no client for this yet: havent received a syn yet
+		// so drop packet
+
+		return;
+	}
+	
+}
+
 void socket_run(IrmoSocket *sock)
 {
 	guchar buf[PACKET_BUFFER_LEN];
@@ -189,6 +297,8 @@ void socket_run(IrmoSocket *sock)
 		packet.data = buf;
 		packet.len = result;
 		packet.pos = 0;
+
+		socket_run_packet(&packet);
       	}
 
 	free(addr);
@@ -197,6 +307,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/02/03 20:44:20  sdh300
+// move sockaddr_len into netlib
+//
 // Revision 1.10  2002/12/02 22:39:54  sdh300
 // Fix binding to sockets (structure not initialise properly)
 //
