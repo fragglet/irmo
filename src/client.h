@@ -1,7 +1,7 @@
-#ifndef IRMO_CLIENT_H
-#define IRMO_CLIENT_H
+#ifndef IRMO_INTERNAL_CLIENT_H
+#define IRMO_INTERNAL_CLIENT_H
 
-typedef struct _IrmoClient IrmoClient;
+#include "public/client.h"
 
 #include <netinet/in.h>
 
@@ -55,21 +55,13 @@ IrmoClient *_client_new(IrmoServer *server, struct sockaddr *addr);
 void _client_run(IrmoClient *client);
 void _client_destroy(IrmoClient *client);
 
-void client_ref(IrmoClient *client);
-void client_unref(IrmoClient *client);
-
-/*!
- * \brief Forcibly disconnect a client
- *
- * \param client      The client to disconnect
- *
- */
-
-void client_disconnect(IrmoClient *client);
-
-#endif /* #ifndef IRMO_CLIENT_H */
+#endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/02/20 18:24:59  sdh300
+// Use GQueue instead of a GPtrArray for the send queue
+// Initial change/destroy code
+//
 // Revision 1.7  2003/02/18 20:26:41  sdh300
 // Initial send queue building/notification code
 //

@@ -2,33 +2,14 @@
 // Irmo Objects
 //
 
-#ifndef IRMO_OBJECT_H
-#define IRMO_OBJECT_H
+#ifndef IRMO_INTERNAL_OBJECT_H
+#define IRMO_INTERNAL_OBJECT_H
 
-/*!
- * \addtogroup object
- *
- * \{
- */
+#include "public/object.h"
 
-//! An Irmo Object
-
-typedef struct _IrmoObject IrmoObject;
+#include "callback.h"
 
 typedef union _IrmoVariable IrmoVariable;
-
-//! Callback functions for operations on variables
-
-typedef void (*IrmoVarCallback) (IrmoObject *object, gchar *variable,
-				 gpointer user_data);
-
-//! Callback functions for operations on objects
-
-typedef void (*IrmoObjCallback) (IrmoObject *object, gpointer user_data);
-
-#include "universe.h"
-
-//! \}
 
 // internal stuff:
 
@@ -49,117 +30,12 @@ struct _IrmoObject {
 
 void __object_destroy(IrmoObject *object);
 
-/*!
- * \addtogroup object
- * \{
- */
-
-/*!
- * \brief create a new object of a particular class
- *
- * \param universe Universe to create the object within
- * \param typename The name of the class of object to create
- * \return 	   The created object or NULL for failure
- */
-
-IrmoObject *object_new(IrmoUniverse *universe, char *typename);
-
-/*!
- * \brief Destroy an object
- *
- * \param object  The object to destroy
- */
-
-void object_destroy(IrmoObject *object);
-
-/*!
- * \brief Get numerical object identifier
- *
- * Each object within a Universe has a unique number assigned to it. 
- * This function allows you to retrieve the number assigned to a particular
- * object.
- *
- * \param object  The object to query
- * \return 	  Object ID
- */
-
-irmo_objid_t object_get_id(IrmoObject *object);
-
-/*!
- * \brief Get the class of an object
- *
- * All objects have a class, which is one of the classes defined in the
- * InterfaceSpec for the Universe the object exists in. This retrieves
- * the name of the class for a particular object.
- *
- * \param object The object to query.
- * \return 	 A string with the classname
- */
-
-gchar *object_get_class(IrmoObject *object);
-
-/*!
- * \brief Set the value of an object variable (int type)
- *
- * Set the value of a member variable. This is for use on variables of
- * int type. To set string values, use \ref object_set_string
- *
- * \param object   The object to change
- * \param variable The name of the variable to change
- * \param value    The new value for the variable
- */
-
-void object_set_int(IrmoObject *object, gchar *variable, int value);
-
-/*!
- * \brief Set the value of an object variable (string type)
- *
- * Set the value of a member variable. This is for use on variables of
- * string type. To set integer values, use \ref object_set_int
- *
- * \param object   The object to change
- * \param variable The name of the variable to change
- * \param value    The new value for the variable
- */
-
-void object_set_string(IrmoObject *object, gchar *variable, gchar *value);
-
-/*!
- * \brief Get the value of an object variable(int type)
- *
- * Retrieve the value of an object's member variable. This function is
- * for variables of integer type. To get string values, use 
- * \ref object_get_string
- *
- * \param object   The object to query
- * \param variable The name of the member variable
- * \return         The value of the member variable
- */
-
-gint object_get_int(IrmoObject *object, gchar *variable);
-
-/*!
- * \brief Get the value of an object variable(string type)
- *
- * Retrieve the value of an object's member variable. This function is
- * for variables of string type. To get integer values, use 
- * \ref object_get_int
- *
- * The returned string should not be modified; to set the value of a 
- * member variable use \ref object_set_string
- *
- * \param object   The object to query
- * \param variable The name of the member variable
- * \return         The value of the member variable
- */
-
-gchar *object_get_string(IrmoObject *object, gchar *variable);
-
-//! \}
-
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2002/11/17 20:37:15  sdh300
+// initial doxygen documentation
+//
 // Revision 1.10  2002/11/13 15:12:34  sdh300
 // object_get_id to get identifier
 //
