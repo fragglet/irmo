@@ -330,14 +330,27 @@ void irmo_client_set_max_sendwindow(IrmoClient *client, int max)
 	irmo_client_sendq_add_sendwindow(client, max);
 }
 
-struct sockaddr *irmo_client_get_addr(IrmoClient *client)
+const char *irmo_client_get_addr(IrmoClient *client)
 {
+	static char buf[128];
+
 	g_return_val_if_fail(client != NULL, NULL);
 
-	return client->addr;
+	switch (client->addr->sa_family) {
+	case AF_INET: {
+		struct sockaddr_in *addr = (struct sockaddr_in *) client->addr;
+		return inet_ntoa(addr->sin_addr.s_addr);
+	}
+	case AF_INET6: {
+		return inet_ntop(AF_INET6, client->addr, buf, sizeof(buf)-1);
+	}
+	}
 }
 
 // $Log$
+// Revision 1.3  2003/08/16 18:13:48  fraggle
+// Remove dependency on BSD sockets API in Irmo API
+//
 // Revision 1.2  2003/07/22 02:05:39  fraggle
 // Move callbacks to use a more object-oriented API.
 //

@@ -38,8 +38,6 @@
 
 typedef struct _IrmoSocket IrmoSocket;
 
-#include <netinet/in.h>
-
 #include "client.h"
 #include "server.h"
 
@@ -96,8 +94,11 @@ void irmo_socket_run(IrmoSocket *sock);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:26  fraggle
-// Initial revision
+// Revision 1.2  2003/08/16 18:13:48  fraggle
+// Remove dependency on BSD sockets API in Irmo API
+//
+// Revision 1.1.1.1  2003/06/09 21:33:26  fraggle
+// Initial sourceforge import
 //
 // Revision 1.4  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices

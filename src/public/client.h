@@ -151,20 +151,23 @@ void irmo_client_set_max_sendwindow(IrmoClient *client, int max);
 /*!
  * \brief Get the address of the client.
  *
- * This returns the BSD sockets address object of the remote
- * client.
+ * This returns the IP of the client in the form of a presentable 
+ * text string.
  * 
  * \param client  The client to query.
  *
  */
 
-struct sockaddr *irmo_client_get_addr(IrmoClient *client);
+const char *irmo_client_get_addr(IrmoClient *client);
 
 //! \}
 
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log$
+// Revision 1.3  2003/08/16 18:13:48  fraggle
+// Remove dependency on BSD sockets API in Irmo API
+//
 // Revision 1.2  2003/07/22 02:05:40  fraggle
 // Move callbacks to use a more object-oriented API.
 //
