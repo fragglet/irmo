@@ -45,7 +45,7 @@ G_INLINE_FUNC void sendatom_change_free_data(IrmoSendAtom *atom)
 			
 			// free strings
 			
-			if (objclass->variables[i]->type == TYPE_STRING)
+			if (objclass->variables[i]->type == IRMO_TYPE_STRING)
 				free(atom->data.change.newvalues[i].s);
 		}
 
@@ -61,7 +61,7 @@ G_INLINE_FUNC void sendatom_method_free_data(IrmoSendAtom *atom)
 	int i;
 
 	for (i=0; i<method->narguments; ++i) {
-		if (method->arguments[i]->type == TYPE_STRING)
+		if (method->arguments[i]->type == IRMO_TYPE_STRING)
 			free(atom->data.method.args[i].s);
 	}
 
@@ -117,16 +117,16 @@ static int sendatom_change_len(IrmoSendAtom *atom)
 			continue;
 		
 		switch (spec->variables[i]->type) {
-		case TYPE_INT8:
+		case IRMO_TYPE_INT8:
 			len += 1;
 			break;
-		case TYPE_INT16:
+		case IRMO_TYPE_INT16:
 			len += 2;
 			break;
-		case TYPE_INT32:
+		case IRMO_TYPE_INT32:
 			len += 4;
 			break;
-		case TYPE_STRING:
+		case IRMO_TYPE_STRING:
 			len += strlen(obj->variables[i].s) + 1;
 			break;
 		}
@@ -298,16 +298,16 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 	
 	for (i=0; i<method->narguments; ++i) {
 		switch (method->arguments[i]->type) {
-		case TYPE_INT8:
+		case IRMO_TYPE_INT8:
 			atom->len += 1;
 			break;
-		case TYPE_INT16:
+		case IRMO_TYPE_INT16:
 			atom->len += 2;
 			break;
-		case TYPE_INT32:
+		case IRMO_TYPE_INT32:
 			atom->len += 4;
 			break;
-		case TYPE_STRING:
+		case IRMO_TYPE_STRING:
 			atom->data.method.args[i].s
 				= strdup(atom->data.method.args[i].s);
 			atom->len += strlen(atom->data.method.args[i].s) + 1;
@@ -404,6 +404,10 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.3  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.2  2003/08/18 01:23:14  fraggle
 // Use G_INLINE_FUNC instead of inline for portable inline function support
 //

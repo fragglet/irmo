@@ -29,20 +29,20 @@
 #include "packet.h"
 
 G_INLINE_FUNC gboolean proto_verify_field(IrmoPacket *packet,
-					  TypeSpec type)
+					  IrmoVarType type)
 {
 	guint8 i8;
 	guint16 i16;
 	guint32 i32;
 	
 	switch (type) {
-	case TYPE_INT8:
+	case IRMO_TYPE_INT8:
 		return packet_readi8(packet, &i8);
-	case TYPE_INT16:
+	case IRMO_TYPE_INT16:
 		return packet_readi16(packet, &i16);
-	case TYPE_INT32:
+	case IRMO_TYPE_INT32:
 		return packet_readi32(packet, &i32);
-	case TYPE_STRING:
+	case IRMO_TYPE_STRING:
 		return packet_readstring(packet) != NULL;
 	}
 }
@@ -282,6 +282,10 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.3  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.2  2003/08/18 01:23:14  fraggle
 // Use G_INLINE_FUNC instead of inline for portable inline function support
 //

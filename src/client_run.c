@@ -106,16 +106,16 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom,
 		// apply change
 
 		switch (objclass->variables[i]->type) {
-		case TYPE_INT8:
+		case IRMO_TYPE_INT8:
 			obj->variables[i].i8 = newvalues[i].i8;
 			break;
-		case TYPE_INT16:
+		case IRMO_TYPE_INT16:
 			obj->variables[i].i16 = newvalues[i].i16;
 			break;
-		case TYPE_INT32:
+		case IRMO_TYPE_INT32:
 			obj->variables[i].i32 = newvalues[i].i32;
 			break;
-		case TYPE_STRING:
+		case IRMO_TYPE_STRING:
 			free(obj->variables[i].s);
 			obj->variables[i].s = strdup(newvalues[i].s);
 			break;
@@ -240,6 +240,10 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.3  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.2  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

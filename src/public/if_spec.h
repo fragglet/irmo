@@ -32,6 +32,17 @@
  */
 
 /*!
+ * \brief Variable types
+ */
+
+typedef enum {
+	IRMO_TYPE_INT8,
+	IRMO_TYPE_INT16,
+	IRMO_TYPE_INT32,
+	IRMO_TYPE_STRING,
+} IrmoVarType;
+
+/*!
  * \brief An IrmoInterfaceSpec object
  * \ingroup if_spec
  */
@@ -79,8 +90,12 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.4  2003/06/09 21:06:55  sdh300
 // Add CVS Id tag and copyright/license notices

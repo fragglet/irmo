@@ -137,13 +137,13 @@ G_INLINE_FUNC int is_type_token(int i)
 	    || i == TOKEN_INT32 || i == TOKEN_STRING;
 }
 
-G_INLINE_FUNC TypeSpec type_token_to_spec(int i)
+G_INLINE_FUNC IrmoVarType type_token_to_spec(int i)
 {
 	switch(i) {
-		case TOKEN_INT8: return TYPE_INT8;
-		case TOKEN_INT16: return TYPE_INT16;
-		case TOKEN_INT32: return TYPE_INT32;
-		case TOKEN_STRING: return TYPE_STRING;
+		case TOKEN_INT8: return IRMO_TYPE_INT8;
+		case TOKEN_INT16: return IRMO_TYPE_INT16;
+		case TOKEN_INT32: return IRMO_TYPE_INT32;
+		case TOKEN_STRING: return IRMO_TYPE_STRING;
 		default:
 	}
 
@@ -500,6 +500,10 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.5  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.4  2003/08/18 01:23:14  fraggle
 // Use G_INLINE_FUNC instead of inline for portable inline function support
 //

@@ -80,16 +80,16 @@ static void proto_add_change_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 		// todo
 
 		switch (obj->objclass->variables[i]->type) {
-		case TYPE_INT8:
+		case IRMO_TYPE_INT8:
 			packet_writei8(packet, obj->variables[i].i8);
 			break;
-		case TYPE_INT16:
+		case IRMO_TYPE_INT16:
 			packet_writei16(packet, obj->variables[i].i16);
 			break;
-		case TYPE_INT32:
+		case IRMO_TYPE_INT32:
 			packet_writei32(packet, obj->variables[i].i32);
 			break;
-		case TYPE_STRING:
+		case IRMO_TYPE_STRING:
 			packet_writestring(packet, obj->variables[i].s);
 			break;
 		}
@@ -110,16 +110,16 @@ static void proto_add_method_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 
 	for (i=0; i<method->narguments; ++i) {
 		switch (method->arguments[i]->type) {
-		case TYPE_INT8:
+		case IRMO_TYPE_INT8:
 			packet_writei8(packet, args[i].i8);
 			break;
-		case TYPE_INT16:
+		case IRMO_TYPE_INT16:
 			packet_writei16(packet, args[i].i16);
 			break;
-		case TYPE_INT32:
+		case IRMO_TYPE_INT32:
 			packet_writei16(packet, args[i].i32);
 			break;
-		case TYPE_STRING:
+		case IRMO_TYPE_STRING:
 			packet_writestring(packet, args[i].s);
 			break;
 		}
@@ -458,6 +458,10 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.4  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.3  2003/08/18 01:23:14  fraggle
 // Use G_INLINE_FUNC instead of inline for portable inline function support
 //

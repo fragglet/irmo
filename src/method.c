@@ -105,16 +105,16 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 	
 	for (i=0; i<spec->narguments; ++i) {
 		switch (spec->arguments[i]->type) {
-		case TYPE_INT8:
+		case IRMO_TYPE_INT8:
 			args[i].i8 = va_arg(arglist, int);
 			break;
-		case TYPE_INT16:
+		case IRMO_TYPE_INT16:
 			args[i].i16 = va_arg(arglist, int);
 			break;
-		case TYPE_INT32:
+		case IRMO_TYPE_INT32:
 			args[i].i32 = va_arg(arglist, int);
 			break;
-		case TYPE_STRING:
+		case IRMO_TYPE_STRING:
 			args[i].s = va_arg(arglist, char *);
 			break;
 		}
@@ -154,7 +154,7 @@ gchar *irmo_method_arg_string(IrmoMethodData *data, gchar *argname)
 		return NULL;
 	}
 
-	if (spec->type != TYPE_STRING) {
+	if (spec->type != IRMO_TYPE_STRING) {
 		irmo_error_report("irmo_method_arg_string",
 				  "'%s' argument for '%s' method is not a string type",
 				  argname, data->spec->name);
@@ -181,11 +181,11 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 	}
 
 	switch (spec->type) {
-	case TYPE_INT8:
+	case IRMO_TYPE_INT8:
 		return data->args[spec->index].i8;
-	case TYPE_INT16:
+	case IRMO_TYPE_INT16:
 		return data->args[spec->index].i16;
-	case TYPE_INT32:
+	case IRMO_TYPE_INT32:
 		return data->args[spec->index].i32;
 	default:
 		irmo_error_report("irmo_method_arg_int",
@@ -196,6 +196,10 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.4  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.3  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

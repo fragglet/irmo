@@ -125,7 +125,7 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 	// string values must be initialised to the empty string ("")
 	
 	for (i=0; i<objclass->nvariables; ++i)
-		if (objclass->variables[i]->type == TYPE_STRING)
+		if (objclass->variables[i]->type == IRMO_TYPE_STRING)
 			object->variables[i].s = g_strdup("");
 
 	
@@ -217,7 +217,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	// destroy member variables
 
 	for (i=0; i<object->objclass->nvariables; ++i) {
-		if (object->objclass->variables[i]->type == TYPE_STRING
+		if (object->objclass->variables[i]->type == IRMO_TYPE_STRING
 		    && object->variables[i].s)
 			free(object->variables[i].s);
 	}
@@ -319,13 +319,13 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 	}
 
 	switch (spec->type) {
-	case TYPE_INT8:
+	case IRMO_TYPE_INT8:
 		object->variables[spec->index].i8 = value;
 		break;
-	case TYPE_INT16:
+	case IRMO_TYPE_INT16:
 		object->variables[spec->index].i16 = value;
 		break;
-	case TYPE_INT32:
+	case IRMO_TYPE_INT32:
 		object->variables[spec->index].i32 = value;
 		break;
 	default:
@@ -359,7 +359,7 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 		return;
 	}
 
-	if (spec->type != TYPE_STRING) {
+	if (spec->type != IRMO_TYPE_STRING) {
 		irmo_error_report("irmo_object_set_string",
 				  "variable '%s' in class '%s' is not string type",
 				  variable, object->objclass->name);
@@ -395,11 +395,11 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable)
 	}
 
 	switch (spec->type) {
-	case TYPE_INT8:
+	case IRMO_TYPE_INT8:
 		return object->variables[spec->index].i8;
-	case TYPE_INT16:
+	case IRMO_TYPE_INT16:
 		return object->variables[spec->index].i16;
-	case TYPE_INT32:
+	case IRMO_TYPE_INT32:
 		return object->variables[spec->index].i32;
 	default:
 		irmo_error_report("irmo_object_get_int",
@@ -430,7 +430,7 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 		return NULL;
 	}
 
-	if (spec->type != TYPE_STRING) {
+	if (spec->type != IRMO_TYPE_STRING) {
 		irmo_error_report("irmo_object_get_string",
 				  "variable '%s' in class '%s' is not a string type",
 				  variable, object->objclass->name);
@@ -448,6 +448,10 @@ IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
 }
 
 // $Log$
+// Revision 1.5  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.4  2003/08/16 16:45:11  fraggle
 // Allow watches on all objects regardless of class
 //

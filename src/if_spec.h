@@ -43,19 +43,12 @@ typedef struct _MethodArgSpec MethodArgSpec;
 #define MAX_VARIABLES 256
 #define MAX_ARGUMENTS 256
 
-typedef enum {
-	TYPE_INT8,
-	TYPE_INT16,
-	TYPE_INT32,
-	TYPE_STRING,
-} TypeSpec;
-
 // an argument to a method
 
 struct _MethodArgSpec {
 	int index;
 
-	TypeSpec type;
+	IrmoVarType type;
 	char *name;
 };
 
@@ -77,7 +70,7 @@ struct _MethodSpec {
 struct _ClassVarSpec {
 	int index;                      // index in variable list
 	
-	TypeSpec type;
+	IrmoVarType type;
 	char *name;
 };
 
@@ -122,8 +115,12 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:23  fraggle
-// Initial revision
+// Revision 1.2  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:23  fraggle
+// Initial sourceforge import
 //
 // Revision 1.9  2003/06/09 21:06:51  sdh300
 // Add CVS Id tag and copyright/license notices

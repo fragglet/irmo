@@ -67,19 +67,19 @@ G_INLINE_FUNC int get_stream_position(int current, int low)
 
 G_INLINE_FUNC void proto_parse_field(IrmoPacket *packet,
 				     IrmoVariable *value,
-				     TypeSpec type)
+				     IrmoVarType type)
 {
 	switch (type) {
-	case TYPE_INT8:
+	case IRMO_TYPE_INT8:
 		packet_readi8(packet, &value->i8);
 		break;
-	case TYPE_INT16:
+	case IRMO_TYPE_INT16:
 		packet_readi16(packet, &value->i16);
 		break;
-	case TYPE_INT32:
+	case IRMO_TYPE_INT32:
 		packet_readi32(packet, &value->i32);
 		break;
-	case TYPE_STRING:
+	case IRMO_TYPE_STRING:
 		value->s = strdup(packet_readstring(packet));
 		break;
 	}
@@ -438,6 +438,10 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.4  2003/08/21 14:21:25  fraggle
+// TypeSpec => IrmoVarType.  TYPE_* => IRMO_TYPE_*.  Make IrmoVarType publicly
+// accessible.
+//
 // Revision 1.3  2003/08/18 01:23:14  fraggle
 // Use G_INLINE_FUNC instead of inline for portable inline function support
 //
