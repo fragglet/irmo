@@ -9,6 +9,7 @@ typedef struct _IrmoSendAtom IrmoSendAtom;
 
 struct _IrmoSendAtom {
 	enum {
+		ATOM_NULL,               // null atom for nullified changes
 		ATOM_NEW,                // new object 
 		ATOM_CHANGE,             // modified object 
 		ATOM_DESTROY,            // object destroyed 
@@ -22,9 +23,8 @@ struct _IrmoSendAtom {
 		} newobj;
 		struct {
 			irmo_objid_t id;
-
-			// more complex stuff later:
-			// variables changed, new values etc.
+			IrmoObject *object;
+			gboolean *changed;  // array saying which have changed
 		} change;
 		struct {
 			irmo_objid_t id;
@@ -48,6 +48,9 @@ void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/02/18 20:26:42  sdh300
+// Initial send queue building/notification code
+//
 // Revision 1.1  2003/02/18 18:25:40  sdh300
 // Initial queue object code
 //

@@ -28,7 +28,9 @@ IrmoClient * _client_new(IrmoServer *server, struct sockaddr *addr)
 
 	// send queue
 
-	client->sendq = g_ptr_array_new();
+	client->sendq = g_queue_new();
+	client->sendq_hashtable = g_hash_table_new(g_direct_hash,
+						   g_direct_equal);
 	
 	// note on refcounts for clients:
 	// reference counting is different for client objects.
@@ -72,14 +74,17 @@ void client_unref(IrmoClient *client)
 
 void _client_destroy(IrmoClient *client)
 {
-	int i;
-	
 	// clear send queue
 
-	for (i=0; i<client->sendq->len; ++i)
-		sendatom_free((IrmoSendAtom *) client->sendq->pdata[i]);
+	while (!g_queue_is_empty(client->sendq)) {
+		IrmoSendAtom *atom;
 
-	g_ptr_array_free(client->sendq, 0);
+		atom = (IrmoSendAtom *) g_queue_pop_head(client->sendq);
+
+		sendatom_free(atom);
+	}
+	
+	g_queue_free(client->sendq);
 	
 	// destroy send queue
 	
@@ -160,6 +165,9 @@ void _client_run(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/02/18 20:04:39  sdh300
+// Automatically increase size of packets when writing
+//
 // Revision 1.5  2003/02/18 18:25:40  sdh300
 // Initial queue object code
 //

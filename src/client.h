@@ -43,7 +43,7 @@ struct _IrmoClient {
 
 	// send queue 
 	
-	GPtrArray *sendq;
+	GQueue *sendq;
 
 	// change entries in sendq are hashed by object id so
 	// new changes can be added to the existing sendatoms
@@ -70,6 +70,9 @@ void client_disconnect(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/02/18 20:26:41  sdh300
+// Initial send queue building/notification code
+//
 // Revision 1.6  2003/02/18 18:25:40  sdh300
 // Initial queue object code
 //
