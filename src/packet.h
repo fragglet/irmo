@@ -15,10 +15,6 @@ typedef struct _IrmoPacket IrmoPacket;
 #define	PACKET_FLAG_SYN 0x01
 #define	PACKET_FLAG_ACK 0x02
 #define	PACKET_FLAG_FIN 0x04
-#define	PACKET_FLAG_NEW 0x08
-#define	PACKET_FLAG_SET 0x10
-#define	PACKET_FLAG_DEL 0x20
-#define	PACKET_FLAG_FNC 0x40
 
 struct _IrmoPacket {
 	IrmoSocket *sock;       // socket this came from
@@ -46,6 +42,9 @@ gchar *packet_readstring(IrmoPacket *packet);
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/02 02:11:30  sdh300
+// Add missing packet_writestring prototype
+//
 // Revision 1.6  2003/02/03 21:12:31  sdh300
 // Fix errors
 //
