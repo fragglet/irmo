@@ -2,22 +2,24 @@
 @setfilename irmo.info
 @settitle The Irmo Multiplayer Game Library
 
-November 2003
-
 @defcodeindex mo
 @defcodeindex ob
 @titlepage
 @title @author @page
 @end titlepage
-@node Top, Overview, (dir), (dir)
+
+@node Top, Overview, , (dir)
 
 @top The Irmo Multiplayer Game Library
 
 @menu
-* Overview::			
-* API Notes::			
-* Interface Specification::	
-* World Representation::	
+* Overview::			A brief introduction to the library and 
+				the concepts of multiplayer gaming
+* API Notes::			Notes on using the library
+* Interface Specification::	Defining an interface to the game world
+				through Interface Specification files
+* World Representation::	How the game world data is represented
+* Index::			Index of concepts
 @end menu
 
 @node Overview, API Notes, Top, Top
@@ -25,11 +27,15 @@ November 2003
 
 @section The Peer-to-Peer model
 
+@cindex Peer-to-Peer model of multiplayer gaming
+
 Traditional multiplayer games have been based on a peer-to-peer model.
 In this, each player in the game acts as a ``peer''. This 
 relies on modelling the game world as a deterministic system. The
 only unpredictable input, therefore, is the input of the players into
 the game. Each peer transmits the player's input to the other peers.
+In this way each peer receives the same input and is ``syncronised''
+to the others.
 
 This has the advantage of being a very simple system to implement. However,
 it has a number of disadvantages:
@@ -39,7 +45,9 @@ it has a number of disadvantages:
 Random input into the game is difficult to model. Typically this
 involves using a pseudo random number generator where each node starts
 from a common random seed. This is particularly important as game AI
-typically makes heavy use of random numbers.
+typically makes heavy use of random numbers.  If different random
+numbers are generated on different peers, they have the potential to
+go ``out of sync''.
 
 @item 
 Fluctuations in the network traffic can have large effects on the 
@@ -57,13 +65,16 @@ games rather than simply joining one in progress.
 
 @end itemize
 
-@section Client-Server Architecture
+@section Client-Server Model
 
-The Client-Server architecture is a model which solves many of the 
-problems inherent in the Peer-to-Peer architecture. In the 
-Client-Server architecture, the game world exists in a server 
+@cindex Client-Server model of multiplayer gaming
+
+The Client-Server model solves many of the 
+problems inherent in the Peer-to-Peer model. In the 
+Client-Server model, the game world exists in a server 
 process, and the players send their input into this world from 
-client processes. The server sends updates about the state of
+client processes, usually over a network connection. 
+The server sends updates about the state of
 the game world to the client processes.
 
 Implementing an efficient client-server multiplayer engine is 
@@ -73,6 +84,8 @@ engine which can be used as a base for many different types of
 multiplayer games and easily extended.
 
 @section Extension Languages
+
+@cindex Extension Languages
 
 Another common theme in many modern games is that of extension
 languages. Many games use a high level extension language to describe
@@ -93,6 +106,9 @@ planned for other high-level languages.
 
 @section Compiling
 
+@cindex pkg-config
+@cindex Makefile options
+
 Irmo uses the @code{pkg-config} system to store information about
 the library and allow programs which use it to be built more 
 easily. To find out more about @code{pkg-config}. Typically 
@@ -106,6 +122,8 @@ and @code{LDFLAGS} variables of the @code{Makefile}:
 
 @section GLib
 
+@cindex GLib
+
 Irmo makes use of the GLib library. GLib provides implementations of
 a number of common and useful data structures and algorithms, as well
 as standardised type definitions for portability. It is not 
@@ -117,6 +135,9 @@ in the GLib manual:
 http://developer.gnome.org/doc/API/2.0/glib/
 
 @section API Documentation
+
+@cindex API Documentation
+@cindex Doxygen
 
 The basic concepts of the library are outlined in this manual. 
 However, in-depth documentation of all the library routines is 
@@ -134,6 +155,8 @@ interface must first be defined describing these types of objects.
 This is done by writing an Interface Specification File.
 
 @section Interface Specification File
+
+@cindex Interface Specification File
 
 The following is an example of an Interface Specification file:
 
@@ -195,25 +218,32 @@ arguments. These are:
 @itemize @bullet
 @item 
 @code{int8} - 8 bit unsigned integer
+@cindex int8
 
 @item 
 @code{int16} - 16 bit unsigned integer
+@cindex int16
 
 @item 
 @code{int32} - 32 bit unsigned integer
+@cindex int32
 
 @item 
 @code{irmo_objid_t} - A reference to an Irmo Object. All objects 
 within a world have
 a number by which they can be referenced. This is a variable
 containing such an identifier.
+@cindex irmo_objid_t
 
 @item 
 @code{string} - A text string.
+@cindex string
 
 @end itemize
 
 @section Loading the Interface Specification
+
+@cindex IrmoInterfaceSpec
 
 The Interface Specification is loaded using the 
 @code{irmo_interface_spec_new} function call. The library
@@ -229,7 +259,7 @@ includes a parser which parses the file given and returns a
 If an error occurs during parsing an error message is printed
 to @code{STDERR} and the function returns @code{NULL}.
 
-@node World Representation,  , Interface Specification, Top
+@node World Representation, Index, Interface Specification, Top
 @chapter World Representation
 
 @menu
@@ -238,6 +268,8 @@ to @code{STDERR} and the function returns @code{NULL}.
 
 @node IrmoWorld,  , World Representation, World Representation
 @section IrmoWorld
+
+@cindex IrmoWorld
 
 Having defined the interface and types of object which can be 
 created in the game world, Irmo then allows the programmer
@@ -313,6 +345,9 @@ The user_data field allows a pointer to some extra data to also be
 passed  to the callback function. In these examples this is not being 
 used and @code{NULL} is being passed.
 
-@contents
+@node Index, , World Representation, Top
+@unnumbered Index
+@printindex cp
+
 @bye
 
