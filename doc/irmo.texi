@@ -4,13 +4,25 @@
 
 @defcodeindex mo
 @defcodeindex ob
+
+@direntry
+* Irmo: (irmo).		The Irmo abstracted network gaming library
+@end direntry
+
+@ifinfo
+The Irmo networking library is a library for building 
+multiplayer games
+@end ifinfo
+
 @titlepage
-@title @author @page
+@title 
+@author Simon Howard
+@page
 @end titlepage
 
 @node Top, Overview, , (dir)
 
-@top The Irmo Multiplayer Game Library
+@top Contents
 
 @menu
 * Overview::			A brief introduction to the library and 
