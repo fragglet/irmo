@@ -32,6 +32,12 @@ IrmoClient *client_new(IrmoServer *server, struct sockaddr *addr)
 	client->sendq_hashtable = g_hash_table_new(g_direct_hash,
 						   g_direct_equal);
 	
+	// receive window
+
+	client->recvwindow_start = 0;
+	client->recvwindow_size = 64;
+	client->recvwindow = g_new0(IrmoSendAtom *, client->recvwindow_size);
+	
 	// note on refcounts for clients:
 	// reference counting is different for client objects.
 	// in the server, when a client is disconnected it goes into
@@ -74,6 +80,8 @@ void client_unref(IrmoClient *client)
 
 void client_destroy(IrmoClient *client)
 {
+	int i;
+	
 	// clear send queue
 
 	while (!g_queue_is_empty(client->sendq)) {
@@ -83,8 +91,23 @@ void client_destroy(IrmoClient *client)
 
 		sendatom_free(atom);
 	}
-	
+
 	g_queue_free(client->sendq);
+	
+	// destroy sendwindow and all data in it
+	
+	for (i=0; i<client->sendwindow_size; ++i)
+		sendatom_free(client->sendwindow[i]);
+
+	free(client->sendwindow);
+
+	// destroy receive window and all data in it
+	
+	for (i=0; i<client->recvwindow_size; ++i)
+		if (client->recvwindow[i])
+			sendatom_free(client->recvwindow[i]);
+
+	free(client->recvwindow);
 	
 	// destroy send queue
 	
@@ -171,6 +194,9 @@ IrmoUniverse *client_get_universe(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/03/03 22:14:44  sdh300
+// Initial window construction and sending of packets
+//
 // Revision 1.9  2003/02/23 01:01:01  sdh300
 // Remove underscores from internal functions
 // This is not much of an issue now the public definitions have been split
