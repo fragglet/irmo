@@ -3,6 +3,8 @@
 
 #include "if_spec.h"
 #include "universe.h"
+#include "socket.h"
+#include "server.h"
 
 void my_callback(IrmoObject *object, gchar *variable, gpointer user_data)
 {
@@ -41,6 +43,7 @@ int main(int argc, char *argv[])
 	InterfaceSpec *spec;
 	IrmoUniverse *universe;
 	IrmoObject *object;
+	IrmoSocket *sock, *sock2;
 	
 	spec = interface_spec_new("test.if");
 	
@@ -182,6 +185,18 @@ int main(int argc, char *argv[])
 	object_destroy(object);
 
 	printf("done\n");
+
+	printf("create an ipv4 socket:\n");
+
+	sock = socket_new(AF_INET, 2000);
+
+	printf("create an ipv6 socket:\n");
+
+	sock2 = socket_new(AF_INET6, 2000);
+
+	printf("create a new server\n");
+	
+	server_new(sock, NULL, universe, spec);
 	
 	universe_unref(universe);
 	interface_spec_unref(spec);
@@ -190,6 +205,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2002/11/13 14:14:46  sdh300
+// object iterator function
+//
 // Revision 1.16  2002/11/12 23:13:05  sdh300
 // add some clarity
 //
