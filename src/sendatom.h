@@ -22,7 +22,7 @@ typedef enum {
 
 struct _IrmoSendAtom {
 	struct timeval sendtime;        // time this atom was last sent
-	
+	gboolean resent;                // this atom was resent
 	int len;			// length in packet
 	IrmoSendAtomType type;
 
@@ -72,6 +72,9 @@ void irmo_client_sendq_add_state(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/03/16 01:54:24  sdh300
+// Method calls over network protocol
+//
 // Revision 1.9  2003/03/07 12:17:17  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

@@ -135,7 +135,59 @@ struct sockaddr *sockaddr_for_name(int domain, gchar *name, int port)
 	return NULL;
 }
 
+#define USEC_MAX 1000000
+
+void irmo_timeval_add(struct timeval *a, struct timeval *b,
+		      struct timeval *result)
+{
+	result->tv_sec = a->tv_sec + b->tv_sec;
+	result->tv_usec = a->tv_usec + b->tv_usec;
+	
+	if (result->tv_usec >= USEC_MAX) {
+		++result->tv_sec;
+		result->tv_usec -= USEC_MAX;
+	}
+}
+
+void irmo_timeval_sub(struct timeval *a, struct timeval *b,
+		      struct timeval *result)
+{
+	result->tv_sec = a->tv_sec - b->tv_sec;
+
+	if (a->tv_usec >= b->tv_usec) {
+		result->tv_usec = a->tv_usec - b->tv_usec;
+	} else {
+		--result->tv_sec;
+		result->tv_usec = USEC_MAX - (b->tv_usec - a->tv_usec);
+	}
+}
+
+int irmo_timeval_cmp(struct timeval *a, struct timeval *b)
+{
+	if (a->tv_sec == b->tv_sec) {
+		return a->tv_usec < b->tv_usec ? -1 :
+			a->tv_usec > b->tv_usec ? 1 : 0;
+	}
+
+	return a->tv_sec < b->tv_sec ? -1 :
+		a->tv_sec > b->tv_sec ? 1 : 0;
+}
+
+int irmo_timeval_to_ms(struct timeval *a)
+{
+	return a->tv_sec + (a->tv_usec / 1000);
+}
+
+void irmo_timeval_from_ms(int ms, struct timeval *time)
+{
+	time->tv_sec = ms / 1000;
+	time->tv_usec = (ms % 1000) * 1000;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/06 01:58:16  sdh300
+// Abstracted address resolve function
+//
 // Revision 1.4  2003/02/03 20:54:01  sdh300
 // sockaddr copy function
 //

@@ -23,9 +23,33 @@ struct sockaddr *sockaddr_copy(struct sockaddr *addr);
 
 struct sockaddr *sockaddr_for_name(int domain, gchar *name, int port);
 
+// time functions
+
+// add two timevals (result = a + b)
+
+void irmo_timeval_add(struct timeval *a, struct timeval *b,
+		      struct timeval *result);
+
+// subtract timevals (result = a - b)
+
+void irmo_timeval_sub(struct timeval *a, struct timeval *b,
+		      struct timeval *result);
+
+// compare timevals
+
+int irmo_timeval_cmp(struct timeval *a, struct timeval *b);
+
+// conversion to milliseconds
+
+int irmo_timeval_to_ms(struct timeval *a);
+void irmo_timeval_from_ms(int ms, struct timeval *a);
+
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/02/06 01:58:16  sdh300
+// Abstracted address resolve function
+//
 // Revision 1.5  2003/02/03 20:54:01  sdh300
 // sockaddr copy function
 //

@@ -268,7 +268,7 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	int seq;
 	int relative;
 	int i;
-
+	
 	//printf("got an ack: %i\n", ack);
 	
 	// extrapolate the high bits from the low 16 bits
@@ -294,6 +294,24 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 			client->sendwindow_start + client->sendwindow_size);
 		return;
 	}
+
+	// We are acking something valid and advancing the window
+	// Assume this is because the first atom in the window has
+	// been cleared. Therefore we can estimate the round-trip time
+	// by subtracting the current time from the send time of the
+	// first atom in the send window.
+	// If the atom was resent, this cannot be used.
+
+	if (!client->sendwindow[0]->resent) {
+		struct timeval nowtime, rtt;
+
+		gettimeofday(&nowtime, NULL);
+
+		irmo_timeval_sub(&nowtime, &client->sendwindow[0]->sendtime,
+				 &rtt);
+
+		printf("round trip time: %i ms\n", irmo_timeval_to_ms(&rtt));
+	}	
 	
 	// need to move the sendwindow along
 	// destroy the atoms in the area acked
@@ -348,6 +366,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/03/16 01:54:24  sdh300
+// Method calls over network protocol
+//
 // Revision 1.9  2003/03/14 01:07:23  sdh300
 // Initial packet verification code
 //

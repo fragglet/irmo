@@ -181,6 +181,9 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 		for (; n>0; --n, ++i) {
 			proto_add_atom(packet, client->sendwindow[i]);
 
+			if (client->sendwindow[i]->sendtime.tv_sec)
+				client->sendwindow[i]->resent = TRUE;
+			
 			// store send time in atoms
 
 			client->sendwindow[i]->sendtime = nowtime;
@@ -188,16 +191,6 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	}
 
 	return packet;
-}
-
-static inline int timeval_cmp(struct timeval *a, struct timeval *b)
-{
-	if (a->tv_sec == b->tv_sec) {
-		return a->tv_usec < b->tv_usec ? -1 :
-			a->tv_usec > b->tv_usec ? 1 : 0;
-	}
-	
-	return a->tv_sec < b->tv_sec ? -1 : 1;
 }
 
 // data gets pumped into the sendwindow until it passes this threshold
@@ -278,8 +271,8 @@ void proto_run_client(IrmoClient *client)
 		// search forward until we find the start of a block
 
 		while (i<client->sendwindow_size
-		       && timeval_cmp(&client->sendwindow[i]->sendtime,
-				      &timeout_time) > 0) {
+		       && irmo_timeval_cmp(&client->sendwindow[i]->sendtime,
+					   &timeout_time) > 0) {
 			//printf("atom %i not expired yet\n", i);
 			++i;
 		}
@@ -295,8 +288,8 @@ void proto_run_client(IrmoClient *client)
 		len = 0;
 		
 		while (i<client->sendwindow_size
-		       && timeval_cmp(&client->sendwindow[i]->sendtime,
-				      &timeout_time) <= 0
+		       && irmo_timeval_cmp(&client->sendwindow[i]->sendtime,
+					   &timeout_time) <= 0
 		       && len < PACKET_THRESHOLD) {
 			//printf("atom %i out of date\n", i);
 			len += client->sendwindow[i]->len;
@@ -351,6 +344,10 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2003/03/16 20:18:19  sdh300
+// Fix bug in packet building with run length encoding making runs too long
+// (33 max rather than 32)
+//
 // Revision 1.9  2003/03/16 01:54:24  sdh300
 // Method calls over network protocol
 //
