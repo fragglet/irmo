@@ -120,10 +120,7 @@ static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
 
 static void client_run_method(IrmoClient *client, IrmoSendAtom *atom)
 {
-	if (client->server->socket->type == SOCKET_SERVER)
-		atom->data.method.src = client;
-	else
-		atom->data.method.src = NULL;
+	atom->data.method.src = client;
 	
 	irmo_method_invoke(client->server->universe, &atom->data.method);
 }
@@ -179,6 +176,10 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/16 17:38:45  sdh300
+// Fix bug with receive window spuriously advancing, caused by
+// improperly clearing the end of the recvwindow when advancing it
+//
 // Revision 1.5  2003/03/16 01:54:23  sdh300
 // Method calls over network protocol
 //
