@@ -330,6 +330,15 @@ typedef IrmoClient IrmoConnection;
 
 typedef struct _IrmoCallback IrmoCallback;
 
+/*!
+ * \brief Function invoked for watching callbacks.
+ *
+ * See \ref irmo_callback_watch_destroy.
+ */
+
+typedef void (*IrmoCallbackCallback)(IrmoCallback *callback,
+				     void *user_data);
+
 //! \}
 
 #ifdef __cplusplus
@@ -339,6 +348,9 @@ typedef struct _IrmoCallback IrmoCallback;
 #endif /* #ifndef IRMO_TYPES_H */
 
 // $Log$
+// Revision 1.3  2003/12/27 19:01:49  fraggle
+// irmo_callback_watch_destroy
+//
 // Revision 1.2  2003/11/21 18:10:18  fraggle
 // Fix up doxygen documentation; move section documentation into headers
 // from 'sections.doxygen'

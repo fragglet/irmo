@@ -49,6 +49,29 @@ IrmoCallback *irmo_callbacklist_add(GSList **list,
 	return callback;
 }
 
+static void irmo_callback_destroy_foreach(IrmoCallback *callback,
+					  IrmoCallback *parent)
+{
+	IrmoCallbackCallback func = callback->func;
+
+	func(parent, callback->user_data);
+}
+
+static void irmo_callback_destroy(IrmoCallback *callback)
+{
+	// invoke all the callbacks watching for this callback
+	// being destroyed
+
+	g_slist_foreach(callback->destroy_callbacks, 
+			(GFunc) irmo_callback_destroy_foreach, 
+			callback);
+
+	// free callback data
+
+	irmo_callbacklist_free(callback->destroy_callbacks);
+	free(callback);
+}
+
 // unset a callback
 
 void irmo_callback_unset(IrmoCallback *callback)
@@ -59,20 +82,30 @@ void irmo_callback_unset(IrmoCallback *callback)
 
 	*list = g_slist_remove(*list, callback);
 
-	free(callback);
+	irmo_callback_destroy(callback);
 }
-
 
 static void callbacklist_free_foreach(IrmoCallback *callback,
 				      gpointer user_data)
 {
-	free(callback);
+	irmo_callback_destroy(callback);
 }
 
 void irmo_callbacklist_free(GSList *list)
 {
 	g_slist_foreach(list, (GFunc) callbacklist_free_foreach, NULL);
 	g_slist_free(list);
+}
+
+// watch for when a callback is destroyed
+
+IrmoCallback *irmo_callback_watch_destroy(IrmoCallback *callback,
+					  IrmoCallbackCallback func,
+					  void *user_data)
+{
+	return irmo_callbacklist_add(&callback->destroy_callbacks,
+				     func,
+				     user_data);
 }
 
 // create a new callbackdata object for watching an object or class
@@ -377,6 +410,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.13  2003/12/27 19:01:48  fraggle
+// irmo_callback_watch_destroy
+//
 // Revision 1.12  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

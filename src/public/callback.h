@@ -58,6 +58,27 @@ extern "C" {
 
 void irmo_callback_unset(IrmoCallback *callback);
 
+/*!
+ * \brief Set a callback for when a \ref IrmoCallback is destroyed.
+ *
+ * This invokes a callback when a callback object is destroyed, either
+ * from being explicitely unset or if the object it is watching is
+ * destroyed. 
+ *
+ * This is mostly useful when writing language bindings so that the
+ * language can know when to free a callback context.
+ *
+ * \param callback   The callback to watch
+ * \param func       Function to invoke
+ * \param user_data  Extra data to pass to the function.
+ * \return           A new callback object representing the watch.
+ *
+ */
+
+IrmoCallback *irmo_callback_watch_destroy(IrmoCallback *callback,
+					  IrmoCallbackCallback func,
+					  void *user_data);
+					  
 //! \}
 
 #ifdef __cplusplus
@@ -67,6 +88,9 @@ void irmo_callback_unset(IrmoCallback *callback);
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
+// Revision 1.8  2003/12/27 19:01:49  fraggle
+// irmo_callback_watch_destroy
+//
 // Revision 1.7  2003/11/21 18:10:18  fraggle
 // Fix up doxygen documentation; move section documentation into headers
 // from 'sections.doxygen'

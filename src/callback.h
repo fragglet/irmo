@@ -42,6 +42,7 @@ struct _IrmoCallback {
 	GSList **list;                 // callback list this belongs to
 	gpointer func;
         gpointer user_data;
+	GSList *destroy_callbacks;
 };
 
 struct _IrmoCallbackData {
@@ -95,6 +96,9 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data,
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.11  2003/12/27 19:01:48  fraggle
+// irmo_callback_watch_destroy
+//
 // Revision 1.10  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
