@@ -37,7 +37,7 @@ struct _IrmoServer {
  * Create a new \ref IrmoServer listening for connections on a
  * particular vhost.
  *
- * \param socket    The socket to listen on.
+ * \param sock      The socket to listen on.
  * \param hostname  The vhost hostname to listen on. If NULL is passed
  *                  for this parameter, this server will be the default
  *                  server for the socket. If there is an existing
@@ -48,13 +48,16 @@ struct _IrmoServer {
  * \return          A new IrmoServer or NULL if the function fails.
  */
 
-IrmoServer *server_new(IrmoSocket *socket, gchar *hostname,
+IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 		       IrmoUniverse *universe, InterfaceSpec *spec);
 
 
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/11/26 15:43:05  sdh300
+// Initial IrmoServer code
+//
 // Revision 1.1  2002/11/26 15:23:49  sdh300
 // Initial network code
 //
