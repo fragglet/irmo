@@ -43,6 +43,7 @@
 #endif
 
 #include "socket.h"
+
 #include <glib.h>
 
 // various network util functions
@@ -81,6 +82,9 @@ void irmo_timeval_from_ms(int ms, GTimeVal *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.8  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.7  2003/11/18 19:32:19  fraggle
 // Use GTimeVal instead of struct timeval
 //

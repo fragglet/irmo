@@ -23,8 +23,9 @@
 //
 //---------------------------------------------------------------------
 
-#include <glib.h>
 #include <string.h>
+
+#include "netlib.h"
 
 #include "object.h"
 #include "packet.h"
@@ -82,6 +83,9 @@ IrmoSendAtomClass irmo_null_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.2  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.1  2003/10/22 16:13:10  fraggle
 // Split off sendatom classes into separate files
 //

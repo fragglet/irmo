@@ -30,8 +30,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include <glib.h>
-
 #include "netlib.h"
 
 int irmo_sockaddr_len(int domain)
@@ -64,7 +62,7 @@ static gint sockaddr_in_cmp(struct sockaddr_in *a,
 
 static guint sockaddr_in6_hash(struct sockaddr_in6 *addr)
 {
-	guint *a = addr->sin6_addr.in6_u.u6_addr32;
+	guint32 *a = (guint32 *) addr->sin6_addr.s6_addr;
 	
 	return a[0] ^ a[1] ^ a[2] ^ a[3] ^ addr->sin6_port;
 }
@@ -72,11 +70,7 @@ static guint sockaddr_in6_hash(struct sockaddr_in6 *addr)
 static gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
 			   struct sockaddr_in6 *b)
 {
-	guint *aa = a->sin6_addr.in6_u.u6_addr32;
-	guint *ba = b->sin6_addr.in6_u.u6_addr32;
-
-	return aa[0] == ba[0] && aa[1] == ba[1]
-	    && aa[2] == ba[2] && aa[3] == ba[3]
+	return !memcmp(&a->sin6_addr, &b->sin6_addr, sizeof(struct in6_addr))
 	    && a->sin6_port == b->sin6_port;
 }
 
@@ -235,6 +229,9 @@ void irmo_timeval_from_ms(int ms, GTimeVal *time)
 }
 
 // $Log$
+// Revision 1.7  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.6  2003/11/18 19:32:19  fraggle
 // Use GTimeVal instead of struct timeval
 //

@@ -31,14 +31,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <glib.h>
-
 #include "callback.h"
 #include "client.h"
 #include "error.h"
 #include "object.h"
 #include "sendatom.h"
 #include "world.h"
+
+#include <glib.h>
 
 // do something for all connected clients
 
@@ -491,6 +491,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.18  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.17  2003/11/21 17:46:18  fraggle
 // Restructure header files: move type definitions into "types.h"; move
 // callback prototypes into their appropriate headers instead of

@@ -23,8 +23,9 @@
 //
 //---------------------------------------------------------------------
 
-#include <glib.h>
 #include <string.h>
+
+#include "netlib.h"
 
 #include "object.h"
 #include "packet.h"
@@ -94,6 +95,9 @@ IrmoSendAtomClass irmo_sendwindow_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.4  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.3  2003/11/18 18:14:47  fraggle
 // Get compilation under windows to work, almost
 //

@@ -33,11 +33,10 @@
 #include <string.h>
 #include <errno.h>
 
-#include <glib.h>
+#include "netlib.h"
 
 #include "connection.h"
 #include "error.h"
-#include "netlib.h"
 #include "packet.h"
 #include "protocol.h"
 #include "socket.h"
@@ -725,6 +724,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.21  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.20  2003/11/20 00:19:17  fraggle
 // Add some fixes to get compiling under windows
 //

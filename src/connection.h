@@ -28,17 +28,20 @@
 
 #include "public/connection.h"
 
-#include <glib.h>
-
 #include "if_spec.h"
 #include "server.h"
 #include "world.h"
+
+#include <glib.h>
 
 void irmo_connection_error(IrmoConnection *conn, char *s, ...);
 
 #endif /* #ifndef IRMO_INTERNAL_CONNECTION_H */
 
 // $Log$
+// Revision 1.5  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.4  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

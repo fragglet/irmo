@@ -23,9 +23,10 @@
 //
 //---------------------------------------------------------------------
 
+#include "netlib.h"
+
 #include "connection.h"
 #include "error.h"
-#include "netlib.h"
 #include "socket.h"
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, 
@@ -194,6 +195,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.14  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.13  2003/11/18 19:24:22  fraggle
 // Fix compile errors and warnings introduced by previous commit
 //

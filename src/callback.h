@@ -34,11 +34,11 @@ typedef struct _IrmoCallbackData IrmoCallbackData;
 
 #include "public/callback.h"
 
-#include <glib.h>
-
 #include "client.h"
 #include "if_spec.h"
 #include "object.h"
+
+#include <glib.h>
 
 struct _IrmoCallback {
 	GSList **list;                 // callback list this belongs to
@@ -97,6 +97,9 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data,
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.9  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.8  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

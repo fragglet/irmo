@@ -28,8 +28,6 @@
 
 #include "public/socket.h"
 
-#include <glib.h>
-
 #include "netlib.h"
 #include "client.h"
 #include "server.h"
@@ -78,6 +76,9 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 #endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
 
 // $Log$
+// Revision 1.4  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.3  2003/11/18 18:14:47  fraggle
 // Get compilation under windows to work, almost
 //

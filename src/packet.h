@@ -30,8 +30,6 @@
 #ifndef IRMO_PACKET_H
 #define IRMO_PACKET_H
 
-#include <glib.h>
-
 typedef struct _IrmoPacket IrmoPacket;
 
 #include "netlib.h"
@@ -76,6 +74,9 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log$
+// Revision 1.7  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.6  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //

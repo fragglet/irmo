@@ -28,12 +28,12 @@
 
 #include "public/server.h"
 
-#include <glib.h>
-
 #include "if_spec.h"
 #include "client.h"
 #include "socket.h"
 #include "world.h"
+
+#include <glib.h>
 
 struct _IrmoServer {
 
@@ -81,6 +81,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log$
+// Revision 1.5  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.4  2003/11/17 00:27:34  fraggle
 // Remove glib dependency in API
 //

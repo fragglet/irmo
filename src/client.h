@@ -28,7 +28,6 @@
 
 #include "public/client.h"
 
-#include <glib.h>
 #include <time.h>
 
 #include "netlib.h"
@@ -178,6 +177,9 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
+// Revision 1.7  2003/12/01 12:46:05  fraggle
+// Fix under NetBSD
+//
 // Revision 1.6  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //
