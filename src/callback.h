@@ -41,3 +41,5 @@ void callback_watch_object(IrmoObject *object, gchar *variable,
 			   IrmoCallbackFunc func, gpointer user_data);
 
 #endif /* #ifndef IRMO_CALLBACK_H */
+
+// $Log: not supported by cvs2svn $

@@ -107,3 +107,5 @@ void callback_watch_object(IrmoObject *object, gchar *variable,
 	callbackdata_watch(object->callbacks, variable,
 			   func, user_data);
 }
+
+// $Log: not supported by cvs2svn $
