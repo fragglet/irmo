@@ -44,7 +44,7 @@ IrmoCallback *irmo_callbacklist_add(GSList **list,
 	callback->user_data = user_data;
 	callback->list = list;
 
-	*list = g_slist_append(*list, callback);
+	*list = g_slist_prepend(*list, callback);
 
 	return callback;
 }
@@ -414,6 +414,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.16  2004/06/23 14:33:02  fraggle
+// Use prepend instead of append for linked lists
+//
 // Revision 1.15  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //
