@@ -130,7 +130,7 @@ IrmoClass *irmo_object_get_class_obj(IrmoObject *object);
  * \param value    The new value for the variable
  */
 
-void irmo_object_set_int(IrmoObject *object, gchar *variable, int value);
+void irmo_object_set_int(IrmoObject *object, gchar *variable, guint value);
 
 /*!
  * \brief Set the value of an object variable (string type)
@@ -216,6 +216,9 @@ gboolean irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.7  2003/09/13 16:11:49  fraggle
+// Guard against overflows when setting int values
+//
 // Revision 1.6  2003/09/02 20:33:55  fraggle
 // Subclassing in interfaces
 //

@@ -306,9 +306,10 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 		       &data);
 }
 
-void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
+void irmo_object_set_int(IrmoObject *object, gchar *variable, guint value)
 {
 	IrmoClassVar *spec;
+	IrmoValue *obj_var;
 
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(variable != NULL);
@@ -324,11 +325,19 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 		return;
 	}
 
+	obj_var = &object->variables[spec->index];
+
 	switch (spec->type) {
 	case IRMO_TYPE_INT8:
+		g_return_if_fail(value >= 0 && value <= 0xff);
+		obj_var->i = value;
+		break;
 	case IRMO_TYPE_INT16:
+		g_return_if_fail(value >= 0 && value <= 0xffff);
+		obj_var->i = value;
+		break;
 	case IRMO_TYPE_INT32:
-		object->variables[spec->index].i = value;
+		obj_var->i = value;
 		break;
 	default:
 		irmo_error_report("irmo_object_set_int",
@@ -480,6 +489,9 @@ gboolean irmo_object_is_a(IrmoObject *obj, gchar *classname)
 }
 
 // $Log$
+// Revision 1.13  2003/09/13 16:11:48  fraggle
+// Guard against overflows when setting int values
+//
 // Revision 1.12  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //
