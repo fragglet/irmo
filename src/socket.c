@@ -392,6 +392,10 @@ static inline void socket_run_packet(IrmoPacket *packet)
 		socket_run_synfin(packet);
 		return;
 	}
+
+	// pass it to the protocol parsing code
+	
+	proto_parse_packet(packet);
 }
 
 static gboolean socket_run_client(gpointer key, IrmoClient *client,
@@ -472,6 +476,11 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.24  2003/02/23 01:01:01  sdh300
+// Remove underscores from internal functions
+// This is not much of an issue now the public definitions have been split
+// off into seperate files.
+//
 // Revision 1.23  2003/02/18 20:04:40  sdh300
 // Automatically increase size of packets when writing
 //
