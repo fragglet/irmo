@@ -48,7 +48,19 @@ int main(int argc, char *argv[])
 
 	printf("trying to set string variable value\n");
 	
-	object_set_int(object, "blah", "yoyodyne");
+	object_set_string(object, "blah", "yoyodyne");
+
+	printf("trying to get variable value\n");
+
+	printf("value: %i\n", object_get_int(object, "myvar"));
+
+	printf("trying to get variable string value\n");
+
+	printf("value: %s\n", object_get_string(object, "blah"));
+
+	printf("trying to get variable value (invalid)\n");
+
+	object_get_string(object, "myvar");
 	
 	printf("destroying object\n");
 
@@ -61,6 +73,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/10/21 15:39:35  sdh300
+// setting string values
+//
 // Revision 1.6  2002/10/21 15:32:35  sdh300
 // variable value setting
 //

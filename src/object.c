@@ -188,7 +188,75 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 	// TODO: value change callbacks
 }
 
+// get int value
+
+gint object_get_int(IrmoObject *object, gchar *variable)
+{
+	ClassVarSpec *spec;
+
+	spec = g_hash_table_lookup(object->objclass->variable_hash,
+				   variable);
+
+	if (!spec) {
+		fprintf(stderr,
+			"object_get_int: unknown variable '%s' "
+			"in class '%s'\n",
+			variable,
+			object->objclass->name);
+		
+		return -1;
+	}
+
+	switch (spec->type) {
+	case TYPE_INT8:
+		return object->variables[spec->n].i8;
+	case TYPE_INT16:
+		return object->variables[spec->n].i16;
+	case TYPE_INT32:
+		return object->variables[spec->n].i32;
+	default:
+		fprintf(stderr,
+			"object_get_int: variable '%s' in class '%s' "
+			"is not an int type\n",
+			variable, object->objclass->name);
+		return -1;
+	}
+}
+
+// get int value
+
+gchar *object_get_string(IrmoObject *object, gchar *variable)
+{
+	ClassVarSpec *spec;
+
+	spec = g_hash_table_lookup(object->objclass->variable_hash,
+				   variable);
+
+	if (!spec) {
+		fprintf(stderr,
+			"object_get_string: unknown variable '%s' "
+			"in class '%s'\n",
+			variable,
+			object->objclass->name);
+		
+		return NULL;
+	}
+
+	if (spec->type != TYPE_STRING) {
+		fprintf(stderr,
+			"object_get_string: variable '%s' in class '%s' "
+			"is not a string type\n",
+			variable, object->objclass->name);
+		return NULL;
+	}
+
+	return object->variables[spec->n].s;
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/10/21 15:39:35  sdh300
+// setting string values
+//
 // Revision 1.3  2002/10/21 15:32:35  sdh300
 // variable value setting
 //
