@@ -21,9 +21,14 @@ gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
 
 struct sockaddr *sockaddr_copy(struct sockaddr *addr);
 
+struct sockaddr *sockaddr_for_name(int domain, gchar *name, int port);
+
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/03 20:54:01  sdh300
+// sockaddr copy function
+//
 // Revision 1.4  2003/02/03 20:44:20  sdh300
 // move sockaddr_len into netlib
 //
