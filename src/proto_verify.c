@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: proto_verify.c,v 1.6 2003-06-09 21:06:52 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -281,7 +281,13 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 	return result;		
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.6  2003/06/09 21:06:52  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.5  2003/05/04 00:28:14  sdh300
 // Add ability to manually set the maximum sendwindow size
 //

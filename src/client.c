@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: client.c,v 1.26 2003-06-09 21:06:50 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -353,7 +353,13 @@ struct sockaddr *irmo_client_get_addr(IrmoClient *client)
 	return client->addr;
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:23  fraggle
+// Initial revision
+//
+// Revision 1.26  2003/06/09 21:06:50  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.25  2003/05/07 15:47:15  sdh300
 // Add irmo_client_get_addr function to get client's remote address
 // Add missing glib assertations

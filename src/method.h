@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: method.h,v 1.3 2003-06-09 21:06:51 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -44,7 +44,13 @@ void irmo_method_invoke(IrmoUniverse *universe, IrmoMethodData *data);
 
 #endif /* #ifndef IRMO_INTERNAL_METHOD_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:24  fraggle
+// Initial revision
+//
+// Revision 1.3  2003/06/09 21:06:51  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.2  2003/03/16 01:54:24  sdh300
 // Method calls over network protocol
 //

@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: socket.h,v 1.10 2003-06-09 21:06:53 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -77,7 +77,13 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 
 #endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.10  2003/06/09 21:06:53  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.9  2003/03/07 12:17:18  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

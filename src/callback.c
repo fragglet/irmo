@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: callback.c,v 1.23 2003-06-09 21:06:50 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -495,7 +495,13 @@ void irmo_object_unwatch_destroy(IrmoObject *object,
 	}
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:23  fraggle
+// Initial revision
+//
+// Revision 1.23  2003/06/09 21:06:50  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.22  2003/04/25 01:26:18  sdh300
 // Add glib assertations to all public API functions
 //

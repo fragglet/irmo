@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: connection.h,v 1.5 2003-06-09 21:06:51 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -34,7 +34,13 @@
 
 #endif /* #ifndef IRMO_INTERNAL_CONNECTION_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:23  fraggle
+// Initial revision
+//
+// Revision 1.5  2003/06/09 21:06:51  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.4  2003/03/17 15:45:35  sdh300
 // Remove 'IrmoConnection' object; make it into a typedef for IrmoClient
 //

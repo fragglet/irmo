@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: callback.h,v 1.17 2003-06-09 21:06:50 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -81,7 +81,13 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:23  fraggle
+// Initial revision
+//
+// Revision 1.17  2003/06/09 21:06:50  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.16  2003/03/16 00:44:04  sdh300
 // Add irmo_callbacklist_free function
 //

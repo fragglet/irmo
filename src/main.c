@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: main.c,v 1.25 2003-06-09 21:06:51 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -304,7 +304,13 @@ int main(int argc, char *argv[])
 	}
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:24  fraggle
+// Initial revision
+//
+// Revision 1.25  2003/06/09 21:06:51  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.24  2003/03/07 12:17:16  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

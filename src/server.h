@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: server.h,v 1.10 2003-06-09 21:06:52 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -74,7 +74,13 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.10  2003/06/09 21:06:52  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.9  2003/03/17 17:33:59  sdh300
 // Fix arguments to irmo_client_callback_raise
 //

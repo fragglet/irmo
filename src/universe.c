@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: universe.c,v 1.17 2003-06-09 21:06:53 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -185,7 +185,13 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 			     &data);			     
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.17  2003/06/09 21:06:53  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.16  2003/04/25 01:26:19  sdh300
 // Add glib assertations to all public API functions
 //

@@ -920,7 +920,14 @@ BIN_ABSPATH            = /usr/local/bin/
 
 EXT_DOC_PATHS          = 
 
-# $Log: not supported by cvs2svn $
+# $Log$
+# Revision 1.1  2003/06/09 21:33:23  fraggle
+# Initial revision
+#
+# Revision 1.3  2003/03/07 10:48:02  sdh300
+# Add new sections to documentation
+# Make Doxyfile to use src/public/ instead of src/
+#
 # Revision 1.2  2002/11/17 20:38:27  sdh300
 # add cvs tags
 #

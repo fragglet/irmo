@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: protocol.h,v 1.4 2003-06-09 21:06:52 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -47,7 +47,13 @@ int proto_client_timeout_time(IrmoClient *client);
 
 #endif /* #ifndef IRMO_PROTO_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.4  2003/06/09 21:06:52  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.3  2003/03/21 17:21:46  sdh300
 // Round Trip Time estimatation and adaptive timeout times
 //

@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: client_run.c,v 1.10 2003-06-09 21:06:50 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -240,7 +240,13 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 		client->recvwindow[n] = NULL;
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:23  fraggle
+// Initial revision
+//
+// Revision 1.10  2003/06/09 21:06:50  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.9  2003/05/20 02:06:06  sdh300
 // Add out-of-order execution of stream
 //

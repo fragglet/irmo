@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: packet.c,v 1.9 2003-06-09 21:06:52 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -162,7 +162,13 @@ gchar *packet_readstring(IrmoPacket *packet)
 	return NULL;
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:24  fraggle
+// Initial revision
+//
+// Revision 1.9  2003/06/09 21:06:52  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.8  2003/02/18 20:04:40  sdh300
 // Automatically increase size of packets when writing
 //

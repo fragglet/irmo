@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: irmo.h,v 1.4 2003-06-09 21:06:55 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -39,7 +39,13 @@
 
 #endif /* #ifndef IRMO_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.4  2003/06/09 21:06:55  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.3  2003/03/16 01:56:09  sdh300
 // Add method.h to irmo.h include
 //

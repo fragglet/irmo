@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: universe.h,v 1.16 2003-06-09 21:06:53 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -87,7 +87,13 @@ struct _IrmoUniverse {
 
 #endif /* #ifndef IRMO_INTERNAL_UNIVERSE_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.16  2003/06/09 21:06:53  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.15  2003/03/15 02:21:16  sdh300
 // Initial method code
 //

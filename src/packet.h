@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: packet.h,v 1.10 2003-06-09 21:06:52 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -67,7 +67,13 @@ gchar *packet_readstring(IrmoPacket *packet);
 
 #endif /* #ifndef IRMO_PACKET_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:24  fraggle
+// Initial revision
+//
+// Revision 1.10  2003/06/09 21:06:52  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.9  2003/03/06 20:15:25  sdh300
 // Initial ack code
 //

@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: method.c,v 1.5 2003-06-09 21:06:51 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -228,7 +228,13 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 	}
 }
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:24  fraggle
+// Initial revision
+//
+// Revision 1.5  2003/06/09 21:06:51  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.4  2003/04/25 01:26:19  sdh300
 // Add glib assertations to all public API functions
 //

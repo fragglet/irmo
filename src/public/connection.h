@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: connection.h,v 1.9 2003-06-09 21:06:55 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -141,7 +141,13 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn);
 
 #endif /* #ifndef IRMO_CONNECTION_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:25  fraggle
+// Initial revision
+//
+// Revision 1.9  2003/06/09 21:06:55  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.8  2003/03/17 16:48:27  sdh300
 // Add ability to disconnect from servers and to disconnect clients
 //

@@ -1,7 +1,7 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id: if_spec.h,v 1.9 2003-06-09 21:06:51 sdh300 Exp $
+// $Id$
 //
 // Copyright (C) 2002-2003 University of Southampton
 // Copyright (C) 2003 Simon Howard
@@ -121,7 +121,13 @@ struct _IrmoInterfaceSpec {
 
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
-// $Log: not supported by cvs2svn $
+// $Log$
+// Revision 1.1  2003/06/09 21:33:23  fraggle
+// Initial revision
+//
+// Revision 1.9  2003/06/09 21:06:51  sdh300
+// Add CVS Id tag and copyright/license notices
+//
 // Revision 1.8  2003/03/14 17:36:36  sdh300
 // Store index for method specs
 //
