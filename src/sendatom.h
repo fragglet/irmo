@@ -3,11 +3,15 @@
 
 typedef struct _IrmoSendAtom IrmoSendAtom;
 
+#include <sys/time.h>
+
 #include "client.h"
 
 // queue object
 
 struct _IrmoSendAtom {
+	struct timeval sendtime;        // time this atom was last sent
+	
 	int len;			// length in packet
 	enum {
 		ATOM_NULL,               // null atom for nullified changes
@@ -50,6 +54,10 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/27 02:07:56  sdh300
+// Store sendatom size in structure
+// Add 'pop' function to remove atoms from sendq head
+//
 // Revision 1.3  2003/02/20 18:25:00  sdh300
 // Use GQueue instead of a GPtrArray for the send queue
 // Initial change/destroy code
