@@ -56,7 +56,7 @@ WHITESPACE [[:space:]]+
 {WHITESPACE} 	;
 {COMMENT}	;
 "class"		return TOKEN_CLASS;
-"func"		return TOKEN_FUNC;
+"func"|"method"	return TOKEN_FUNC;
 "int8"		return TOKEN_INT8;
 "int16"		return TOKEN_INT16;
 "int32"		return TOKEN_INT32;
@@ -433,3 +433,6 @@ void interface_spec_unref(InterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1.1.1  2002/10/19 18:53:23  sdh300
+// initial import
+//

@@ -15,5 +15,5 @@ class myclass {
 }
 
 
-func my_callback_func(int32 blah, string something);
+method my_callback_func(int32 blah, string something);
 func my_cayllback_func(int32 blah, string something);
