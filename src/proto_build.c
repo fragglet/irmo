@@ -189,7 +189,9 @@ IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	// include these as it may reduce the need for retransmissions.
 	
 	for (backstart=start; 
-	     backstart > 0 && client->recvwindow[backstart-1]->type==ATOM_NULL;
+	     backstart > 0 
+		&& client->recvwindow[backstart-1]
+		&& client->recvwindow[backstart-1]->type==ATOM_NULL;
 	     --backstart);
 	
 	// start position in stream
@@ -431,6 +433,11 @@ void proto_run_client(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/05/08 08:20:05  sdh300
+// In building packets, extend the range specified to include all null
+// atoms before the range. This sends a small amount of redundant
+// data which can make packet retransmission unneccesary.
+//
 // Revision 1.15  2003/05/04 00:28:14  sdh300
 // Add ability to manually set the maximum sendwindow size
 //
