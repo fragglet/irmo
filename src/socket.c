@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -43,7 +44,7 @@ IrmoSocket *socket_new(int domain, int port)
 
 	if (domain != AF_INET
 #ifdef USE_IPV6
-         || domain != AF_INET6
+         && domain != AF_INET6
 #endif
 		) {
 		fprintf(stderr,
@@ -93,6 +94,9 @@ IrmoSocket *socket_new(int domain, int port)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2002/11/26 16:32:45  sdh300
+// forget to free address after use
+//
 // Revision 1.3  2002/11/26 16:23:28  sdh300
 // Split off sockaddr hash functions to a seperate netlib module
 //
