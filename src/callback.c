@@ -60,8 +60,8 @@ struct raise_data {
 	gchar *variable;
 };
 
-void _callbackdata_raise_foreach(IrmoVarCallbackData *callback, 
-				 struct raise_data *raise_data)
+static void _callbackdata_raise_foreach(IrmoVarCallbackData *callback, 
+					struct raise_data *raise_data)
 {
 	callback->func.var(raise_data->object, raise_data->variable,
 			   callback->user_data);
@@ -206,6 +206,9 @@ void object_watch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/11/05 15:55:12  sdh300
+// object destroy callbacks
+//
 // Revision 1.6  2002/11/05 15:17:17  sdh300
 // more consistent naming for callback types
 //

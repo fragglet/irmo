@@ -91,13 +91,6 @@ void __object_destroy(IrmoObject *object)
 {
 	int i;
 
-	// raise destroy callbacks
-
-	_callbackdata_raise_destroy(object->callbacks, object);
-	_callbackdata_raise_destroy(object->universe->callbacks
-				    [object->objclass->index],
-				    object);
-	
 	// destroy member variables
 
 	for (i=0; i<object->objclass->nvariables; ++i) {
@@ -116,6 +109,13 @@ void __object_destroy(IrmoObject *object)
 
 void object_destroy(IrmoObject *object)
 {
+	// raise destroy callbacks
+
+	_callbackdata_raise_destroy(object->callbacks, object);
+	_callbackdata_raise_destroy(object->universe->callbacks
+				    [object->objclass->index],
+				    object);
+
 	// remove from universe
 	
 	g_hash_table_remove(object->universe->objects, (gpointer) object->id);
@@ -123,8 +123,6 @@ void object_destroy(IrmoObject *object)
 	// destroy object
 	
 	__object_destroy(object);
-	
-	// TODO: hooks for object destruction callbacks
 }
 
 void object_set_int(IrmoObject *object, gchar *variable, gint value)
@@ -272,6 +270,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2002/11/05 15:55:13  sdh300
+// object destroy callbacks
+//
 // Revision 1.8  2002/10/29 16:28:50  sdh300
 // functioning callbacks
 //
