@@ -23,20 +23,6 @@
 
 #define PACKET_BUFFER_LEN 0x10000
 
-static int get_sockaddr_len(int domain)
-{
-	switch (domain) {
-	case AF_INET:
-		return sizeof(struct sockaddr_in);
-#ifdef USE_IPV6
-	case AF_INET6:
-		return sizeof(struct sockaddr_in6);
-#endif
-	}
-
-	return 0;
-}
-
 IrmoSocket *socket_new(int domain, int port)
 {
 	IrmoSocket *irmosock;
@@ -75,7 +61,7 @@ IrmoSocket *socket_new(int domain, int port)
 
 	// bind
 
-	addr_len = get_sockaddr_len(domain);
+	addr_len = sockaddr_len(domain);
 	addr = (struct sockaddr *) g_malloc0(addr_len);
 
 	switch (domain) {
@@ -172,7 +158,7 @@ void socket_run(IrmoSocket *sock)
 	struct sockaddr *addr;
 	int addr_len;
 
-	addr_len = get_sockaddr_len(sock->domain);
+	addr_len = sockaddr_len(sock->domain);
 	addr = malloc(addr_len);
 	
 	while (1) {
@@ -211,6 +197,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2002/12/02 22:39:54  sdh300
+// Fix binding to sockets (structure not initialise properly)
+//
 // Revision 1.9  2002/12/02 22:24:23  sdh300
 // Initial socket run code/add extra data to packet objects
 //

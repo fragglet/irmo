@@ -12,6 +12,20 @@
 
 #include "netlib.h"
 
+int sockaddr_len(int domain)
+{
+        switch (domain) {
+        case AF_INET:
+                return sizeof(struct sockaddr_in);
+#ifdef USE_IPV6
+        case AF_INET6:
+                return sizeof(struct sockaddr_in6);
+#endif
+        }
+
+        return 0;
+}
+
 guint sockaddr_in_hash(struct sockaddr_in *addr)
 {
 	return addr->sin_addr.s_addr ^ addr->sin_port;
@@ -77,6 +91,9 @@ gint sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/11/26 16:31:27  sdh300
+// oops! need to hash by port number as well as address
+//
 // Revision 1.1  2002/11/26 16:23:27  sdh300
 // Split off sockaddr hash functions to a seperate netlib module
 //
