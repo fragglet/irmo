@@ -79,6 +79,14 @@ static void client_run_connecting(IrmoClient *client)
 	time_t nowtime = time(NULL);
 
 	if (nowtime >= client->_connect_time + CLIENT_SYN_INTERVAL) {
+
+		// run out of connection attempts?
+
+		if (client->_connect_attempts <= 0) {
+			client->state = CLIENT_DISCONNECTED;
+			return;
+		}
+		
 		// build and send a new packet
 
 		if (client->server->socket->type == SOCKET_CLIENT) {
@@ -116,8 +124,7 @@ static void client_run_connecting(IrmoClient *client)
 		
 		client->_connect_time = nowtime;
 
-		--client->_connect_attempts;
-		
+		--client->_connect_attempts;		
 	}
 }
 
@@ -137,6 +144,9 @@ void _client_run(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/16 23:41:26  sdh300
+// Reference counting for client and server objects
+//
 // Revision 1.2  2003/02/11 19:18:43  sdh300
 // Initial working connection code!
 //

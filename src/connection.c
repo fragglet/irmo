@@ -6,10 +6,14 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 			     InterfaceSpec *spec, IrmoUniverse *local_universe)
 {
 	IrmoConnection *connection;
-	IrmoSocket *sock = _socket_new_unbound(domain);
+	IrmoSocket *sock;
 	struct sockaddr *addr;
 	IrmoServer *server;
 	IrmoClient *client;
+
+	// create a socket
+	
+	sock = _socket_new_unbound(domain);
 	
 	if (!sock)
 		return NULL;
@@ -28,7 +32,8 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	// connection to us
 
 	client = _client_new(server, addr);
-
+	client_ref(client);
+	
 	// now initiate the connection
 	// send SYN packets to the server once every second and
 	// wait for replies.
@@ -42,11 +47,16 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	}
 
 	if (client->state == CLIENT_DISCONNECTED) {
-		// bad things happened. todo
+		// connection failed
+		// unreference objects we were using
+		
+		client_unref(client);
+		server_unref(server);
+		socket_unref(sock);
+		
+		return NULL;
 	}
 
-	printf("connected to server!\n");
-	
 	// put everything inside a connection object
 
 	connection = g_new0(IrmoConnection, 1);
@@ -62,6 +72,9 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 } 
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/02/11 19:18:43  sdh300
+// Initial working connection code!
+//
 // Revision 1.3  2003/02/06 02:39:04  sdh300
 // Add missing netlib.h, fix call to sockaddr_for_name
 //
