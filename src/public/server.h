@@ -53,19 +53,17 @@ extern "C" {
  * Create a new \ref IrmoServer listening for connections on a
  * particular vhost.
  *
- * \param sock      The socket to listen on.
- * \param hostname  The vhost hostname to listen on. If NULL is passed
- *                  for this parameter, this server will be the default
- *                  server for the socket. If there is an existing
- *                  default server, the function will fail.
- * \param world  The world the server will serve.
- * \param spec      An interface specification describing the interface
- *                  for the client world of the connecting clients.
- * \return          A new IrmoServer or NULL if the function fails.
+ * \param domain      The type of socket to listen on 
+ *                    (see \ref IrmoSocketDomain)
+ * \param port        The port number to listen on
+ * \param world       The world the server will serve.
+ * \param client_spec An interface specification describing the interface
+ *                    for the client world of the connecting clients.
+ * \return            A new IrmoServer or NULL if the function fails.
  */
 
-IrmoServer *irmo_server_new(IrmoSocket *sock, char *hostname,
-			    IrmoWorld *world, IrmoInterfaceSpec *spec);
+IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
+			    IrmoWorld *world, IrmoInterfaceSpec *client_spec);
 
 /*!
  * \brief Watch new connections to a server
@@ -146,6 +144,9 @@ void irmo_server_shutdown(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.9  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.8  2003/11/21 18:10:18  fraggle
 // Fix up doxygen documentation; move section documentation into headers
 // from 'sections.doxygen'

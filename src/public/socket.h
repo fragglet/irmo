@@ -47,20 +47,6 @@ extern "C" {
  */
 
 /*!
- * \brief Create a new socket
- *
- * Create a new socket listening on a particular port. Servers can then
- * be attached to the socket to serve worlds on different vhosts.
- *
- * \param domain  The type of socket to create (see \ref IrmoSocketDomain)
- * \param port    The port number to listen on
- * \return        A new IrmoSocket or NULL if the new socket could
- *                not be created.
- */
-
-IrmoSocket *irmo_socket_new(IrmoSocketDomain domain, int port);
-
-/*!
  * \brief Add a reference to a socket
  *
  * \param sock  Socket to reference
@@ -130,6 +116,9 @@ void irmo_socket_block(IrmoSocket *sock, int timeout);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.10  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.9  2003/11/21 18:10:18  fraggle
 // Fix up doxygen documentation; move section documentation into headers
 // from 'sections.doxygen'

@@ -29,30 +29,14 @@
 #include "netlib.h"
 #include "server.h"
 
-IrmoServer *irmo_server_new(IrmoSocket *sock, char *hostname,
-			    IrmoWorld *world, IrmoInterfaceSpec *spec)
+// create a new server using an existing IrmoSocket object
+// used when making client connections
+
+IrmoServer *irmo_server_new_from(IrmoSocket *sock,
+				 IrmoWorld *world, 
+				 IrmoInterfaceSpec *client_spec)
 {
 	IrmoServer *server;
-
-	g_return_val_if_fail(sock != NULL, NULL);
-	
-	// sanity checks; make sure the hostname is not already taken
-	
-	if (hostname) {
-		if (g_hash_table_lookup(sock->servers, hostname)) {
-			irmo_error_report("irmo_server_new",
-					  "already a server bound to '%s' on socket %i::%i",
-					  hostname, sock->domain, sock->port);
-			return NULL;
-		}
-	} else {
-		if (sock->default_server) {
-			irmo_error_report("irmo_server_new",
-					  "already a default server for socket %i::%i\n",
-					  sock->domain, sock->port);
-			return NULL;
-		}
-	}
 
 	// create new server
 	
@@ -60,13 +44,13 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, char *hostname,
 	server->refcount = 1;
 	server->socket = sock;
 	server->world = world;
-	server->client_spec = spec;
+	server->client_spec = client_spec;
 	server->running = TRUE;
 
 	irmo_socket_ref(sock);
 
-	if (spec)
-		irmo_interface_spec_ref(spec);
+	if (client_spec)
+		irmo_interface_spec_ref(client_spec);
 	
 	// we can have a server which does not serve a world
 	// store this server in the list of servers attached to this
@@ -77,16 +61,29 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, char *hostname,
 		g_ptr_array_add(world->servers, server);
 	}
 	
-	if (hostname) {
-		server->hostname = strdup(hostname);
-		g_hash_table_insert(sock->servers, hostname, server);
-	} else {
-		server->hostname = NULL;
-		sock->default_server = server;
-	}
+	// attach ourselves to the server
+
+	sock->server = server;
 
 	server->clients = g_hash_table_new((GHashFunc) irmo_sockaddr_hash,
 					   (GCompareFunc) irmo_sockaddr_cmp);
+}
+
+IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
+                            IrmoWorld *world, 
+			    IrmoInterfaceSpec *client_spec)
+{
+	IrmoSocket *sock;
+	IrmoServer *server;
+
+	sock = irmo_socket_new_bound(domain, port);
+
+	if (sock == NULL) 
+		return NULL;
+	
+	server = irmo_server_new_from(sock, world, client_spec);
+
+	irmo_socket_unref(sock);
 	
 	return server;
 }
@@ -101,10 +98,6 @@ void irmo_server_ref(IrmoServer *server)
 static gboolean remove_each_client(gpointer key, IrmoClient *client,
 				   gpointer user_data)
 {
-	// remove from the socket list
-	
-	g_hash_table_remove(client->server->socket->clients, key);
-
 	// destroy
 
 	irmo_client_internal_unref(client);
@@ -127,15 +120,9 @@ static void irmo_server_internal_shutdown(IrmoServer *server)
 				    (GHRFunc) remove_each_client,
 				    NULL);
 		
-	// delink from the server
-		
-	if (server->hostname) {
-		g_hash_table_remove(server->socket->servers,
-				    server->hostname);
-		free(server->hostname);
-	} else {
-		server->socket->default_server = NULL;
-	}
+	// shutdown the socket we're using
+
+	irmo_socket_shutdown(server->socket);
 
 	// remove from list of attached servers
 			
@@ -143,7 +130,6 @@ static void irmo_server_internal_shutdown(IrmoServer *server)
 		g_ptr_array_remove(server->world->servers, server);
 
 	server->running = FALSE;
-			
 }
 
 void irmo_server_unref(IrmoServer *server)
@@ -257,6 +243,9 @@ void irmo_server_shutdown(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.14  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.13  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

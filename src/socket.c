@@ -155,9 +155,6 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 	irmosock->refcount = 1;
 	irmosock->domain = type;
 	irmosock->sock = sock;
-	irmosock->servers = g_hash_table_new(g_str_hash, g_str_equal);
-	irmosock->clients = g_hash_table_new((GHashFunc) irmo_sockaddr_hash,
-					     (GCompareFunc) irmo_sockaddr_cmp);
 
 	return irmosock;
 }
@@ -169,6 +166,17 @@ void irmo_socket_ref(IrmoSocket *sock)
 	++sock->refcount;
 }
 
+void irmo_socket_shutdown(IrmoSocket *sock)
+{
+	g_return_if_fail(sock->shutdown != TRUE);
+	
+	// close socket
+
+	closesocket(sock->sock);
+		
+	sock->shutdown = TRUE;
+}
+
 void irmo_socket_unref(IrmoSocket *sock)
 {
 	g_return_if_fail(sock != NULL);
@@ -176,16 +184,9 @@ void irmo_socket_unref(IrmoSocket *sock)
 	--sock->refcount;
 
 	if (sock->refcount <= 0) {
-		// close socket
 
-		closesocket(sock->sock);
-		
-		// if there are no references to this socket, it follows
-		// there are no servers or clients either as they
-		// reference it.
-
-		g_hash_table_destroy(sock->clients);
-		g_hash_table_destroy(sock->servers);
+		if (!sock->shutdown)
+			irmo_socket_shutdown(sock);
 
 		free(sock);
 	}
@@ -208,7 +209,7 @@ IrmoSocket *irmo_socket_new_unbound(IrmoSocketDomain type)
 
 // create a socket for servers, bound to a port
 
-IrmoSocket *irmo_socket_new(IrmoSocketDomain domain, int port)
+IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port)
 {
 	IrmoSocket *sock;
 	struct sockaddr *addr;
@@ -315,8 +316,6 @@ static void socket_run_syn(IrmoPacket *packet)
 
 		// remove from hash tables
 
-		g_hash_table_remove(client->server->socket->clients,
-				    client->addr);
 		g_hash_table_remove(client->server->clients,
 				    client->addr);
 
@@ -349,29 +348,7 @@ static void socket_run_syn(IrmoPacket *packet)
 		return;
 	}
 
-	// read server vhost name
-	
-	s = irmo_packet_readstring(packet);
-
-	if (s) {
-		server = g_hash_table_lookup(packet->sock->servers,
-					     s);
-	} else {
-		server = NULL;
-	}
-
-	if (!server) { 
-		// try default server if vhost not found or none 
-		// specified
-
-		server = packet->sock->default_server;
-	}
-
-	if (!server) {
-		socket_send_refuse(packet->sock, packet->src,
-				   "server not found");
-		return;
-	}
+	server = packet->sock->server;
 
 	// if there is a server, get the hashes for the interface
 	// specs
@@ -548,7 +525,8 @@ static void socket_run_packet(IrmoPacket *packet)
 	// find a client from the socket hashtable
 
 	packet->client = client
-		= g_hash_table_lookup(packet->sock->clients, packet->src);
+		= g_hash_table_lookup(packet->sock->server->clients, 
+				      packet->src);
 
 	// read packet header
 	
@@ -675,7 +653,7 @@ void irmo_socket_run(IrmoSocket *sock)
 
 	// run each of the clients
 	
-	g_hash_table_foreach_remove(sock->clients,
+	g_hash_table_foreach_remove(sock->server->clients,
 				    (GHRFunc) socket_run_client, NULL);
 }
 
@@ -719,6 +697,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.23  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.22  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

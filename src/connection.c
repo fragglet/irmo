@@ -79,7 +79,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 	// local world the server is seen as a client connecting
 	// to our own local server (symmetrical)
 	
-	server = irmo_server_new(sock, NULL, local_world, spec);
+	server = irmo_server_new_from(sock, local_world, spec);
 
 	// only the server is using this socket 
 	
@@ -196,6 +196,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.16  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.15  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

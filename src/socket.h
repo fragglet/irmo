@@ -44,6 +44,10 @@ typedef enum {
 struct _IrmoSocket {
 
 	IrmoSocketType type;
+
+	// if true, this has been shutdown
+	
+	int shutdown;
 	
 	// reference count
 	
@@ -55,27 +59,23 @@ struct _IrmoSocket {
 	int port;
 	int sock;
 
-	// attached servers hashed by name
-
-	GHashTable *servers;
-
-	// the default server to use (if the hostname a client is trying to
-	// connect to does not exist)
-
-	IrmoServer *default_server;
+	// server using this socket
 	
-	// connected clients hashed by IP
-
-	GHashTable *clients;
+	IrmoServer *server;
 };
 
+IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port);
 IrmoSocket *irmo_socket_new_unbound(IrmoSocketDomain domain);
 void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 			    IrmoPacket *packet);
+void irmo_socket_shutdown(IrmoSocket *sock);
 
 #endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
 
 // $Log$
+// Revision 1.5  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.4  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //

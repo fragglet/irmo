@@ -31,7 +31,7 @@
 
 // protocol version number, bumped every time the protocol changes
 
-#define IRMO_PROTOCOL_VERSION 3
+#define IRMO_PROTOCOL_VERSION 4
 
 // verifying integrity of received packets before parsing
 
@@ -52,6 +52,9 @@ int irmo_proto_client_timeout_time(IrmoClient *client);
 #endif /* #ifndef IRMO_PROTO_H */
 
 // $Log$
+// Revision 1.5  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.4  2003/10/18 01:34:45  fraggle
 // Better error reporting for connecting, allow server to send back an
 // error message when refusing connections

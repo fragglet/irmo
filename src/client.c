@@ -89,9 +89,6 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 	g_hash_table_insert(server->clients,
 			    client->addr,
 			    client);
-	g_hash_table_insert(server->socket->clients,
-			    client->addr,
-			    client);
 	
 	return client;
 }
@@ -360,6 +357,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.17  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.16  2003/12/27 19:22:25  fraggle
 // Some of the callback lists were not being destroyed properly
 //

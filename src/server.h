@@ -68,6 +68,11 @@ struct _IrmoServer {
 	GSList *connect_callbacks;
 };
 
+// make a new server using an existing socket object
+
+IrmoServer *irmo_server_new_from(IrmoSocket *sock, IrmoWorld *world,
+				 IrmoInterfaceSpec *client_spec);
+
 // invoke IrmoClientCallback callback functions in a list
 
 void irmo_client_callback_raise(GSList *list, IrmoClient *client);
@@ -79,6 +84,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log$
+// Revision 1.7  2004/01/06 01:36:18  fraggle
+// Remove vhosting. Simplify the server API.
+//
 // Revision 1.6  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
