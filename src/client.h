@@ -83,6 +83,10 @@ struct _IrmoClient {
 	// something it has sent us
 	
 	gboolean need_ack;
+
+	// disconnect callbacks
+
+	GSList *disconnect_callbacks;
 };
 
 // create a new client, attached to a particular server
@@ -104,6 +108,9 @@ void irmo_client_run_recvwindow(IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2003/03/17 16:48:22  sdh300
+// Add ability to disconnect from servers and to disconnect clients
+//
 // Revision 1.15  2003/03/07 12:32:15  sdh300
 // Add missing prototype and some documentation
 //

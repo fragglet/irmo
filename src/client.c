@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -247,7 +248,32 @@ void irmo_client_disconnect(IrmoClient *client)
 	client->_connect_attempts = CLIENT_CONNECT_ATTEMPTS;
 }
 
+void irmo_client_watch_disconnect(IrmoClient *client,
+				  IrmoClientCallback func,
+				  gpointer user_data)
+{
+	irmo_callbacklist_add(&client->disconnect_callbacks,
+			      func, user_data);
+}
+
+void irmo_client_unwatch_disconnect(IrmoClient *client,
+				    IrmoClientCallback func,
+				    gpointer user_data)
+{
+	if (!irmo_callbacklist_remove(&client->disconnect_callbacks,
+				      func, user_data)) {
+		fprintf(stderr,
+			"irmo_client_unwatch_disconnect: "
+			"disconnect watch not found!\n");
+		return;
+	}
+}
+
+
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2003/03/17 17:02:23  sdh300
+// Add some missing destroy/unref calls to irmo_client_destroy
+//
 // Revision 1.16  2003/03/17 16:48:22  sdh300
 // Add ability to disconnect from servers and to disconnect clients
 //

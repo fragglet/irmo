@@ -380,6 +380,9 @@ static inline void socket_run_synfin(IrmoPacket *packet)
 		client->state = CLIENT_DISCONNECTED;
 		client->_connect_time = time(NULL);
 		client->disconnect_wait = TRUE;
+
+		irmo_client_callback_raise(client->disconnect_callbacks,
+					   client);
 	}
 
 	if (client->state == CLIENT_DISCONNECTED) {
@@ -406,6 +409,8 @@ static inline void socket_run_synfinack(IrmoPacket *packet)
 	
 	if (client->state == CLIENT_DISCONNECTING) {
 		client->state = CLIENT_DISCONNECTED;
+		irmo_client_callback_raise(client->disconnect_callbacks,
+					   client);
 		printf("disconnected client ok\n");
 	}
 }
@@ -560,6 +565,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.36  2003/03/17 16:48:23  sdh300
+// Add ability to disconnect from servers and to disconnect clients
+//
 // Revision 1.35  2003/03/17 15:45:01  sdh300
 // Some extra sanity checks before parsing packets
 //
