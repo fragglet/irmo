@@ -124,6 +124,13 @@ void irmo_world_unref(IrmoWorld *world)
 		
 		free(world->callbacks);
 
+		// method callbacks
+		
+		for (i=0; i<world->spec->nmethods; ++i)
+			irmo_callbacklist_free(world->method_callbacks[i]);
+
+		free(world->method_callbacks);
+
 		// no longer using the interface spec
 		
 		irmo_interface_spec_unref(world->spec);
@@ -203,6 +210,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.8  2003/12/27 19:22:25  fraggle
+// Some of the callback lists were not being destroyed properly
+//
 // Revision 1.7  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

@@ -140,6 +140,10 @@ void irmo_callbackdata_free(IrmoCallbackData *data)
 
 	irmo_callbacklist_free(data->class_callbacks);
 
+	// free new object callbacks
+	
+	irmo_callbacklist_free(data->new_callbacks);
+
 	// free destroy callbacks
 
 	irmo_callbacklist_free(data->destroy_callbacks);
@@ -410,6 +414,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.14  2003/12/27 19:22:25  fraggle
+// Some of the callback lists were not being destroyed properly
+//
 // Revision 1.13  2003/12/27 19:01:48  fraggle
 // irmo_callback_watch_destroy
 //

@@ -112,6 +112,10 @@ static void irmo_client_destroy(IrmoClient *client)
 {
 	int i;
 
+	// destroy callbacks
+	
+	irmo_callbacklist_free(client->disconnect_callbacks);
+
 	// clear send queue
 
 	while (!g_queue_is_empty(client->sendq)) {
@@ -125,7 +129,7 @@ static void irmo_client_destroy(IrmoClient *client)
 	g_queue_free(client->sendq);
 
 	g_hash_table_destroy(client->sendq_hashtable);
-	
+
 	// destroy sendwindow and all data in it
 	
 	for (i=0; i<client->sendwindow_size; ++i)
@@ -356,6 +360,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.16  2003/12/27 19:22:25  fraggle
+// Some of the callback lists were not being destroyed properly
+//
 // Revision 1.15  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
