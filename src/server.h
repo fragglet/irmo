@@ -22,6 +22,10 @@ struct _IrmoServer {
 	
 	IrmoUniverse *universe;
 
+	// spec for client universes
+
+	InterfaceSpec *client_spec;
+	
 	// connected IrmoClients hashed by IP
 	
 	GHashTable *clients;
@@ -51,4 +55,7 @@ IrmoServer *server_new(IrmoSocket *socket, gchar *hostname,
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2002/11/26 15:23:49  sdh300
+// Initial network code
+//
 
