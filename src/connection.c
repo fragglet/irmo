@@ -71,7 +71,20 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	return connection;
 } 
 
+IrmoSocket *connection_get_socket(IrmoConnection *conn)
+{
+	return conn->sock;
+}
+
+void connection_run(IrmoConnection *conn)
+{
+	socket_run(conn->sock);
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/18 17:41:37  sdh300
+// Add timeout for connect (6 attempts)
+//
 // Revision 1.4  2003/02/11 19:18:43  sdh300
 // Initial working connection code!
 //
