@@ -114,13 +114,16 @@ gboolean packet_readi32(IrmoPacket *packet, guint32 *l)
 
 gchar *packet_readstring(IrmoPacket *packet)
 {
-	guchar *start;
+	guchar *start = packet->data + packet->pos;
 
-	for (start=packet->data + packet->pos;
-	     packet->pos < packet->len;
-	     ++packet->pos) {
-		if (!packet->data[packet->pos])
+	for (; packet->pos < packet->len; ++packet->pos) {
+		if (!packet->data[packet->pos]) {
+			// skip past the terminating 0
+			
+			++packet->pos;
+			
 			return start;
+		}
 	}
 
 	// overflowed past the end of the packet
@@ -129,6 +132,9 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/11 19:02:03  sdh300
+// fix packet_readstring bug
+//
 // Revision 1.4  2003/02/03 21:12:31  sdh300
 // Fix errors
 //
