@@ -20,7 +20,7 @@ IrmoCallbackData *_callbackdata_new(ClassSpec *objclass)
 	return data;
 }
 
-static void _callbackdata_free_foreach(IrmoCallback *callback,
+static void _callbackdata_free_foreach(IrmoVarCallbackData *callback,
 				       gpointer user_data)
 {
 	free(callback);
@@ -54,7 +54,7 @@ struct raise_data {
 	gchar *variable;
 };
 
-void _callbackdata_raise_foreach(IrmoCallback *callback,
+void _callbackdata_raise_foreach(IrmoVarCallbackData *callback, 
 				 struct raise_data *raise_data)
 {
 	callback->func(raise_data->object, raise_data->variable,
@@ -84,10 +84,10 @@ void _callbackdata_raise(IrmoCallbackData *data,
 
 static void callbackdata_watch(IrmoCallbackData *data,
 			       gchar *variable,
-			       IrmoCallbackFunc func, gpointer user_data)
+			       IrmoCallback func, gpointer user_data)
 {
 	GSList **list;
-	IrmoCallback *callback;
+	IrmoVarCallbackData *callback;
 	
 	if (variable) {
 		ClassVarSpec *varspec
@@ -107,7 +107,7 @@ static void callbackdata_watch(IrmoCallbackData *data,
 		list = &data->class_callbacks;
 	}
 
-	callback = g_new0(IrmoCallback, 1);
+	callback = g_new0(IrmoVarCallbackData, 1);
 	callback->func = func;
 	callback->user_data = user_data;
 
@@ -116,7 +116,7 @@ static void callbackdata_watch(IrmoCallbackData *data,
 
 void universe_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
-			  IrmoCallbackFunc func, gpointer user_data)
+			  IrmoCallback func, gpointer user_data)
 {
 	ClassSpec *spec;
 	
@@ -136,13 +136,16 @@ void universe_watch_class(IrmoUniverse *universe,
 }
 
 void object_watch(IrmoObject *object, gchar *variable,
-		  IrmoCallbackFunc func, gpointer user_data)
+		  IrmoCallback func, gpointer user_data)
 {
 	callbackdata_watch(object->callbacks, variable,
 			   func, user_data);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/11/05 15:04:11  sdh300
+// more warnings!
+//
 // Revision 1.4  2002/11/05 15:01:05  sdh300
 // change callback function names
 // initial destroy callback variables
