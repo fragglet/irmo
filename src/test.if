@@ -1,0 +1,19 @@
+// this is a test of c++ comments
+
+/* this is a test of c comments */ // heh
+
+/* here
+   is 
+   a *****
+   multiline comment */
+
+class myclass {
+	string foo;
+	int32 myvar;
+	int32 heh;
+	string blah;
+}
+
+
+func my_callback_func(int32 blah, string something);
+func my_cayllback_func(int32 blah, string something);
