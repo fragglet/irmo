@@ -41,6 +41,7 @@
 // 
 
 #include <glib.h>
+#include <setjmp.h>
 #include <stdarg.h>
 #include <string.h>
 #include "if_spec.h"
@@ -75,6 +76,17 @@ typedef enum {
 	}
  
 static void parse_assert(int expr, char *msg, ...);
+static jmp_buf parse_error_env;
+
+typedef void (*cleanup_func)(gpointer data);
+
+#define CLEANUP_STACK_SIZE 10
+
+static struct {
+	cleanup_func func;
+	gpointer data;
+} cleanup_stack[CLEANUP_STACK_SIZE];
+static int cleanup_stack_pos;
  
 static char *yyin_filename;
 static int line_num;
@@ -111,6 +123,22 @@ WHITESPACE [[:space:]]+
 
 %%
 
+// add some data to the stack of things to free back
+
+static void cleanup_push(gpointer func, gpointer data)
+{
+	g_assert(cleanup_stack_pos < CLEANUP_STACK_SIZE);
+
+	cleanup_stack[cleanup_stack_pos].func = (cleanup_func) func;
+	cleanup_stack[cleanup_stack_pos].data = data;
+	++cleanup_stack_pos;
+}
+
+static void cleanup_pop()
+{
+	--cleanup_stack_pos;
+}
+
 // test a condition and bomb out with an error
 // message if it is false
 
@@ -119,15 +147,28 @@ static void parse_assert(int expr, char *msg, ...)
 	va_list l;
 
 	if (!expr) {
+		char *error_string;
+		int i;
+
 		va_start(l, msg);
 
-		fprintf(stderr, "%s: %i: ", yyin_filename, line_num);
-		vfprintf(stderr, msg, l);
-		fprintf(stderr, "\n");
+		error_string = g_strdup_vprintf(msg, l);
+
+		irmo_error_report("irmo_interface_spec_new", "%s: %i: %s",
+				  yyin_filename, line_num,
+				  error_string);
+
+		free(error_string);
 
 		va_end(l);
 
-		exit(-1);
+		// now free back all the data we were working on to 
+		// clean up
+
+		for (i=0; i<cleanup_stack_pos; ++i)
+			cleanup_stack[i].func(cleanup_stack[i].data);
+
+		longjmp(parse_error_env, 1);
 	}
 }
 
@@ -145,9 +186,68 @@ G_INLINE_FUNC IrmoVarType type_token_to_spec(int i)
 		case TOKEN_INT32: return IRMO_TYPE_INT32;
 		case TOKEN_STRING: return IRMO_TYPE_STRING;
 		default:
+			return IRMO_TYPE_UNKNOWN;
 	}
+}
 
-	return 0;
+static void class_var_free(IrmoClassVar *var)
+{
+	free(var->name);
+	free(var);
+}
+
+static IrmoClassVar *eat_class_var(IrmoClass *klass)
+{
+	IrmoVarType vartype;
+	token_t token;
+	IrmoClassVar *var;
+
+	token = yylex();
+
+	// end of class
+
+	if (token == TOKEN_RCURLY)
+		return NULL;
+
+	// type token
+		
+	parse_assert(is_type_token(token), 
+		     "'%s' not a variable type", yytext);
+
+	vartype = type_token_to_spec(token);
+
+	// variable name
+
+	token = yylex();
+	parse_assert(token == TOKEN_ID, "variable name expected");
+
+	parse_assert(irmo_class_get_variable(klass, yytext) == NULL,
+		     "multiple definitions of '%s'", yytext);
+
+	var = g_new0(IrmoClassVar, 1);
+	var->type = vartype;
+	var->index = klass->nvariables;
+	var->name = strdup(yytext);
+
+	cleanup_push(class_var_free, var);
+
+	// ending semicolon
+
+	parse_assert(yylex() == TOKEN_SEMICOLON, "semicolon expected");
+
+	parse_assert(klass->nvariables < MAX_VARIABLES,
+		     "maximum of %i variables per class", MAX_VARIABLES);
+
+	// insert into class
+
+	klass->variables[klass->nvariables++] = var;
+	g_hash_table_insert(klass->variable_hash, var->name, var);
+
+	// now part of the class, no longer need to watch it
+
+	cleanup_pop();
+
+	return var;
 }
 
 static void class_free(IrmoClass *spec)
@@ -156,10 +256,8 @@ static void class_free(IrmoClass *spec)
 
 	g_hash_table_destroy(spec->variable_hash);
 	
-	for (i=0; i<spec->nvariables; ++i) {
-		free(spec->variables[i]->name);
-		free(spec->variables[i]);
-	}
+	for (i=0; i<spec->nvariables; ++i)
+		class_var_free(spec->variables[i]);
 
 	free(spec->variables);
 	free(spec->name);
@@ -187,69 +285,93 @@ static guint class_hash(IrmoClass *spec)
 	return hash;
 }
 
-static IrmoClass *eat_class()
+static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 {
-	IrmoClass *spec;
+	IrmoClass *klass;
 	int i;
 
 	parse_assert(yylex() == TOKEN_ID, "class name expected");
 
-	spec = g_new0(IrmoClass, 1); 
-	spec->name = strdup(yytext);
-	spec->variables = malloc(sizeof(IrmoClassVar *) * MAX_VARIABLES);
+	parse_assert(irmo_interface_spec_get_class(spec, yytext) == NULL,
+		     "multiple definitions of '%s'",
+		     yytext);
 
-	spec->variable_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	klass = g_new0(IrmoClass, 1); 
+	klass->name = strdup(yytext);
+	klass->variables = malloc(sizeof(IrmoClassVar *) * MAX_VARIABLES);
+	klass->nvariables = 0;
+	klass->variable_hash = g_hash_table_new(g_str_hash, g_str_equal);
+
+	cleanup_push(class_free, klass);
 	
 	parse_assert(yylex() == TOKEN_LCURLY, "expected '{' open parentheses");
 
-	for (i=0; ;  ++i) {
-		token_t token = yylex();
-		IrmoClassVar *var;
+	while (eat_class_var(klass));
 
-		// end of class
+	if (klass->nvariables < MAX_VARIABLES)
+		klass->variables 
+		   = realloc(klass->variables, klass->nvariables * sizeof(IrmoClassVar *));
 
-		if (token == TOKEN_RCURLY)
-			break;
+	//printf("read class: name '%s', %i variables\n", klass->name, i);
 
-		parse_assert(i < MAX_VARIABLES,
-			     "maximum %i variables per class", MAX_VARIABLES);
+	// this class is complete
 
-		var = g_new0(IrmoClassVar, 1);
+	cleanup_pop();
 
-		// type token
-		
-		parse_assert(is_type_token(token), 
-			     "'%s' not a variable type", yytext);
-		var->type = type_token_to_spec(token);
-	
-		// variable name
+	return klass;
+}
 
+static void method_arg_free(IrmoMethodArg *arg)
+{
+	free(arg->name);
+	free(arg);
+}
+
+static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
+{
+	token_t token = yylex();
+	IrmoMethodArg *arg;
+	IrmoVarType argtype;
+
+	if (token == TOKEN_RPAREN)
+		return NULL;
+
+	if (method->narguments > 0) {
+		parse_assert(token == TOKEN_COMMA,
+			     "comma expected between arguments");
 		token = yylex();
-		parse_assert(token == TOKEN_ID, "variable name expected");
-
-		parse_assert(irmo_class_get_variable(spec, yytext) == NULL,
-			     "multiple definitions of '%s'", yytext);
-		
-		var->name = strdup(yytext);
-		var->index = i;
-		
-		// ending semicolon
-
-		parse_assert(yylex() == TOKEN_SEMICOLON, "semicolon expected");
-
-		spec->variables[i] = var;
-		g_hash_table_insert(spec->variable_hash, var->name, var);
 	}
+		
+	// argument type
 
-	spec->nvariables = i;
+	parse_assert(is_type_token(token), 
+		     "'%s' not a variable type", yytext);
 
-	if (i < MAX_VARIABLES)
-		spec->variables 
-		   = realloc(spec->variables, i * sizeof(IrmoClassVar *));
+	argtype = type_token_to_spec(token);
 
-	//printf("read class: name '%s', %i variables\n", spec->name, i);
+	// argument name
 
-	return spec;
+	parse_assert(yylex() == TOKEN_ID, "expecting argument name");
+
+	arg = g_new0(IrmoMethodArg, 1); 
+	arg->name = strdup(yytext);
+	arg->type = argtype;
+	arg->index = method->narguments;
+
+	cleanup_push(method_arg_free, arg);
+
+	parse_assert(irmo_method_get_argument(method, yytext) == NULL,
+		     "multiple definitions of '%s'", yytext);
+
+	parse_assert(method->narguments < MAX_ARGUMENTS,
+		     "maximum of %i arguments to a method", MAX_ARGUMENTS);
+		
+	method->arguments[method->narguments++] = arg;
+	g_hash_table_insert(method->argument_hash, arg->name, arg);
+
+	cleanup_pop();
+
+	return arg;
 }
 
 static void method_free(IrmoMethod *spec)
@@ -258,10 +380,8 @@ static void method_free(IrmoMethod *spec)
 	
 	g_hash_table_destroy(spec->argument_hash);
 
-	for (i=0; i<spec->narguments; ++i) {
-		free(spec->arguments[i]->name);
-		free(spec->arguments[i]);
-	}
+	for (i=0; i<spec->narguments; ++i) 
+		method_arg_free(spec->arguments[i]);
 	
 	free(spec->arguments);
 	free(spec->name);
@@ -284,69 +404,43 @@ static guint method_hash(IrmoMethod *spec)
 	return hash;
 }
 
-static IrmoMethod *eat_method()
+static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 {
-	IrmoMethod *spec;
+	IrmoMethod *method;
 	int i;
 	
 	parse_assert(yylex() == TOKEN_ID, "function name expected");
-	
-	spec = g_new0(IrmoMethod, 1); 
-	spec->name = strdup(yytext);
-	spec->arguments = malloc(sizeof(IrmoMethodArg *) * MAX_ARGUMENTS);
 
-	spec->argument_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	parse_assert(irmo_interface_spec_get_method(spec, yytext) == NULL,
+		     "multiple definitions of '%s'", yytext);
+	
+	method = g_new0(IrmoMethod, 1); 
+	method->name = strdup(yytext);
+	method->arguments = malloc(sizeof(IrmoMethodArg *) * MAX_ARGUMENTS);
+	method->argument_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	method->narguments = 0;
+
+	cleanup_push(method_free, method);
 	
 	parse_assert(yylex() == TOKEN_LPAREN,
 		     "expecting '(' open parentheses");
 
-	for (i=0;; ++i) {
-		token_t token = yylex();
-		IrmoMethodArg *arg;
+	while (eat_method_arg(method));
 
-		if (token == TOKEN_RPAREN)
-			break;
-
-		if (i > 0) {
-			parse_assert(token == TOKEN_COMMA,
-				     "comma expected between arguments");
-			token = yylex();
-		}
-		
-		// argument type
-
-		parse_assert(is_type_token(token), 
-			     "'%s' not a variable type", yytext);
-
-		arg = g_new0(IrmoMethodArg, 1); 
-		arg->type = type_token_to_spec(token);
-		arg->index = i;
-
-		// argument name
-
-		parse_assert(yylex() == TOKEN_ID, "expecting argument name");
-
-		parse_assert(irmo_method_get_argument(spec, yytext) == NULL,
-			     "multiple definitions of '%s'", yytext);
-		
-		arg->name = strdup(yytext);
-		
-		spec->arguments[i] = arg;
-		
-		g_hash_table_insert(spec->argument_hash, arg->name, arg);
-	}
-
-	spec->narguments = i;
-	if (i < MAX_ARGUMENTS) {
-		spec->arguments = realloc(spec->arguments,
-					  sizeof(IrmoMethodArg) * i);
+	if (method->narguments < MAX_ARGUMENTS) {
+		method->arguments = realloc(method->arguments,
+					  sizeof(IrmoMethodArg) * method->narguments);
 	}
 
 	parse_assert(yylex() == TOKEN_SEMICOLON,
 		     "expecting semicolon at end of function prototype");
 
-	//printf("read method: name '%s', %i arguments\n", spec->name, i);
-	return spec;
+	// this method is complete
+
+	cleanup_pop();
+
+	//printf("read method: name '%s', %i arguments\n", method->name, i);
+	return method;
 }
 
 static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
@@ -398,7 +492,9 @@ static IrmoInterfaceSpec *eat_interface()
 	
 	spec->class_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	spec->method_hash = g_hash_table_new(g_str_hash, g_str_equal);
-	
+
+	cleanup_push(irmo_interface_spec_free, spec);
+
 	while ((token = yylex())) {
 		if (token == TOKEN_CLASS) {
 			IrmoClass *class_spec;
@@ -406,12 +502,8 @@ static IrmoInterfaceSpec *eat_interface()
 			parse_assert(spec->nclasses < MAX_CLASSES,
 				     "maximum of %i classes", MAX_CLASSES);
 
-			class_spec = eat_class();
+			class_spec = eat_class(spec);
 
-			parse_assert(irmo_interface_spec_get_class(spec, class_spec->name) == NULL,
-				     "multiple definitions of '%s'",
-				     class_spec->name);
-			
 			class_spec->index = spec->nclasses;
 			spec->classes[spec->nclasses] = class_spec;
 
@@ -426,12 +518,8 @@ static IrmoInterfaceSpec *eat_interface()
 			parse_assert(spec->nmethods < MAX_METHODS,
 				     "maximum of %i methods", MAX_METHODS);
 
-			method = eat_method();
-			
-			parse_assert(irmo_interface_spec_get_method(spec, method->name) == NULL,
-				     "multiple definitions of '%s'",
-					method->name);
-			
+			method = eat_method(spec);
+
 			method->index = spec->nmethods;
 			spec->methods[spec->nmethods++] = method;
 			g_hash_table_insert(spec->method_hash, method->name,
@@ -449,6 +537,10 @@ static IrmoInterfaceSpec *eat_interface()
 					sizeof(IrmoMethod *) * spec->nmethods);
 
 	spec->hash = irmo_interface_spec_hash(spec);
+
+	// interface spec is complete
+
+	cleanup_pop();
 	
 	return spec;
 }
@@ -470,7 +562,14 @@ IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 	yyin_filename = filename;
 	line_num = 1;
 
-	spec = eat_interface();
+	// set up catching errors
+
+	cleanup_stack_pos = 0;
+
+	if (setjmp(parse_error_env)) 
+		spec = NULL;		// an error occurred
+	else
+		spec = eat_interface();
 
 	fclose(yyin);
 
@@ -495,6 +594,10 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.8  2003/08/30 16:21:42  fraggle
+// Restructure the interface spec parser. Report errors properly instead
+// of just exit()ing when an error occurs.
+//
 // Revision 1.7  2003/08/28 16:43:45  fraggle
 // Use the reflection API internally to improve readability in places
 //
