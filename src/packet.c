@@ -134,7 +134,7 @@ gboolean irmo_packet_readi8(IrmoPacket *packet, guint *i)
 
 gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i)
 {
-	guchar *data;
+	guint8 *data;
 	
 	if (packet->pos + 2 > packet->len)
 		return FALSE;
@@ -152,7 +152,7 @@ gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i)
 
 gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i)
 {
-	guchar *data;
+	guint8 *data;
 
 	if (packet->pos + 4 > packet->len)
 		return FALSE;
@@ -171,7 +171,7 @@ gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i)
 
 gchar *irmo_packet_readstring(IrmoPacket *packet)
 {
-	guchar *start = packet->data + packet->pos;
+	guint8 *start = packet->data + packet->pos;
 
 	for (; packet->pos < packet->len; ++packet->pos) {
 		if (!packet->data[packet->pos]) {
@@ -242,6 +242,9 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 }
 
 // $Log$
+// Revision 1.7  2003/11/05 02:05:41  fraggle
+// Use guint8 instead of guchar
+//
 // Revision 1.6  2003/10/22 16:05:01  fraggle
 // Move field reading routines into packet.c
 //

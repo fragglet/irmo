@@ -629,7 +629,7 @@ static gboolean socket_run_client(gpointer key, IrmoClient *client,
 
 void irmo_socket_run(IrmoSocket *sock)
 {
-	guchar buf[PACKET_BUFFER_LEN];
+	guint8 buf[PACKET_BUFFER_LEN];
 	struct sockaddr *addr;
 	int addr_len;
 
@@ -714,6 +714,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.16  2003/11/05 02:05:41  fraggle
+// Use guint8 instead of guchar
+//
 // Revision 1.15  2003/10/18 01:34:45  fraggle
 // Better error reporting for connecting, allow server to send back an
 // error message when refusing connections
