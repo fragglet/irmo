@@ -353,14 +353,9 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 		client->rtt_deviation = RTT_ALPHA * client->rtt_deviation
 			+ (1-RTT_ALPHA) * deviation;
 
-		// if we were backing off, but this came within
-		// the timeout time, we have now adjusted the
-		// backoff time correctly to the new rtt
-		// backoff can be turned off 
-		
-		if (client->backoff != 1
-		    && rtt_ms < irmo_client_timeout_time(client))
-			client->backoff = 1;
+		// reset backoff back to 1 now we have a valid packet
+
+		client->backoff = 1;
 	}	
 	
 	// need to move the sendwindow along
@@ -409,6 +404,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2003/05/04 00:28:14  sdh300
+// Add ability to manually set the maximum sendwindow size
+//
 // Revision 1.13  2003/04/21 18:10:54  sdh300
 // Fix sending of unneccesary acks
 // Slow start/Congestion avoidance
