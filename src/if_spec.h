@@ -41,8 +41,9 @@
 // an argument to a method
 
 struct _IrmoMethodArg {
-	int index;
+	IrmoMethod *parent;
 
+	int index;
 	IrmoVarType type;
 	char *name;
 };
@@ -50,8 +51,9 @@ struct _IrmoMethodArg {
 // method declaration
 
 struct _IrmoMethod {
-	int index;
+	IrmoInterfaceSpec *parent;
 
+	int index;
 	char *name;			// method name
 	
 	IrmoMethodArg **arguments;
@@ -63,8 +65,9 @@ struct _IrmoMethod {
 // class member variable
 
 struct _IrmoClassVar {
+	IrmoClass *parent;
+
 	int index;                      // index in variable list
-	
 	IrmoVarType type;
 	char *name;
 };
@@ -72,6 +75,8 @@ struct _IrmoClassVar {
 // class
 
 struct _IrmoClass {
+	IrmoInterfaceSpec *parent;
+
 	int index;                      // index in class list
 
 	char *name;			// class name
@@ -110,6 +115,9 @@ struct _IrmoInterfaceSpec {
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
+// Revision 1.4  2003/08/31 18:32:10  fraggle
+// refcounting functions for the InterfaceSpec internals
+//
 // Revision 1.3  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

@@ -228,6 +228,7 @@ static IrmoClassVar *eat_class_var(IrmoClass *klass)
 	var->type = vartype;
 	var->index = klass->nvariables;
 	var->name = strdup(yytext);
+	var->parent = klass;
 
 	cleanup_push(class_var_free, var);
 
@@ -301,6 +302,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 	klass->variables = malloc(sizeof(IrmoClassVar *) * MAX_VARIABLES);
 	klass->nvariables = 0;
 	klass->variable_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	klass->parent = spec;
 
 	cleanup_push(class_free, klass);
 	
@@ -357,6 +359,7 @@ static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 	arg->name = strdup(yytext);
 	arg->type = argtype;
 	arg->index = method->narguments;
+	arg->parent = method;
 
 	cleanup_push(method_arg_free, arg);
 
@@ -419,6 +422,7 @@ static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 	method->arguments = malloc(sizeof(IrmoMethodArg *) * MAX_ARGUMENTS);
 	method->argument_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	method->narguments = 0;
+	method->parent = spec;
 
 	cleanup_push(method_free, method);
 	
@@ -594,6 +598,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.9  2003/08/31 18:32:10  fraggle
+// refcounting functions for the InterfaceSpec internals
+//
 // Revision 1.8  2003/08/30 16:21:42  fraggle
 // Restructure the interface spec parser. Report errors properly instead
 // of just exit()ing when an error occurs.

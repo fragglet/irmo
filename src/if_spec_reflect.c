@@ -113,6 +113,21 @@ void irmo_class_foreach_variable(IrmoClass *klass,
 		func(klass->variables[i], user_data);
 }
 
+void irmo_class_ref(IrmoClass *klass)
+{
+	g_return_if_fail(klass != NULL);
+
+	irmo_interface_spec_ref(klass->parent);
+}
+
+void irmo_class_unref(IrmoClass *klass)
+{
+	g_return_if_fail(klass != NULL);
+
+	irmo_interface_spec_unref(klass->parent);
+}
+
+
 //
 // IrmoClassVar
 //
@@ -129,6 +144,20 @@ IrmoVarType irmo_class_var_get_type(IrmoClassVar *var)
 	g_return_val_if_fail(var != NULL, IRMO_TYPE_UNKNOWN);
 
 	return var->type;
+}
+
+void irmo_class_var_ref(IrmoClassVar *var)
+{
+	g_return_if_fail(var != NULL);
+
+	irmo_interface_spec_ref(var->parent->parent);
+}
+
+void irmo_class_var_unref(IrmoClassVar *var)
+{
+	g_return_if_fail(var != NULL);
+
+	irmo_interface_spec_unref(var->parent->parent);
 }
 
 //
@@ -170,8 +199,22 @@ void irmo_method_foreach_argument(IrmoMethod *method,
 		func(method->arguments[i], user_data);
 }
 
+void irmo_method_ref(IrmoMethod *method)
+{
+	g_return_if_fail(method != NULL);
+
+	irmo_interface_spec_ref(method->parent);
+}
+
+void irmo_method_unref(IrmoMethod *method)
+{
+	g_return_if_fail(method != NULL);
+
+	irmo_interface_spec_unref(method->parent);
+}
+
 //
-// IrmoMethod
+// IrmoMethodArg
 //
 
 gchar *irmo_method_arg_get_name(IrmoMethodArg *arg)
@@ -188,7 +231,24 @@ IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg)
 	return arg->type;
 }
 
+void irmo_method_arg_ref(IrmoMethodArg *arg)
+{
+	g_return_if_fail(arg != NULL);
+
+	irmo_interface_spec_ref(arg->parent->parent);
+}
+
+void irmo_method_arg_unref(IrmoMethodArg *arg)
+{
+	g_return_if_fail(arg != NULL);
+
+	irmo_interface_spec_unref(arg->parent->parent);
+}
+
 // $Log$
+// Revision 1.5  2003/08/31 18:32:10  fraggle
+// refcounting functions for the InterfaceSpec internals
+//
 // Revision 1.4  2003/08/29 16:46:33  fraggle
 // Use "foreach" instead of "each" for consistency
 //
