@@ -57,7 +57,8 @@ typedef struct _IrmoMethodData IrmoMethodData;
  *                  the callback.
  */
 
-typedef void (*IrmoMethodCallback)(IrmoMethodData *data, gpointer user_data);
+typedef void (*IrmoInvokeCallback)(IrmoMethodData *data, 
+				   gpointer user_data);
 
 /*!
  * \brief Set a callback function to be invoked when a method is called
@@ -72,7 +73,7 @@ typedef void (*IrmoMethodCallback)(IrmoMethodData *data, gpointer user_data);
 
 IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe, 
 					 gchar *method_name,
-					 IrmoMethodCallback method, 
+					 IrmoInvokeCallback method, 
 					 gpointer user_data);
 
 /*!
@@ -134,6 +135,10 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...);
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log$
+// Revision 1.3  2003/08/29 16:28:19  fraggle
+// Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
+// to avoid name conflict.
+//
 // Revision 1.2  2003/07/22 02:05:40  fraggle
 // Move callbacks to use a more object-oriented API.
 //

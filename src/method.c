@@ -32,7 +32,7 @@
 
 IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe, 
 					 gchar *method_name,
-					 IrmoMethodCallback method, 
+					 IrmoInvokeCallback method, 
 					 gpointer user_data)
 {
 	IrmoMethod *spec;
@@ -56,7 +56,7 @@ IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe,
 static void method_invoke_foreach(IrmoCallback *data,
 				  IrmoMethodData *method_data)
 {
-	IrmoMethodCallback func = (IrmoMethodCallback) data->func;
+	IrmoInvokeCallback func = (IrmoInvokeCallback) data->func;
 
 	func(method_data, data->user_data);
 }
@@ -195,6 +195,10 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.7  2003/08/29 16:28:19  fraggle
+// Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
+// to avoid name conflict.
+//
 // Revision 1.6  2003/08/28 16:43:45  fraggle
 // Use the reflection API internally to improve readability in places
 //

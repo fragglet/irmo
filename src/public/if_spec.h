@@ -76,6 +76,11 @@ typedef struct _IrmoMethodArg IrmoMethodArg;
 
 typedef struct _IrmoInterfaceSpec IrmoInterfaceSpec;
 
+typedef void (*IrmoClassCallback)(IrmoClass *klass, gpointer user_data);
+typedef void (*IrmoClassVarCallback)(IrmoClassVar *var, gpointer user_data);
+typedef void (*IrmoMethodCallback)(IrmoMethod *method, gpointer user_data);
+typedef void (*IrmoMethodArgCallback)(IrmoMethodArg *arg, gpointer user_data);
+
 /*!
  * \brief Create a new IrmoInterfaceSpec object
  *
@@ -125,6 +130,17 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
 					 gchar *class_name);
 
 /*!
+ * \brief Iterate over all classes in a specification
+ * 
+ * \param spec		The specification object
+ * \param func		A user function to call for each class
+ * \param user_data	Extra data to pass to the function
+ */
+
+void irmo_interface_spec_each_class(IrmoInterfaceSpec *spec, 
+				    IrmoClassCallback func, 
+				    gpointer user_data);
+/*!
  * \brief Get the \ref IrmoMethod object representing a particular method
  *
  * \param spec		The interface specification
@@ -135,6 +151,18 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
 
 IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
 					   gchar *method_name);
+
+/*!
+ * \brief Iterate over all methods in a specification
+ * 
+ * \param spec		The specification object
+ * \param func		A user function to call for each method
+ * \param user_data	Extra data to pass to the function
+ */
+
+void irmo_interface_spec_each_method(IrmoInterfaceSpec *spec, 
+				     IrmoMethodCallback func, 
+				     gpointer user_data);
 
 /*! 
  * \brief Get the name of a \ref IrmoClass object
@@ -159,6 +187,18 @@ gint irmo_class_num_variables(IrmoClass *klass);
  */
 
 IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name);
+
+/*!
+ * \brief Iterate over all variables in a class
+ * 
+ * \param klass		The class object
+ * \param func		A user function to call for each variable
+ * \param user_data	Extra data to pass to the function
+ */
+
+void irmo_class_each_variable(IrmoClass *klass, 
+			      IrmoClassVarCallback func, 
+			      gpointer user_data);
 
 /*!
  * \brief Get the name of a \ref IrmoClassVar object
@@ -196,6 +236,18 @@ gint irmo_method_num_arguments(IrmoMethod *method);
 
 IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name);
 
+/*!
+ * \brief Iterate over all arguments to a method
+ * 
+ * \param method	The class object
+ * \param func		A user function to call for each variable
+ * \param user_data	Extra data to pass to the function
+ */
+
+void irmo_method_each_argument(IrmoMethod *method,
+			       IrmoMethodArgCallback func, 
+			       gpointer user_data);
+
 /*! 
  * \brief Get the name of a method argument
  */
@@ -213,6 +265,10 @@ IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.5  2003/08/29 16:28:19  fraggle
+// Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
+// to avoid name conflict.
+//
 // Revision 1.4  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

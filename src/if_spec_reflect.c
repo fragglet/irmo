@@ -47,6 +47,33 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
 	return g_hash_table_lookup(spec->method_hash, method_name);
 }
 
+void irmo_interface_spec_each_class(IrmoInterfaceSpec *spec, 
+				    IrmoClassCallback func, 
+				    gpointer user_data)
+{
+	int i;
+
+	g_return_if_fail(spec != NULL);
+	g_return_if_fail(func != NULL);
+
+	for (i=0; i<spec->nclasses; ++i) 
+		func(spec->classes[i], user_data);
+}
+
+void irmo_interface_spec_each_method(IrmoInterfaceSpec *spec, 
+				     IrmoMethodCallback func, 
+				     gpointer user_data)
+{
+	int i;
+
+	g_return_if_fail(spec != NULL);
+	g_return_if_fail(func != NULL);
+
+	for (i=0; i<spec->nmethods; ++i) 
+		func(spec->methods[i], user_data);
+}
+
+
 //
 // IrmoClass
 //
@@ -71,6 +98,19 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name)
 	g_return_val_if_fail(var_name != NULL, NULL);
 
 	return g_hash_table_lookup(klass->variable_hash, var_name);
+}
+
+void irmo_class_each_variable(IrmoClass *klass, 
+			      IrmoClassVarCallback func, 
+			      gpointer user_data)
+{
+	int i;
+
+	g_return_if_fail(klass != NULL);
+	g_return_if_fail(func != NULL);
+
+	for (i=0; i<klass->nvariables; ++i)
+		func(klass->variables[i], user_data);
 }
 
 //
@@ -117,6 +157,19 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name)
 	return g_hash_table_lookup(method->argument_hash, arg_name);
 }
 
+void irmo_method_each_argument(IrmoMethod *method,
+			       IrmoMethodArgCallback func, 
+			       gpointer user_data)
+{
+	int i;
+
+	g_return_if_fail(method != NULL);
+	g_return_if_fail(func != NULL);
+
+	for (i=0; i<method->narguments; ++i)
+		func(method->arguments[i], user_data);
+}
+
 //
 // IrmoMethod
 //
@@ -136,6 +189,10 @@ IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.3  2003/08/29 16:28:19  fraggle
+// Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
+// to avoid name conflict.
+//
 // Revision 1.2  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.
@@ -145,4 +202,3 @@ IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg)
 // Initial reflection API
 //
 //
-
