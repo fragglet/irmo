@@ -109,7 +109,7 @@ void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 	// + 2 bytes for object id
 	
 	atom->len = 1 + 2;
-	
+
 	g_queue_push_tail(client->sendq, atom);
 }
 
@@ -138,7 +138,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 	atom->data.change.changed[variable] = TRUE;
 
 	// need to recalculate atom size
-	
+
 	atom->len = sendatom_change_len(atom);
 }
 
@@ -155,7 +155,6 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	// convert to a ATOM_NULL atom
 	
 	if (atom) {
-		printf("nullify atom\n");
 		sendatom_nullify(atom);
 		g_hash_table_remove(client->sendq_hashtable,
 				    (gpointer) object->id);
@@ -180,7 +179,7 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	// 2 bytes for object id to destroy
 	
 	atom->len = 2;
-	
+
 	g_queue_push_tail(client->sendq, atom);
 }
 
@@ -229,7 +228,7 @@ static void client_sendq_add_variables(IrmoObject *object,
 	int i;
 
 	// queue up variables
-	
+
 	for (i=0; i<object->objclass->nvariables; ++i)
 		irmo_client_sendq_add_change(client, object, i);
 }
@@ -253,6 +252,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/07 12:17:17  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.10  2003/03/06 21:29:05  sdh300
 // On connect, send the entire universe state to the client
 //

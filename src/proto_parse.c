@@ -49,7 +49,6 @@ static inline void proto_parse_change_atom(IrmoClient *client,
 	
 	packet_readi8(packet, &i8);
 
-	printf("object class number: %i\n", i8);
 	objclass = client->universe->spec->classes[i8];
 	atom->data.change.objclass = objclass;
 
@@ -157,8 +156,6 @@ static void proto_parse_insert_atom(IrmoClient *client,
 	if (index >= client->recvwindow_size) {
 		int newsize = index+1;
 
-		printf("resize recv window to %i\n", newsize);
-		
 		client->recvwindow
 			= g_renew(IrmoSendAtom *,
 				  client->recvwindow,
@@ -192,7 +189,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 
 	start = get_stream_position(client->recvwindow_start, i16);
 
-	printf("stream position: %i->%i\n", i16, start);
+	//printf("stream position: %i->%i\n", i16, start);
 	
 	for (seq=start;;) {
 		IrmoSendAtomType atomtype;
@@ -207,7 +204,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 		atomtype = (i8 >> 5) & 0x07;
 		natoms = (i8 & 0x1f) + 1;
 
-		printf("%i atoms, type %i\n", natoms, atomtype);
+		//printf("%i atoms, type %i\n", natoms, atomtype);
 		
 		for (i=0; i<natoms; ++i, ++seq) {
 			IrmoSendAtom *atom;
@@ -234,7 +231,7 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	int relative;
 	int i;
 
-	printf("got an ack: %i\n", ack);
+	//printf("got an ack: %i\n", ack);
 	
 	// extrapolate the high bits from the low 16 bits
 
@@ -279,8 +276,6 @@ void proto_parse_packet(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 
-	printf("parse packet\n");
-	
 	// read ack field if there is one
 
 	if (packet->flags & PACKET_FLAG_ACK) {
@@ -306,6 +301,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/07 12:31:51  sdh300
+// Add protocol.h
+//
 // Revision 1.6  2003/03/07 12:17:17  sdh300
 // Add irmo_ prefix to public function names (namespacing)
 //

@@ -26,7 +26,7 @@ static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 			atom->data.newobj.id);
 		return;
 	}
-	
+
 	// create new object
 							  
 	irmo_object_internal_new(client->universe, objclass,
@@ -134,8 +134,6 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 	     ++i) {
 		IrmoSendAtom *atom = client->recvwindow[i];
 
-		printf("run atom %i\n", i+client->recvwindow_start);
-
 		switch (atom->type) {
 		case ATOM_NULL:
 			break;
@@ -171,6 +169,9 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/03/07 12:17:16  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.2  2003/03/06 19:33:50  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //
