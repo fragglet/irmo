@@ -198,18 +198,17 @@ static void class_var_free(IrmoClassVar *var)
 	free(var);
 }
 
-static IrmoClassVar *eat_class_var(IrmoClass *klass)
+static gboolean eat_class_var_statement(IrmoClass *klass)
 {
 	IrmoValueType vartype;
 	token_t token;
-	IrmoClassVar *var;
 
 	token = yylex();
 
 	// end of class
 
 	if (token == TOKEN_RCURLY)
-		return NULL;
+		return FALSE;
 
 	// type token
 		
@@ -218,39 +217,39 @@ static IrmoClassVar *eat_class_var(IrmoClass *klass)
 
 	vartype = type_token_to_spec(token);
 
-	// variable name
+	// read comma separated variable names
 
-	token = yylex();
-	parse_assert(token == TOKEN_ID, "variable name expected");
+	do {
+		IrmoClassVar *var;
 
-	parse_assert(irmo_class_get_variable(klass, yytext) == NULL,
-		     "multiple definitions of '%s'", yytext);
+		// variable name
 
-	var = g_new0(IrmoClassVar, 1);
-	var->type = vartype;
-	var->index = klass->nvariables;
-	var->name = strdup(yytext);
-	var->parent = klass;
+		token = yylex();
+		parse_assert(token == TOKEN_ID, "variable name expected");
+	
+		parse_assert(irmo_class_get_variable(klass, yytext) == NULL,
+			     "multiple definitions of '%s'", yytext);
+		parse_assert(klass->nvariables < MAX_VARIABLES,
+			     "maximum of %i variables per class", MAX_VARIABLES);
 
-	cleanup_push(class_var_free, var);
+		var = g_new0(IrmoClassVar, 1);
+		var->type = vartype;
+		var->index = klass->nvariables;
+		var->name = strdup(yytext);
+		var->parent = klass;
 
-	// ending semicolon
+		// insert into class
 
-	parse_assert(yylex() == TOKEN_SEMICOLON, "semicolon expected");
+		klass->variables[klass->nvariables++] = var;
+		g_hash_table_insert(klass->variable_hash, var->name, var);
 
-	parse_assert(klass->nvariables < MAX_VARIABLES,
-		     "maximum of %i variables per class", MAX_VARIABLES);
+		token = yylex();
 
-	// insert into class
+	} while (token == TOKEN_COMMA);
 
-	klass->variables[klass->nvariables++] = var;
-	g_hash_table_insert(klass->variable_hash, var->name, var);
+	parse_assert(token == TOKEN_SEMICOLON, "semicolon expected");
 
-	// now part of the class, no longer need to watch it
-
-	cleanup_pop();
-
-	return var;
+	return TRUE;
 }
 
 static void class_free(IrmoClass *spec)
@@ -356,7 +355,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 	
 	parse_assert(token == TOKEN_LCURLY, "expected '{' open parentheses");
 
-	while (eat_class_var(klass));
+	while (eat_class_var_statement(klass));
 
 	if (klass->nvariables < MAX_VARIABLES)
 		klass->variables 
@@ -650,6 +649,11 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.13  2003/12/27 03:33:14  fraggle
+// Allow comma-separated variables in class definitions, rather than
+// requiring a complete separate statement for each variable
+// declaration.
+//
 // Revision 1.12  2003/11/17 00:32:27  fraggle
 // Rename irmo_objid_t to IrmoObjectID for consistency with other types
 //
