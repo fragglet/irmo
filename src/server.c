@@ -37,6 +37,9 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 	server->universe = universe;
 	server->client_spec = spec;
 
+	universe_ref(universe);
+	socket_ref(sock);
+	
 	if (hostname) {
 		server->hostname = strdup(hostname);
 		g_hash_table_insert(sock->servers, hostname, server);
@@ -56,6 +59,9 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/11/26 16:27:00  sdh300
+// server needs a hash of connected clients as well as the parent socket
+//
 // Revision 1.2  2002/11/26 15:46:41  sdh300
 // Fix compile and possible namespace conflicts with the "socket" function
 //

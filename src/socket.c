@@ -83,6 +83,7 @@ IrmoSocket *socket_new(int domain, int port)
 	// wrap it all up in an IrmoSocket object
 
 	irmosock = g_new0(IrmoSocket, 1);
+	irmosock->refcount = 1;
 	irmosock->domain = domain;
 	irmosock->sock = sock;
 	irmosock->port = port;
@@ -93,7 +94,37 @@ IrmoSocket *socket_new(int domain, int port)
 	return irmosock;
 }
 
+void socket_ref(IrmoSocket *sock)
+{
+	++socket->refcount;
+}
+
+void socket_unref(IrmoSocket *sock)
+{
+	--socket->refcount;
+
+	if (socket->refcount <= 0) {
+		
+		// close socket
+
+		close(sock->sock);
+		
+		// if there are no references to this socket, it follows
+		// there are no servers or clients either as they
+		// reference it.
+
+		g_hash_table_destroy(irmosock->clients);
+		g_hash_table_destroy(irmosock->servers);
+
+		free(sock);
+	}
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/11/26 16:37:00  sdh300
+// add missing header to remove warnings
+// || test should be &&
+//
 // Revision 1.4  2002/11/26 16:32:45  sdh300
 // forget to free address after use
 //
