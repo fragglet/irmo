@@ -47,9 +47,9 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
 	return g_hash_table_lookup(spec->method_hash, method_name);
 }
 
-void irmo_interface_spec_each_class(IrmoInterfaceSpec *spec, 
-				    IrmoClassCallback func, 
-				    gpointer user_data)
+void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec, 
+				       IrmoClassCallback func, 
+				       gpointer user_data)
 {
 	int i;
 
@@ -60,9 +60,9 @@ void irmo_interface_spec_each_class(IrmoInterfaceSpec *spec,
 		func(spec->classes[i], user_data);
 }
 
-void irmo_interface_spec_each_method(IrmoInterfaceSpec *spec, 
-				     IrmoMethodCallback func, 
-				     gpointer user_data)
+void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec, 
+					IrmoMethodCallback func, 
+					gpointer user_data)
 {
 	int i;
 
@@ -100,9 +100,9 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name)
 	return g_hash_table_lookup(klass->variable_hash, var_name);
 }
 
-void irmo_class_each_variable(IrmoClass *klass, 
-			      IrmoClassVarCallback func, 
-			      gpointer user_data)
+void irmo_class_foreach_variable(IrmoClass *klass, 
+				 IrmoClassVarCallback func, 
+				 gpointer user_data)
 {
 	int i;
 
@@ -157,9 +157,9 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name)
 	return g_hash_table_lookup(method->argument_hash, arg_name);
 }
 
-void irmo_method_each_argument(IrmoMethod *method,
-			       IrmoMethodArgCallback func, 
-			       gpointer user_data)
+void irmo_method_foreach_argument(IrmoMethod *method,
+				  IrmoMethodArgCallback func, 
+				  gpointer user_data)
 {
 	int i;
 
@@ -189,6 +189,9 @@ IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.4  2003/08/29 16:46:33  fraggle
+// Use "foreach" instead of "each" for consistency
+//
 // Revision 1.3  2003/08/29 16:28:19  fraggle
 // Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
 // to avoid name conflict.

@@ -137,9 +137,9 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_interface_spec_each_class(IrmoInterfaceSpec *spec, 
-				    IrmoClassCallback func, 
-				    gpointer user_data);
+void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec, 
+				       IrmoClassCallback func, 
+				       gpointer user_data);
 /*!
  * \brief Get the \ref IrmoMethod object representing a particular method
  *
@@ -160,9 +160,9 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_interface_spec_each_method(IrmoInterfaceSpec *spec, 
-				     IrmoMethodCallback func, 
-				     gpointer user_data);
+void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec, 
+					IrmoMethodCallback func, 
+					gpointer user_data);
 
 /*! 
  * \brief Get the name of a \ref IrmoClass object
@@ -196,9 +196,9 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, gchar *var_name);
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_class_each_variable(IrmoClass *klass, 
-			      IrmoClassVarCallback func, 
-			      gpointer user_data);
+void irmo_class_foreach_variable(IrmoClass *klass, 
+				 IrmoClassVarCallback func, 
+				 gpointer user_data);
 
 /*!
  * \brief Get the name of a \ref IrmoClassVar object
@@ -244,9 +244,9 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name);
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_method_each_argument(IrmoMethod *method,
-			       IrmoMethodArgCallback func, 
-			       gpointer user_data);
+void irmo_method_foreach_argument(IrmoMethod *method,
+				  IrmoMethodArgCallback func, 
+				  gpointer user_data);
 
 /*! 
  * \brief Get the name of a method argument
@@ -265,6 +265,9 @@ IrmoVarType irmo_method_arg_get_type(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.6  2003/08/29 16:46:33  fraggle
+// Use "foreach" instead of "each" for consistency
+//
 // Revision 1.5  2003/08/29 16:28:19  fraggle
 // Iterators for reflection API. Rename IrmoMethodCallback to IrmoInvokeCallback
 // to avoid name conflict.
