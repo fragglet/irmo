@@ -53,10 +53,141 @@ games rather than simply joining one in progress.
 
 \subsection{Client-Server Architecture}
 
-The Client-Server architecture is one which solves the problems
-inherent in the Peer-to-Peer architecture. 
+The Client-Server architecture is a model which solves many of the 
+problems inherent in the Peer-to-Peer architecture. In the 
+Client-Server architecture, the game world exists in a server 
+process, and the players send their input into this world from 
+client processes. The server sends updates about the state of
+the game world to the client processes.
 
+Implementing an efficient client-server multiplayer engine is 
+a difficult task. Most games implement a complete engine 
+from scratch. The Irmo library aims to be a generic multiplayer
+engine which can be used as a base for many different types of
+multiplayer games and easily extended.
 
+\subsection{Extension Languages}
+
+Another common theme in many modern games is that of extension
+languages. Many games use a high level extension language to describe
+the game logic while using a lower level language such as C
+to perform operations such as graphical rendering. Examples of
+this are Quake's ``QuakeC'' language and the AisleRiot solitaire
+game's use of the Guile extension language.
+
+While providing client-server functionality, Irmo also aims to
+provide cross-language abstraction such that the server can
+be written in a high level language with the client written
+in a lower level language. For this reason, a language binding
+already exists for the Ruby scripting language. Bindings are
+planned for other high-level languages.
+
+\section{Interface Specification}
+
+Irmo allows the programmer to describe the game world.  It is 
+assumed that the world consists of a number of objects.  An
+interface must first be defined describing these types of objects.
+This is done by writing an Interface Specification File.
+
+\subsection{Interface Specification File}
+
+The following is an example of an Interface Specification file:
+
+\begin{quote}\begin{verbatim}
+// Irmo interface specification file for astro
+
+class Object {
+        int16 x;
+        int16 y;
+        int16 angle;
+        int16 scale;
+}
+
+class PlayerObject : Object {
+        irmo_objid_t player;
+}
+
+class Explosion : Object {
+        int8 time;
+}
+
+class Missile : Object {}
+class Asteroid : Object {}
+
+class Player {
+        string name;
+        int16 score;
+        irmo_objid_t avatar;
+}
+
+method fire(irmo_objid_t player);
+\end{verbatim}\end{quote}
+
+Here a number of classes are defined. These define the types of object
+which can exist within the game world. A base class is defined named
+``Object'' for all objects within the game world which the player sees.
+These objects all have a number of common properties: in this case,
+a pair of x,y coordinates, an angle and a scale (size). 
+
+A number of subclasses are made of this class using the `:' operator
+for the particular different types of object.  Some of these subclasses
+contain additional data in addition to the data inherited from the
+parent class.  For example, the ``Explosion'' class contains a ``time''
+variable; explosions in the game expand and this is used to indicate 
+the current size of the explosion.
+
+As well as game objects, objects are also created to represent each
+player within the game. These contain information such as the player's 
+name and current score.
+
+Finally, the specification file allows methods to be declared. These
+are methods which can be invoked by the clients on the world.
+
+\subsection{Base Types}
+
+There are several base types used for object variables and method 
+arguments. These are:
+
+\begin{itemize}
+\item \begin{verbatim}int8\end{verbatim}
+
+	- 8 bit unsigned integer
+
+\item \begin{verbatim}int16\end{verbatim}
+
+	- 16 bit unsigned integer
+
+\item \begin{verbatim}int32\end{verbatim}
+
+	- 32 bit unsigned integer
+
+\item \begin{verbatim}irmo_objid_t\end{verbatim}
+
+	- A reference to an Irmo Object. All objects within a world have
+	  a number by which they can be referenced. This is a variable
+	  containing such an identifier.
+
+\item \begin{verbatim}string\end{verbatim}
+
+	- A text string.
+
+\end{itemize}
+
+\subsection{Loading the Interface Specification}
+
+The Interface Specification is loaded using the 
+\texttt{irmo\_interface\_spec\_new} function call. The library
+includes a parser which parses the file given and returns a
+\texttt{IrmoInterfaceSpec} object representing the interface.
+
+\begin{quote}\begin{verbatim}
+	IrmoInterfaceSpec *spec;
+
+	spec = irmo_interface_spec_new("asteroids.if");
+\end{verbatim}\end{quote}
+
+If an error occurs during parsing an error message is printed
+to \texttt{STDERR} and the function returns \texttt{NULL}.
 
 \end{document}
 
