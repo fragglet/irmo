@@ -2,6 +2,9 @@
 // Safe packet handling code
 //
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "packet.h"
 
 IrmoPacket *packet_new(gsize size)
@@ -9,7 +12,7 @@ IrmoPacket *packet_new(gsize size)
 	IrmoPacket *packet = g_new0(IrmoPacket, 1);
 
 	packet->data = malloc(size);
-	packet->size = size;
+	packet->len = size;
 	packet->pos = 0;
 
 	return packet;
@@ -48,10 +51,10 @@ gboolean packet_writei32(IrmoPacket *packet, guint32 l)
 	if (packet->pos + 4 > packet->len)
 		return FALSE;
 
-	packet->data[packet->pos++] = (s >> 24) & 0xff;
-	packet->data[packet->pos++] = (s >> 16) & 0xff;
-	packet->data[packet->pos++] = (s >> 8) & 0xff;
-	packet->data[packet->pos++] = (s) & 0xff;
+	packet->data[packet->pos++] = (l >> 24) & 0xff;
+	packet->data[packet->pos++] = (l >> 16) & 0xff;
+	packet->data[packet->pos++] = (l >> 8) & 0xff;
+	packet->data[packet->pos++] = (l) & 0xff;
 
 	return TRUE;
 }
@@ -124,6 +127,11 @@ gchar *packet_readstring(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/03 20:45:27  sdh300
+// add packet string code
+// add packet writing code
+// add packet flags
+//
 // Revision 1.2  2002/12/02 21:34:49  sdh300
 // Add CVS tags
 //

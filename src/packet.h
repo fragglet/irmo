@@ -31,7 +31,7 @@ struct _IrmoPacket {
 };
 
 IrmoPacket *packet_new(gsize size);
-void packet_free(IrmoPacket packet);
+void packet_free(IrmoPacket *packet);
 
 gboolean packet_writei8(IrmoPacket *packet, guchar c);
 gboolean packet_writei16(IrmoPacket *packet, guint16 s);
@@ -45,6 +45,11 @@ gchar *packet_readstring(IrmoPacket *packet);
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/03 20:45:27  sdh300
+// add packet string code
+// add packet writing code
+// add packet flags
+//
 // Revision 1.4  2002/12/02 22:24:22  sdh300
 // Initial socket run code/add extra data to packet objects
 //
