@@ -151,7 +151,7 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 {
 	IrmoSendAtom *atom;
 
-	do {
+	while (1) {
 	
 		atom = (IrmoSendAtom *) g_queue_pop_head(client->sendq);
 		
@@ -161,11 +161,11 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 		// automatically ignore and delete NULL atoms that
 		// are in the sendq
 		
-		if (atom->type == ATOM_NULL) {
-			sendatom_free(atom);
-			continue;
-		}
-	} while (0);
+		if (atom->type != ATOM_NULL)
+			break;
+		
+		sendatom_free(atom);
+	} 
 
 	// if a change, remove from the change hash
 
@@ -178,6 +178,9 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/27 02:26:39  sdh300
+// Fix compile errors
+//
 // Revision 1.4  2003/02/27 02:07:56  sdh300
 // Store sendatom size in structure
 // Add 'pop' function to remove atoms from sendq head
