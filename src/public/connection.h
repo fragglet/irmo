@@ -6,18 +6,22 @@
  * \{
  */
 
+#include "if_spec.h"
+#include "client.h"
+#include "server.h"
+#include "universe.h"
+
 /*!
  * \brief An IrmoConnection object 
  *
  * This represents a connection to a \ref IrmoServer server running
- * on a remote machine
+ * on a remote machine.
+ *
+ * This is exactly the same as an \ref IrmoClient. Internally the remote
+ * server is seen as a client connected back to the local machine.
  */
 
-typedef struct _IrmoConnection IrmoConnection;
-
-#include "if_spec.h"
-#include "server.h"
-#include "universe.h"
+typedef IrmoClient IrmoConnection;
 
 /*!
  * \brief Establish a new connection to a server
@@ -88,11 +92,17 @@ void irmo_connection_run(IrmoConnection *conn);
 
 IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn);
 
+#define irmo_connection_ref irmo_client_ref
+#define irmo_connection_unref irmo_client_unref
+
 //! \}
 
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/03/07 12:17:22  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.5  2003/03/07 10:48:07  sdh300
 // Add new sections to documentation
 //

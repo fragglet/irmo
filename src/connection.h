@@ -7,34 +7,13 @@
 #include "server.h"
 #include "universe.h"
 
-struct _IrmoConnection {
-
-	// socket
-	
-	IrmoSocket *sock;
-
-	// the server object is "serving" the local
-	// universe to the server (symmetrical)
-
-	IrmoServer *local_server;
-
-	// client object. this is the server's "connection" to the
-	// local universe we are serving to it.
-
-	IrmoClient *local_client;
-	
-	// local universe that we are serving to the server
-	
-	IrmoUniverse *local_universe;
-
-	// the universe on the remote server
-	
-	IrmoUniverse *universe;
-};
-
 #endif /* #ifndef IRMO_INTERNAL_CONNECTION_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/23 00:00:03  sdh300
+// Split off public parts of headers into seperate files in the 'public'
+// directory (objects now totally opaque)
+//
 // Revision 1.2  2003/02/06 02:10:11  sdh300
 // Add missing CVS tags
 //

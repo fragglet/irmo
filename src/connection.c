@@ -6,7 +6,6 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 			     IrmoInterfaceSpec *spec, 
 			     IrmoUniverse *local_universe)
 {
-	IrmoConnection *connection;
 	IrmoSocket *sock;
 	struct sockaddr *addr;
 	IrmoServer *server;
@@ -29,11 +28,19 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	
 	server = irmo_server_new(sock, NULL, local_universe, spec);
 
+	// only the server is using this socket 
+	
+	irmo_socket_unref(sock);
+	
 	// create a client object, also representing the servers
 	// connection to us
 
 	client = irmo_client_new(server, addr);
+
+	// reference is on the client, which implies the server
+	
 	irmo_client_ref(client);
+	irmo_server_unref(server);
 	
 	// now initiate the connection
 	// send SYN packets to the server once every second and
@@ -49,38 +56,24 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 
 	if (client->state == CLIENT_DISCONNECTED) {
 		// connection failed
-		// unreference objects we were using
+		// delete client object
 		
 		irmo_client_unref(client);
-		irmo_server_unref(server);
-		irmo_socket_unref(sock);
 		
 		return NULL;
 	}
 
-	// put everything inside a connection object
-
-	connection = g_new0(IrmoConnection, 1);
-	connection->sock = sock;
-	connection->local_client = client;
-	connection->local_server = server;
-	connection->local_universe = local_universe;
-	connection->universe = client->universe;
-
-	if (local_universe)
-		irmo_universe_ref(local_universe);
-
-	return connection;
+	return client;
 } 
 
 IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn)
 {
-	return conn->sock;
+	return conn->server->socket;
 }
 
 void irmo_connection_run(IrmoConnection *conn)
 {
-	irmo_socket_run(conn->sock);
+	irmo_socket_run(conn->server->socket);
 }
 
 IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
@@ -89,6 +82,9 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/07 12:17:16  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.10  2003/03/06 19:33:50  sdh300
 // Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
 //
