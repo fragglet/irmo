@@ -113,7 +113,7 @@ static gboolean remove_each_client(gpointer key, IrmoClient *client,
 
 static void irmo_server_internal_shutdown(IrmoServer *server)
 {
-	printf("shutdown server\n");
+	//printf("shutdown server\n");
 	if (!server->running)
 		return;
 
@@ -260,6 +260,9 @@ void irmo_server_run(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.18  2004/04/17 22:27:48  fraggle
+// Remove left over debug printf
+//
 // Revision 1.17  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //
