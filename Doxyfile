@@ -919,3 +919,6 @@ BIN_ABSPATH            = /usr/local/bin/
 # the documentation for these projects as well.
 
 EXT_DOC_PATHS          = 
+
+# $Log: not supported by cvs2svn $
+
