@@ -158,7 +158,7 @@ static void client_callback_raise_foreach(IrmoCallbackFuncData *data,
 	func(client, data->user_data);
 }
 
-void irmo_client_callback_raise(GSList **list, IrmoClient *client)
+void irmo_client_callback_raise(GSList *list, IrmoClient *client)
 {
 	g_slist_foreach(list,
 			(GFunc) client_callback_raise_foreach,
@@ -171,6 +171,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2003/03/17 17:16:48  sdh300
+// Generalise to invoking lists of IrmoClientCallback callbacks
+//
 // Revision 1.14  2003/03/16 00:44:04  sdh300
 // Add irmo_callbacklist_free function
 //

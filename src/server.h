@@ -41,7 +41,7 @@ struct _IrmoServer {
 
 // invoke IrmoClientCallback callback functions in a list
 
-void irmo_client_callback_raise(GSList **list, IrmoClient *client);
+void irmo_client_callback_raise(GSList *list, IrmoClient *client);
 
 // raise callback functions on new client connect
 
@@ -50,6 +50,9 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/17 17:16:48  sdh300
+// Generalise to invoking lists of IrmoClientCallback callbacks
+//
 // Revision 1.7  2003/03/07 14:31:19  sdh300
 // Callback functions for watching new client connects
 //
