@@ -1,4 +1,6 @@
 
+v1.1.0
+
 	* Completed IPv6 support
 	* Segfault in building packets fixed
 	* Fix bug on immediate reconnect after a disconnect
