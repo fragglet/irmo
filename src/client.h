@@ -30,9 +30,16 @@ struct _IrmoClient {
 	// address:
 
 	struct sockaddr *addr;
+
+	// protocol stuff (internal)
+
+	// time last syn/synack was sent
+	time_t _connect_time;
+	gint _connect_attempts;
 };
 
 IrmoClient *_client_new(IrmoServer *server, struct sockaddr *addr);
+void _client_run(IrmoClient *client);
 
 /*!
  * \brief Forcibly disconnect a client
@@ -46,6 +53,9 @@ void client_disconnect(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/06 02:41:25  sdh300
+// Add CLIENT_DISCONNECTED for disconnected clients
+//
 // Revision 1.2  2003/02/03 20:57:22  sdh300
 // Initial client code
 //

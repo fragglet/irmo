@@ -37,7 +37,15 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 	// if client->state is set to CLIENT_DISCONNECTED,
 	// the server responded with a SYN FIN and something went wrong
 
-	
+	while (client->state == CLIENT_CONNECTING) {
+		socket_run(sock);
+	}
+
+	if (client->state == CLIENT_DISCONNECTED) {
+		// bad things happened. todo
+	}
+
+	printf("connected to server!\n");
 	
 	// put everything inside a connection object
 
@@ -54,6 +62,9 @@ IrmoConnection *irmo_connect(int domain, gchar *location, int port,
 } 
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/06 02:39:04  sdh300
+// Add missing netlib.h, fix call to sockaddr_for_name
+//
 // Revision 1.2  2003/02/06 02:10:11  sdh300
 // Add missing CVS tags
 //

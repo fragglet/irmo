@@ -4,9 +4,14 @@
 typedef struct _IrmoSocket IrmoSocket;
 
 #include <glib.h>
+#include <netinet/in.h>
 
 #include "client.h"
 #include "server.h"
+
+// fixme: packet.h is supposed to be internal and should not be here
+// split off internal socket stuff to a seperate header
+#include "packet.h"
 
 typedef enum {
 	SOCKET_SERVER,
@@ -78,7 +83,8 @@ void socket_ref(IrmoSocket *sock);
 void socket_unref(IrmoSocket *sock);
 
 IrmoSocket *_socket_new_unbound(int domain);
-
+void _socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
+			IrmoPacket *packet);
 /*!
  * \brief Run socket
  *
@@ -94,6 +100,9 @@ void socket_run(IrmoSocket *sock);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2003/02/11 17:53:01  sdh300
+// Add socket_run and documentation (missing from the header)
+//
 // Revision 1.4  2003/02/06 00:59:26  sdh300
 // Split up socket constructor function, so that unbound sockets can
 // be created for clients

@@ -23,6 +23,27 @@
 
 #define PACKET_BUFFER_LEN 0x10000
 
+// socket send function
+
+void _socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
+			IrmoPacket *packet)
+{
+	int result;
+
+	result = sendto(sock->sock,
+			packet->data,
+			packet->pos,
+			0,
+			dest,
+			sockaddr_len(dest->sa_family));
+
+	if (result < 0) {
+		fprintf(stderr,
+			"_socket_sendpacket: Error sending packet (%s)\n",
+			strerror(errno));
+	}
+}
+
 // shared constructor
 // this does not bind to a port
 
@@ -204,7 +225,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	// read packet data
 	
 	if (!packet_readi32(packet, &local_hash)
-	 && !packet_readi32(packet, &server_hash)) {
+	 || !packet_readi32(packet, &server_hash)) {
 		// no hashes - drop
 
 		return;
@@ -233,7 +254,7 @@ static inline void socket_run_syn(IrmoPacket *packet)
 	server_hash_expected 
 		= server->universe ? server->universe->spec->hash : 0;
 
-	if (!server || local_hash != server_hash_expected
+	if (!server || local_hash != local_hash_expected
 	    || server_hash != server_hash_expected) {
 		// server not found, or invalid parameters (spec hashes
 		// are wrong)
@@ -243,11 +264,9 @@ static inline void socket_run_syn(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
-		/* todo
-		socket_sendpacket(packet->sock,
-				  packet->src,
-				  sendpacket);
-		*/
+		_socket_sendpacket(packet->sock,
+				   packet->src,
+				   sendpacket);
 		
 		packet_free(sendpacket);
 	} else {
@@ -255,21 +274,20 @@ static inline void socket_run_syn(IrmoPacket *packet)
 		
 		// if this is the first syn we have received,
 		// create a new client object
-		
-		if (!client) 
-			client = _client_new(server, packet->src);
 
+		if (!client) {
+			client = _client_new(server, packet->src);
+		}
+		
 		// send a reply
 
 		sendpacket = packet_new(2);
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		/* todo
-		   socket_sendpacket(packet->sock,
-		                     packet->src,
-				     sendpacket);
-		*/
+		_socket_sendpacket(packet->sock,
+				   packet->src,
+				   sendpacket);
 		
 		packet_free(sendpacket);
 	}
@@ -286,8 +304,9 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 		// create the remote universe object
 
-		packet->client->universe
-			= universe_new(packet->client->server->client_spec);
+		if (packet->client->server->client_spec)
+			packet->client->universe
+			  = universe_new(packet->client->server->client_spec);
 	}
 
 	// if we are the client receiving this from the server,
@@ -299,11 +318,10 @@ static inline void socket_run_synack(IrmoPacket *packet)
 
 		packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		/* todo
-		   socket_sendpacket(packet->sock,
-		                     packet->src,
-				     sendpacket);
-		*/
+		_socket_sendpacket(packet->sock,
+				   packet->src,
+				   sendpacket);
+
 		packet_free(sendpacket);
 	}
 
@@ -355,6 +373,16 @@ static inline void socket_run_packet(IrmoPacket *packet)
 	}
 }
 
+static gboolean socket_run_client(gpointer key, IrmoClient *client,
+				  gpointer user_data)
+{
+	_client_run(client);
+
+	// eventually, do timeout stuff to remove dead clients
+	
+	return FALSE;
+}
+
 void socket_run(IrmoSocket *sock)
 {
 	guchar buf[PACKET_BUFFER_LEN];
@@ -398,10 +426,16 @@ void socket_run(IrmoSocket *sock)
 
 	free(addr);
 
-	// send stuff too eventually
+	// run each of the clients
+	
+	g_hash_table_foreach_remove(sock->clients,
+				    (GHRFunc) socket_run_client, NULL);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2003/02/06 16:30:25  sdh300
+// Create universe object when connection is established
+//
 // Revision 1.17  2003/02/06 02:42:38  sdh300
 // Before checking hashes on connect, check for no universe served
 //
