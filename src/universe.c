@@ -5,13 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "callback.h"
 #include "if_spec.h"
 #include "universe.h"
 
 IrmoUniverse *universe_new(InterfaceSpec *spec)
 {
 	IrmoUniverse *universe;
-
+	int i;
+	
 	universe = g_new0(IrmoUniverse, 1);
 
 	universe->spec = spec;
@@ -21,6 +23,14 @@ IrmoUniverse *universe_new(InterfaceSpec *spec)
 
 	interface_spec_ref(spec);
 
+	// create a callback for each class
+	
+	universe->callbacks = g_new0(IrmoCallbackData *, spec->nclasses);
+
+	for (i=0; i<spec->nclasses; ++i) {
+		universe->callbacks[i] = _callbackdata_new(spec->classes[i]);
+	}
+	
 	return universe;
 }
 
@@ -40,10 +50,25 @@ void universe_unref(IrmoUniverse *universe)
 	--universe->refcount;
 
 	if (universe->refcount <= 0) {
+		int i;
+
+		// delete all objects
+		
 		g_hash_table_foreach(universe->objects,
 				     (GHFunc) universe_unref_foreach, NULL);
 		g_hash_table_destroy(universe->objects);
+
+		// delete callbacks
+		
+		for (i=0; i<universe->spec->nclasses; ++i)
+			_callbackdata_free(universe->callbacks[i]);
+		
+		free(universe->callbacks);
+
+		// no longer using the interface spec
+		
 		interface_spec_unref(universe->spec);
+		
 		free(universe);
 	}
 }
@@ -59,6 +84,9 @@ IrmoObject *universe_get_object_for_id(IrmoUniverse *universe,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/10/21 15:09:01  sdh300
+// object destruction
+//
 // Revision 1.5  2002/10/21 14:58:07  sdh300
 // split off object code to a seperate module
 //

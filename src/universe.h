@@ -9,6 +9,7 @@ typedef struct _IrmoUniverse IrmoUniverse;
 typedef guint irmo_objid_t;
 
 #include <glib.h>
+#include "callback.h"
 #include "if_spec.h"
 #include "object.h"
 
@@ -18,6 +19,7 @@ typedef guint irmo_objid_t;
 
 struct _IrmoUniverse {
 	InterfaceSpec *spec;
+	IrmoCallbackData **callbacks;
 	GHashTable *objects;
 	irmo_objid_t lastid;
 	int refcount;
@@ -32,6 +34,9 @@ void universe_unref(IrmoUniverse *universe);
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/10/21 14:58:07  sdh300
+// split off object code to a seperate module
+//
 // Revision 1.4  2002/10/21 14:48:54  sdh300
 // oops, fix build
 //

@@ -8,6 +8,7 @@
 
 #include <glib.h>
 
+#include "callback.h"
 #include "object.h"
 #include "universe.h"
 
@@ -64,7 +65,8 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 	object->id = id;
 	object->objclass = spec;
 	object->universe = universe;
-
+	object->callbacks = _callbackdata_new(spec);
+	
 	// member variables:
 
 	object->variables = malloc(sizeof(IrmoVariable) * spec->nvariables);
@@ -98,6 +100,7 @@ void __object_destroy(IrmoObject *object)
 	}
 
 	free(object->variables);
+	_callbackdata_free(object->callbacks);
 	
 	// done
 	
@@ -254,6 +257,10 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/10/29 15:58:25  sdh300
+// add index entry for ClassSpec, use "index" instead of n for index
+// member name
+//
 // Revision 1.5  2002/10/29 14:48:16  sdh300
 // variable value retrieval
 //

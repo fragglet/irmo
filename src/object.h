@@ -19,6 +19,7 @@ union _IrmoVariable {
 
 struct _IrmoObject {
 	IrmoUniverse *universe;
+	IrmoCallbackData *callbacks;
 	ClassSpec *objclass;
 	irmo_objid_t id;
 	IrmoVariable *variables;
@@ -40,6 +41,9 @@ void __object_destroy(IrmoObject *object);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/10/29 14:48:16  sdh300
+// variable value retrieval
+//
 // Revision 1.4  2002/10/21 15:39:36  sdh300
 // setting string values
 //
