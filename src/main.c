@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	
 	printf("creating object\n");
 
-	object = universe_object_new(universe, "myclass");
+	object = object_new(universe, "myclass");
 
 	if (universe)
 		printf("successful!\n");
@@ -43,6 +43,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/21 10:55:14  sdh300
+// reference checking and object deletion
+//
 // Revision 1.2  2002/10/21 10:43:32  sdh300
 // initial universe code
 //
