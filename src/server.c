@@ -252,7 +252,17 @@ IrmoSocket *irmo_server_get_socket(IrmoServer *server)
 	return server->socket;
 }
 
+void irmo_server_run(IrmoServer *server)
+{
+	g_return_if_fail(server != NULL);
+
+	irmo_socket_run(server->socket);
+}
+
 // $Log$
+// Revision 1.16  2004/01/06 02:07:10  fraggle
+// Add irmo_server_run utility function
+//
 // Revision 1.15  2004/01/06 01:58:56  fraggle
 // Add irmo_server_get_socket. Fix return value from irmo_server_new_from
 //

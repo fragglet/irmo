@@ -145,6 +145,21 @@ void irmo_server_shutdown(IrmoServer *server);
 
 IrmoSocket *irmo_server_get_socket(IrmoServer *server);
 
+/*!
+ * \brief Check for new packets received at the server.
+ *
+ * This function must be called periodically to check for new packets
+ * received and send new packets required by the network
+ * protocol.
+ * 
+ * This is identical to:
+ *   irmo_socket_run(irmo_server_get_socket(conn));
+ *
+ * \sa irmo_socket_run
+ */
+
+void irmo_server_run(IrmoServer *server);
+
 //! \}
 
 #ifdef __cplusplus
@@ -154,6 +169,9 @@ IrmoSocket *irmo_server_get_socket(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.11  2004/01/06 02:07:10  fraggle
+// Add irmo_server_run utility function
+//
 // Revision 1.10  2004/01/06 01:58:56  fraggle
 // Add irmo_server_get_socket. Fix return value from irmo_server_new_from
 //
