@@ -334,6 +334,17 @@ static inline void socket_run_synack(IrmoPacket *packet)
 	// an infinite loop :)
 }
 
+// run SYN FIN (disconnect)
+
+static inline void socket_run_synfin(IrmoPacket *packet)
+{
+	// connection refused?
+	
+	if (packet->client->state == CLIENT_CONNECTING) {
+		packet->client->state = CLIENT_DISCONNECTED;
+	}
+}
+
 static inline void socket_run_packet(IrmoPacket *packet)
 {
 	guint16 flags;
@@ -374,6 +385,11 @@ static inline void socket_run_packet(IrmoPacket *packet)
 	
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_ACK)) {
 		socket_run_synack(packet);
+		return;
+	}
+
+	if ((flags & PACKET_FLAG_SYN) && (flags & PACKET_FLAG_FIN)) {
+		socket_run_synfin(packet);
 		return;
 	}
 }
@@ -456,6 +472,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.21  2003/02/16 23:41:27  sdh300
+// Reference counting for client and server objects
+//
 // Revision 1.20  2003/02/16 23:37:28  sdh300
 // Fix bug lookup up hashes when server not found
 //
