@@ -1,7 +1,20 @@
+%option prefix="irmo_if_spec"
+%option outfile="lex.yy.c"
+%option noyywrap
+
 %{
 //
 // Interface Specification File Parser
 //
+// Comments for options above:
+//
+// prefix:  Change the prefix for the flex variables and function names.
+//          this is to avoid conflict with other flex parsers
+// outfile: automake expects the output file to be the default 'lex.yy.c'
+//          changing the prefix changes the default output filename, so
+//          this changes it back
+// noyywrap: Only read one file at a time
+// 
 
 #include <glib.h>
 #include <stdarg.h>
@@ -454,6 +467,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2003/03/07 12:17:16  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.1  2003/03/07 01:43:51  sdh300
 // Rename if_spec.lex to the standard name if_spec.l
 //
