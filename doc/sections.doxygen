@@ -79,7 +79,7 @@
  *
  * Once clients are disconnected from the server, they are
  * automatically 'garbage collected' and destroyed. However, 
- * the \ref client_ref and \ref client_unref functions can be
+ * the \ref irmo_client_ref and \ref irmo_client_unref functions can be
  * used to hold a reference to an IrmoClient object and prevent
  * it from being destroyed.
  */
@@ -104,6 +104,9 @@
  */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/07 12:16:56  sdh300
+// Add irmo_ prefix to public function names (namespacing)
+//
 // Revision 1.6  2003/03/07 10:49:11  sdh300
 // Convert InterfaceSpec -> IrmoInterfaceSpec
 //
