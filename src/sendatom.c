@@ -30,7 +30,7 @@
 #include "object.h"
 #include "sendatom.h"
 
-G_INLINE_FUNC void irmo_sendatom_change_free_data(IrmoSendAtom *atom)
+static void irmo_sendatom_change_free_data(IrmoSendAtom *atom)
 {
 	int i;
 
@@ -55,7 +55,7 @@ G_INLINE_FUNC void irmo_sendatom_change_free_data(IrmoSendAtom *atom)
 	free(atom->data.change.changed);
 }
 
-G_INLINE_FUNC void irmo_sendatom_method_free_data(IrmoSendAtom *atom)
+static void irmo_sendatom_method_free_data(IrmoSendAtom *atom)
 {
 	IrmoMethod *method = atom->data.method.spec;
 	int i;
@@ -404,6 +404,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.8  2003/10/14 00:53:43  fraggle
+// Remove pointless inlinings
+//
 // Revision 1.7  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

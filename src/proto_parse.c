@@ -49,7 +49,7 @@ gboolean irmo_proto_use_preexec = TRUE;
 // therefore we must expand positions we get based on the
 // current position
 
-G_INLINE_FUNC int get_stream_position(int current, int low)
+static int get_stream_position(int current, int low)
 {
 	int newpos = (current & ~0xffff) | low;
 
@@ -444,6 +444,9 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.10  2003/10/14 00:53:43  fraggle
+// Remove pointless inlinings
+//
 // Revision 1.9  2003/09/12 11:30:26  fraggle
 // Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
 //

@@ -259,7 +259,7 @@ IrmoSocket *irmo_socket_new(IrmoSocketDomain domain, int port)
 	return sock;
 }
 
-G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
+static void socket_run_syn(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	IrmoServer *server;
@@ -379,7 +379,7 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 
 // handle syn-ack connection acknowledgements
 
-G_INLINE_FUNC void socket_run_synack(IrmoPacket *packet)
+static void socket_run_synack(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	
@@ -438,7 +438,7 @@ G_INLINE_FUNC void socket_run_synack(IrmoPacket *packet)
 
 // run SYN FIN (disconnect)
 
-G_INLINE_FUNC void socket_run_synfin(IrmoPacket *packet)
+static void socket_run_synfin(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	IrmoPacket *sendpacket;
@@ -477,7 +477,7 @@ G_INLINE_FUNC void socket_run_synfin(IrmoPacket *packet)
 	}
 }
 
-G_INLINE_FUNC void socket_run_synfinack(IrmoPacket *packet)
+static void socket_run_synfinack(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	
@@ -488,7 +488,7 @@ G_INLINE_FUNC void socket_run_synfinack(IrmoPacket *packet)
 	}
 }
 
-G_INLINE_FUNC void socket_run_packet(IrmoPacket *packet)
+static void socket_run_packet(IrmoPacket *packet)
 {
 	guint16 flags;
 	IrmoClient *client;
@@ -664,6 +664,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.12  2003/10/14 00:53:43  fraggle
+// Remove pointless inlinings
+//
 // Revision 1.11  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //

@@ -150,7 +150,7 @@ static void proto_add_atom(IrmoPacket *packet, IrmoSendAtom *atom)
 	}
 }
 
-G_INLINE_FUNC void proto_atom_resent(IrmoClient *client, int i)
+static void proto_atom_resent(IrmoClient *client, int i)
 {
 	// set resent flag
 	
@@ -458,6 +458,9 @@ void irmo_proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.9  2003/10/14 00:53:43  fraggle
+// Remove pointless inlinings
+//
 // Revision 1.8  2003/09/03 15:28:30  fraggle
 // Add irmo_ prefix to all internal global functions (namespacing)
 //
