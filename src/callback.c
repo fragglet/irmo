@@ -47,6 +47,38 @@ void _callbackdata_free(IrmoCallbackData *data)
 	free(data);
 }
 
+struct raise_data {
+	IrmoObject *object;
+	gchar *variable;
+};
+
+void _callbackdata_raise_foreach(IrmoCallback *callback,
+				 struct raise_data *raise_data)
+{
+	callback->func(raise_data->object, raise_data->variable,
+		       callback->user_data);
+}
+
+void _callbackdata_raise(IrmoCallbackData *data,
+			 IrmoObject *object, gint variable_index)
+{
+	struct raise_data raise_data = {
+		object: object,
+		variable: data->objclass->variables[variable_index]->name,
+	};
+
+	// call class callbacks
+	
+	g_slist_foreach(data->class_callbacks,
+			(GFunc) _callbackdata_raise_foreach,
+			&raise_data);
+
+	// variable callbacks
+
+	g_slist_foreach(data->variable_callbacks[variable_index],
+			(GFunc) _callbackdata_raise_foreach,
+			&raise_data);
+}
 
 static void callbackdata_watch(IrmoCallbackData *data,
 			       gchar *variable,
@@ -109,3 +141,6 @@ void callback_watch_object(IrmoObject *object, gchar *variable,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/10/29 16:10:19  sdh300
+// add missing cvs tags
+//

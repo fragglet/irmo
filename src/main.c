@@ -3,6 +3,15 @@
 #include "if_spec.h"
 #include "universe.h"
 
+void my_callback(IrmoObject *object, gchar *variable, gpointer user_data)
+{
+	char *message = (char *) user_data;
+	
+	printf("callback invoked!\n");
+
+	printf("message: '%s'\n", message);
+}
+
 int main(int argc, char *argv[])
 {
 	InterfaceSpec *spec;
@@ -31,6 +40,28 @@ int main(int argc, char *argv[])
 	else
 		printf("failed\n");
 
+	printf("trying to set callback on object\n");
+
+	callback_watch_object(object, NULL,
+			      my_callback, "object watch callback");
+
+	printf("trying to set callback on object variable\n");
+
+	callback_watch_object(object, "my_int",
+			      my_callback, "variable watch callback");
+
+	printf("trying to set callback on class\n");
+
+	callback_watch_class(universe,
+			     "my_class", NULL,
+			     my_callback, "class watch callback");
+
+	printf("trying to set callback on class variable\n");
+
+	callback_watch_class(universe,
+			     "my_class", "my_int",
+			     my_callback, "class variable watch callback");
+	
 	printf("looking for object in universe\n");
 
 	if (universe_get_object_for_id(universe, object->id))
@@ -73,6 +104,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2002/10/29 14:53:34  sdh300
+// sensible test variable names for clarity
+//
 // Revision 1.8  2002/10/29 14:48:16  sdh300
 // variable value retrieval
 //

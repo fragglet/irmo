@@ -155,7 +155,11 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 		return;
 	}
 
-	// TODO: value change callbacks
+	// callback functions for change
+
+	_callbackdata_raise(object->callbacks, object, spec->index);
+	_callbackdata_raise(object->universe->callbacks[object->objclass->index],
+			    object, spec->index);
 }
 
 void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
@@ -188,7 +192,11 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 
 	object->variables[spec->index].s = strdup(value);
 
-	// TODO: value change callbacks
+	// callback functions
+
+	_callbackdata_raise(object->callbacks, object, spec->index);
+	_callbackdata_raise(object->universe->callbacks[object->objclass->index],
+			    object, spec->index);
 }
 
 // get int value
@@ -257,6 +265,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2002/10/29 16:09:10  sdh300
+// initial callback code
+//
 // Revision 1.6  2002/10/29 15:58:25  sdh300
 // add index entry for ClassSpec, use "index" instead of n for index
 // member name

@@ -33,6 +33,8 @@ struct _IrmoCallbackData {
 
 IrmoCallbackData *_callbackdata_new(ClassSpec *objclass);
 void _callbackdata_free(IrmoCallbackData *data);
+void _callbackdata_raise(IrmoCallbackData *data,
+			 IrmoObject *object, gint variable_index);
 
 void callback_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
@@ -43,3 +45,6 @@ void callback_watch_object(IrmoObject *object, gchar *variable,
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/10/29 16:10:19  sdh300
+// add missing cvs tags
+//
