@@ -454,6 +454,9 @@ void interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2003/03/06 19:33:50  sdh300
+// Rename InterfaceSpec to IrmoInterfaceSpec for API consistency
+//
 // Revision 1.7  2003/02/06 02:43:58  sdh300
 // Never give an InterfaceSpec a hash of 0, as this has special meaning in
 // the network protocol
