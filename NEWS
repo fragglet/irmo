@@ -1,4 +1,6 @@
 
+v1.2.0
+
 	* Beginnings of a texinfo manual
 	* Now uses a more object oriented model internally for the
 	  network protocol code.
