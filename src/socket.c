@@ -317,6 +317,12 @@ static inline void socket_run_synack(IrmoPacket *packet)
 			
 			packet->client->universe->remote = TRUE;
 		}
+
+		// if we are serving a universe to the client,
+		// send the entire current universe state
+
+		if (packet->client->server->universe)
+			client_sendq_add_state(packet->client);
 	}
 
 	// if we are the client receiving this from the server,
@@ -481,6 +487,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.26  2003/03/06 20:53:16  sdh300
+// Checking of remote flag for universe objects
+//
 // Revision 1.25  2003/03/05 17:37:52  sdh300
 // Add initial packet parsing code
 //

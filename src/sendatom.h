@@ -65,9 +65,17 @@ void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
        
 IrmoSendAtom *client_sendq_pop(IrmoClient *client);
 
+// send entire universe state
+
+void client_sendq_add_state(IrmoClient *client);
+
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/03/05 15:45:37  sdh300
+// Split sendatom type into a seperate type,
+// Add missing #includes
+//
 // Revision 1.6  2003/03/05 15:28:14  sdh300
 // Add receive window and extra data for sendatoms in the receive window.
 //

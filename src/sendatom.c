@@ -214,7 +214,47 @@ IrmoSendAtom *client_sendq_pop(IrmoClient *client)
 	return atom;
 }
 
+// queue up the entire current universe state in the client send queue
+// this is used for when new clients connect to retrieve the entire
+// current universe state
+
+static void client_sendq_add_objects(IrmoObject *object, IrmoClient *client)
+{
+	client_sendq_add_new(client, object);
+}
+
+static void client_sendq_add_variables(IrmoObject *object, IrmoClient *client)
+{
+	int i;
+
+	// queue up variables
+	
+	for (i=0; i<object->objclass->nvariables; ++i)
+		client_sendq_add_change(client, object, i);
+}
+
+void client_sendq_add_state(IrmoClient *client)
+{
+	// create all the objects first
+	// this is done all together and seperately from sending the
+	// variable state, as the rle encoding in the packets will
+	// better compress the atoms this way
+
+	universe_foreach_object(client->server->universe, NULL,
+				(IrmoObjCallback) client_sendq_add_objects,
+				client);
+
+	// send variable states
+
+	universe_foreach_object(client->server->universe, NULL,
+				(IrmoObjCallback) client_sendq_add_variables,
+				client);
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2003/03/06 20:43:11  sdh300
+// Nullify sendatoms in the send window as well as the send queue
+//
 // Revision 1.8  2003/03/05 15:32:21  sdh300
 // Add object class to change atoms to make their coding in packets
 // unambiguous.
