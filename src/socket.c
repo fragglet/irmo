@@ -92,6 +92,7 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 	IrmoSocket *irmosock;
 	int sock;
 	int domain;
+	int opts;
 
 	if (type == IRMO_SOCKET_AUTO)
 		type = IRMO_SOCKET_IPV4;
@@ -713,6 +714,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.18  2003/11/18 19:24:22  fraggle
+// Fix compile errors and warnings introduced by previous commit
+//
 // Revision 1.17  2003/11/18 18:14:47  fraggle
 // Get compilation under windows to work, almost
 //

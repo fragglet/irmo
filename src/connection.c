@@ -42,6 +42,8 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 
 	if (domain == IRMO_SOCKET_AUTO) {
 
+		IrmoConnection *conn;
+
 #ifdef USE_IPV6
 		// try IPv6
 		
@@ -192,6 +194,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.13  2003/11/18 19:24:22  fraggle
+// Fix compile errors and warnings introduced by previous commit
+//
 // Revision 1.12  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //

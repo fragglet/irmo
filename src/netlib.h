@@ -32,6 +32,7 @@
 
 #else
 
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -80,6 +81,9 @@ void irmo_timeval_from_ms(int ms, struct timeval *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.6  2003/11/18 19:24:22  fraggle
+// Fix compile errors and warnings introduced by previous commit
+//
 // Revision 1.5  2003/11/18 18:14:46  fraggle
 // Get compilation under windows to work, almost
 //
