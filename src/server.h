@@ -31,7 +31,7 @@
 #include "if_spec.h"
 #include "client.h"
 #include "socket.h"
-#include "universe.h"
+#include "world.h"
 
 struct _IrmoServer {
 
@@ -47,11 +47,11 @@ struct _IrmoServer {
 
 	IrmoSocket *socket;
 	
-	// universe being served by this server
+	// world being served by this server
 	
-	IrmoUniverse *universe;
+	IrmoWorld *world;
 
-	// spec for client universes
+	// spec for client worlds
 
 	IrmoInterfaceSpec *client_spec;
 	
@@ -75,8 +75,11 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log$
-// Revision 1.1  2003/06/09 21:33:25  fraggle
-// Initial revision
+// Revision 1.2  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
+// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
+// Initial sourceforge import
 //
 // Revision 1.10  2003/06/09 21:06:52  sdh300
 // Add CVS Id tag and copyright/license notices

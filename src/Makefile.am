@@ -9,8 +9,8 @@ SRC= \
   callback.h    connection.h  netlib.h   proto_build.c  server.h	\
   client.c      if_spec.h     object.c   proto_parse.c  socket.c	\
   client.h      if_spec.l     object.h   sendatom.c     socket.h	\
-  client_run.c  packet.c      sendatom.h universe.c			\
-  universe.h    protocol.h    proto_verify.c            method.c	\
+  client_run.c  packet.c      sendatom.h world.c			\
+  world.h       protocol.h    proto_verify.c            method.c	\
   method.h	error.c	      error.h    if_spec_reflect.c
 
 libirmo_la_SOURCES= $(SRC)

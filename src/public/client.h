@@ -51,7 +51,7 @@ typedef void (*IrmoClientCallback) (IrmoClient *client, gpointer user_data);
 
 #include "server.h"
 #include "socket.h"
-#include "universe.h"
+#include "world.h"
 
 /*!
  * \brief Add a reference to a client
@@ -88,19 +88,19 @@ void irmo_client_unref(IrmoClient *client);
 void irmo_client_disconnect(IrmoClient *client);
 
 /*!
- * \brief Get the clients universe object
+ * \brief Get the clients world object
  *
- * While a server can serve a \ref IrmoUniverse object to connecting 
- * clients, the clients can also serve a universe object back to the
+ * While a server can serve a \ref IrmoWorld object to connecting 
+ * clients, the clients can also serve a world object back to the
  * server. This function returns a reference to the local copy of 
- * that remote universe object if it exists, or NULL if it does not.
+ * that remote world object if it exists, or NULL if it does not.
  *
  * \sa irmo_connect
- * \sa irmo_connection_get_universe
+ * \sa irmo_connection_get_world
  *
  */
 
-IrmoUniverse *irmo_client_get_universe(IrmoClient *client);
+IrmoWorld *irmo_client_get_world(IrmoClient *client);
 
 /*!
  * \brief Watch for client disconnection
@@ -165,6 +165,9 @@ const char *irmo_client_get_addr(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log$
+// Revision 1.4  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.3  2003/08/16 18:13:48  fraggle
 // Remove dependency on BSD sockets API in Irmo API
 //

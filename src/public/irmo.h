@@ -36,11 +36,14 @@
 #include <irmo/object.h>
 #include <irmo/server.h>
 #include <irmo/socket.h>
-#include <irmo/universe.h>
+#include <irmo/world.h>
 
 #endif /* #ifndef IRMO_H */
 
 // $Log$
+// Revision 1.3  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.2  2003/07/24 01:25:27  fraggle
 // Add an error reporting API
 //

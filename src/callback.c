@@ -29,7 +29,7 @@
 #include "callback.h"
 #include "if_spec.h"
 #include "object.h"
-#include "universe.h"
+#include "world.h"
 
 // add a callback function to a list
 
@@ -226,37 +226,37 @@ static IrmoCallback *callbackdata_watch(IrmoCallbackData *data,
 	return irmo_callbacklist_add(list, func, user_data);
 }
 
-static IrmoCallbackData *find_callback_class(IrmoUniverse *universe, gchar *classname)
+static IrmoCallbackData *find_callback_class(IrmoWorld *world, gchar *classname)
 {
 	IrmoClass *spec;
 
 	if (classname == NULL) 
-		return universe->callbacks_all;
+		return world->callbacks_all;
 
-	spec = irmo_interface_spec_get_class(universe->spec, classname);
+	spec = irmo_interface_spec_get_class(world->spec, classname);
 
 	if (!spec)
 		return NULL;
 
-	return universe->callbacks[spec->index];
+	return world->callbacks[spec->index];
 }
 
 // watch creation of new objects of a particular class
 
-IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
+IrmoCallback *irmo_world_watch_new(IrmoWorld *world, gchar *classname,
 				      IrmoObjCallback func, gpointer user_data)
 {
 	IrmoCallbackData *data;
 
-	g_return_val_if_fail(universe != NULL, NULL);
+	g_return_val_if_fail(world != NULL, NULL);
 	g_return_val_if_fail(func != NULL, NULL);
 	
 	// find the class
 
-	data = find_callback_class(universe, classname);
+	data = find_callback_class(world, classname);
 
 	if (!data) {
-		irmo_error_report("irmo_universe_watch_new",
+		irmo_error_report("irmo_world_watch_new",
 				  "unknown class '%s'", classname);
 		return NULL;
 	} else {
@@ -265,7 +265,7 @@ IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe, gchar *classname,
 	}
 }
 
-IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
+IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
 					gchar *classname, gchar *variable,
 					IrmoVarCallback func, 
 					gpointer user_data)
@@ -273,16 +273,16 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
 	IrmoCallbackData *data;
 	IrmoCallback *callback = NULL;
 	
-	g_return_val_if_fail(universe != NULL, NULL);
+	g_return_val_if_fail(world != NULL, NULL);
 	g_return_val_if_fail(func != NULL, NULL);
 	g_return_val_if_fail(!(classname == NULL && variable != NULL), NULL);
 	
 	// find the class
 	
-	data = find_callback_class(universe, classname);
+	data = find_callback_class(world, classname);
 
 	if (!data) {
-		irmo_error_report("irmo_universe_watch_class",
+		irmo_error_report("irmo_world_watch_class",
 				  "unknown class '%s'", classname);
 	} else {
 	        callback = callbackdata_watch(data,
@@ -290,7 +290,7 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
 					      func, user_data);
 
 		if (!callback) {
-			irmo_error_report("irmo_universe_watch_class",
+			irmo_error_report("irmo_world_watch_class",
 					  "unknown variable '%s' in class '%s'",
 					  variable, classname);
 		}
@@ -299,7 +299,7 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
 	return callback;
 }
 
-IrmoCallback *irmo_universe_watch_destroy(IrmoUniverse *universe, 
+IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world, 
 					  gchar *classname,
 					  IrmoObjCallback func, 
 					  gpointer user_data)
@@ -307,13 +307,13 @@ IrmoCallback *irmo_universe_watch_destroy(IrmoUniverse *universe,
 	IrmoCallbackData *data;
 	IrmoCallback *callback = NULL;
 
-	g_return_val_if_fail(universe != NULL, NULL);
+	g_return_val_if_fail(world != NULL, NULL);
 	g_return_val_if_fail(func != NULL, NULL);
 	
-	data = find_callback_class(universe, classname);
+	data = find_callback_class(world, classname);
 
 	if (!data) {
-		irmo_error_report("irmo_universe_watch_destroy",
+		irmo_error_report("irmo_world_watch_destroy",
 				  "unknown class '%s'", classname);
 	} else {
 		callback = irmo_callbacklist_add(&data->destroy_callbacks,
@@ -355,6 +355,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.7  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.6  2003/08/28 16:43:45  fraggle
 // Use the reflection API internally to improve readability in places
 //

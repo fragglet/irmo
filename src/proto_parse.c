@@ -107,7 +107,7 @@ G_INLINE_FUNC void proto_parse_change_atom(IrmoClient *client,
 	
 	packet_readi8(packet, &i8);
 
-	objclass = client->universe->spec->classes[i8];
+	objclass = client->world->spec->classes[i8];
 	atom->data.change.objclass = objclass;
 
 	// read object id
@@ -159,7 +159,7 @@ static IrmoSendAtom *proto_parse_method_atom(IrmoClient *client,
 	// read method number
 	
 	packet_readi8(packet, &i8);
-	method = client->server->universe->spec->methods[i8];
+	method = client->server->world->spec->methods[i8];
 	
 	atom->data.method.spec = method;
 
@@ -444,6 +444,9 @@ void proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.7  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.6  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

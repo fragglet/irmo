@@ -58,7 +58,7 @@ typedef enum {
  * \brief Create a new socket
  *
  * Create a new socket listening on a particular port. Servers can then
- * be attached to the socket to serve universes on different vhosts.
+ * be attached to the socket to serve worlds on different vhosts.
  *
  * \param type    The type of socket to create (see \ref IrmoSocketDomain)
  * \param port    The port number to listen on
@@ -107,6 +107,9 @@ void irmo_socket_run(IrmoSocket *sock);
 #endif /* #ifndef IRMO_SOCKET_H */
 
 // $Log$
+// Revision 1.4  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.3  2003/08/26 14:57:31  fraggle
 // Remove AF_* BSD sockets dependency from Irmo API
 //

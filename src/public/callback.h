@@ -30,7 +30,7 @@
 #ifndef IRMO_CALLBACK_H
 #define IRMO_CALLBACK_H
 
-#include "universe.h"
+#include "world.h"
 #include "object.h"
 
 /*!
@@ -63,18 +63,18 @@ void irmo_callback_unset(IrmoCallback *callback);
 
 
 /*!
- * \addtogroup universe
+ * \addtogroup world
  * \{
  */
 
 /*!
  * \brief Watch for creation of new objects.
  *
- * Watch for creation of new objects in a Universe. Every time objects
+ * Watch for creation of new objects in a World. Every time objects
  * of a particular class are created, a callback function will be
  * called.
  *
- * \param universe	Universe to watch in.
+ * \param world	World to watch in.
  * \param classname	The object class to watch. Specify NULL to watch
  *                      for creation of all objects.
  * \param func		The function to call when new objects are
@@ -85,7 +85,7 @@ void irmo_callback_unset(IrmoCallback *callback);
  * \return an \ref IrmoCallback object representing the watch
  */
 
-IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe, 
+IrmoCallback *irmo_world_watch_new(IrmoWorld *world, 
 				      gchar *classname,
 				      IrmoObjCallback func, 
 				      gpointer user_data);
@@ -98,7 +98,7 @@ IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe,
  * a particular variable is changed, or when any variable is
  * changed.
  *
- * \param universe	The universe to watch in.
+ * \param world	The world to watch in.
  * \param classname	The class to watch. Specify NULL to watch for
  *                      changes to objects of all classes.
  * \param variable	The variable name to watch. Specify NULL to
@@ -110,7 +110,7 @@ IrmoCallback *irmo_universe_watch_new(IrmoUniverse *universe,
  * \return an \ref IrmoCallback object representing the watch
  */
 
-IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
+IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
 					gchar *classname, gchar *variable,
 					IrmoVarCallback func, 
 					gpointer user_data);
@@ -121,7 +121,7 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
  * Whenever any object of a particular class is about to be destroyed,
  * a callback function will first be called.
  *
- * \param universe	The universe to watch in.
+ * \param world	The world to watch in.
  * \param classname	The name of the class of object to watch. Specify
  *                      NULL to watch for destruction of objects of all
  * 		        classes.
@@ -131,7 +131,7 @@ IrmoCallback *irmo_universe_watch_class(IrmoUniverse *universe,
  * \return an \ref IrmoCallback object representing the watch
  */
 
-IrmoCallback *irmo_universe_watch_destroy(IrmoUniverse *universe, 
+IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world, 
 					  gchar *classname,
 					  IrmoObjCallback func, 
 					  gpointer user_data);
@@ -186,6 +186,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log$
+// Revision 1.4  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.3  2003/08/16 16:45:11  fraggle
 // Allow watches on all objects regardless of class
 //

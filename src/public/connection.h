@@ -34,7 +34,7 @@
 #include "if_spec.h"
 #include "client.h"
 #include "server.h"
-#include "universe.h"
+#include "world.h"
 
 /*!
  * \brief An IrmoConnection object 
@@ -56,7 +56,7 @@ typedef IrmoClient IrmoConnection;
  * the connection to the server.
  *
  * Care must be taken in the interface specification and the local 
- * universe: their types must match those expected by the server.
+ * world: their types must match those expected by the server.
  * (see \ref irmo_server_new)
  *
  * \param domain         Domain of the socket to use (see \ref IrmoSocketDomain).
@@ -66,10 +66,10 @@ typedef IrmoClient IrmoConnection;
  * \param port           The port on the remote machine on which the server
  *                       is running.
  * \param spec           An interface specification object describing the
- *                       remove universe served by the server, or NULL if
- *                       the server is not serving a universe.
- * \param local_universe A local universe to serve back to the server, or
- *                       NULL not to serve any universe back.
+ *                       remove world served by the server, or NULL if
+ *                       the server is not serving a world.
+ * \param local_world    A local world to serve back to the server, or
+ *                       NULL not to serve any world back.
  * \return               A IrmoConnection object representing the
  *                       connection, or NULL if a connection could not be
  *                       established.
@@ -77,7 +77,7 @@ typedef IrmoClient IrmoConnection;
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
                              IrmoInterfaceSpec *spec,
-			     IrmoUniverse *local_universe);
+			     IrmoWorld *local_world);
 
 /*!
  * \brief Close a connection to a remote server
@@ -122,18 +122,18 @@ IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn);
 void irmo_connection_run(IrmoConnection *conn);
 
 /*!
- * \brief Get the universe object for the remote server
+ * \brief Get the world object for the remote server
  *
- * Servers can serve a \ref IrmoUniverse object to their connecting
+ * Servers can serve a \ref IrmoWorld object to their connecting
  * clients. This function returns a reference to the local copy of 
- * the remote universe (or NULL if the server is not serving a
- * universe)
+ * the remote world (or NULL if the server is not serving a
+ * world)
  *
  * \sa irmo_server_new
- * \sa client_get_universe
+ * \sa irmo_client_get_world
  */
 
-IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn);
+IrmoWorld *irmo_connection_get_world(IrmoConnection *conn);
 
 #define irmo_connection_ref irmo_client_ref
 #define irmo_connection_unref irmo_client_unref
@@ -143,6 +143,9 @@ IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn);
 #endif /* #ifndef IRMO_CONNECTION_H */
 
 // $Log$
+// Revision 1.3  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.2  2003/08/26 14:57:31  fraggle
 // Remove AF_* BSD sockets dependency from Irmo API
 //

@@ -33,7 +33,7 @@
 #include "sendatom.h"
 #include "server.h"
 #include "socket.h"
-#include "universe.h"
+#include "world.h"
 
 // maximum sendwindow size
 
@@ -63,9 +63,9 @@ struct _IrmoClient {
 
 	IrmoServer *server;
 	
-	// clients remote universe
+	// clients remote world
 	
-	IrmoUniverse *universe;
+	IrmoWorld *world;
 
 	// address:
 
@@ -172,6 +172,9 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
+// Revision 1.3  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.2  2003/08/30 03:08:00  fraggle
 // Use irmo_client_internal_unref instead of unreffing externally. Make
 // irmo_client_destroy static now.

@@ -37,14 +37,14 @@
 #include "client.h"
 #include "object.h"
 #include "sendatom.h"
-#include "universe.h"
+#include "world.h"
 
 // do something for all connected clients
 
 typedef void (*ClientCallback) (IrmoClient *client, gpointer user_data);
 
 struct foreach_client_data {
-	IrmoUniverse *universe;
+	IrmoWorld *world;
 	ClientCallback func;
 	gpointer user_data;
 };
@@ -60,19 +60,19 @@ static void foreach_client_foreach(gpointer key, IrmoClient *client,
 	data->func(client, data->user_data);
 }
 
-static void foreach_client(IrmoUniverse *universe,
+static void foreach_client(IrmoWorld *world,
 			   ClientCallback func, gpointer user_data)
 {
 	struct foreach_client_data data = {
-		universe,
+		world,
 		func,
 		user_data,
 	};
 	int i;
 
-	for (i=0; i<universe->servers->len; ++i) {
+	for (i=0; i<world->servers->len; ++i) {
 		IrmoServer *server
-			= (IrmoServer *) universe->servers->pdata[i];
+			= (IrmoServer *) world->servers->pdata[i];
 
 		g_hash_table_foreach(server->clients,
 				     (GHFunc) foreach_client_foreach,
@@ -80,28 +80,28 @@ static void foreach_client(IrmoUniverse *universe,
 	}
 }		   
 
-static gint get_free_id(IrmoUniverse *universe)
+static gint get_free_id(IrmoWorld *world)
 {
-	irmo_objid_t start = universe->lastid;
+	irmo_objid_t start = world->lastid;
 
 	// keep incrementing until we find one free
 	// we increment once to start off with, since the current lastid
 	// was assigned to the previous object
 	
 	do {
-		universe->lastid = (universe->lastid + 1) % MAX_OBJECTS;
+		world->lastid = (world->lastid + 1) % MAX_OBJECTS;
 
 		// no free spaces
 		
-		if (universe->lastid == start)
+		if (world->lastid == start)
 			return -1;
-	} while (g_hash_table_lookup(universe->objects,
-				     (gpointer) universe->lastid));
+	} while (g_hash_table_lookup(world->objects,
+				     (gpointer) world->lastid));
 
-	return universe->lastid;
+	return world->lastid;
 }
 
-IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
+IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 				     IrmoClass *objclass,
 				     irmo_objid_t id)
 {
@@ -114,7 +114,7 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 
 	object->id = id;
 	object->objclass = objclass;
-	object->universe = universe;
+	object->world = world;
 	object->callbacks = callbackdata_new(objclass);
 	
 	// member variables:
@@ -129,40 +129,40 @@ IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
 			object->variables[i].s = g_strdup("");
 
 	
-	// add to universe
+	// add to world
 
-	g_hash_table_insert(universe->objects, (gpointer) id, object);
+	g_hash_table_insert(world->objects, (gpointer) id, object);
 
 	// raise callback functions for new object creation
 
-	callbackdata_raise_new(universe->callbacks[objclass->index],
+	callbackdata_raise_new(world->callbacks[objclass->index],
 			       object);
-	callbackdata_raise_new(universe->callbacks_all, object);
+	callbackdata_raise_new(world->callbacks_all, object);
 
 	// notify attached clients
 
-	foreach_client(universe,
+	foreach_client(world,
 		       (ClientCallback) irmo_client_sendq_add_new, object);
 
-	// if a remote universe, create variable_time array
+	// if a remote world, create variable_time array
 
-	if (universe->remote)
+	if (world->remote)
 		object->variable_time = g_new0(int, objclass->nvariables);
 	
 	return object;
 }
 				
 
-IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename)
+IrmoObject *irmo_object_new(IrmoWorld *world, char *typename)
 {
 	IrmoClass *spec;
 	gint id;
 
-	g_return_val_if_fail(universe != NULL, NULL);
+	g_return_val_if_fail(world != NULL, NULL);
 	g_return_val_if_fail(typename != NULL, NULL);
-	g_return_val_if_fail(universe->remote == FALSE, NULL);
+	g_return_val_if_fail(world->remote == FALSE, NULL);
 	
-	spec = irmo_interface_spec_get_class(universe->spec, typename);
+	spec = irmo_interface_spec_get_class(world->spec, typename);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_new", 
@@ -170,16 +170,16 @@ IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename)
 		return NULL;
 	}
 
-	id = get_free_id(universe);
+	id = get_free_id(world);
 
 	if (id < 0) {
 		irmo_error_report("irmo_object_new",
-				  "maximum of %i objects per universe (no more objects!)",
+				  "maximum of %i objects per world (no more objects!)",
 				  MAX_OBJECTS);
 		return NULL;
 	}
 
-	return irmo_object_internal_new(universe, spec, id);
+	return irmo_object_internal_new(world, spec, id);
 }
 
 // internal object destroy function
@@ -194,23 +194,23 @@ void irmo_object_internal_destroy(IrmoObject *object,
 		// raise destroy callbacks
 		
 		callbackdata_raise_destroy(object->callbacks, object);
-		callbackdata_raise_destroy(object->universe->callbacks
+		callbackdata_raise_destroy(object->world->callbacks
 					   [object->objclass->index],
 					   object);
-		callbackdata_raise_destroy(object->universe->callbacks_all,
+		callbackdata_raise_destroy(object->world->callbacks_all,
 					   object);
 		
 		// notify connected clients
 		
-		foreach_client(object->universe,
+		foreach_client(object->world,
 			       (ClientCallback) irmo_client_sendq_add_destroy,
 			       object);
 	}	
 
-	// remove from universe
+	// remove from world
 
 	if (remove) {
-		g_hash_table_remove(object->universe->objects,
+		g_hash_table_remove(object->world->objects,
 				    (gpointer) object->id);
 	}
 	
@@ -238,10 +238,10 @@ void irmo_object_internal_destroy(IrmoObject *object,
 void irmo_object_destroy(IrmoObject *object)
 {
 	g_return_if_fail(object != NULL);
-	g_return_if_fail(object->universe->remote == FALSE);
+	g_return_if_fail(object->world->remote == FALSE);
 	
 	// destroy object
-	// notify callbacks and remove from universe
+	// notify callbacks and remove from world
 	
 	irmo_object_internal_destroy(object, TRUE, TRUE);
 }
@@ -294,14 +294,14 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 	// call callback functions for change
 
 	callbackdata_raise(object->callbacks, object, spec->index);
-	callbackdata_raise(object->universe->callbacks[objclass->index],
+	callbackdata_raise(object->world->callbacks[objclass->index],
 			   object, variable);
-	callbackdata_raise(object->universe->callbacks_all,
+	callbackdata_raise(object->world->callbacks_all,
 			   object, variable);
 	
 	// notify clients
 
-	foreach_client(object->universe,
+	foreach_client(object->world,
 		       (ClientCallback) object_set_notify_foreach,
 		       &data);
 }
@@ -312,7 +312,7 @@ void irmo_object_set_int(IrmoObject *object, gchar *variable, gint value)
 
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(variable != NULL);
-	g_return_if_fail(object->universe->remote == FALSE);
+	g_return_if_fail(object->world->remote == FALSE);
 	
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -347,7 +347,7 @@ void irmo_object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(variable != NULL);
 	g_return_if_fail(value != NULL);
-	g_return_if_fail(object->universe->remote == FALSE);
+	g_return_if_fail(object->world->remote == FALSE);
 	
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -437,14 +437,17 @@ gchar *irmo_object_get_string(IrmoObject *object, gchar *variable)
 	return object->variables[spec->index].s;
 }
 
-IrmoUniverse *irmo_object_get_universe(IrmoObject *obj)
+IrmoWorld *irmo_object_get_world(IrmoObject *obj)
 {
 	g_return_val_if_fail(obj != NULL, NULL);
 
-	return obj->universe;
+	return obj->world;
 }
 
 // $Log$
+// Revision 1.10  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.9  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

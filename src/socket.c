@@ -333,7 +333,7 @@ G_INLINE_FUNC void socket_run_syn(IrmoPacket *packet)
 		local_hash_expected 
 			= server->client_spec ? server->client_spec->hash : 0;
 		server_hash_expected 
-			= server->universe ? server->universe->spec->hash : 0;
+			= server->world ? server->world->spec->hash : 0;
 	}
 
 	if (!server || local_hash != local_hash_expected
@@ -386,23 +386,23 @@ G_INLINE_FUNC void socket_run_synack(IrmoPacket *packet)
 		
 		client->state = CLIENT_CONNECTED;
 
-		// create the remote universe object
+		// create the remote world object
 
 		if (client->server->client_spec) {
-			client->universe
-			  = irmo_universe_new(client->server->client_spec);
+			client->world
+			  = irmo_world_new(client->server->client_spec);
 
-			// mark this as a remote universe
+			// mark this as a remote world
 			
-			client->universe->remote = TRUE;
+			client->world->remote = TRUE;
 
-			client->universe->remote_client = client;
+			client->world->remote_client = client;
 		}
 
-		// if we are serving a universe to the client,
-		// send the entire current universe state
+		// if we are serving a world to the client,
+		// send the entire current world state
 
-		if (client->server->universe)
+		if (client->server->world)
 			irmo_client_sendq_add_state(client);
 
 		// raise callback functions for new client
@@ -625,6 +625,9 @@ void irmo_socket_run(IrmoSocket *sock)
 }
 
 // $Log$
+// Revision 1.8  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.7  2003/09/01 01:25:49  fraggle
 // Improve packet code; increase packet size exponentially.
 // Remove the need to specify the size when creating a new packet object.

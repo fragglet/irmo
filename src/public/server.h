@@ -40,7 +40,7 @@ typedef struct _IrmoServer IrmoServer;
 #include "if_spec.h"
 #include "client.h"
 #include "socket.h"
-#include "universe.h"
+#include "world.h"
 
 /*!
  * \brief Create a new server
@@ -53,14 +53,14 @@ typedef struct _IrmoServer IrmoServer;
  *                  for this parameter, this server will be the default
  *                  server for the socket. If there is an existing
  *                  default server, the function will fail.
- * \param universe  The universe the server will serve.
+ * \param world  The world the server will serve.
  * \param spec      An interface specification describing the interface
- *                  for the client universe of the connecting clients.
+ *                  for the client world of the connecting clients.
  * \return          A new IrmoServer or NULL if the function fails.
  */
 
 IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
-			    IrmoUniverse *universe, IrmoInterfaceSpec *spec);
+			    IrmoWorld *world, IrmoInterfaceSpec *spec);
 
 /*!
  * \brief Watch new connections to a server
@@ -127,6 +127,9 @@ void irmo_server_unref(IrmoServer *server);
 #endif /* #ifndef IRMO_SERVER_H */
 
 // $Log$
+// Revision 1.4  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.3  2003/08/15 15:22:42  fraggle
 // Add an iterator function to iterate over clients connected to a server.
 //

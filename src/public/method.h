@@ -54,7 +54,7 @@ typedef struct _IrmoMethodData IrmoMethodData;
  * \param data      A \ref IrmoMethodData object holding data about the
  *                  invoked method.
  * \param user_data A pointer to user defined piece of memory specified in
- *                  the \ref irmo_universe_method_watch call used to set
+ *                  the \ref irmo_world_method_watch call used to set
  *                  the callback.
  */
 
@@ -64,7 +64,7 @@ typedef void (*IrmoInvokeCallback)(IrmoMethodData *data,
 /*!
  * \brief Set a callback function to be invoked when a method is called
  *
- * \param universe    The universe to set the watch.
+ * \param world    The world to set the watch.
  * \param method_name The name of the method to watch
  * \param method      A callback function to call when the method is invoked.
  * \param user_data   User data to be passed to the callback function
@@ -72,7 +72,7 @@ typedef void (*IrmoInvokeCallback)(IrmoMethodData *data,
  * \return            A \ref IrmoCallback object representing the watch.
  */
 
-IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe, 
+IrmoCallback *irmo_world_method_watch(IrmoWorld *world, 
 					 gchar *method_name,
 					 IrmoInvokeCallback method, 
 					 gpointer user_data);
@@ -119,29 +119,29 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data);
 /*!
  * \brief Call a method
  *
- * Invoke a method. If the universe is a local copy of a universe served from
+ * Invoke a method. If the world is a local copy of a world served from
  * a remote machine the call will be forwarded to the remote machine.
  *
  * Following the function arguments are the method arguments, in the order
  * specified in the interface specification.
  * 
- * \param universe  The universe object on which to invoke the method
+ * \param world  The world object on which to invoke the method
  * \param method    The name of the method
  *
- * \sa irmo_universe_method_call2
+ * \sa irmo_world_method_call2
  */
 
-void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...);
+void irmo_world_method_call(IrmoWorld *world, gchar *method, ...);
 
 /*!
  * \brief Call a method
  *
- * Invoke a method. This is the same as \ref irmo_universe_method_call
+ * Invoke a method. This is the same as \ref irmo_world_method_call
  * except it takes an array of \ref IrmoValue structures for the 
  * arguments instead of using the C varargs mechanism.
  */
 
-void irmo_universe_method_call2(IrmoUniverse *universe, gchar *method,
+void irmo_world_method_call2(IrmoWorld *world, gchar *method,
 				IrmoValue *arguments);
 
 //! \}
@@ -149,6 +149,9 @@ void irmo_universe_method_call2(IrmoUniverse *universe, gchar *method,
 #endif /* #ifndef IRMO_METHOD_H */
 
 // $Log$
+// Revision 1.5  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.4  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

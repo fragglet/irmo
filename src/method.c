@@ -28,28 +28,28 @@
 
 #include "callback.h"
 #include "method.h"
-#include "universe.h"
+#include "world.h"
 
-IrmoCallback *irmo_universe_method_watch(IrmoUniverse *universe, 
+IrmoCallback *irmo_world_method_watch(IrmoWorld *world, 
 					 gchar *method_name,
 					 IrmoInvokeCallback method, 
 					 gpointer user_data)
 {
 	IrmoMethod *spec;
 
-	g_return_if_fail(universe != NULL);
+	g_return_if_fail(world != NULL);
 	g_return_if_fail(method_name != NULL);
 	g_return_if_fail(method != NULL);
 	
-	spec = irmo_interface_spec_get_method(universe->spec, method_name);
+	spec = irmo_interface_spec_get_method(world->spec, method_name);
 
 	if (!spec) {
-		irmo_error_report("irmo_universe_method_watch",
+		irmo_error_report("irmo_world_method_watch",
 				  "unknown method '%s'", method_name);
 		return;
 	}
 
-	return irmo_callbacklist_add(&universe->method_callbacks[spec->index],
+	return irmo_callbacklist_add(&world->method_callbacks[spec->index],
 				     method, user_data);
 }
 
@@ -61,23 +61,23 @@ static void method_invoke_foreach(IrmoCallback *data,
 	func(method_data, data->user_data);
 }
 
-void irmo_method_invoke(IrmoUniverse *universe, IrmoMethodData *data)
+void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 {
 	// send to source
 
-	if (universe->remote) {
-		irmo_client_sendq_add_method(universe->remote_client,
+	if (world->remote) {
+		irmo_client_sendq_add_method(world->remote_client,
 					     data);
 	}
 	
 	// invoke callback functions
 	
-	g_slist_foreach(universe->method_callbacks[data->spec->index],
+	g_slist_foreach(world->method_callbacks[data->spec->index],
 			(GFunc) method_invoke_foreach,
 			data);
 }
 
-void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
+void irmo_world_method_call(IrmoWorld *world, gchar *method, ...)
 {
 	IrmoMethodData method_data;
 	IrmoMethod *spec;
@@ -85,13 +85,13 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 	va_list arglist;
 	int i;
 
-	g_return_if_fail(universe != NULL);
+	g_return_if_fail(world != NULL);
 	g_return_if_fail(method != NULL);
 	
-	spec = irmo_interface_spec_get_method(universe->spec, method);
+	spec = irmo_interface_spec_get_method(world->spec, method);
 
 	if (!spec) {
-		irmo_error_report("irmo_universe_method_call",
+		irmo_error_report("irmo_world_method_call",
 				  "unknown method '%s'", method);
 		return;
 	}
@@ -121,25 +121,25 @@ void irmo_universe_method_call(IrmoUniverse *universe, gchar *method, ...)
 	method_data.args = args;
 	method_data.src = NULL;
 
-	irmo_method_invoke(universe, &method_data);
+	irmo_method_invoke(world, &method_data);
 
 	free(args);
 }
 
 
-void irmo_universe_method_call2(IrmoUniverse *universe, gchar *method,
+void irmo_world_method_call2(IrmoWorld *world, gchar *method,
 				IrmoValue *arguments)
 {
 	IrmoMethodData method_data;
 	IrmoMethod *spec;
 
-	g_return_if_fail(universe != NULL);
+	g_return_if_fail(world != NULL);
 	g_return_if_fail(method != NULL);
 	
-	spec = irmo_interface_spec_get_method(universe->spec, method);
+	spec = irmo_interface_spec_get_method(world->spec, method);
 
 	if (!spec) {
-		irmo_error_report("irmo_universe_method_call2",
+		irmo_error_report("irmo_world_method_call2",
 				  "unknown method '%s'", method);
 		return;
 	}
@@ -148,7 +148,7 @@ void irmo_universe_method_call2(IrmoUniverse *universe, gchar *method,
 	method_data.args = arguments;
 	method_data.src = NULL;
 
-	irmo_method_invoke(universe, &method_data);
+	irmo_method_invoke(world, &method_data);
 }
 
 
@@ -215,6 +215,9 @@ guint irmo_method_arg_int(IrmoMethodData *data, gchar *argname)
 }
 
 // $Log$
+// Revision 1.9  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.8  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

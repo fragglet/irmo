@@ -38,7 +38,7 @@
  *
  * An \ref IrmoInterfaceSpec object defines an interface specification 
  * comprising specification for several object classes and methods.
- * The specification can then be used to create an \ref IrmoUniverse
+ * The specification can then be used to create an \ref IrmoWorld
  * where the classes can be instantiated as \ref IrmoObject objects.
  *
  * The InterfaceSpec is defined in a seperate file. This has a C-like
@@ -56,23 +56,23 @@
  */
 
 /*!
- * \defgroup universe Irmo Universe
+ * \defgroup world Irmo World
  *
- * An IrmoUniverse defines a data structure which implements an Interface
- * Specification. Inside an IrmoUniverse, objects (see \ref IrmoObject)
+ * An IrmoWorld defines a data structure which implements an Interface
+ * Specification. Inside an IrmoWorld, objects (see \ref IrmoObject)
  * of classes defined within that specification can be created. These 
  * objects can be used to hold data of various types.
  *
  * Callback functions can be set to be called automatically when particular
- * objects change within the Universe.
+ * objects change within the World.
  */
 
 /*!
  * \defgroup object Irmo Objects
  *
- * Irmo Objects exist within a Universe (see \ref IrmoUniverse). They 
+ * Irmo Objects exist within a World (see \ref IrmoWorld). They 
  * have a class which defines member variables which hold data. The
- * classes are defined by the IrmoInterfaceSpec which the Universe
+ * classes are defined by the IrmoInterfaceSpec which the World
  * is using. The object member variables can hold several different 
  * types of data (int, string) and the values of the variables can
  * be changed and retrieved. Callback functions can be set to watch
@@ -82,10 +82,10 @@
 /*!
  * \defgroup method Irmo Method Call Interface
  *
- * Method calls can be defined and invoked on \ref IrmoUniverse objects.
+ * Method calls can be defined and invoked on \ref IrmoWorld objects.
  * Callback functions can be set to be called when methods are invoked.
  * The methods and their arguments are declared in the Interface 
- * Specification for the Universe.
+ * Specification for the World.
  *
  */
 
@@ -104,13 +104,13 @@
 /*!
  * \defgroup server Irmo Server
  *
- * Server objects are used to serve a particular \ref IrmoUniverse
- * universe object on an \ref IrmoSocket socket. Clients can then
+ * Server objects are used to serve a particular \ref IrmoWorld
+ * world object on an \ref IrmoSocket socket. Clients can then
  * connect to the server using the \ref irmo_connect function
- * and receive information about the universe being served.
+ * and receive information about the world being served.
  * 
- * The clients themselves may also serve a universe back to the 
- * server. The client universe to serve is specified using the
+ * The clients themselves may also serve a world back to the 
+ * server. The client world to serve is specified using the
  * 'spec' field of the irmo_server_new constructor.
  */
 
@@ -137,13 +137,13 @@
  * connection.
  * 
  * In using irmo_connect, the 'spec' object is used to specify the
- * universe being served by the remote server. The specification
+ * world being served by the remote server. The specification
  * file must be identical; if the specification objects differ
  * on the client and the server, the server will refuse the connection.
  *
- * The client may serve a universe back to the server by setting
- * the 'local_universe' parameter to irmo_connect to point to a
- * valid IrmoUniverse object. The type here must also be identical to
+ * The client may serve a world back to the server by setting
+ * the 'local_world' parameter to irmo_connect to point to a
+ * valid IrmoWorld object. The type here must also be identical to
  * that expected by the server.
  */
 
@@ -157,6 +157,9 @@
  */
 
 // $Log$
+// Revision 1.4  2003/09/01 14:21:19  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.3  2003/07/24 01:25:26  fraggle
 // Add an error reporting API
 //

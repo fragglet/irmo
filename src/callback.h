@@ -48,7 +48,7 @@ struct _IrmoCallbackData {
 
 	// Class this callback data is being used for watching
 	// if this is NULL, it is for the global callback data
-	// for a universe, used to watch all objects.
+	// for a world, used to watch all objects.
 
 	IrmoClass *objclass;
 
@@ -88,6 +88,9 @@ void callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object);
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.5  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.4  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

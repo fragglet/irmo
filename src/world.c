@@ -24,7 +24,7 @@
 //---------------------------------------------------------------------
 
 //
-// Irmo Universe
+// Irmo World 
 //
 
 #include <stdio.h>
@@ -32,119 +32,119 @@
 
 #include "callback.h"
 #include "if_spec.h"
-#include "universe.h"
+#include "world.h"
 
-IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec)
+IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 {
-	IrmoUniverse *universe;
+	IrmoWorld *world;
 	int i;
 
 	g_return_val_if_fail(spec != NULL, NULL);
 	
-	universe = g_new0(IrmoUniverse, 1);
+	world = g_new0(IrmoWorld, 1);
 
-	universe->spec = spec;
-	universe->objects = g_hash_table_new(g_direct_hash, g_direct_equal);
-	universe->refcount = 1;
-	universe->lastid = 0;
-	universe->servers = g_ptr_array_new();
-	universe->remote = FALSE;
+	world->spec = spec;
+	world->objects = g_hash_table_new(g_direct_hash, g_direct_equal);
+	world->refcount = 1;
+	world->lastid = 0;
+	world->servers = g_ptr_array_new();
+	world->remote = FALSE;
 	
 	irmo_interface_spec_ref(spec);
 
 	// create a callback for each class
 	
-	universe->callbacks = g_new0(IrmoCallbackData *, spec->nclasses);
+	world->callbacks = g_new0(IrmoCallbackData *, spec->nclasses);
 
 	for (i=0; i<spec->nclasses; ++i) {
-		universe->callbacks[i] = callbackdata_new(spec->classes[i]);
+		world->callbacks[i] = callbackdata_new(spec->classes[i]);
 	}
 
-	universe->callbacks_all = callbackdata_new(NULL);
+	world->callbacks_all = callbackdata_new(NULL);
 
 	// method callbacks
 	
-	universe->method_callbacks = g_new0(GSList *, spec->nmethods);
+	world->method_callbacks = g_new0(GSList *, spec->nmethods);
 
-	return universe;
+	return world;
 }
 
-void irmo_universe_ref(IrmoUniverse *universe)
+void irmo_world_ref(IrmoWorld *world)
 {
-	g_return_if_fail(universe != NULL);
+	g_return_if_fail(world != NULL);
 	
-	++universe->refcount;
+	++world->refcount;
 }
 
-static void irmo_universe_unref_foreach(irmo_objid_t id, IrmoObject *object,
+static void irmo_world_unref_foreach(irmo_objid_t id, IrmoObject *object,
 					gpointer user_data)
 {
 	// destroy object. do not notify objects. do not remove
-	// from universe as this may upset the foreach function
+	// from world as this may upset the foreach function
 	// we are in.
 	
 	irmo_object_internal_destroy(object, FALSE, FALSE);
 }
 
-void irmo_universe_unref(IrmoUniverse *universe)
+void irmo_world_unref(IrmoWorld *world)
 {
-	g_return_if_fail(universe != NULL);
+	g_return_if_fail(world != NULL);
 	
-	--universe->refcount;
+	--world->refcount;
 
-	if (universe->refcount <= 0) {
+	if (world->refcount <= 0) {
 		int i;
 
 		// delete list of servers (must by definition be empty
 		// already)
 
-		g_ptr_array_free(universe->servers, 0);
+		g_ptr_array_free(world->servers, 0);
 		
 		// delete all objects
 		
-		g_hash_table_foreach(universe->objects,
-				     (GHFunc) irmo_universe_unref_foreach, 
+		g_hash_table_foreach(world->objects,
+				     (GHFunc) irmo_world_unref_foreach, 
 				     NULL);
-		g_hash_table_destroy(universe->objects);
+		g_hash_table_destroy(world->objects);
 
 		// delete callbacks
 		
-		for (i=0; i<universe->spec->nclasses; ++i)
-			callbackdata_free(universe->callbacks[i]);
+		for (i=0; i<world->spec->nclasses; ++i)
+			callbackdata_free(world->callbacks[i]);
 
-		callbackdata_free(universe->callbacks_all);
+		callbackdata_free(world->callbacks_all);
 		
-		free(universe->callbacks);
+		free(world->callbacks);
 
 		// no longer using the interface spec
 		
-		irmo_interface_spec_unref(universe->spec);
+		irmo_interface_spec_unref(world->spec);
 		
-		free(universe);
+		free(world);
 	}
 }
 
-IrmoObject *irmo_universe_get_object_for_id(IrmoUniverse *universe,
+IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 					    irmo_objid_t id)
 {
 	IrmoObject *object;
 
-	g_return_if_fail(universe != NULL);
+	g_return_if_fail(world != NULL);
 	
-	object = g_hash_table_lookup(universe->objects, (gpointer) id);
+	object = g_hash_table_lookup(world->objects, (gpointer) id);
 
 	return object;
 }
 
-struct universe_foreach_data {
+struct world_foreach_data {
 	IrmoClass *spec;
 	IrmoObjCallback func;
 	gpointer user_data;
 };
 
-static void universe_foreach_foreach(gint key,
+static void world_foreach_foreach(gint key,
 				     IrmoObject *object,
-				     struct universe_foreach_data *data)
+				     struct world_foreach_data *data)
 {
 	// only call callback if this is of the particular class
 	// or if no class was specified
@@ -155,23 +155,23 @@ static void universe_foreach_foreach(gint key,
 }
 					    
 
-void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
+void irmo_world_foreach_object(IrmoWorld *world, gchar *classname,
 				  IrmoObjCallback func, gpointer user_data)
 {
 	IrmoClass *spec;
-	struct universe_foreach_data data = {
+	struct world_foreach_data data = {
 		func: func,
 		user_data: user_data,
 	};
 
-	g_return_if_fail(universe != NULL);
+	g_return_if_fail(world != NULL);
 	g_return_if_fail(func != NULL);
 	
 	if (classname) {
-		spec = irmo_interface_spec_get_class(universe->spec, classname);
+		spec = irmo_interface_spec_get_class(world->spec, classname);
 
 		if (!spec) {
-			irmo_error_report("irmo_universe_foreach_object",
+			irmo_error_report("irmo_world_foreach_object",
 					  "unknown class '%s'", classname);
 			return;
 		}
@@ -181,19 +181,22 @@ void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 
 	data.spec = spec;
 	
-	g_hash_table_foreach(universe->objects,
-			     (GHFunc) universe_foreach_foreach,
+	g_hash_table_foreach(world->objects,
+			     (GHFunc) world_foreach_foreach,
 			     &data);			     
 }
 
-IrmoInterfaceSpec *irmo_universe_get_spec(IrmoUniverse *universe)
+IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 {
-	g_return_val_if_fail(universe != NULL, NULL);
+	g_return_val_if_fail(world != NULL, NULL);
 
-	return universe->spec;
+	return world->spec;
 }
 
 // $Log$
+// Revision 1.1  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.6  2003/08/28 16:43:45  fraggle
 // Use the reflection API internally to improve readability in places
 //

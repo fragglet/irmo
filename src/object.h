@@ -39,21 +39,21 @@
 
 struct _IrmoObject {
 
-	// universe this object is attached to
+	// world this object is attached to
 
-	IrmoUniverse *universe;
+	IrmoWorld *world;
 
 	// callback data for this object
 	
 	IrmoCallbackData *callbacks;
 
 	// the class of this object, one of the classes specified
-	// in the interface spec for the universe this object exists
+	// in the interface spec for the world this object exists
 	// in.
 	
 	IrmoClass *objclass;
 
-	// numerical id reference for this object in the universe
+	// numerical id reference for this object in the world
 	
 	irmo_objid_t id;
 
@@ -70,13 +70,13 @@ struct _IrmoObject {
 
 // internal function create a new object
 
-IrmoObject *irmo_object_internal_new(IrmoUniverse *universe,
+IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 				     IrmoClass *objclass,
 				     irmo_objid_t id);
 
 // internal function to destroy an object. control over whether to
 // call notify routines (call callbacks, forward info to clients)
-// and whether to remove from the universe.
+// and whether to remove from the world.
 
 void irmo_object_internal_destroy(IrmoObject *object, gboolean notify,
 				  gboolean remove);
@@ -93,6 +93,9 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.4  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.3  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

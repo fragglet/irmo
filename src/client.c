@@ -143,8 +143,8 @@ static void irmo_client_destroy(IrmoClient *client)
 
 	free(client->recvwindow);
 
-	if (client->universe)
-		irmo_universe_unref(client->universe);
+	if (client->world)
+		irmo_world_unref(client->world);
 	
 	free(client->addr);
 	free(client);
@@ -186,8 +186,8 @@ static void client_run_connecting(IrmoClient *client)
 		// build and send a new packet
 
 		if (client->server->socket->type == SOCKET_CLIENT) {
-			IrmoUniverse *local_universe
-				= client->server->universe;
+			IrmoWorld *local_world
+				= client->server->world;
 			IrmoInterfaceSpec *spec = client->server->client_spec;
 
 			packet = packet_new(); 
@@ -197,8 +197,8 @@ static void client_run_connecting(IrmoClient *client)
 
 			packet_writei16(packet, PACKET_FLAG_SYN);
 			packet_writei32(packet,
-					local_universe ?
-					local_universe->spec->hash : 0);
+					local_world ?
+					local_world->spec->hash : 0);
 			packet_writei32(packet, spec ? spec->hash : 0);
 
 			// no hostname yet, fixme
@@ -277,11 +277,11 @@ void irmo_client_run(IrmoClient *client)
 	}
 }
 
-IrmoUniverse *irmo_client_get_universe(IrmoClient *client)
+IrmoWorld *irmo_client_get_world(IrmoClient *client)
 {
 	g_return_val_if_fail(client != NULL, NULL);
 	
-	return client->universe;
+	return client->world;
 }
 
 void irmo_client_disconnect(IrmoClient *client)
@@ -351,6 +351,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.9  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.8  2003/09/01 01:25:49  fraggle
 // Improve packet code; increase packet size exponentially.
 // Remove the need to specify the size when creating a new packet object.

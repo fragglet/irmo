@@ -63,10 +63,10 @@ static gboolean proto_verify_change_atom(IrmoClient *client,
 	if (!packet_readi8(packet, &i8))
 		return FALSE;
 
-	if (i8 >= client->universe->spec->nclasses)
+	if (i8 >= client->world->spec->nclasses)
 		return FALSE;
 
-	objclass = client->universe->spec->classes[i8];
+	objclass = client->world->spec->classes[i8];
 	
 	// object id
 
@@ -124,10 +124,10 @@ static gboolean proto_verify_method_atom(IrmoClient *client,
 
 	// sanity check method index
 
-	if (i8 >= client->server->universe->spec->nmethods)
+	if (i8 >= client->server->world->spec->nmethods)
 		return FALSE;
 
-	method = client->server->universe->spec->methods[i8];
+	method = client->server->world->spec->methods[i8];
 
 	// read arguments
 
@@ -161,7 +161,7 @@ static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 
 		// check valid class
 		
-		if (i8 >= client->universe->spec->nclasses)
+		if (i8 >= client->world->spec->nclasses)
 			return FALSE;
 
 		break;
@@ -222,19 +222,19 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 			return FALSE;
 		}
 
-		// if this atom is about a change to the remote universe,
-		// check we have a remote universe we are expecting changes
+		// if this atom is about a change to the remote world,
+		// check we have a remote world we are expecting changes
 		// about
 		
 		if ((atomtype == ATOM_NEW || atomtype == ATOM_CHANGE
 		    || atomtype == ATOM_DESTROY)
-		    && !client->universe) {
+		    && !client->world) {
 			return FALSE;
 		}
 
-		// same with remote method calls to local universe
+		// same with remote method calls to local world
 
-		if (atomtype == ATOM_METHOD && !client->server->universe)
+		if (atomtype == ATOM_METHOD && !client->server->world)
 			return FALSE;
 		
 		//printf("%i atoms, %i\n", natoms, atomtype);
@@ -282,6 +282,9 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.5  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.4  2003/08/28 15:24:02  fraggle
 // Make types for object system part of the public API.
 // *Spec renamed -> Irmo*.

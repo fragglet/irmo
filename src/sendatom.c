@@ -365,9 +365,9 @@ IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 	return atom;
 }
 
-// queue up the entire current universe state in the client send queue
+// queue up the entire current world state in the client send queue
 // this is used for when new clients connect to retrieve the entire
-// current universe state
+// current world state
 
 static void client_sendq_add_objects(IrmoObject *object, IrmoClient *client)
 {
@@ -392,18 +392,21 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 	// variable state, as the rle encoding in the packets will
 	// better compress the atoms this way
 
-	irmo_universe_foreach_object(client->server->universe, NULL,
+	irmo_world_foreach_object(client->server->world, NULL,
 				     (IrmoObjCallback) client_sendq_add_objects,
 				     client);
 
 	// send variable states
 
-	irmo_universe_foreach_object(client->server->universe, NULL,
+	irmo_world_foreach_object(client->server->world, NULL,
 				     (IrmoObjCallback) client_sendq_add_variables,
 				     client);
 }
 
 // $Log$
+// Revision 1.6  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.5  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

@@ -34,16 +34,16 @@
 #include "client.h"
 #include "object.h"
 #include "sendatom.h"
-#include "universe.h"
+#include "world.h"
 
 static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 {
-	IrmoInterfaceSpec *spec = client->universe->spec;
+	IrmoInterfaceSpec *spec = client->world->spec;
 	IrmoClass *objclass = spec->classes[atom->data.newobj.classnum];
 	
 	// sanity check
 
-	if (irmo_universe_get_object_for_id(client->universe,
+	if (irmo_world_get_object_for_id(client->world,
 					    atom->data.newobj.id)) {
 		irmo_error_report("client_run_new",
 				  "new object id of %i but an object with "
@@ -54,7 +54,7 @@ static void client_run_new(IrmoClient *client, IrmoSendAtom *atom)
 
 	// create new object
 							  
-	irmo_object_internal_new(client->universe, objclass,
+	irmo_object_internal_new(client->world, objclass,
 				 atom->data.newobj.id);
 	
 }
@@ -72,7 +72,7 @@ static void client_run_change(IrmoClient *client, IrmoSendAtom *atom,
 	
 	// sanity checks
 
-	obj = irmo_universe_get_object_for_id(client->universe,
+	obj = irmo_world_get_object_for_id(client->world,
 					      atom->data.change.id);
 
 	// if these fail, it is possibly because of dependencies on
@@ -133,7 +133,7 @@ static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
 
 	// sanity check
 
-	obj = irmo_universe_get_object_for_id(client->universe,
+	obj = irmo_world_get_object_for_id(client->world,
 					      atom->data.destroy.id);
 
 	if (!obj) {
@@ -143,7 +143,7 @@ static void client_run_destroy(IrmoClient *client, IrmoSendAtom *atom)
 		return;
 	}
 
-	// destroy object. remove from universe and call notify functions
+	// destroy object. remove from world and call notify functions
 	
 	irmo_object_internal_destroy(obj, TRUE, TRUE);
 }
@@ -152,7 +152,7 @@ static void client_run_method(IrmoClient *client, IrmoSendAtom *atom)
 {
 	atom->data.method.src = client;
 	
-	irmo_method_invoke(client->server->universe, &atom->data.method);
+	irmo_method_invoke(client->server->world, &atom->data.method);
 }
 
 // preexec receive window, run change atoms where possible,
@@ -236,6 +236,9 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.6  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.5  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

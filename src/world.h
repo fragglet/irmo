@@ -24,13 +24,13 @@
 //---------------------------------------------------------------------
 
 //
-// Irmo Universe
+// Irmo World 
 //
 
-#ifndef IRMO_INTERNAL_UNIVERSE_H
-#define IRMO_INTERNAL_UNIVERSE_H
+#ifndef IRMO_INTERNAL_WORLD_H
+#define IRMO_INTERNAL_WORLD_H
 
-#include "public/universe.h"
+#include "public/world.h"
 
 #include "callback.h"
 #include "client.h"
@@ -43,13 +43,13 @@
 
 #define MAX_OBJECTS 65536 
 
-struct _IrmoUniverse {
+struct _IrmoWorld {
 
-	// specification this universe implements
+	// specification this world implements
 	
 	IrmoInterfaceSpec *spec;
 
-	// universe-global callback objects, 1 per class
+	// world-global callback objects, 1 per class
 	// used for eg. "watch creation of objects of class my_class"
 	// 		"watch for when my_class::my_string is changed"
 	
@@ -61,7 +61,7 @@ struct _IrmoUniverse {
 
 	IrmoCallbackData *callbacks_all;
 
-	// objects in the universe, hashed by their object id
+	// objects in the world, hashed by their object id
 	
 	GHashTable *objects;
 
@@ -70,21 +70,21 @@ struct _IrmoUniverse {
 	
 	irmo_objid_t lastid;
 
-	// servers attached to this universe who are serving it.
+	// servers attached to this world who are serving it.
 	
 	GPtrArray *servers;
 
-	// number of references to this universe
+	// number of references to this world
 	
 	int refcount;
 
-	// if true, this is a local copy of a remote universe and
+	// if true, this is a local copy of a remote world and
 	// cannot be changed
 	
 	gboolean remote;
 
 	// if this is remote, this is the client from which we are
-	// getting the universe state
+	// getting the world state
 
 	IrmoClient *remote_client;
 
@@ -93,9 +93,12 @@ struct _IrmoUniverse {
 	GSList **method_callbacks;
 };
 
-#endif /* #ifndef IRMO_INTERNAL_UNIVERSE_H */
+#endif /* #ifndef IRMO_INTERNAL_WORLD_H */
 
 // $Log$
+// Revision 1.1  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.2  2003/08/16 16:45:11  fraggle
 // Allow watches on all objects regardless of class
 //

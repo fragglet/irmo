@@ -58,17 +58,17 @@ typedef void (*IrmoVarCallback) (IrmoObject *object, gchar *variable,
 
 typedef void (*IrmoObjCallback) (IrmoObject *object, gpointer user_data);
 
-#include "universe.h"
+#include "world.h"
 
 /*!
  * \brief create a new object of a particular class
  *
- * \param universe Universe to create the object within
+ * \param world World to create the object within
  * \param typename The name of the class of object to create
  * \return 	   The created object or NULL for failure
  */
 
-IrmoObject *irmo_object_new(IrmoUniverse *universe, char *typename);
+IrmoObject *irmo_object_new(IrmoWorld *world, char *typename);
 
 /*!
  * \brief Destroy an object
@@ -81,7 +81,7 @@ void irmo_object_destroy(IrmoObject *object);
 /*!
  * \brief Get numerical object identifier
  *
- * Each object within a Universe has a unique number assigned to it. 
+ * Each object within a World has a unique number assigned to it. 
  * This function allows you to retrieve the number assigned to a particular
  * object.
  *
@@ -95,7 +95,7 @@ irmo_objid_t irmo_object_get_id(IrmoObject *object);
  * \brief Get the class of an object
  *
  * All objects have a class, which is one of the classes defined in the
- * IrmoInterfaceSpec for the Universe the object exists in. This retrieves
+ * IrmoInterfaceSpec for the World the object exists in. This retrieves
  * the name of the class for a particular object.
  *
  * \param object The object to query.
@@ -177,22 +177,25 @@ gint irmo_object_get_int(IrmoObject *object, gchar *variable);
 gchar *irmo_object_get_string(IrmoObject *object, gchar *variable);
 
 /*!
- * \brief Get the universe an object belongs to
+ * \brief Get the world an object belongs to
  *
- * Returns a reference to the \ref IrmoUniverse universe object
+ * Returns a reference to the \ref IrmoWorld world object
  * the object belongs to.
  *
  * \param object    The object to query
- * \return	    The universe object the object belongs to
+ * \return	    The world object the object belongs to
  */
 
-IrmoUniverse *irmo_object_get_universe(IrmoObject *object);
+IrmoWorld *irmo_object_get_world(IrmoObject *object);
 
 //! \}
 
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.5  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.4  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke

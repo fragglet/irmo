@@ -29,7 +29,7 @@
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 			     IrmoInterfaceSpec *spec, 
-			     IrmoUniverse *local_universe)
+			     IrmoWorld *local_world)
 {
 	IrmoSocket *sock;
 	struct sockaddr *addr;
@@ -45,7 +45,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 		// try IPv6
 		
 		conn = irmo_connect(IRMO_SOCKET_IPV6, location, port, spec,
-				    local_universe);
+				    local_world);
 
 		if (conn)
 			return conn;
@@ -53,7 +53,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 		// fall back to v4
 
 		return irmo_connect(IRMO_SOCKET_IPV4, location, port, spec,
-				    local_universe);
+				    local_world);
 	}
 	
 	// create a socket
@@ -67,11 +67,11 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, gchar *location, int port,
 
 	addr = sockaddr_for_name(domain, location, port);
 	
-	// create a server for our local universe. for accessing the
-	// local universe the server is seen as a client connecting
+	// create a server for our local world. for accessing the
+	// local world the server is seen as a client connecting
 	// to our own local server (symmetrical)
 	
-	server = irmo_server_new(sock, NULL, local_universe, spec);
+	server = irmo_server_new(sock, NULL, local_world, spec);
 
 	// only the server is using this socket 
 	
@@ -151,14 +151,17 @@ void irmo_connection_run(IrmoConnection *conn)
 	irmo_socket_run(conn->server->socket);
 }
 
-IrmoUniverse *irmo_connection_get_universe(IrmoConnection *conn)
+IrmoWorld *irmo_connection_get_world(IrmoConnection *conn)
 {
 	g_return_val_if_fail(conn != NULL, NULL);
 	
-	return conn->universe;
+	return conn->world;
 }
 
 // $Log$
+// Revision 1.5  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.4  2003/08/26 14:57:31  fraggle
 // Remove AF_* BSD sockets dependency from Irmo API
 //

@@ -31,7 +31,7 @@
 #include "server.h"
 
 IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
-			    IrmoUniverse *universe, IrmoInterfaceSpec *spec)
+			    IrmoWorld *world, IrmoInterfaceSpec *spec)
 {
 	IrmoServer *server;
 
@@ -60,7 +60,7 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 	server = g_new0(IrmoServer, 1);
 	server->refcount = 1;
 	server->socket = sock;
-	server->universe = universe;
+	server->world = world;
 	server->client_spec = spec;
 
 	irmo_socket_ref(sock);
@@ -68,13 +68,13 @@ IrmoServer *irmo_server_new(IrmoSocket *sock, gchar *hostname,
 	if (spec)
 		irmo_interface_spec_ref(spec);
 	
-	// we can have a server which does not serve a universe
+	// we can have a server which does not serve a world
 	// store this server in the list of servers attached to this
-	// universe
+	// world
 	
-	if (universe) {
-		irmo_universe_ref(universe);
-		g_ptr_array_add(universe->servers, server);
+	if (world) {
+		irmo_world_ref(world);
+		g_ptr_array_add(world->servers, server);
 	}
 	
 	if (hostname) {
@@ -148,13 +148,13 @@ void irmo_server_unref(IrmoServer *server)
 		
 		if (server->client_spec)
 			irmo_interface_spec_unref(server->client_spec);
-		if (server->universe) {
+		if (server->world) {
 			// remove from list of attached servers
 			
-			g_ptr_array_remove(server->universe->servers,
+			g_ptr_array_remove(server->world->servers,
 					   server);
 			
-			irmo_universe_unref(server->universe);
+			irmo_world_unref(server->world);
 		}
 		
 		free(server);
@@ -222,6 +222,9 @@ void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
 }
 
 // $Log$
+// Revision 1.6  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.5  2003/08/30 03:08:00  fraggle
 // Use irmo_client_internal_unref instead of unreffing externally. Make
 // irmo_client_destroy static now.

@@ -24,30 +24,30 @@
 //---------------------------------------------------------------------
 
 //
-// Irmo Universe
+// Irmo World
 //
 
-#ifndef IRMO_UNIVERSE_H
-#define IRMO_UNIVERSE_H
+#ifndef IRMO_WORLD_H
+#define IRMO_WORLD_H
 
 #include <glib.h>
 
 /*!
- * \addtogroup universe
+ * \addtogroup world
  * \{
  */
 
-//! An Irmo Universe.
+//! An Irmo World.
 
-typedef struct _IrmoUniverse IrmoUniverse;
+typedef struct _IrmoWorld IrmoWorld;
 
 /*!
  * \brief A numerical object identifier
  *
- * All objects in a \ref IrmoUniverse have a unique number assigned to
+ * All objects in a \ref IrmoWorld have a unique number assigned to
  * them. This can be used to refer to objects by their number. You can
  * search for an object by number using the 
- * \ref irmo_universe_get_object_for_id function.
+ * \ref irmo_world_get_object_for_id function.
  */
 
 typedef guint irmo_objid_t;
@@ -57,42 +57,42 @@ typedef guint irmo_objid_t;
 #include "object.h"
 
 /*!
- * \brief Create a new Universe
+ * \brief Create a new World
  *
- * Create a new Universe from an Interface Specification. The classes
+ * Create a new World from an Interface Specification. The classes
  * defined in the specification can then be instantiated as objects
- * within the universe.
+ * within the world.
  *
  * \param spec	The Interface Specification to use.
- * \return	The new universe.
+ * \return	The new world.
  */
 
-IrmoUniverse *irmo_universe_new(IrmoInterfaceSpec *spec);
+IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec);
 
 /*!
  * \brief Find an object by its ID
  *
- * All objects within an IrmoUniverse have a unique number assigned to
+ * All objects within an IrmoWorld have a unique number assigned to
  * them (see \ref irmo_objid_t). This function searches for an object 
  * by its identifier.
  *
- * \param universe	The Universe to search in
+ * \param world	The World to search in
  * \param id		The object number to search for
  * \return		The IrmoObject or NULL if the object is not found.
  */
 
-IrmoObject *irmo_universe_get_object_for_id(IrmoUniverse *universe,
+IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 					    irmo_objid_t id);
 
 /*!
- * \brief Iterate over objects in a Universe
+ * \brief Iterate over objects in a World
  *
- * This function allows you to iterate over objects in a Universe.
+ * This function allows you to iterate over objects in a World.
  * For each object found, a function is called with a pointer to the
  * object. The function can be used to iterate over ALL objects or
  * just ones of a particular class.
  *
- * \param universe	The universe to iterate over
+ * \param world	The world to iterate over
  * \param classname	The name of the class of objects to iterate over.
  * 			If you want to iterate over ALL objects, pass
  * 			NULL for this value.
@@ -101,50 +101,53 @@ IrmoObject *irmo_universe_get_object_for_id(IrmoUniverse *universe,
  * 			are called.
  */
 
-void irmo_universe_foreach_object(IrmoUniverse *universe, gchar *classname,
+void irmo_world_foreach_object(IrmoWorld *world, gchar *classname,
 				  IrmoObjCallback func, gpointer user_data);
 
 /*!
- * \brief	Get the specification for a Universe
+ * \brief	Get the specification for a World
  *
  * Returns the \ref IrmoInterfaceSpec specification object for a
- * given universe.
+ * given world.
  *
- * \param universe	The universe to query
+ * \param world	The world to query
  * \return		The interface object
  */
 
-IrmoInterfaceSpec *irmo_universe_get_spec(IrmoUniverse *universe);
+IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world);
 
 /*!
- * \brief	Add a reference to a Universe.
+ * \brief	Add a reference to a World.
  *
- * Universes implement reference counting. Each time you store a 
- * reference to a universe, call irmo_universe_ref to increase the reference
- * count. When you remove a reference, call \ref irmo_universe_unref. The
- * count starts at 1. When the count reaches 0, the universe is 
+ * Worlds implement reference counting. Each time you store a 
+ * reference to a world, call irmo_world_ref to increase the reference
+ * count. When you remove a reference, call \ref irmo_world_unref. The
+ * count starts at 1. When the count reaches 0, the world is 
  * destroyed.
  *
- * \param universe	The universe to reference
+ * \param world	The world to reference
  */
 
-void irmo_universe_ref(IrmoUniverse *universe);
+void irmo_world_ref(IrmoWorld *world);
 
 /*!
- * \brief	Remove a reference to a Universe.
+ * \brief	Remove a reference to a World.
  *
- * See \ref irmo_universe_ref.
+ * See \ref irmo_world_ref.
  *
- * \param universe	The universe to unreference.
+ * \param world	The world to unreference.
  */
 
-void irmo_universe_unref(IrmoUniverse *universe);
+void irmo_world_unref(IrmoWorld *world);
 
 //! \}
 
-#endif /* #ifndef IRMO_UNIVERSE_H */
+#endif /* #ifndef IRMO_WORLD_H */
 
 // $Log$
+// Revision 1.1  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.2  2003/08/15 17:53:56  fraggle
 // irmo_object_get_universe, irmo_universe_get_spec functions
 //

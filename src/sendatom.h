@@ -103,13 +103,16 @@ void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max);
 
 IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client);
 
-// send entire universe state
+// send entire world state
 
 void irmo_client_sendq_add_state(IrmoClient *client);
 
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.4  2003/09/01 14:21:20  fraggle
+// Use "world" instead of "universe". Rename everything.
+//
 // Revision 1.3  2003/08/31 22:51:22  fraggle
 // Rename IrmoVariable to IrmoValue and make public. Replace i8,16,32 fields
 // with a single integer field. Add irmo_universe_method_call2 to invoke
