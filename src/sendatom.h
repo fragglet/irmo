@@ -8,6 +8,7 @@ typedef struct _IrmoSendAtom IrmoSendAtom;
 // queue object
 
 struct _IrmoSendAtom {
+	int len;			// length in packet
 	enum {
 		ATOM_NULL,               // null atom for nullified changes
 		ATOM_NEW,                // new object 
@@ -44,10 +45,15 @@ void client_sendq_add_change(IrmoClient *client,
 			     IrmoObject *object, int variable);
 void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
        
+IrmoSendAtom *client_sendq_pop(IrmoClient *client);
 
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2003/02/20 18:25:00  sdh300
+// Use GQueue instead of a GPtrArray for the send queue
+// Initial change/destroy code
+//
 // Revision 1.2  2003/02/18 20:26:42  sdh300
 // Initial send queue building/notification code
 //
