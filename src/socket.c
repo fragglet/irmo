@@ -249,10 +249,15 @@ static inline void socket_run_syn(IrmoPacket *packet)
 		server = packet->sock->default_server;
 	}
 
-	local_hash_expected 
-		= server->client_spec ? server->client_spec->hash : 0;
-	server_hash_expected 
-		= server->universe ? server->universe->spec->hash : 0;
+	if (server) {
+		// if there is a server, get the hashes for the interface
+		// specs
+
+		local_hash_expected 
+			= server->client_spec ? server->client_spec->hash : 0;
+		server_hash_expected 
+			= server->universe ? server->universe->spec->hash : 0;
+	}
 
 	if (!server || local_hash != local_hash_expected
 	    || server_hash != server_hash_expected) {
@@ -433,6 +438,9 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2003/02/11 19:18:43  sdh300
+// Initial working connection code!
+//
 // Revision 1.18  2003/02/06 16:30:25  sdh300
 // Create universe object when connection is established
 //
