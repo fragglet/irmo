@@ -342,6 +342,9 @@ static guint interface_spec_hash(InterfaceSpec *spec)
 	for (i=0; i<spec->nmethods; ++i)
 		hash = rotate(hash) + method_hash(spec->methods[i]);
 
+	if (hash == 0)
+		hash = 1;
+
 	return hash;
 }
 
@@ -451,6 +454,9 @@ void interface_spec_unref(InterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2002/11/05 15:04:12  sdh300
+// more warnings!
+//
 // Revision 1.5  2002/10/29 15:58:25  sdh300
 // add index entry for ClassSpec, use "index" instead of n for index
 // member name
