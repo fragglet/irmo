@@ -1,19 +1,29 @@
-\documentclass{article}
+\input texinfo @c -*-texinfo-*-
+@setfilename irmo.info
+@settitle The Irmo Multiplayer Game Library
 
-\title{The Irmo Multiplayer Game Library}
+November 2003
 
-\author{sdh300@zepler.net}
-\date{November 2003}
+@defcodeindex mo
+@defcodeindex ob
+@titlepage
+@title @author @page
+@end titlepage
+@node Top, Overview, (dir), (dir)
 
-\begin{document}
+@top The Irmo Multiplayer Game Library
 
-\maketitle
-\tableofcontents
-\pagebreak
+@menu
+* Overview::			
+* API Notes::			
+* Interface Specification::	
+* World Representation::	
+@end menu
 
-\section{Overview}
+@node Overview, API Notes, Top, Top
+@chapter Overview
 
-\subsection{The Peer-to-Peer model}
+@section The Peer-to-Peer model
 
 Traditional multiplayer games have been based on a peer-to-peer model.
 In this, each player in the game acts as a ``peer''. This 
@@ -24,17 +34,14 @@ the game. Each peer transmits the player's input to the other peers.
 This has the advantage of being a very simple system to implement. However,
 it has a number of disadvantages:
 
-\begin{itemize}
-
-\item
- 
+@itemize @bullet
+@item 
 Random input into the game is difficult to model. Typically this
 involves using a pseudo random number generator where each node starts
 from a common random seed. This is particularly important as game AI
 typically makes heavy use of random numbers.
 
-\item
-
+@item 
 Fluctuations in the network traffic can have large effects on the 
 playability of the game. Any interruption in traffic from one peer
 in the game will cause the game to freeze until the connection is
@@ -42,16 +49,15 @@ resumed. As the probability of an interruption increases with the
 number of peers, this model does not scale well to large numbers
 of players.
 
-\item
-
+@item 
 Allowing players to join a game while in progress is difficult.
 It is difficult to transmit the complete game state to a joining
 peer. This is troublesome for the players as they must prearrange
 games rather than simply joining one in progress.
 
-\end{itemize}
+@end itemize
 
-\subsection{Client-Server Architecture}
+@section Client-Server Architecture
 
 The Client-Server architecture is a model which solves many of the 
 problems inherent in the Peer-to-Peer architecture. In the 
@@ -66,7 +72,7 @@ from scratch. The Irmo library aims to be a generic multiplayer
 engine which can be used as a base for many different types of
 multiplayer games and easily extended.
 
-\subsection{Extension Languages}
+@section Extension Languages
 
 Another common theme in many modern games is that of extension
 languages. Many games use a high level extension language to describe
@@ -82,22 +88,23 @@ in a lower level language. For this reason, a language binding
 already exists for the Ruby scripting language. Bindings are
 planned for other high-level languages.
 
-\section{API Notes}
+@node API Notes, Interface Specification, Overview, Top
+@chapter API Notes
 
-\subsection{Compiling}
+@section Compiling
 
-Irmo uses the \texttt{pkg-config} system to store information about
+Irmo uses the @code{pkg-config} system to store information about
 the library and allow programs which use it to be built more 
-easily. To find out more about \texttt{pkg-config}. Typically 
-all that needs to be done is to add to the \texttt{CFLAGS}
-and \texttt{LDFLAGS} variables of the \texttt{Makefile}:
+easily. To find out more about @code{pkg-config}. Typically 
+all that needs to be done is to add to the @code{CFLAGS}
+and @code{LDFLAGS} variables of the @code{Makefile}:
 
-\begin{quote}\begin{verbatim}
+@example
 	CFLAGS += `pkg-config --cflags irmo`
 	LDFLAGS += `pkg-config --libs irmo`
-\end{verbatim}\end{quote}
+@end example
 
-\subsection{GLib}
+@section GLib
 
 Irmo makes use of the GLib library. GLib provides implementations of
 a number of common and useful data structures and algorithms, as well
@@ -107,48 +114,58 @@ but the programmer may find it useful to understand the basic
 types defined by the GLib library. More information can be found 
 in the GLib manual:
 
-\begin{quote}http://developer.gnome.org/doc/API/2.0/glib/\end{quote}
+http://developer.gnome.org/doc/API/2.0/glib/
 
-\section{Interface Specification}
+@section API Documentation
+
+The basic concepts of the library are outlined in this manual. 
+However, in-depth documentation of all the library routines is 
+provided through the Doxygen documentation system. Information
+about Doxygen can be found from the website:
+
+http://www.doxygen.org/
+
+@node Interface Specification, World Representation, API Notes, Top
+@chapter Interface Specification
 
 Irmo allows the programmer to describe the game world.  It is 
 assumed that the world consists of a number of objects.  An
 interface must first be defined describing these types of objects.
 This is done by writing an Interface Specification File.
 
-\subsection{Interface Specification File}
+@section Interface Specification File
 
 The following is an example of an Interface Specification file:
 
-\begin{quote}\begin{verbatim}
+@example
 // Irmo interface specification file for astro
 
-class Object {
+class Object @{
         int16 x;
         int16 y;
         int16 angle;
         int16 scale;
-}
+@}
 
-class PlayerObject : Object {
+class PlayerObject : Object @{
         irmo_objid_t player;
-}
+@}
 
-class Explosion : Object {
+class Explosion : Object @{
         int8 time;
-}
+@}
 
-class Missile : Object {}
-class Asteroid : Object {}
+class Missile : Object @{@}
+class Asteroid : Object @{@}
 
-class Player {
+class Player @{
         string name;
         int16 score;
         irmo_objid_t avatar;
-}
+@}
 
 method fire(irmo_objid_t player);
-\end{verbatim}\end{quote}
+@end example
 
 Here a number of classes are defined. These define the types of object
 which can exist within the game world. A base class is defined named
@@ -170,112 +187,132 @@ name and current score.
 Finally, the specification file allows methods to be declared. These
 are methods which can be invoked by the clients on the world.
 
-\subsection{Base Types}
+@section Base Types
 
 There are several base types used for object variables and method 
 arguments. These are:
 
-\begin{itemize}
-\item \begin{verbatim}int8\end{verbatim}
+@itemize @bullet
+@item 
+@code{int8} - 8 bit unsigned integer
 
-	- 8 bit unsigned integer
+@item 
+@code{int16} - 16 bit unsigned integer
 
-\item \begin{verbatim}int16\end{verbatim}
+@item 
+@code{int32} - 32 bit unsigned integer
 
-	- 16 bit unsigned integer
+@item 
+@code{irmo_objid_t} - A reference to an Irmo Object. All objects 
+within a world have
+a number by which they can be referenced. This is a variable
+containing such an identifier.
 
-\item \begin{verbatim}int32\end{verbatim}
+@item 
+@code{string} - A text string.
 
-	- 32 bit unsigned integer
+@end itemize
 
-\item \begin{verbatim}irmo_objid_t\end{verbatim}
-
-	- A reference to an Irmo Object. All objects within a world have
-	  a number by which they can be referenced. This is a variable
-	  containing such an identifier.
-
-\item \begin{verbatim}string\end{verbatim}
-
-	- A text string.
-
-\end{itemize}
-
-\subsection{Loading the Interface Specification}
+@section Loading the Interface Specification
 
 The Interface Specification is loaded using the 
-\texttt{irmo\_interface\_spec\_new} function call. The library
+@code{irmo_interface_spec_new} function call. The library
 includes a parser which parses the file given and returns a
-\texttt{IrmoInterfaceSpec} object representing the interface.
+@code{IrmoInterfaceSpec} object representing the interface.
 
-\begin{quote}\begin{verbatim}
+@example
 	IrmoInterfaceSpec *spec;
 
 	spec = irmo_interface_spec_new("asteroids.if");
-\end{verbatim}\end{quote}
+@end example
 
 If an error occurs during parsing an error message is printed
-to \texttt{STDERR} and the function returns \texttt{NULL}.
+to @code{STDERR} and the function returns @code{NULL}.
 
-\section{World Representation}
+@node World Representation,  , Interface Specification, Top
+@chapter World Representation
 
-\subsection{IrmoWorld}
+@menu
+* IrmoWorld::			
+@end menu
+
+@node IrmoWorld,  , World Representation, World Representation
+@section IrmoWorld
 
 Having defined the interface and types of object which can be 
 created in the game world, Irmo then allows the programmer
 to create these objects.
 
-All objects are created belonging to a ``container'' object, of
-type \texttt{IrmoWorld}. A new \texttt{IrmoWorld} object is 
+All objects are created within a ``container'' object, of
+type @code{IrmoWorld}. A new @code{IrmoWorld} object is 
 created using the
-\texttt{irmo\_world\_new} function call. For example:
+@code{irmo_world_new} function call. For example:
 
-\begin{quote}\begin{verbatim}
+@example
 	IrmoWorld *world;
 
 	world = irmo_world_new(spec);
-\end{verbatim}\end{quote}
+@end example
 
 Creating a world object requires giving an interface specification,
-as described in the previous section. \texttt{irmo\_world\_new} 
+as described in the previous section. @code{irmo_world_new} 
 returns a pointer to the new world object.
 
-Having created a world object, objects can be created belonging to the
+Having created a world object, objects can be created within the
 world with the types defined in the Interface Specification. Each object
 in the world has a unique numeric identifier. A reference to the object
-can be found from its ID using the \texttt{irmo\_world\_get\_object\_for\_id}
+can be found from its ID using the @code{irmo_world_get_object_for_id}
 function call. For example:
 
-\begin{quote}\begin{verbatim}
+@example
 	IrmoObject *object;
 
 	// search for object 55
 
 	object = irmo_world_get_object_for_id(world, 55);
-\end{verbatim}\end{quote}
+@end example
 
 If there is no object in the world with the identifier given, the function
-returns NULL.
+returns @code{NULL}.
 
 Similarly, it is possible to iterate over objects in an 
-\texttt{IrmoWorld} using the \texttt{irmo\_world\_foreach\_object}
+@code{IrmoWorld} using the @code{irmo_world_foreach_object}
 function. This is performed by passing a pointer to a function to 
 call for each object. For example:
 
-\begin{quote}\begin{verbatim}
+@example
 	void my_object_callback(IrmoObject *object, gpointer user_data)
-	{
+	@{
 		// ... perform operation for each object ...
-	}
+	@}
 
 	...
 
 	irmo_world_foreach_object(world, NULL, my_object_callback, NULL);
-\end{verbatim}\end{quote}
+@end example
 
 The function allows the programmer to specify the name of a class: this
 allows the iterator to iterate over only objects of a particular class.
 If the class has subclasses, these are included as well.
-In the above example, NULL is passed to specify all objects of any class.
+In the above example, @code{NULL} is passed to specify all objects 
+of any class. To iterate over all objects of the class @code{Player}
+is done similarly:
 
-\end{document}
+@example
+	void my_player_callback(IrmoObject *object, gpointer user_data)
+	@{
+		// ... perform some operation for each player ...
+	@}
+
+	...
+
+	irmo_world_foreach_object(world, "Player", my_player_callback, NULL);
+@end example
+
+The user_data field allows a pointer to some extra data to also be 
+passed  to the callback function. In these examples this is not being 
+used and @code{NULL} is being passed.
+
+@contents
+@bye
 
