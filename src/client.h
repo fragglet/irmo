@@ -40,7 +40,15 @@ struct _IrmoClient {
 	// time last syn/synack was sent
 	time_t _connect_time;
 	gint _connect_attempts;
+
+	// send queue 
+	
 	GPtrArray *sendq;
+
+	// change entries in sendq are hashed by object id so
+	// new changes can be added to the existing sendatoms
+	
+	GHashTable *sendq_hashtable;
 };
 
 IrmoClient *_client_new(IrmoServer *server, struct sockaddr *addr);
@@ -62,6 +70,9 @@ void client_disconnect(IrmoClient *client);
 #endif /* #ifndef IRMO_CLIENT_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2003/02/18 18:25:40  sdh300
+// Initial queue object code
+//
 // Revision 1.5  2003/02/16 23:41:26  sdh300
 // Reference counting for client and server objects
 //

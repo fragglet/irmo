@@ -37,7 +37,18 @@ struct _IrmoSendAtom {
 
 void sendatom_free(IrmoSendAtom *atom);
 
+// create a new sendatom and add to a clients sendqueue
+
+void client_sendq_add_new(IrmoClient *client, IrmoObject *object);
+void client_sendq_add_change(IrmoClient *client,
+			     IrmoObject *object, int variable);
+void client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
+       
+
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/02/18 18:25:40  sdh300
+// Initial queue object code
+//
 

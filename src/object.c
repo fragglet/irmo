@@ -9,8 +9,46 @@
 #include <glib.h>
 
 #include "callback.h"
+#include "client.h"
 #include "object.h"
+#include "sendatom.h"
 #include "universe.h"
+
+// do something for all connected clients
+
+typedef void (*ClientCallback) (IrmoClient *client, gpointer user_data);
+
+struct foreach_client_data {
+	IrmoUniverse *universe;
+	ClientCallback func;
+	gpointer user_data;
+};
+
+static void foreach_client_foreach(gpointer key, IrmoClient *client,
+				   struct foreach_client_data *data)
+{
+	data->func(client, data->user_data);
+}
+
+static void foreach_client(IrmoUniverse *universe,
+			   ClientCallback func, gpointer user_data)
+{
+	struct foreach_client_data data = {
+		universe,
+		func,
+		user_data,
+	};
+	int i;
+
+	for (i=0; i<universe->servers->len; ++i) {
+		IrmoServer *server
+			= (IrmoServer *) universe->servers->pdata[i];
+
+		g_hash_table_foreach(server->clients,
+				     (GHFunc) foreach_client_foreach,
+				     &data);
+	}
+}		   
 
 static gint get_free_id(IrmoUniverse *universe)
 {
@@ -78,6 +116,11 @@ IrmoObject *object_new(IrmoUniverse *universe, char *typename)
 
 	_callbackdata_raise_new(universe->callbacks[spec->index],
 				object);
+
+	// notify attached clients
+
+	foreach_client(universe,
+		       (ClientCallback) client_sendq_add_new, object);
 	
 	return object;
 }
@@ -113,6 +156,12 @@ void object_destroy(IrmoObject *object)
 				    [object->objclass->index],
 				    object);
 
+	// notify connected clients
+
+	foreach_client(object->universe,
+		       (ClientCallback) client_sendq_add_destroy,
+		       object);
+	
 	// remove from universe
 	
 	g_hash_table_remove(object->universe->objects, (gpointer) object->id);
@@ -130,6 +179,31 @@ irmo_objid_t object_get_id(IrmoObject *object)
 gchar *object_get_class(IrmoObject *object)
 {
 	return object->objclass->name;
+}
+
+// notify connected clients of changes
+
+struct set_notify_data {
+	IrmoObject *object;
+	int variable;
+};
+
+static void object_set_notify_foreach(IrmoClient *client,
+				      struct set_notify_data *data)
+{
+	client_sendq_add_change(client, data->object, data->variable);
+}
+
+static void object_set_notify(IrmoObject *object, int variable)
+{
+	struct set_notify_data data = {
+		object,
+		variable,
+	};
+
+	foreach_client(object->universe,
+		       (ClientCallback) object_set_notify_foreach,
+		       &data);
 }
 
 void object_set_int(IrmoObject *object, gchar *variable, gint value)
@@ -172,6 +246,10 @@ void object_set_int(IrmoObject *object, gchar *variable, gint value)
 	_callbackdata_raise(object->callbacks, object, spec->index);
 	_callbackdata_raise(object->universe->callbacks[object->objclass->index],
 			    object, spec->index);
+
+	// notify attached clients
+
+	object_set_notify(object, spec->index);
 }
 
 void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
@@ -209,6 +287,10 @@ void object_set_string(IrmoObject *object, gchar *variable, gchar *value)
 	_callbackdata_raise(object->callbacks, object, spec->index);
 	_callbackdata_raise(object->universe->callbacks[object->objclass->index],
 			    object, spec->index);
+
+	// notify attached clients
+
+	object_set_notify(object, spec->index);
 }
 
 // get int value
@@ -277,6 +359,9 @@ gchar *object_get_string(IrmoObject *object, gchar *variable)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2002/11/13 15:12:33  sdh300
+// object_get_id to get identifier
+//
 // Revision 1.13  2002/11/13 13:57:41  sdh300
 // object_get_class to get the class of an object
 //
