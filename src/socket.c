@@ -182,7 +182,6 @@ IrmoSocket *socket_new(int domain, int port)
 
 	sock->type = SOCKET_SERVER;
 	sock->port = port;
-	printf("port: %i\n", port);
 	
 	return sock;
 }
@@ -342,6 +341,10 @@ void socket_run(IrmoSocket *sock)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/02/06 00:59:25  sdh300
+// Split up socket constructor function, so that unbound sockets can
+// be created for clients
+//
 // Revision 1.12  2003/02/03 21:13:55  sdh300
 // establish connections from connecting clients
 //
