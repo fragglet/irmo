@@ -1,7 +1,7 @@
 PKGS=glib-2.0
 CFLAGS=-Wall `pkg-config --cflags $(PKGS)` -DUSE_IPV6
 LDFLAGS = `pkg-config --libs $(PKGS)` -lfl
-OBJS=if_spec.o main.o universe.o object.o callback.o socket.o server.o netlib.o packet.o client.o connection.o
+OBJS=if_spec.o main.o universe.o object.o callback.o socket.o server.o netlib.o packet.o client.o connection.o sendatom.o
 
 irmo: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
@@ -13,6 +13,9 @@ irmo: $(OBJS)
 	flex -o$@ $<
 
 # $Log: not supported by cvs2svn $
+# Revision 1.12  2003/02/06 02:09:17  sdh300
+# Initial connection code
+#
 # Revision 1.11  2003/02/03 21:12:49  sdh300
 # add client.c
 #
