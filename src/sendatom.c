@@ -129,9 +129,47 @@ void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 }
 
 void irmo_client_sendq_add_change(IrmoClient *client,
-			     IrmoObject *object, int variable)
+				  IrmoObject *object, int variable)
 {
 	IrmoSendAtom *atom;
+	int i, n;
+	
+	// search the send window and nullify this variable if there
+	// is an existing change for it waiting to be acked
+
+	for (i=0; i<client->sendwindow_size; ++i) {
+		atom = client->sendwindow[i];
+
+		// check this is a change atom for this variable in
+		// this object
+		
+		if (atom->type == ATOM_CHANGE
+		 && atom->data.change.object == object
+		 && atom->data.change.changed[variable]) {
+
+			// unset the change in the atom. update
+			// change count
+			
+			atom->data.change.changed[variable] = FALSE;
+			--atom->data.change.nchanged;
+
+			// if there are no more changes, replace the atom
+			// with a NULL
+
+			if (atom->data.change.nchanged <= 0) {
+				printf("nullifying atom\n");
+				sendatom_nullify(atom);
+			} else printf("%i vars left..\n", atom->data.change.nchanged);
+			
+			// there can only be one change atom for a
+			// variable in the send window. stop searching
+			
+			break;
+		}
+	}
+	
+	// check if there is an existing atom for this object in
+	// the send queue
 	
 	atom = g_hash_table_lookup(client->sendq_hashtable,
 				   (gpointer) object->id);
@@ -143,15 +181,21 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 		atom->data.change.object = object;
 		atom->data.change.changed
 			= g_new0(gboolean, object->objclass->nvariables);
-
+		atom->data.change.nchanged = 0;
+		
 		g_queue_push_tail(client->sendq, atom);
 		g_hash_table_insert(client->sendq_hashtable,
 				    (gpointer) object->id,
 				    atom);
 	}
 
-	atom->data.change.changed[variable] = TRUE;
+	// set the change in the atom and update the change count
 
+	if (!atom->data.change.changed[variable]) {
+		atom->data.change.changed[variable] = TRUE;
+		++atom->data.change.nchanged;
+	}
+	
 	// need to recalculate atom size
 
 	atom->len = sendatom_change_len(atom);
@@ -321,6 +365,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2003/03/16 01:54:24  sdh300
+// Method calls over network protocol
+//
 // Revision 1.12  2003/03/12 18:59:26  sdh300
 // Remove/comment out some debug messages
 //

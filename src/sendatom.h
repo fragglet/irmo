@@ -34,7 +34,14 @@ struct _IrmoSendAtom {
 		struct {
 			irmo_objid_t id;
 			IrmoObject *object;
-			gboolean *changed;  // array saying which have changed
+
+			// count of number of changed variables in this atom
+			
+			int nchanged;
+			
+			// array saying which have changed
+			
+			gboolean *changed;
 
 			// class of the object being changed. this is only
 			// used for the receive window.
@@ -72,6 +79,9 @@ void irmo_client_sendq_add_state(IrmoClient *client);
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2003/03/18 20:55:47  sdh300
+// Initial round trip time measurement
+//
 // Revision 1.10  2003/03/16 01:54:24  sdh300
 // Method calls over network protocol
 //
