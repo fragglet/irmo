@@ -44,9 +44,13 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 		interface_spec_ref(spec);
 	
 	// we can have a server which does not serve a universe
+	// store this server in the list of servers attached to this
+	// universe
 	
-	if (universe)
+	if (universe) {
 		universe_ref(universe);
+		g_ptr_array_add(universe->servers, server);
+	}
 	
 	if (hostname) {
 		server->hostname = strdup(hostname);
@@ -58,9 +62,6 @@ IrmoServer *server_new(IrmoSocket *sock, gchar *hostname,
 
 	server->clients = g_hash_table_new((GHashFunc) sockaddr_hash,
 					   (GCompareFunc) sockaddr_cmp);
-	
-	// TODO: add hooks for universe, store a list of servers connected
-	// to each universe
 	
 	return server;
 }
@@ -114,14 +115,24 @@ void server_unref(IrmoServer *server)
 		
 		if (server->client_spec)
 			interface_spec_unref(server->client_spec);
-		if (server->universe)
+		if (server->universe) {
+			// remove from list of attached servers
+			
+			g_ptr_array_remove(server->universe->servers,
+					   server);
+			
 			universe_unref(server->universe);
-
+		}
+		
 		free(server);
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2003/02/18 17:41:01  sdh300
+// fix reference counting (refcount not initialised properly,
+// 	object not freed)
+//
 // Revision 1.6  2003/02/16 23:41:26  sdh300
 // Reference counting for client and server objects
 //

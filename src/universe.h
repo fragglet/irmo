@@ -43,6 +43,7 @@ struct _IrmoUniverse {
 	IrmoCallbackData **callbacks;
 	GHashTable *objects;
 	irmo_objid_t lastid;
+	GPtrArray *servers;
 	int refcount;
 };
 
@@ -126,6 +127,9 @@ void universe_unref(IrmoUniverse *universe);
 #endif /* #ifndef IRMO_UNIVERSE_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2002/11/17 20:37:15  sdh300
+// initial doxygen documentation
+//
 // Revision 1.8  2002/11/13 14:14:46  sdh300
 // object iterator function
 //

@@ -20,7 +20,8 @@ IrmoUniverse *universe_new(InterfaceSpec *spec)
 	universe->objects = g_hash_table_new(g_direct_hash, g_direct_equal);
 	universe->refcount = 1;
 	universe->lastid = 0;
-
+	universe->servers = g_ptr_array_new();
+	
 	interface_spec_ref(spec);
 
 	// create a callback for each class
@@ -52,6 +53,11 @@ void universe_unref(IrmoUniverse *universe)
 	if (universe->refcount <= 0) {
 		int i;
 
+		// delete list of servers (must by definition be empty
+		// already)
+
+		g_ptr_array_free(universe->servers, 0);
+		
 		// delete all objects
 		
 		g_hash_table_foreach(universe->objects,
@@ -133,6 +139,9 @@ void universe_foreach_object(IrmoUniverse *universe, gchar *classname,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2002/11/13 14:14:46  sdh300
+// object iterator function
+//
 // Revision 1.7  2002/10/29 16:09:11  sdh300
 // initial callback code
 //
