@@ -43,7 +43,7 @@ void my_iterator_callback(IrmoObject *object, gpointer user_data)
 
 void test_universe()
 {
-	InterfaceSpec *spec;
+	IrmoInterfaceSpec *spec;
 	IrmoUniverse *universe;
 	IrmoObject *object;
 	
@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (!strcmp(argv[1], "client")) {
-		InterfaceSpec *spec;
+		IrmoInterfaceSpec *spec;
 		IrmoConnection *conn;
 
 		spec = interface_spec_new("test.if");
@@ -210,16 +210,24 @@ int main(int argc, char *argv[])
 		conn = irmo_connect(AF_INET, "localhost", TEST_PORT,
 				    spec, NULL);
 
-		if (conn)
+		if (conn) {
+			IrmoUniverse *universe;
+			
 			printf("connected to server!\n");
-		else
-			printf("connection failed.\n");
 
-		for (;;)
-			connection_run(conn);
+			universe = connection_get_universe(conn);
+			
+			universe_watch_new(universe, "my_class",
+					   my_destroy_callback,
+					   "new object callback");
+			for (;;)
+				connection_run(conn);
+		} else {
+			printf("connection failed.\n");
+		}
 		
 	} else if (!strcmp(argv[1], "server")) {
-		InterfaceSpec *spec;
+		IrmoInterfaceSpec *spec;
 		IrmoUniverse *universe;
 		IrmoSocket *socket;
 		IrmoServer *server;
@@ -258,6 +266,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.21  2003/03/05 17:38:05  sdh300
+// Test harness for network code
+//
 // Revision 1.20  2003/02/23 00:05:02  sdh300
 // Fix compile after header changes
 //
