@@ -202,7 +202,7 @@ void universe_watch_class(IrmoUniverse *universe,
 
 	if (!spec) {
 		fprintf(stderr,
-			"callback_watch_class: unknown class '%s'\n",
+			"universe_watch_class: unknown class '%s'\n",
 			classname);
 		return;
 	}
@@ -244,6 +244,9 @@ void object_watch_destroy(IrmoObject *object,
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2002/11/05 16:28:10  sdh300
+// new object callbacks
+//
 // Revision 1.8  2002/11/05 16:00:36  sdh300
 // various "oops"'es
 //
