@@ -266,8 +266,8 @@ gchar *irmo_method_get_name(IrmoMethod *method);
 gint irmo_method_num_arguments(IrmoMethod *method);
 
 /*!
- * \brief Get the \ref IrmoMethodArg object representing a particular class
- *        variable
+ * \brief Get the \ref IrmoMethodArg object representing a particular 
+ *        method argument
  *
  * \param method	The \ref IrmoMethod object representing the method
  * \param arg_name	The argument name
@@ -276,6 +276,16 @@ gint irmo_method_num_arguments(IrmoMethod *method);
  */
 
 IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name);
+
+/*!
+ * \brief Get the \ref IrmoMethodArg object representing a particular 
+ *        method argument by number
+ *
+ * This is the same as \ref irmo_method_get_argument, but finds the argument
+ * by the number of the argument.
+ */
+
+IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, gint arg_number);
 
 /*!
  * \brief Iterate over all arguments to a method
@@ -330,6 +340,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log$
+// Revision 1.12  2003/09/12 11:38:19  fraggle
+// Make it possible to get method arguments by argument number
+//
 // Revision 1.11  2003/09/12 11:30:26  fraggle
 // Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
 //

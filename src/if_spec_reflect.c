@@ -202,6 +202,15 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, gchar *arg_name)
 	return g_hash_table_lookup(method->argument_hash, arg_name);
 }
 
+IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, gint arg_number)
+{
+	g_return_val_if_fail(method != NULL, NULL);
+	g_return_val_if_fail(arg_number >= 0 && arg_number < method->narguments,
+			     NULL);
+
+	return method->arguments[arg_number];
+}
+
 void irmo_method_foreach_argument(IrmoMethod *method,
 				  IrmoMethodArgCallback func, 
 				  gpointer user_data)
@@ -262,6 +271,9 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.9  2003/09/12 11:38:19  fraggle
+// Make it possible to get method arguments by argument number
+//
 // Revision 1.8  2003/09/12 11:30:25  fraggle
 // Rename IrmoVarType to IrmoValueType to be orthogonal to IrmoValue
 //
