@@ -67,6 +67,8 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 
 	server->clients = g_hash_table_new((GHashFunc) irmo_sockaddr_hash,
 					   (GCompareFunc) irmo_sockaddr_cmp);
+
+	return server;
 }
 
 IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
@@ -111,6 +113,7 @@ static gboolean remove_each_client(gpointer key, IrmoClient *client,
 
 static void irmo_server_internal_shutdown(IrmoServer *server)
 {
+	printf("shutdown server\n");
 	if (!server->running)
 		return;
 
@@ -242,7 +245,17 @@ void irmo_server_shutdown(IrmoServer *server)
 	irmo_server_internal_shutdown(server);
 }
 
+IrmoSocket *irmo_server_get_socket(IrmoServer *server)
+{
+	g_return_val_if_fail(server != NULL, NULL);
+
+	return server->socket;
+}
+
 // $Log$
+// Revision 1.15  2004/01/06 01:58:56  fraggle
+// Add irmo_server_get_socket. Fix return value from irmo_server_new_from
+//
 // Revision 1.14  2004/01/06 01:36:18  fraggle
 // Remove vhosting. Simplify the server API.
 //
