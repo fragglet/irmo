@@ -37,7 +37,8 @@ void irmo_error_report(char *function_name, char *format, ...)
 
 	va_start(args, format);
 
-	free(last_error);
+	if (last_error)
+		free(last_error);
 
 	last_error = g_strdup_vprintf(format, args);
 
@@ -52,6 +53,9 @@ char *irmo_error_get(void)
 }
 
 // $Log$
+// Revision 1.3  2003/11/20 00:19:17  fraggle
+// Add some fixes to get compiling under windows
+//
 // Revision 1.2  2003/08/13 18:32:40  fraggle
 // Convert () in function definitions to the more explicit (void)
 //

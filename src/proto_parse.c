@@ -34,7 +34,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
+#include "error.h"
 #include "packet.h"
 #include "protocol.h"
 #include "sendatom.h"
@@ -115,7 +117,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 	for (seq=start;;) {
 		IrmoSendAtomClass *klass;
 		IrmoSendAtomType atomtype;
-		int natoms;
+		guint natoms;
 		guint byte;
 		
 		// read type/count byte
@@ -289,6 +291,9 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.13  2003/11/20 00:19:17  fraggle
+// Add some fixes to get compiling under windows
+//
 // Revision 1.12  2003/11/18 19:32:19  fraggle
 // Use GTimeVal instead of struct timeval
 //

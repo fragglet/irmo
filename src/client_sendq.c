@@ -111,7 +111,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 				  IrmoObject *object, int variable)
 {
 	IrmoChangeAtom *atom;
-	int i, n;
+	int i;
 	
 	// search the send window and nullify this variable if there
 	// is an existing change for it waiting to be acked
@@ -305,6 +305,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.2  2003/11/20 00:19:17  fraggle
+// Add some fixes to get compiling under windows
+//
 // Revision 1.1  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than

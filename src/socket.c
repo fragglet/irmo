@@ -125,7 +125,15 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 
 	// make socket nonblocking
 
-#ifndef _WIN32
+#ifdef _WIN32  
+	// this is how we set nonblocking under windows
+	{
+		int trueval=1;
+		ioctlsocket(sock, FIONBIO, &trueval);
+	}
+#else
+	// this is how we set nonblocking under unix
+
 	opts = fcntl(sock, F_GETFL);
 
 	if (opts < 0) {
@@ -651,7 +659,7 @@ void irmo_socket_run(IrmoSocket *sock)
 				  &tmp_addr_len);
 
 		if (result < 0) {
-			if (errno != EWOULDBLOCK)
+			if (errno != EAGAIN)
 				irmo_error_report("irmo_socket_run",
 						  "error on receive (%s)",
 						  strerror(errno));
@@ -681,6 +689,7 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 {
 	fd_set set;
 	GTimeVal tv_timeout;
+	struct timeval tv_timeout2;
 	int result;
 	int max;
 	int i;
@@ -698,7 +707,9 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 
 	if (timeout > 0) {
 		irmo_timeval_from_ms(timeout, &tv_timeout);
-		result = select(max+1, &set, NULL, NULL, &tv_timeout);
+		tv_timeout2.tv_sec = tv_timeout.tv_sec;
+		tv_timeout2.tv_usec = tv_timeout.tv_usec;
+		result = select(max+1, &set, NULL, NULL, &tv_timeout2);
 	} else {
 		result = select(max+1, &set, NULL, NULL, NULL);
 	}
@@ -714,6 +725,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.20  2003/11/20 00:19:17  fraggle
+// Add some fixes to get compiling under windows
+//
 // Revision 1.19  2003/11/18 19:32:19  fraggle
 // Use GTimeVal instead of struct timeval
 //
