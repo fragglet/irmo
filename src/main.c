@@ -42,23 +42,23 @@ int main(int argc, char *argv[])
 
 	printf("trying to set callback on object\n");
 
-	callback_watch_object(object, NULL,
-			      my_callback, "object watch callback");
+	object_watch(object, NULL,
+		     my_callback, "object watch callback");
 
 	printf("trying to set callback on object variable\n");
 
-	callback_watch_object(object, "my_int",
-			      my_callback, "variable watch callback");
+	object_watch(object, "my_int",
+		     my_callback, "variable watch callback");
 
 	printf("trying to set callback on class\n");
 
-	callback_watch_class(universe,
+	universe_watch_class(universe,
 			     "my_class", NULL,
 			     my_callback, "class watch callback");
 
 	printf("trying to set callback on class variable\n");
 
-	callback_watch_class(universe,
+	universe_watch_class(universe,
 			     "my_class", "my_int",
 			     my_callback, "class variable watch callback");
 	
@@ -104,6 +104,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2002/10/29 16:28:50  sdh300
+// functioning callbacks
+//
 // Revision 1.9  2002/10/29 14:53:34  sdh300
 // sensible test variable names for clarity
 //

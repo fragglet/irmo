@@ -13,6 +13,7 @@ IrmoCallbackData *_callbackdata_new(ClassSpec *objclass)
 	data->objclass = objclass;
 
 	data->class_callbacks = NULL;
+	data->destroy_callbacks = NULL;
 	data->variable_callbacks = g_new0(GSList *, objclass->nvariables);
 
 	return data;
@@ -112,7 +113,7 @@ static void callbackdata_watch(IrmoCallbackData *data,
 	*list = g_slist_append(*list, callback);
 }
 
-void callback_watch_class(IrmoUniverse *universe,
+void universe_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
 			  IrmoCallbackFunc func, gpointer user_data)
 {
@@ -133,14 +134,17 @@ void callback_watch_class(IrmoUniverse *universe,
 			   func, user_data);
 }
 
-void callback_watch_object(IrmoObject *object, gchar *variable,
-			   IrmoCallbackFunc func, gpointer user_data)
+void object_watch(IrmoObject *object, gchar *variable,
+		  IrmoCallbackFunc func, gpointer user_data)
 {
 	callbackdata_watch(object->callbacks, variable,
 			   func, user_data);
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/29 16:28:50  sdh300
+// functioning callbacks
+//
 // Revision 1.2  2002/10/29 16:10:19  sdh300
 // add missing cvs tags
 //

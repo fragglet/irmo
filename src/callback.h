@@ -29,6 +29,10 @@ struct _IrmoCallbackData {
 	// callbacks for if a particular variable is changed
 	
 	GSList **variable_callbacks;
+
+	// callbacks called when object is destroyed
+	
+	GSList *destroy_callbacks;
 };
 
 IrmoCallbackData *_callbackdata_new(ClassSpec *objclass);
@@ -36,15 +40,18 @@ void _callbackdata_free(IrmoCallbackData *data);
 void _callbackdata_raise(IrmoCallbackData *data,
 			 IrmoObject *object, gint variable_index);
 
-void callback_watch_class(IrmoUniverse *universe,
+void universe_watch_class(IrmoUniverse *universe,
 			  gchar *classname, gchar *variable,
 			  IrmoCallbackFunc func, gpointer user_data);
-void callback_watch_object(IrmoObject *object, gchar *variable,
-			   IrmoCallbackFunc func, gpointer user_data);
+void object_watch(IrmoObject *object, gchar *variable,
+		  IrmoCallbackFunc func, gpointer user_data);
 
 #endif /* #ifndef IRMO_CALLBACK_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/29 16:28:50  sdh300
+// functioning callbacks
+//
 // Revision 1.2  2002/10/29 16:10:19  sdh300
 // add missing cvs tags
 //
