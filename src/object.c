@@ -116,7 +116,48 @@ void object_destroy(IrmoObject *object)
 	// TODO: hooks for object destruction callbacks
 }
 
+void object_set_int(IrmoObject *object, gchar *variable, gint value)
+{
+	ClassVarSpec *spec;
+
+	spec = g_hash_table_lookup(object->objclass->variable_hash,
+				   variable);
+
+	if (!spec) {
+		fprintf(stderr,
+			"object_set_int: unknown variable '%s' "
+			"in class '%s'\n",
+			variable,
+			object->objclass->name);
+		
+		return;
+	}
+
+	switch (spec->type) {
+	case TYPE_INT8:
+		object->variables[spec->n].i8 = value;
+		break;
+	case TYPE_INT16:
+		object->variables[spec->n].i16 = value;
+		break;
+	case TYPE_INT32:
+		object->variables[spec->n].i32 = value;
+		break;
+	default:
+		fprintf(stderr,
+			"object_set_int: variable '%s' in class '%s' "
+			"is not an int type\n",
+			variable, object->objclass->name);
+		return;
+	}
+
+	// TODO: value change callbacks
+}
+
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2002/10/21 15:09:01  sdh300
+// object destruction
+//
 // Revision 1.1  2002/10/21 14:58:06  sdh300
 // split off object code to a seperate module
 //

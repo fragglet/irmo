@@ -47,6 +47,7 @@ struct _MethodSpec {
 struct _ClassVarSpec {
 	TypeSpec type;
 	char *name;
+	int n;
 };
 
 // class
@@ -92,3 +93,6 @@ void interface_spec_unref(InterfaceSpec *spec);
 #endif /* #ifndef IFSPEC_H */
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1.1.1  2002/10/19 18:53:23  sdh300
+// initial import
+//

@@ -38,6 +38,14 @@ int main(int argc, char *argv[])
 	else
 		printf("failed!\n");
 
+	printf("trying to set variable value\n");
+	
+	object_set_int(object, "myvar", 1234);
+
+	printf("trying to set variable value (invalid)\n");
+	
+	object_set_int(object, "blah", 1234);
+	
 	printf("destroying object\n");
 
 	object_destroy(object);
@@ -49,6 +57,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2002/10/21 15:09:01  sdh300
+// object destruction
+//
 // Revision 1.4  2002/10/21 14:58:08  sdh300
 // split off object code to a seperate module
 //

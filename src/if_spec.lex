@@ -193,7 +193,8 @@ static ClassSpec *eat_class()
 			     "multiple definitions of '%s'", yytext);
 		
 		var->name = strdup(yytext);
-
+		var->n = i;
+		
 		// ending semicolon
 
 		parse_assert(yylex() == TOKEN_SEMICOLON, "semicolon expected");
@@ -442,6 +443,9 @@ void interface_spec_unref(InterfaceSpec *spec)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2002/10/21 10:00:43  sdh300
+// fix up some formatting
+//
 // Revision 1.2  2002/10/19 18:57:23  sdh300
 // recognise "method" as well as "func"
 //
