@@ -121,7 +121,15 @@ static gboolean proto_verify_atom(IrmoClient *client, IrmoPacket *packet,
 
 static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 {
-	printf("verify packet\n");
+	guint16 i16;
+
+	// start position
+	
+	if (!packet_readi16(packet, &i16))
+		return FALSE;
+
+	// read atoms
+	
 	for (;;) {
 		guint8 i8;
 		int i;
@@ -136,16 +144,16 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 
 		if (atomtype != ATOM_NULL && atomtype != ATOM_NEW
 		    && atomtype != ATOM_CHANGE && atomtype != ATOM_DESTROY) {
-			printf("invalid atom type (%i)\n", atomtype);
+			//printf("invalid atom type (%i)\n", atomtype);
 			return FALSE;
 		}
-		printf("%i atoms, %i\n", natoms, atomtype);
+		//printf("%i atoms, %i\n", natoms, atomtype);
 
 		for (i=0; i<natoms; ++i) {
-			printf("\tverify atom %i (%i)\n", i, atomtype);
+			//printf("\tverify atom %i (%i)\n", i, atomtype);
 			if (!proto_verify_atom(packet->client, packet,
 					       atomtype)) {
-				printf("\t\tfailed\n");
+				//printf("\t\tfailed\n");
 				return FALSE;
 			}
 		}
@@ -159,6 +167,8 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 {
 	gboolean result = TRUE;
 	guint origpos = packet->pos;
+	
+	//printf("verify packet\n");
 	
 	// read ack
 	
@@ -182,4 +192,7 @@ gboolean proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/03/14 01:07:23  sdh300
+// Initial packet verification code
+//
  
