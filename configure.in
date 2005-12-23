@@ -37,13 +37,16 @@ fi
 AC_MSG_RESULT($ts_cv_ipv6)
 
 if test "x$ts_cv_ipv6" = "xyes"; then
-	AC_DEFINE(USE_IPV6)
+	AC_DEFINE([USE_IPV6], [], [IPv6 support])
 fi
+
+AM_CONFIG_HEADER(config.h:config.h.in)
 
 AC_OUTPUT([
 	Makefile
 	doc/Makefile
 	src/Makefile
+        src/common/Makefile
 	src/public/Makefile
 	irmo.pc
 ])
