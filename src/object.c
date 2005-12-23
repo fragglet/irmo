@@ -38,15 +38,15 @@
 
 // do something for all connected clients
 
-typedef void (*ClientCallback) (IrmoClient *client, gpointer user_data);
+typedef void (*ClientCallback) (IrmoClient *client, void *user_data);
 
 struct foreach_client_data {
 	IrmoWorld *world;
 	ClientCallback func;
-	gpointer user_data;
+	void *user_data;
 };
 
-static void foreach_client_foreach(gpointer key, IrmoClient *client,
+static void foreach_client_foreach(void *key, IrmoClient *client,
 				   struct foreach_client_data *data)
 {
 	// only do this for clients which are full connected
@@ -58,7 +58,7 @@ static void foreach_client_foreach(gpointer key, IrmoClient *client,
 }
 
 static void foreach_client(IrmoWorld *world,
-			   ClientCallback func, gpointer user_data)
+			   ClientCallback func, void *user_data)
 {
 	struct foreach_client_data data = {
 		world,
@@ -67,17 +67,17 @@ static void foreach_client(IrmoWorld *world,
 	};
 	int i;
 
-	for (i=0; i<world->servers->len; ++i) {
+	for (i=0; i<world->servers->length; ++i) {
 		IrmoServer *server
-			= (IrmoServer *) world->servers->pdata[i];
+			= (IrmoServer *) world->servers->data[i];
 
-		g_hash_table_foreach(server->clients,
-				     (GHFunc) foreach_client_foreach,
+		irmo_hash_table_foreach(server->clients,
+				     (IrmoHashTableIterator) foreach_client_foreach,
 				     &data);
 	}
 }		   
 
-static gint get_free_id(IrmoWorld *world)
+static int get_free_id(IrmoWorld *world)
 {
 	IrmoObjectID start = world->lastid;
 
@@ -92,8 +92,8 @@ static gint get_free_id(IrmoWorld *world)
 		
 		if (world->lastid == start)
 			return -1;
-	} while (g_hash_table_lookup(world->objects,
-				     (gpointer) world->lastid));
+	} while (irmo_hash_table_lookup(world->objects,
+				     (void *) world->lastid));
 
 	return world->lastid;
 }
@@ -123,12 +123,12 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	
 	for (i=0; i<objclass->nvariables; ++i)
 		if (objclass->variables[i]->type == IRMO_TYPE_STRING)
-			object->variables[i].s = g_strdup("");
+			object->variables[i].s = strdup("");
 
 	
 	// add to world
 
-	g_hash_table_insert(world->objects, (gpointer) id, object);
+	irmo_hash_table_insert(world->objects, (void *) id, object);
 
 	// raise callback functions for new object creation
 
@@ -153,11 +153,11 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 {
 	IrmoClass *spec;
-	gint id;
+	int id;
 
 	g_return_val_if_fail(world != NULL, NULL);
 	g_return_val_if_fail(type_name != NULL, NULL);
-	g_return_val_if_fail(world->remote == FALSE, NULL);
+	g_return_val_if_fail(world->remote == 0, NULL);
 	
 	spec = irmo_interface_spec_get_class(world->spec, type_name);
 
@@ -182,8 +182,8 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 // internal object destroy function
 
 void irmo_object_internal_destroy(IrmoObject *object,
-				  gboolean notify,
-				  gboolean remove)
+				  int notify,
+				  int remove)
 {
 	int i;
 
@@ -207,8 +207,8 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	// remove from world
 
 	if (remove) {
-		g_hash_table_remove(object->world->objects,
-				    (gpointer) object->id);
+		irmo_hash_table_remove(object->world->objects,
+				    (void *) object->id);
 	}
 	
 	// destroy member variables
@@ -216,31 +216,31 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	for (i=0; i<object->objclass->nvariables; ++i) {
 		if (object->objclass->variables[i]->type == IRMO_TYPE_STRING
 		    && object->variables[i].s)
-			g_free(object->variables[i].s);
+			free(object->variables[i].s);
 	}
 
-	g_free(object->variables);
+	free(object->variables);
 	irmo_callbackdata_free(object->callbacks);
 
 	// free variable time array
 
 	if (object->variable_time)
-		g_free(object->variable_time);
+		free(object->variable_time);
 	
 	// done
 	
-	g_free(object);
+	free(object);
 }
 
 void irmo_object_destroy(IrmoObject *object)
 {
 	g_return_if_fail(object != NULL);
-	g_return_if_fail(object->world->remote == FALSE);
+	g_return_if_fail(object->world->remote == 0);
 	
 	// destroy object
 	// notify callbacks and remove from world
 	
-	irmo_object_internal_destroy(object, TRUE, TRUE);
+	irmo_object_internal_destroy(object, 1, 1);
 }
 
 IrmoObjectID irmo_object_get_id(IrmoObject *object)
@@ -311,7 +311,7 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(variable != NULL);
-	g_return_if_fail(object->world->remote == FALSE);
+	g_return_if_fail(object->world->remote == 0);
 	
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -354,7 +354,7 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(variable != NULL);
 	g_return_if_fail(value != NULL);
-	g_return_if_fail(object->world->remote == FALSE);
+	g_return_if_fail(object->world->remote == 0);
 	
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -374,7 +374,7 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 		return;
 	}
 
-	g_free(object->variables[spec->index].s);
+	free(object->variables[spec->index].s);
 
 	object->variables[spec->index].s = strdup(value);
 
@@ -455,38 +455,43 @@ unsigned int irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
 {
 	IrmoClass *c;
 	
-	g_return_val_if_fail(obj != NULL, FALSE);
-	g_return_val_if_fail(klass != NULL, FALSE);
+	g_return_val_if_fail(obj != NULL, 0);
+	g_return_val_if_fail(klass != NULL, 0);
 
 	// search through all parent classes
 
 	for (c=obj->objclass; c; c=c->parent_class) {
 		if (c == klass)
-			return TRUE;
+			return 1;
 	}
 
-	return FALSE;
+	return 0;
 }
 
 unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 {
 	IrmoClass *klass;
 
-	g_return_val_if_fail(obj != NULL, FALSE);
-	g_return_val_if_fail(classname != NULL, FALSE);
+	g_return_val_if_fail(obj != NULL, 0);
+	g_return_val_if_fail(classname != NULL, 0);
 
 	klass = irmo_interface_spec_get_class(obj->world->spec, classname);
 
 	if (!klass) {
 		irmo_error_report("irmo_object_is_a",
 				  "unknown class name '%s'", classname);
-		return FALSE;
+		return 0;
 	}
 
 	return irmo_object_is_a2(obj, klass);
 }
 
 // $Log$
+// Revision 1.21  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.20  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

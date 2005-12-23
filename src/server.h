@@ -41,11 +41,11 @@ struct _IrmoServer {
 
 	// server running?
 	
-	gboolean running;
+	int running;
 	
 	// vhost hostname
 
-	gchar *hostname;
+	char *hostname;
 
 	// socket this server is using
 
@@ -61,11 +61,11 @@ struct _IrmoServer {
 	
 	// connected IrmoClients hashed by IP
 	
-	GHashTable *clients;
+	IrmoHashTable *clients;
 
 	// callback functions for new connections
 
-	GSList *connect_callbacks;
+	IrmoSListEntry *connect_callbacks;
 };
 
 // make a new server using an existing socket object
@@ -75,7 +75,7 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock, IrmoWorld *world,
 
 // invoke IrmoClientCallback callback functions in a list
 
-void irmo_client_callback_raise(GSList *list, IrmoClient *client);
+void irmo_client_callback_raise(IrmoSListEntry *list, IrmoClient *client);
 
 // raise callback functions on new client connect
 
@@ -84,6 +84,11 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 #endif /* #ifndef IRMO_INTERNAL_SERVER_H */
 
 // $Log$
+// Revision 1.8  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.7  2004/01/06 01:36:18  fraggle
 // Remove vhosting. Simplify the server API.
 //

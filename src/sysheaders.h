@@ -33,6 +33,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "common/common.h"
+
 #ifdef _WIN32
 
 #include <WinSock.h>
@@ -54,6 +56,11 @@
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
 // $Log$
+// Revision 1.2  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.1  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

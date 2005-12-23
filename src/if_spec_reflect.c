@@ -37,7 +37,7 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
 	g_return_val_if_fail(spec != NULL, NULL);
 	g_return_val_if_fail(class_name != NULL, NULL);
 
-	return g_hash_table_lookup(spec->class_hash, class_name);
+	return irmo_hash_table_lookup(spec->class_hash, class_name);
 }
 
 IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
@@ -46,7 +46,7 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
 	g_return_val_if_fail(spec != NULL, NULL);
 	g_return_val_if_fail(method_name != NULL, NULL);
 
-	return g_hash_table_lookup(spec->method_hash, method_name);
+	return irmo_hash_table_lookup(spec->method_hash, method_name);
 }
 
 void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec, 
@@ -102,7 +102,7 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name)
 	g_return_val_if_fail(klass != NULL, NULL);
 	g_return_val_if_fail(var_name != NULL, NULL);
 
-	return g_hash_table_lookup(klass->variable_hash, var_name);
+	return irmo_hash_table_lookup(klass->variable_hash, var_name);
 }
 
 void irmo_class_foreach_variable(IrmoClass *klass, 
@@ -201,7 +201,7 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, char *arg_name)
 	g_return_val_if_fail(method != NULL, NULL);
 	g_return_val_if_fail(arg_name != NULL, NULL);
 
-	return g_hash_table_lookup(method->argument_hash, arg_name);
+	return irmo_hash_table_lookup(method->argument_hash, arg_name);
 }
 
 IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number)
@@ -273,6 +273,11 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 }
 
 // $Log$
+// Revision 1.12  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.11  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

@@ -95,8 +95,8 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 	
 	// invoke callback functions
 	
-	g_slist_foreach(world->method_callbacks[data->spec->index],
-			(GFunc) method_invoke_foreach,
+	irmo_slist_foreach(world->method_callbacks[data->spec->index],
+			(IrmoSListIterator) method_invoke_foreach,
 			data);
 }
 
@@ -146,7 +146,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 
 	irmo_method_invoke(world, &method_data);
 
-	g_free(args);
+	free(args);
 }
 
 
@@ -238,6 +238,11 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 }
 
 // $Log$
+// Revision 1.15  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.14  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

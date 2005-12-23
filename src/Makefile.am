@@ -2,7 +2,7 @@ lib_LTLIBRARIES=libirmo.la
 
 INCLUDES=$(MODULES_CFLAGS)
 
-SUBDIRS=public
+SUBDIRS=common public
 
 SRC= \
   callback.c    connection.c  netlib.c   packet.h       server.c	\
@@ -18,5 +18,5 @@ SRC= \
   sysheaders.h
 
 libirmo_la_SOURCES= $(SRC)
-libirmo_la_LIBADD=$(MODULES_LIBS) @LEXLIB@
+libirmo_la_LIBADD=common/libirmocommon.a $(MODULES_LIBS) @LEXLIB@
 

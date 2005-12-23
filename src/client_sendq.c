@@ -36,7 +36,7 @@ IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 
 	while (1) {
 	
-		atom = (IrmoSendAtom *) g_queue_pop_head(client->sendq);
+		atom = (IrmoSendAtom *) irmo_queue_pop_head(client->sendq);
 		
 		if (!atom)
 			return NULL;
@@ -55,8 +55,8 @@ IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 	if (atom->klass == &irmo_change_atom) {
 		IrmoChangeAtom *catom = (IrmoChangeAtom *) atom;
 
-		g_hash_table_remove(client->sendq_hashtable,
-				    (gpointer) catom->object->id);
+		irmo_hash_table_remove(client->sendq_hashtable,
+				    (void *) catom->object->id);
 	}
 
 	return atom;
@@ -67,15 +67,15 @@ void irmo_client_sendq_push(IrmoClient *client, IrmoSendAtom *atom)
 	if (atom->klass == &irmo_change_atom) {
 		IrmoChangeAtom *catom = (IrmoChangeAtom *) atom;
 
-		g_hash_table_insert(client->sendq_hashtable,
-				    (gpointer) catom->object->id,
+		irmo_hash_table_insert(client->sendq_hashtable,
+				    (void *) catom->object->id,
 				    atom);
 	}
 	
 	atom->client = client;
 	atom->len = atom->klass->length(atom);
 	
-	g_queue_push_tail(client->sendq, atom);
+	irmo_queue_push_tail(client->sendq, atom);
 }
 
 void irmo_sendatom_free(IrmoSendAtom *atom)
@@ -83,7 +83,7 @@ void irmo_sendatom_free(IrmoSendAtom *atom)
 	if (atom->klass->destructor)
 		atom->klass->destructor(atom);
 
-	g_free(atom);
+	free(atom);
 }
 
 static void irmo_sendatom_nullify(IrmoSendAtom *atom)
@@ -130,7 +130,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 			// unset the change in the atom. update
 			// change count
 			
-			atom->changed[variable] = FALSE;
+			atom->changed[variable] = 0;
 			--atom->nchanged;
 
 			// if there are no more changes, replace the atom
@@ -150,8 +150,8 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 	// check if there is an existing atom for this object in
 	// the send queue
 	
-	atom = g_hash_table_lookup(client->sendq_hashtable,
-				   (gpointer) object->id);
+	atom = irmo_hash_table_lookup(client->sendq_hashtable,
+				   (void *) object->id);
 
 	if (!atom) {
 		atom = g_new0(IrmoChangeAtom, 1);
@@ -159,7 +159,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 
 		atom->id = object->id;
 		atom->object = object;
-		atom->changed = g_new0(gboolean, object->objclass->nvariables);
+		atom->changed = g_new0(int, object->objclass->nvariables);
 		atom->nchanged = 0;
 		
 		irmo_client_sendq_push(client, IRMO_SENDATOM(atom));
@@ -168,7 +168,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 	// set the change in the atom and update the change count
 
 	if (!atom->changed[variable]) {
-		atom->changed[variable] = TRUE;
+		atom->changed[variable] = 1;
 		++atom->nchanged;
 	}
 	
@@ -184,15 +184,15 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	
 	// check for any changeatoms referring to this object
 
-	atom = g_hash_table_lookup(client->sendq_hashtable,
-				   (gpointer) object->id);
+	atom = irmo_hash_table_lookup(client->sendq_hashtable,
+				   (void *) object->id);
 
 	// convert to a ATOM_NULL atom
 	
 	if (atom) {
 		irmo_sendatom_nullify(IRMO_SENDATOM(atom));
-		g_hash_table_remove(client->sendq_hashtable,
-				    (gpointer) object->id);
+		irmo_hash_table_remove(client->sendq_hashtable,
+				    (void *) object->id);
 	}
 
 	// nullify atoms in send window too
@@ -292,19 +292,22 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 	// this is done all together and seperately from sending the
 	// variable state, as the rle encoding in the packets will
 	// better compress the atoms this way
-
 	irmo_world_foreach_object(client->server->world, NULL,
 				     (IrmoObjCallback) client_sendq_add_objects,
 				     client);
 
 	// send variable states
-
 	irmo_world_foreach_object(client->server->world, NULL,
 				     (IrmoObjCallback) client_sendq_add_variables,
 				     client);
 }
 
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //
@@ -320,7 +323,7 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 // Revision 1.1  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
+//    unsigned int8/unsigned int16/unsigned int32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together
@@ -401,7 +404,7 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 // Add 'pop' function to remove atoms from sendq head
 //
 // Revision 1.3  2003/02/20 18:24:59  sdh300
-// Use GQueue instead of a GPtrArray for the send queue
+// Use IrmoQueue instead of a IrmoArrayList for the send queue
 // Initial change/destroy code
 //
 // Revision 1.2  2003/02/18 20:26:42  sdh300

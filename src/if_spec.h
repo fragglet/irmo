@@ -57,7 +57,7 @@ struct _IrmoMethod {
 	IrmoMethodArg **arguments;
 	int narguments;
 
-	GHashTable *argument_hash;
+	IrmoHashTable *argument_hash;
 };
 
 // class member variable
@@ -89,7 +89,7 @@ struct _IrmoClass {
 	IrmoClassVar **variables;	// class member variables
 	int nvariables;
 	
-	GHashTable *variable_hash;
+	IrmoHashTable *variable_hash;
 };
 
 // overall interface
@@ -103,23 +103,28 @@ struct _IrmoInterfaceSpec {
 	IrmoClass **classes;
 	int nclasses;
 
-	GHashTable *class_hash;
+	IrmoHashTable *class_hash;
 
 	// methods:
 	
 	IrmoMethod **methods;
 	int nmethods;
 
-	GHashTable *method_hash;
+	IrmoHashTable *method_hash;
 
 	// unique (or should be) hash value
 
-	guint hash;
+	unsigned int hash;
 };
 
 #endif /* #ifndef IRMO_INTERNAL_IF_SPEC_H */
 
 // $Log$
+// Revision 1.9  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.8  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

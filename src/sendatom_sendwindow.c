@@ -40,9 +40,9 @@
 // <int16>	new send window size in bytes
 //
 
-static gboolean irmo_sendwindow_atom_verify(IrmoPacket *packet)
+static int irmo_sendwindow_atom_verify(IrmoPacket *packet)
 {
-	guint i;
+	unsigned int i;
 
 	// set maximum sendwindow size
 
@@ -76,7 +76,7 @@ static void irmo_sendwindow_atom_run(IrmoSendWindowAtom *atom)
 	client->remote_sendwindow_max = atom->max;
 }
 
-static gsize irmo_sendwindow_atom_length(IrmoSendAtom *atom)
+static size_t irmo_sendwindow_atom_length(IrmoSendAtom *atom)
 {
 	return 2;
 }
@@ -94,6 +94,11 @@ IrmoSendAtomClass irmo_sendwindow_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

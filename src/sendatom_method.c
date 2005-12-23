@@ -41,24 +41,24 @@
 //		data depends on the argument type
 //
 
-static gboolean irmo_method_atom_verify(IrmoPacket *packet)
+static int irmo_method_atom_verify(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	IrmoMethod *method;
-	int i;
+	unsigned int i;
 
 	if (!client->server->world)
-		return FALSE;
+		return 0;
 
 	// read method index
 
 	if (!irmo_packet_readi8(packet, &i))
-		return FALSE;
+		return 0;
 
 	// sanity check method index
 
 	if (i >= client->server->world->spec->nmethods)
-		return FALSE;
+		return 0;
 
 	method = client->server->world->spec->methods[i];
 
@@ -67,17 +67,17 @@ static gboolean irmo_method_atom_verify(IrmoPacket *packet)
 	for (i=0; i<method->narguments; ++i) {
 		if (!irmo_packet_verify_value
 			(packet, method->arguments[i]->type))
-			return FALSE;
+			return 0;
 	}
 
-	return TRUE;
+	return 1;
 }
 
 static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 {
 	IrmoMethodAtom *atom;
 	IrmoMethod *method;
-	int i;
+	unsigned int i;
 
 	atom = g_new0(IrmoMethodAtom, 1);
 	atom->sendatom.klass = &irmo_method_atom;
@@ -133,17 +133,17 @@ static void irmo_method_atom_destroy(IrmoMethodAtom *atom)
  
         for (i=0; i<method->narguments; ++i) {
                 if (method->arguments[i]->type == IRMO_TYPE_STRING)
-                        g_free(atom->method.args[i].s);
+                        free(atom->method.args[i].s);
         }
  
-        g_free(atom->method.args);
+        free(atom->method.args);
 }
 
-static gsize irmo_method_atom_length(IrmoMethodAtom *atom)
+static size_t irmo_method_atom_length(IrmoMethodAtom *atom)
 {
 	IrmoMethod *method = atom->method.spec;
 	int i;
-	gsize len;
+	size_t len;
 
         // find length of atom,
  
@@ -189,6 +189,11 @@ IrmoSendAtomClass irmo_method_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

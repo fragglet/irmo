@@ -74,23 +74,23 @@ struct _IrmoClient {
 
 	// time last syn/synack was sent
 	time_t connect_time;
-	gint connect_attempts;
+	int connect_attempts;
 
 	// when a client remotely disconnects, keep the client object
 	// for several seconds before destroying it (if they do not
 	// receive the disconnect ack they may send another disconnect
 	// request, in which case another ack will need to be sent)
 	
-	gboolean disconnect_wait;
+	int disconnect_wait;
 
 	// send queue 
 	
-	GQueue *sendq;
+	IrmoQueue *sendq;
 
 	// change entries in sendq are hashed by object id so
 	// new changes can be added to the existing sendatoms
 	
-	GHashTable *sendq_hashtable;
+	IrmoHashTable *sendq_hashtable;
 
 	// position of start of send window in stream
 
@@ -111,11 +111,11 @@ struct _IrmoClient {
 	// if true, we need to send an ack to the client to acknowledge
 	// something it has sent us
 	
-	gboolean need_ack;
+	int need_ack;
 
 	// disconnect callbacks
 
-	GSList *disconnect_callbacks;
+	IrmoSListEntry *disconnect_callbacks;
 
 	// estimations of round trip time mean and standard deviation
 	// (in milliseconds)
@@ -145,7 +145,7 @@ struct _IrmoClient {
 
 	// connection error
 
-	gchar *connection_error;
+	char *connection_error;
 };
 
 // create a new client, attached to a particular server
@@ -175,6 +175,11 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 #endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
 
 // $Log$
+// Revision 1.9  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.8  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
@@ -251,7 +256,7 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 // directory (objects now totally opaque)
 //
 // Revision 1.8  2003/02/20 18:24:59  sdh300
-// Use GQueue instead of a GPtrArray for the send queue
+// Use IrmoQueue instead of a IrmoArrayList for the send queue
 // Initial change/destroy code
 //
 // Revision 1.7  2003/02/18 20:26:41  sdh300

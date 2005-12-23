@@ -41,19 +41,19 @@
 // <int16>	object id of object to destroy
 //
 
-static gboolean irmo_destroy_atom_verify(IrmoPacket *packet)
+static int irmo_destroy_atom_verify(IrmoPacket *packet)
 {
-	guint i;
+	unsigned int i;
 
 	if (!packet->client->world)
-		return FALSE;
+		return 0;
 
 	// object id
 
 	if (!irmo_packet_readi16(packet, &i))
-		return FALSE;
+		return 0;
 		
-	return TRUE;
+	return 1;
 }
 
 static IrmoSendAtom *irmo_destroy_atom_read(IrmoPacket *packet)
@@ -93,10 +93,10 @@ static void irmo_destroy_atom_run(IrmoDestroyAtom *atom)
 
 	// destroy object. remove from world and call notify functions
 	
-	irmo_object_internal_destroy(obj, TRUE, TRUE);
+	irmo_object_internal_destroy(obj, 1, 1);
 }
 
-static gsize irmo_destroy_atom_length(IrmoSendAtom *atom)
+static size_t irmo_destroy_atom_length(IrmoSendAtom *atom)
 {
 	return 2;
 }
@@ -114,6 +114,11 @@ IrmoSendAtomClass irmo_destroy_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

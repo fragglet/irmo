@@ -36,7 +36,7 @@ void irmo_error_report(char *function_name, char *format, ...)
 	va_start(args, format);
 
 	if (last_error)
-		g_free(last_error);
+		free(last_error);
 
 	last_error = g_strdup_vprintf(format, args);
 
@@ -51,6 +51,11 @@ char *irmo_error_get(void)
 }
 
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

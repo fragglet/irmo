@@ -39,9 +39,9 @@
 //  (empty)
 //
 
-static gboolean irmo_null_atom_verify(IrmoPacket *packet)
+static int irmo_null_atom_verify(IrmoPacket *packet)
 {
-	return TRUE;
+	return 1;
 }
 
 static IrmoSendAtom *irmo_null_atom_read(IrmoPacket *packet)
@@ -59,7 +59,7 @@ static void irmo_null_atom_write(IrmoSendAtom *atom, IrmoPacket *packet)
 	return;
 }
 
-static gsize irmo_null_atom_length(IrmoSendAtom *atom)
+static size_t irmo_null_atom_length(IrmoSendAtom *atom)
 {
 	return 0;
 }
@@ -82,6 +82,11 @@ IrmoSendAtomClass irmo_null_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.4  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.3  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

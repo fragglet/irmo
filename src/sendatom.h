@@ -55,11 +55,11 @@ typedef enum {
 #include "object.h"
 #include "packet.h"
 
-typedef gboolean (*IrmoSendAtomVerifyFunc)(IrmoPacket *packet);
+typedef int (*IrmoSendAtomVerifyFunc)(IrmoPacket *packet);
 typedef IrmoSendAtom *(*IrmoSendAtomReadFunc)(IrmoPacket *packet);
 typedef void (*IrmoSendAtomWriteFunc)(IrmoSendAtom *atom, IrmoPacket *packet);
 typedef void (*IrmoSendAtomRunFunc)(IrmoSendAtom *atom);
-typedef gsize (*IrmoSendAtomLengthFunc)(IrmoSendAtom *atom);
+typedef size_t (*IrmoSendAtomLengthFunc)(IrmoSendAtom *atom);
 typedef void (*IrmoSendAtomDestroyFunc)(IrmoSendAtom *atom);
 
 struct _IrmoSendAtomClass {
@@ -105,7 +105,7 @@ struct _IrmoSendAtom {
 
 	// true if this atom was resent
 
-	gboolean resent;
+	int resent;
 
 	// length of atom in bytes
 
@@ -120,13 +120,13 @@ struct _IrmoNewObjectAtom {
 	IrmoSendAtom sendatom;
 
 	IrmoObjectID id;
-	guint classnum;
+	unsigned int classnum;
 };
 
 struct _IrmoChangeAtom {
 	IrmoSendAtom sendatom;
 
-	gboolean executed;           // atom has been executed
+	int executed;           // atom has been executed
 	IrmoObjectID id;
 	IrmoObject *object;
 
@@ -136,7 +136,7 @@ struct _IrmoChangeAtom {
 			
 	// array saying which have changed
 	
-	gboolean *changed;
+	int *changed;
 
 	// class of the object being changed. this is only
 	// used for the receive window.
@@ -158,7 +158,7 @@ struct _IrmoDestroyAtom {
 struct _IrmoSendWindowAtom {
 	IrmoSendAtom sendatom;
 
-	guint max;
+	unsigned int max;
 };
 
 struct _IrmoMethodAtom {
@@ -198,6 +198,11 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.13  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.12  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
@@ -219,7 +224,7 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 // Revision 1.6  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
+//    unsigned int8/unsigned int16/unsigned int32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together
@@ -284,7 +289,7 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 // Add 'pop' function to remove atoms from sendq head
 //
 // Revision 1.3  2003/02/20 18:25:00  sdh300
-// Use GQueue instead of a GPtrArray for the send queue
+// Use IrmoQueue instead of a IrmoArrayList for the send queue
 // Initial change/destroy code
 //
 // Revision 1.2  2003/02/18 20:26:42  sdh300

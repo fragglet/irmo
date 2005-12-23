@@ -78,8 +78,8 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 // call notify routines (call callbacks, forward info to clients)
 // and whether to remove from the world.
 
-void irmo_object_internal_destroy(IrmoObject *object, gboolean notify,
-				  gboolean remove);
+void irmo_object_internal_destroy(IrmoObject *object, int notify,
+				  int remove);
 
 
 // internal function to raise notify functions for when an object
@@ -93,6 +93,11 @@ void irmo_object_set_raise(IrmoObject *object, int variable);
 #endif /* #ifndef IRMO_OBJECT_H */
 
 // $Log$
+// Revision 1.8  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.7  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

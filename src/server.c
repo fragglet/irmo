@@ -45,7 +45,7 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 	server->socket = sock;
 	server->world = world;
 	server->client_spec = client_spec;
-	server->running = TRUE;
+	server->running = 1;
 
 	irmo_socket_ref(sock);
 
@@ -58,15 +58,15 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 	
 	if (world) {
 		irmo_world_ref(world);
-		g_ptr_array_add(world->servers, server);
+		irmo_arraylist_append(world->servers, server);
 	}
 	
 	// attach ourselves to the server
 
 	sock->server = server;
 
-	server->clients = g_hash_table_new((GHashFunc) irmo_sockaddr_hash,
-					   (GCompareFunc) irmo_sockaddr_cmp);
+	server->clients = irmo_hash_table_new((IrmoHashTableHashFunc) irmo_sockaddr_hash,
+					      (IrmoHashTableEqualFunc) irmo_sockaddr_cmp);
 
 	return server;
 }
@@ -97,8 +97,8 @@ void irmo_server_ref(IrmoServer *server)
 	++server->refcount;
 }
 
-static gboolean remove_each_client(gpointer key, IrmoClient *client,
-				   gpointer user_data)
+static int remove_each_client(void *key, IrmoClient *client,
+				   void *user_data)
 {
 	// destroy
 
@@ -106,21 +106,23 @@ static gboolean remove_each_client(gpointer key, IrmoClient *client,
 	
 	// remove from server list
 	
-	return TRUE;
+	return 1;
 }
 
 // remove ourselves from the socket
 
 static void irmo_server_internal_shutdown(IrmoServer *server)
 {
+        int i;
+
 	//printf("shutdown server\n");
 	if (!server->running)
 		return;
 
 	// remove clients
 
-	g_hash_table_foreach_remove(server->clients,
-				    (GHRFunc) remove_each_client,
+	irmo_hash_table_foreach_remove(server->clients,
+				    (IrmoHashTableRemoveIterator) remove_each_client,
 				    NULL);
 		
 	// shutdown the socket we're using
@@ -129,10 +131,15 @@ static void irmo_server_internal_shutdown(IrmoServer *server)
 
 	// remove from list of attached servers
 			
-	if (server->world)
-		g_ptr_array_remove(server->world->servers, server);
+	if (server->world) {
+                for (i=0; i<server->world->servers->length; ++i) {
+                        if (server->world->servers->data[i] == server) {
+                                irmo_arraylist_remove(server->world->servers, i);
+                        }
+                }
+        }
 
-	server->running = FALSE;
+	server->running = 0;
 }
 
 void irmo_server_unref(IrmoServer *server)
@@ -144,7 +151,7 @@ void irmo_server_unref(IrmoServer *server)
 	if (server->refcount <= 0) {
 		
 		irmo_server_internal_shutdown(server);
-		g_hash_table_destroy(server->clients);
+		irmo_hash_table_free(server->clients);
 
 		// destroy callbacks
 
@@ -158,7 +165,7 @@ void irmo_server_unref(IrmoServer *server)
 		if (server->world)
 			irmo_world_unref(server->world);
 		
-		g_free(server);
+		free(server);
 	}
 }
 
@@ -181,10 +188,10 @@ static void client_callback_raise_foreach(IrmoCallback *data,
 	func(client, data->user_data);
 }
 
-void irmo_client_callback_raise(GSList *list, IrmoClient *client)
+void irmo_client_callback_raise(IrmoSListEntry *list, IrmoClient *client)
 {
-	g_slist_foreach(list,
-			(GFunc) client_callback_raise_foreach,
+	irmo_slist_foreach(list,
+			(IrmoSListIterator) client_callback_raise_foreach,
 			client);
 }
 
@@ -195,10 +202,10 @@ void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 
 struct server_foreach_data {
 	IrmoClientCallback func;
-	gpointer user_data;	
+	void *user_data;	
 };
 
-static void server_foreach_foreach(gpointer key,
+static void server_foreach_foreach(void *key,
 				   IrmoClient *client,
 				   struct server_foreach_data *data)
 {
@@ -217,12 +224,12 @@ void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
 	g_return_if_fail(server != NULL);
 	g_return_if_fail(callback != NULL);
 
-	g_hash_table_foreach(server->clients, 
-			     (GHFunc) server_foreach_foreach,
+	irmo_hash_table_foreach(server->clients, 
+			     (IrmoHashTableIterator) server_foreach_foreach,
 			     &foreach_data);
 }
 
-static void server_shutdown_foreach(IrmoClient *client, gpointer user_data)
+static void server_shutdown_foreach(IrmoClient *client, void *user_data)
 {
 	irmo_client_disconnect(client);
 }
@@ -237,7 +244,7 @@ void irmo_server_shutdown(IrmoServer *server)
 
 	// run the socket until all clients are disconnected
 	
-	while (g_hash_table_size(server->clients)) {
+	while (irmo_hash_table_num_entries(server->clients)) {
 		irmo_socket_run(server->socket);
 		irmo_socket_block(server->socket, 100);
 	}
@@ -260,6 +267,11 @@ void irmo_server_run(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.19  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.18  2004/04/17 22:27:48  fraggle
 // Remove left over debug printf
 //

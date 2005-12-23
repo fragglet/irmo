@@ -36,7 +36,7 @@ IrmoPacket *irmo_packet_new(void)
 	IrmoPacket *packet = g_new0(IrmoPacket, 1);
 
 	packet->data_size = 256;
-	packet->data = g_malloc(packet->data_size);
+	packet->data = malloc(packet->data_size);
 	packet->len = 0;
 	packet->pos = 0;
 
@@ -45,9 +45,9 @@ IrmoPacket *irmo_packet_new(void)
 
 void irmo_packet_free(IrmoPacket *packet)
 {
-	g_free(packet->data);
-	g_free(packet->src);
-	g_free(packet);
+	free(packet->data);
+	free(packet->src);
+	free(packet);
 }
 
 G_INLINE_FUNC void irmo_packet_resize(IrmoPacket *packet)
@@ -64,7 +64,7 @@ G_INLINE_FUNC void irmo_packet_update_len(IrmoPacket *packet)
 		packet->len = packet->pos;
 }
 
-gboolean irmo_packet_writei8(IrmoPacket *packet, guint i)
+int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 {
 	if (packet->pos + 1 > packet->data_size)
 		irmo_packet_resize(packet);
@@ -73,10 +73,10 @@ gboolean irmo_packet_writei8(IrmoPacket *packet, guint i)
 
 	irmo_packet_update_len(packet);
 
-	return TRUE;
+	return 1;
 }
 
-gboolean irmo_packet_writei16(IrmoPacket *packet, guint i)
+int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 {
 	if (packet->pos + 2 > packet->data_size)
 		irmo_packet_resize(packet);
@@ -86,10 +86,10 @@ gboolean irmo_packet_writei16(IrmoPacket *packet, guint i)
 
 	irmo_packet_update_len(packet);
 
-	return TRUE;
+	return 1;
 }
 
-gboolean irmo_packet_writei32(IrmoPacket *packet, guint i)
+int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 {
 	if (packet->pos + 4 > packet->data_size)
 		irmo_packet_resize(packet);
@@ -101,26 +101,26 @@ gboolean irmo_packet_writei32(IrmoPacket *packet, guint i)
 
 	irmo_packet_update_len(packet);
 
-	return TRUE;
+	return 1;
 }
 
-gboolean irmo_packet_writestring(IrmoPacket *packet, gchar *s)
+int irmo_packet_writestring(IrmoPacket *packet, char *s)
 {
 	if (packet->pos + strlen(s) + 1 > packet->data_size)
 		irmo_packet_resize(packet);
 
-	strcpy(packet->data + packet->pos, s);
+	strcpy((char *) packet->data + packet->pos, s); 
 	packet->pos += strlen(s) + 1;
 
 	irmo_packet_update_len(packet);
 
-	return TRUE;
+	return 1;
 }
 
-gboolean irmo_packet_readi8(IrmoPacket *packet, guint *i)
+int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i)
 {
 	if (packet->pos + 1 > packet->len)
-		return FALSE;
+		return 0;
 
 	if (i) {
 		*i = packet->data[packet->pos];
@@ -128,15 +128,15 @@ gboolean irmo_packet_readi8(IrmoPacket *packet, guint *i)
 
 	packet->pos += 1;
 
-	return TRUE;
+	return 1;
 }
 
-gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i)
+int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 {
 	guint8 *data;
 	
 	if (packet->pos + 2 > packet->len)
-		return FALSE;
+		return 0;
 
 	data = packet->data + packet->pos;
 	
@@ -146,15 +146,15 @@ gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i)
 
 	packet->pos += 2;
 
-	return TRUE;
+	return 1;
 }
 
-gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i)
+int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i)
 {
 	guint8 *data;
 
 	if (packet->pos + 4 > packet->len)
-		return FALSE;
+		return 0;
 		
 	data = packet->data + packet->pos;
 
@@ -165,10 +165,10 @@ gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i)
 
 	packet->pos += 4;
 
-	return TRUE;
+	return 1;
 }
 
-gchar *irmo_packet_readstring(IrmoPacket *packet)
+char *irmo_packet_readstring(IrmoPacket *packet)
 {
 	guint8 *start = packet->data + packet->pos;
 
@@ -178,7 +178,7 @@ gchar *irmo_packet_readstring(IrmoPacket *packet)
 			
 			++packet->pos;
 			
-			return start;
+			return (char *) start;
 		}
 	}
 
@@ -187,7 +187,7 @@ gchar *irmo_packet_readstring(IrmoPacket *packet)
 	return NULL;
 }
 
-gboolean irmo_packet_verify_value(IrmoPacket *packet,
+int irmo_packet_verify_value(IrmoPacket *packet,
 				  IrmoValueType type)
 {
 	switch (type) {
@@ -201,7 +201,7 @@ gboolean irmo_packet_verify_value(IrmoPacket *packet,
 		return irmo_packet_readstring(packet) != NULL;
 	}
 
-	return FALSE;
+	return 0;
 }
 
 void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
@@ -243,6 +243,11 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 }
 
 // $Log$
+// Revision 1.11  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.10  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //
@@ -253,7 +258,7 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 // Get compilation under windows to work, almost
 //
 // Revision 1.7  2003/11/05 02:05:41  fraggle
-// Use guint8 instead of guchar
+// Use guint8 instead of unsigned char
 //
 // Revision 1.6  2003/10/22 16:05:01  fraggle
 // Move field reading routines into packet.c

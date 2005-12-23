@@ -168,13 +168,13 @@ void irmo_socket_ref(IrmoSocket *sock)
 
 void irmo_socket_shutdown(IrmoSocket *sock)
 {
-	g_return_if_fail(sock->shutdown != TRUE);
+	g_return_if_fail(sock->shutdown != 1);
 	
 	// close socket
 
 	closesocket(sock->sock);
 		
-	sock->shutdown = TRUE;
+	sock->shutdown = 1;
 }
 
 void irmo_socket_unref(IrmoSocket *sock)
@@ -188,7 +188,7 @@ void irmo_socket_unref(IrmoSocket *sock)
 		if (!sock->shutdown)
 			irmo_socket_shutdown(sock);
 
-		g_free(sock);
+		free(sock);
 	}
 }
 
@@ -244,7 +244,7 @@ IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port)
 	
 	result = bind(sock->sock, addr, addr_len);
 
-	g_free(addr);
+	free(addr);
 
 	if (result < 0) {
 		irmo_error_report("irmo_socket_new",
@@ -266,10 +266,10 @@ IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port)
 
 static void socket_send_refuse(IrmoSocket *sock,
 			       struct sockaddr *addr,
-			       gchar *s, ...)
+			       char *s, ...)
 {
 	IrmoPacket *packet;
-	gchar *message;
+	char *message;
 	va_list args;
 
 	va_start(args, s);
@@ -287,7 +287,7 @@ static void socket_send_refuse(IrmoSocket *sock,
 		
 	irmo_packet_free(packet);
 
-	g_free(message);
+	free(message);
 }
 
 static void socket_run_syn(IrmoPacket *packet)
@@ -295,10 +295,10 @@ static void socket_run_syn(IrmoPacket *packet)
 	IrmoClient *client = packet->client;
 	IrmoServer *server;
 	IrmoPacket *sendpacket;
-	guint local_hash, server_hash;
-	guint protocol_version;
-	guint local_hash_expected=0, server_hash_expected=0;
-	gchar *s;
+	unsigned int local_hash, server_hash;
+	unsigned int protocol_version;
+	unsigned int local_hash_expected=0, server_hash_expected=0;
+	char *s;
 
 	// if this is a client socket, dont let people connect
 	// to us!
@@ -316,7 +316,7 @@ static void socket_run_syn(IrmoPacket *packet)
 
 		// remove from hash tables
 
-		g_hash_table_remove(client->server->clients,
+		irmo_hash_table_remove(client->server->clients,
 				    client->addr);
 
 		irmo_client_internal_unref(client);
@@ -414,7 +414,7 @@ static void socket_run_synack(IrmoPacket *packet)
 
 			// mark this as a remote world
 			
-			client->world->remote = TRUE;
+			client->world->remote = 1;
 
 			client->world->remote_client = client;
 		}
@@ -464,7 +464,7 @@ static void socket_run_synfin(IrmoPacket *packet)
 	// connection refused?
 	
 	if (client->state == CLIENT_CONNECTING) {
-		gchar *message;
+		char *message;
 
 		// read the reason message
 
@@ -483,7 +483,7 @@ static void socket_run_synfin(IrmoPacket *packet)
 	if (client->state == CLIENT_CONNECTED) {
 		client->state = CLIENT_DISCONNECTED;
 		client->connect_time = time(NULL);
-		client->disconnect_wait = TRUE;
+		client->disconnect_wait = 1;
 
 		irmo_client_callback_raise(client->disconnect_callbacks,
 					   client);
@@ -519,13 +519,13 @@ static void socket_run_synfinack(IrmoPacket *packet)
 
 static void socket_run_packet(IrmoPacket *packet)
 {
-	guint flags;
+	unsigned int flags;
 	IrmoClient *client;
 
 	// find a client from the socket hashtable
 
 	packet->client = client
-		= g_hash_table_lookup(packet->sock->server->clients, 
+		= irmo_hash_table_lookup(packet->sock->server->clients, 
 				      packet->src);
 
 	// read packet header
@@ -578,28 +578,28 @@ static void socket_run_packet(IrmoPacket *packet)
 	irmo_proto_parse_packet(packet);
 }
 
-static gboolean socket_run_client(gpointer key, IrmoClient *client,
-				  gpointer user_data)
+static int socket_run_client(void *key, IrmoClient *client,
+				  void *user_data)
 {
 	irmo_client_run(client);
 
 	// dont remove clients which arent disconnected
 
 	if (client->state != CLIENT_DISCONNECTED)
-		return FALSE;
+		return 0;
 
 	// if this is a client remotely disconnecting,
 	// we wait a while before destroying the object
 	
 	if (client->disconnect_wait
 	    && time(NULL) - client->connect_time < 10)
-		return FALSE;
+		return 0;
 	
 	irmo_client_internal_unref(client);
 
-	// remove from socket list: return TRUE
+	// remove from socket list: return 1
 	
-	return TRUE;
+	return 1;
 }
 
 void irmo_socket_run(IrmoSocket *sock)
@@ -611,12 +611,12 @@ void irmo_socket_run(IrmoSocket *sock)
 	g_return_if_fail(sock != NULL);
 	
 	addr_len = irmo_sockaddr_len(socket_type_to_domain(sock->domain));
-	addr = g_malloc(addr_len);
+	addr = malloc(addr_len);
 	
 	while (1) {
 		IrmoPacket packet;
 		int result;
-		int tmp_addr_len = addr_len;
+		unsigned int tmp_addr_len = addr_len;
 		
 		result = recvfrom(sock->sock,
 				  buf,
@@ -644,12 +644,11 @@ void irmo_socket_run(IrmoSocket *sock)
 		socket_run_packet(&packet);
       	}
 
-	g_free(addr);
+	free(addr);
 
 	// run each of the clients
-	
-	g_hash_table_foreach_remove(sock->server->clients,
-				    (GHRFunc) socket_run_client, NULL);
+	irmo_hash_table_foreach_remove(sock->server->clients,
+				    (IrmoHashTableRemoveIterator) socket_run_client, NULL);
 }
 
 void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
@@ -692,6 +691,11 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.26  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.25  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //
@@ -720,7 +724,7 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 // Get compilation under windows to work, almost
 //
 // Revision 1.16  2003/11/05 02:05:41  fraggle
-// Use guint8 instead of guchar
+// Use guint8 instead of unsigned char
 //
 // Revision 1.15  2003/10/18 01:34:45  fraggle
 // Better error reporting for connecting, allow server to send back an

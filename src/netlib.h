@@ -32,13 +32,13 @@
 
 int irmo_sockaddr_len(int domain);
 
-guint irmo_sockaddr_hash(struct sockaddr *addr);
-gint irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
+unsigned int irmo_sockaddr_hash(struct sockaddr *addr);
+int irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
 
 struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr);
 
 struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain, 
-					gchar *name, int port);
+					char *name, int port);
 
 // time functions
 
@@ -64,6 +64,11 @@ void irmo_timeval_from_ms(int ms, GTimeVal *a);
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.10  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.9  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

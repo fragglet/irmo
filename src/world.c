@@ -44,11 +44,11 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 	world = g_new0(IrmoWorld, 1);
 
 	world->spec = spec;
-	world->objects = g_hash_table_new(g_direct_hash, g_direct_equal);
+	world->objects = irmo_hash_table_new(irmo_pointer_hash, irmo_pointer_equal);
 	world->refcount = 1;
 	world->lastid = 0;
-	world->servers = g_ptr_array_new();
-	world->remote = FALSE;
+	world->servers = irmo_arraylist_new(1);
+	world->remote = 0;
 	
 	irmo_interface_spec_ref(spec);
 
@@ -72,7 +72,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 
 	// method callbacks
 	
-	world->method_callbacks = g_new0(GSList *, spec->nmethods);
+	world->method_callbacks = g_new0(IrmoSListEntry *, spec->nmethods);
 
 	return world;
 }
@@ -85,13 +85,13 @@ void irmo_world_ref(IrmoWorld *world)
 }
 
 static void irmo_world_unref_foreach(IrmoObjectID id, IrmoObject *object,
-				     gpointer user_data)
+				     void *user_data)
 {
 	// destroy object. do not notify objects. do not remove
 	// from world as this may upset the foreach function
 	// we are in.
 	
-	irmo_object_internal_destroy(object, FALSE, FALSE);
+	irmo_object_internal_destroy(object, 0, 0);
 }
 
 void irmo_world_unref(IrmoWorld *world)
@@ -106,14 +106,14 @@ void irmo_world_unref(IrmoWorld *world)
 		// delete list of servers (must by definition be empty
 		// already)
 
-		g_ptr_array_free(world->servers, 0);
+		irmo_arraylist_free(world->servers);
 		
 		// delete all objects
 		
-		g_hash_table_foreach(world->objects,
-				     (GHFunc) irmo_world_unref_foreach, 
+		irmo_hash_table_foreach(world->objects,
+				     (IrmoHashTableIterator) irmo_world_unref_foreach, 
 				     NULL);
-		g_hash_table_destroy(world->objects);
+		irmo_hash_table_free(world->objects);
 
 		// delete callbacks
 		
@@ -122,20 +122,20 @@ void irmo_world_unref(IrmoWorld *world)
 
 		irmo_callbackdata_free(world->callbacks_all);
 		
-		g_free(world->callbacks);
+		free(world->callbacks);
 
 		// method callbacks
 		
 		for (i=0; i<world->spec->nmethods; ++i)
 			irmo_callbacklist_free(world->method_callbacks[i]);
 
-		g_free(world->method_callbacks);
+		free(world->method_callbacks);
 
 		// no longer using the interface spec
 		
 		irmo_interface_spec_unref(world->spec);
 		
-		g_free(world);
+		free(world);
 	}
 }
 
@@ -146,7 +146,7 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 
 	g_return_val_if_fail(world != NULL, NULL);
 	
-	object = g_hash_table_lookup(world->objects, (gpointer) id);
+	object = irmo_hash_table_lookup(world->objects, (void *) id);
 
 	return object;
 }
@@ -154,10 +154,10 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 struct world_foreach_data {
 	IrmoClass *spec;
 	IrmoObjCallback func;
-	gpointer user_data;
+	void *user_data;
 };
 
-static void world_foreach_foreach(gint key,
+static void world_foreach_foreach(int key,
 				  IrmoObject *object,
 				  struct world_foreach_data *data)
 {
@@ -197,8 +197,8 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 
 	data.spec = spec;
 	
-	g_hash_table_foreach(world->objects,
-			     (GHFunc) world_foreach_foreach,
+	irmo_hash_table_foreach(world->objects,
+			     (IrmoHashTableIterator) world_foreach_foreach,
 			     &data);			     
 }
 
@@ -210,6 +210,11 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.10  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.9  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

@@ -94,13 +94,18 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.10  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.9  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
 // Revision 1.8  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
+//    unsigned int8/unsigned int16/unsigned int32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together

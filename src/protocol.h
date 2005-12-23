@@ -35,7 +35,7 @@
 
 // verifying integrity of received packets before parsing
 
-gboolean irmo_proto_verify_packet(IrmoPacket *packet);
+int irmo_proto_verify_packet(IrmoPacket *packet);
 
 // parsing received packets
 
@@ -52,6 +52,11 @@ int irmo_proto_client_timeout_time(IrmoClient *client);
 #endif /* #ifndef IRMO_PROTO_H */
 
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2004/01/06 01:36:18  fraggle
 // Remove vhosting. Simplify the server API.
 //

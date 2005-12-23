@@ -30,22 +30,22 @@
 
 #include "packet.h"
 
-static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
+static int proto_verify_packet_cluster(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
-	guint i;
+	unsigned int i;
 
 	// start position
 	
 	if (!irmo_packet_readi16(packet, &i))
-		return FALSE;
+		return 0;
 
 	// read atoms
 	
 	for (;;) {
 		IrmoSendAtomClass *klass;
 		int atomtype;
-		guint natoms;
+		unsigned int natoms;
 		
 		if (!irmo_packet_readi8(packet, &i))
 			break;
@@ -55,7 +55,7 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 
 		if (atomtype >= NUM_SENDATOM_TYPES) {
 			//printf("invalid atom type (%i)\n", atomtype);
-			return FALSE;
+			return 0;
 		}
 
 		klass = irmo_sendatom_types[atomtype];
@@ -65,34 +65,34 @@ static gboolean proto_verify_packet_cluster(IrmoPacket *packet)
 		for (i=0; i<natoms; ++i) {
 			if (!klass->verify(packet)) {
 				//printf("\t\tfailed\n");
-				return FALSE;
+				return 0;
 			}
 		}
 			
 	}
 
-	return TRUE;
+	return 1;
 }
 
-gboolean irmo_proto_verify_packet(IrmoPacket *packet)
+int irmo_proto_verify_packet(IrmoPacket *packet)
 {
-	gboolean result = TRUE;
-	guint origpos = packet->pos;
+	int result = 1;
+	unsigned int origpos = packet->pos;
 	
 	//printf("verify packet\n");
 	
 	// read ack
 	
 	if (packet->flags & PACKET_FLAG_ACK) {
-		guint ack;
+		unsigned int ack;
 
 		if (!irmo_packet_readi16(packet, &ack))
-			result = FALSE;
+			result = 0;
 	}
 
 	if (result && packet->flags & PACKET_FLAG_DTA) {
 		if (!proto_verify_packet_cluster(packet))
-			result = FALSE;
+			result = 0;
 	}
 
 	// restore start position
@@ -103,6 +103,11 @@ gboolean irmo_proto_verify_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.11  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.10  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
@@ -112,7 +117,7 @@ gboolean irmo_proto_verify_packet(IrmoPacket *packet)
 // Revision 1.8  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
+//    unsigned int8/unsigned int16/unsigned int32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together

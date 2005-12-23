@@ -44,28 +44,28 @@ typedef struct _IrmoPacket IrmoPacket;
 struct _IrmoPacket {
 	IrmoSocket *sock;       // socket this came from
 	struct sockaddr *src;   // source address
-	guchar *data;           // packet data
-	gsize data_size;	// size of the buffer
-	gsize len;              // length of used data in the buffer
-	guint pos;              // current position in packet
+	unsigned char *data;           // packet data
+	size_t data_size;	// size of the buffer
+	size_t len;              // length of used data in the buffer
+	unsigned int pos;              // current position in packet
 	IrmoClient *client;     // client implied by address (or NULL if none)
-	guint flags;            // flags from header
+	unsigned int flags;            // flags from header
 };
 
 IrmoPacket *irmo_packet_new(void);
 void irmo_packet_free(IrmoPacket *packet);
 
-gboolean irmo_packet_writei8(IrmoPacket *packet, guint i);
-gboolean irmo_packet_writei16(IrmoPacket *packet, guint i);
-gboolean irmo_packet_writei32(IrmoPacket *packet, guint i);
-gboolean irmo_packet_writestring(IrmoPacket *packet, gchar *s);
+int irmo_packet_writei8(IrmoPacket *packet, unsigned int i);
+int irmo_packet_writei16(IrmoPacket *packet, unsigned int i);
+int irmo_packet_writei32(IrmoPacket *packet, unsigned int i);
+int irmo_packet_writestring(IrmoPacket *packet, char *s);
 
-gboolean irmo_packet_readi8(IrmoPacket *packet, guint *i);
-gboolean irmo_packet_readi16(IrmoPacket *packet, guint *i);
-gboolean irmo_packet_readi32(IrmoPacket *packet, guint *i);
-gchar *irmo_packet_readstring(IrmoPacket *packet);
+int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i);
+int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i);
+int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i);
+char *irmo_packet_readstring(IrmoPacket *packet);
 
-gboolean irmo_packet_verify_value(IrmoPacket *packet, IrmoValueType type);
+int irmo_packet_verify_value(IrmoPacket *packet, IrmoValueType type);
 void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
 			    IrmoValueType type);
 void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value, 
@@ -74,6 +74,11 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log$
+// Revision 1.8  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.7  2003/12/01 12:46:05  fraggle
 // Fix under NetBSD
 //
@@ -86,7 +91,7 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 // Revision 1.4  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
+//    unsigned int8/unsigned int16/unsigned int32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together

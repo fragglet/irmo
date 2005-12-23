@@ -39,10 +39,10 @@ typedef struct _IrmoCallbackData IrmoCallbackData;
 #include "object.h"
 
 struct _IrmoCallback {
-	GSList **list;                 // callback list this belongs to
-	gpointer func;
-        gpointer user_data;
-	GSList *destroy_callbacks;
+	IrmoSListEntry **list;                 // callback list this belongs to
+	void *func;
+        void *user_data;
+	IrmoSListEntry *destroy_callbacks;
 };
 
 struct _IrmoCallbackData {
@@ -61,33 +61,33 @@ struct _IrmoCallbackData {
 	// this is only for the class callbackdata - redundant
 	// in object callbacks
 
-	GSList *new_callbacks;
+	IrmoSListEntry *new_callbacks;
 	
 	// callbacks for if any variable is changed
 
-	GSList *class_callbacks;
+	IrmoSListEntry *class_callbacks;
 
 	// callbacks for if a particular variable is changed
 	// this is redundant if objclass == NULL
 	
-	GSList **variable_callbacks;
+	IrmoSListEntry **variable_callbacks;
 
 	// callbacks called when object is destroyed
 	
-	GSList *destroy_callbacks;
+	IrmoSListEntry *destroy_callbacks;
 };
 
 // generalised callback list functions
 
-IrmoCallback *irmo_callbacklist_add(GSList **list, gpointer func, 
-				    gpointer user_data);
-void irmo_callbacklist_free(GSList *list);
+IrmoCallback *irmo_callbacklist_add(IrmoSListEntry **list, void *func, 
+				    void *user_data);
+void irmo_callbacklist_free(IrmoSListEntry *list);
 
 IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass, 
 					IrmoCallbackData *parent_data);
 void irmo_callbackdata_free(IrmoCallbackData *data);
 void irmo_callbackdata_raise(IrmoCallbackData *data,
-			     IrmoObject *object, gint variable_index);
+			     IrmoObject *object, int variable_index);
 void irmo_callbackdata_raise_destroy(IrmoCallbackData *data, 
 				     IrmoObject *object);
 void irmo_callbackdata_raise_new(IrmoCallbackData *data, 
@@ -96,6 +96,11 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data,
 #endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
 
 // $Log$
+// Revision 1.12  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.11  2003/12/27 19:01:48  fraggle
 // irmo_callback_watch_destroy
 //

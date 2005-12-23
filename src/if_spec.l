@@ -40,10 +40,9 @@
 // noyywrap: Only read one file at a time
 // 
 
-#include <glib.h>
 #include <setjmp.h>
-#include <stdarg.h>
-#include <string.h>
+
+#include "sysheaders.h"
 #include "if_spec.h"
 
 typedef enum {
@@ -79,13 +78,13 @@ typedef enum {
 static void parse_assert(int expr, char *msg, ...);
 static jmp_buf parse_error_env;
 
-typedef void (*cleanup_func)(gpointer data);
+typedef void (*cleanup_func)(void *data);
 
 #define CLEANUP_STACK_SIZE 10
 
 static struct {
 	cleanup_func func;
-	gpointer data;
+	void *data;
 } cleanup_stack[CLEANUP_STACK_SIZE];
 static int cleanup_stack_pos;
  
@@ -127,7 +126,7 @@ WHITESPACE [[:space:]]+
 
 // add some data to the stack of things to free back
 
-static void cleanup_push(gpointer func, gpointer data)
+static void cleanup_push(void *func, void *data)
 {
 	g_assert(cleanup_stack_pos < CLEANUP_STACK_SIZE);
 
@@ -160,7 +159,7 @@ static void parse_assert(int expr, char *msg, ...)
 				  yyin_filename, line_num,
 				  error_string);
 
-		g_free(error_string);
+		free(error_string);
 
 		va_end(l);
 
@@ -194,11 +193,11 @@ G_INLINE_FUNC IrmoValueType type_token_to_spec(int i)
 
 static void class_var_free(IrmoClassVar *var)
 {
-	g_free(var->name);
-	g_free(var);
+	free(var->name);
+	free(var);
 }
 
-static gboolean eat_class_var_statement(IrmoClass *klass)
+static int eat_class_var_statement(IrmoClass *klass)
 {
 	IrmoValueType vartype;
 	token_t token;
@@ -208,7 +207,7 @@ static gboolean eat_class_var_statement(IrmoClass *klass)
 	// end of class
 
 	if (token == TOKEN_RCURLY)
-		return FALSE;
+		return 0;
 
 	// type token
 		
@@ -241,7 +240,7 @@ static gboolean eat_class_var_statement(IrmoClass *klass)
 		// insert into class
 
 		klass->variables[klass->nvariables++] = var;
-		g_hash_table_insert(klass->variable_hash, var->name, var);
+		irmo_hash_table_insert(klass->variable_hash, var->name, var);
 
 		token = yylex();
 
@@ -249,7 +248,7 @@ static gboolean eat_class_var_statement(IrmoClass *klass)
 
 	parse_assert(token == TOKEN_SEMICOLON, "semicolon expected");
 
-	return TRUE;
+	return 1;
 }
 
 static void class_free(IrmoClass *spec)
@@ -257,7 +256,7 @@ static void class_free(IrmoClass *spec)
 	int i;
 	int start;
 
-	g_hash_table_destroy(spec->variable_hash);
+	irmo_hash_table_free(spec->variable_hash);
 
 	// find the start of the range of variables to free
 	// (dont free variables from parent class)
@@ -270,28 +269,28 @@ static void class_free(IrmoClass *spec)
 	for (i=start; i<spec->nvariables; ++i)
 		class_var_free(spec->variables[i]);
 
-	g_free(spec->variables);
-	g_free(spec->name);
-	g_free(spec);
+	free(spec->variables);
+	free(spec->name);
+	free(spec);
 }
 
-G_INLINE_FUNC guint rotate(guint i)
+G_INLINE_FUNC unsigned int rotate(unsigned int i)
 {
 	return (i << 1) | (i >> 31);
 }
 
-static guint class_hash(IrmoClass *spec)
+static unsigned int class_hash(IrmoClass *spec)
 {
-	guint hash = 0;
+	unsigned int hash = 0;
 	int i;
 	
 	for (i=0; i<spec->nvariables; ++i) {
 		hash = rotate(hash) +
 			+ (spec->variables[i]->type ^
-			   g_str_hash(spec->variables[i]->name));
+			   irmo_string_hash(spec->variables[i]->name));
 	}
 
-	hash ^= g_str_hash(spec->name);
+	hash ^= irmo_string_hash(spec->name);
 
 	if (spec->parent_class)
 		hash = rotate(hash) ^ spec->parent_class->index;
@@ -315,7 +314,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 	klass->name = strdup(yytext);
 	klass->variables = g_new0(IrmoClassVar *, MAX_VARIABLES);
 	klass->nvariables = 0;
-	klass->variable_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	klass->variable_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 	klass->parent = spec;
 
 	cleanup_push(class_free, klass);
@@ -344,7 +343,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 			IrmoClassVar *var = parent_class->variables[i];
 
 			klass->variables[klass->nvariables++] = var;
-			g_hash_table_insert(klass->variable_hash, 
+			irmo_hash_table_insert(klass->variable_hash, 
 					    var->name, var);
 		}
 
@@ -370,10 +369,10 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 	return klass;
 }
 
-static void method_arg_free(IrmoMethodArg *arg)
+static void method_arfree(IrmoMethodArg *arg)
 {
-	g_free(arg->name);
-	g_free(arg);
+	free(arg->name);
+	free(arg);
 }
 
 static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
@@ -408,7 +407,7 @@ static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 	arg->index = method->narguments;
 	arg->parent = method;
 
-	cleanup_push(method_arg_free, arg);
+	cleanup_push(method_arfree, arg);
 
 	parse_assert(irmo_method_get_argument(method, yytext) == NULL,
 		     "multiple definitions of '%s'", yytext);
@@ -417,7 +416,7 @@ static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 		     "maximum of %i arguments to a method", MAX_ARGUMENTS);
 		
 	method->arguments[method->narguments++] = arg;
-	g_hash_table_insert(method->argument_hash, arg->name, arg);
+	irmo_hash_table_insert(method->argument_hash, arg->name, arg);
 
 	cleanup_pop();
 
@@ -428,28 +427,28 @@ static void method_free(IrmoMethod *spec)
 {
 	int i;
 	
-	g_hash_table_destroy(spec->argument_hash);
+	irmo_hash_table_free(spec->argument_hash);
 
 	for (i=0; i<spec->narguments; ++i) 
-		method_arg_free(spec->arguments[i]);
+		method_arfree(spec->arguments[i]);
 	
-	g_free(spec->arguments);
-	g_free(spec->name);
-	g_free(spec);
+	free(spec->arguments);
+	free(spec->name);
+	free(spec);
 }
 
-static guint method_hash(IrmoMethod *spec)
+static unsigned int method_hash(IrmoMethod *spec)
 {
-	guint hash = 0;
+	unsigned int hash = 0;
 	int i;
 
 	for (i=0; i<spec->narguments; ++i) {
 		hash = rotate(hash)
 			+ (spec->arguments[i]->type ^
-			   g_str_hash(spec->arguments[i]->name));
+			   irmo_string_hash(spec->arguments[i]->name));
 	}
 
-	hash ^= g_str_hash(spec->name);
+	hash ^= irmo_string_hash(spec->name);
 	
 	return hash;
 }
@@ -467,7 +466,7 @@ static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 	method = g_new0(IrmoMethod, 1); 
 	method->name = strdup(yytext);
 	method->arguments = g_new0(IrmoMethodArg *, MAX_ARGUMENTS);
-	method->argument_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	method->argument_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 	method->narguments = 0;
 	method->parent = spec;
 
@@ -498,8 +497,8 @@ static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
 {
 	int i;
 	
-	g_hash_table_destroy(spec->class_hash);
-	g_hash_table_destroy(spec->method_hash);
+	irmo_hash_table_free(spec->class_hash);
+	irmo_hash_table_free(spec->method_hash);
 
 	// free classes.
 	// this must be done in reverse order, so classes lower in the
@@ -508,18 +507,18 @@ static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
 	for (i=spec->nclasses-1; i>=0; --i)
 		class_free(spec->classes[i]);
 
-	g_free(spec->classes);
+	free(spec->classes);
 
 	for (i=0; i<spec->nmethods; ++i)
 		method_free(spec->methods[i]);
 
-	g_free(spec->methods);
-	g_free(spec);
+	free(spec->methods);
+	free(spec);
 }
 
-static guint irmo_interface_spec_hash(IrmoInterfaceSpec *spec)
+static unsigned int irmo_interface_spec_hash(IrmoInterfaceSpec *spec)
 {
-	guint hash = 0;
+	unsigned int hash = 0;
 	int i;
 
 	for (i=0; i<spec->nclasses; ++i)
@@ -545,8 +544,8 @@ static IrmoInterfaceSpec *eat_interface()
 	spec->nclasses = spec->nmethods = 0;
 	spec->refcount = 1;
 	
-	spec->class_hash = g_hash_table_new(g_str_hash, g_str_equal);
-	spec->method_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	spec->class_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
+	spec->method_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 
 	cleanup_push(irmo_interface_spec_free, spec);
 
@@ -564,7 +563,7 @@ static IrmoInterfaceSpec *eat_interface()
 
 			++spec->nclasses;
 			
-			g_hash_table_insert(spec->class_hash,
+			irmo_hash_table_insert(spec->class_hash,
 					    class_spec->name,
 					    class_spec);
 
@@ -577,7 +576,7 @@ static IrmoInterfaceSpec *eat_interface()
 
 			method->index = spec->nmethods;
 			spec->methods[spec->nmethods++] = method;
-			g_hash_table_insert(spec->method_hash, method->name,
+			irmo_hash_table_insert(spec->method_hash, method->name,
 					    method);
 		} else {
 			parse_assert(0, "expecting class or method definiton");
@@ -649,6 +648,11 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.15  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.14  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

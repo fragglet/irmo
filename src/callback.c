@@ -33,9 +33,9 @@
 
 // add a callback function to a list
 
-IrmoCallback *irmo_callbacklist_add(GSList **list,
-				    gpointer func,
-				    gpointer user_data)
+IrmoCallback *irmo_callbacklist_add(IrmoSListEntry **list,
+				    void *func,
+				    void *user_data)
 {
 	IrmoCallback *callback;
 	
@@ -44,7 +44,7 @@ IrmoCallback *irmo_callbacklist_add(GSList **list,
 	callback->user_data = user_data;
 	callback->list = list;
 
-	*list = g_slist_prepend(*list, callback);
+        irmo_slist_prepend(list, callback);
 
 	return callback;
 }
@@ -62,39 +62,39 @@ static void irmo_callback_destroy(IrmoCallback *callback)
 	// invoke all the callbacks watching for this callback
 	// being destroyed
 
-	g_slist_foreach(callback->destroy_callbacks, 
-			(GFunc) irmo_callback_destroy_foreach, 
+	irmo_slist_foreach(callback->destroy_callbacks, 
+			(IrmoSListIterator) irmo_callback_destroy_foreach, 
 			callback);
 
 	// free callback data
 
 	irmo_callbacklist_free(callback->destroy_callbacks);
-	g_free(callback);
+	free(callback);
 }
 
 // unset a callback
 
 void irmo_callback_unset(IrmoCallback *callback)
 {
-        GSList **list = callback->list;
+        IrmoSListEntry **list = callback->list;
 
 	g_return_if_fail(callback != NULL);
 
-	*list = g_slist_remove(*list, callback);
+	irmo_slist_remove_data(list, irmo_pointer_equal, callback);
 
 	irmo_callback_destroy(callback);
 }
 
 static void callbacklist_free_foreach(IrmoCallback *callback,
-				      gpointer user_data)
+				      void *user_data)
 {
 	irmo_callback_destroy(callback);
 }
 
-void irmo_callbacklist_free(GSList *list)
+void irmo_callbacklist_free(IrmoSListEntry *list)
 {
-	g_slist_foreach(list, (GFunc) callbacklist_free_foreach, NULL);
-	g_slist_free(list);
+	irmo_slist_foreach(list, (IrmoSListIterator) callbacklist_free_foreach, NULL);
+	irmo_slist_free(list);
 }
 
 // watch for when a callback is destroyed
@@ -127,7 +127,7 @@ IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass,
 
 	if (objclass)
 		data->variable_callbacks 
-			= g_new0(GSList *, objclass->nvariables);
+			= g_new0(IrmoSListEntry *, objclass->nvariables);
 
 	return data;
 }
@@ -156,15 +156,15 @@ void irmo_callbackdata_free(IrmoCallbackData *data)
 			irmo_callbacklist_free(data->variable_callbacks[i]);
 		}
 
-		g_free(data->variable_callbacks);
+		free(data->variable_callbacks);
 	}
 
-	g_free(data);
+	free(data);
 }
 
 struct raise_data {
 	IrmoObject *object;
-	gchar *variable;
+	char *variable;
 };
 
 static void callbackdata_raise_foreach(IrmoCallback *callback, 
@@ -177,7 +177,7 @@ static void callbackdata_raise_foreach(IrmoCallback *callback,
 }
 
 void irmo_callbackdata_raise(IrmoCallbackData *data,
-			     IrmoObject *object, gint variable_index)
+			     IrmoObject *object, int variable_index)
 {
 	struct raise_data raise_data = {
 		object,
@@ -186,15 +186,15 @@ void irmo_callbackdata_raise(IrmoCallbackData *data,
 
 	// call class callbacks
 	
-	g_slist_foreach(data->class_callbacks,
-			(GFunc) callbackdata_raise_foreach,
+	irmo_slist_foreach(data->class_callbacks,
+			(IrmoSListIterator) callbackdata_raise_foreach,
 			&raise_data);
 
 	if (data->objclass) {
 		// variable callbacks
 
-		g_slist_foreach(data->variable_callbacks[variable_index],
-				(GFunc) callbackdata_raise_foreach,
+		irmo_slist_foreach(data->variable_callbacks[variable_index],
+				(IrmoSListIterator) callbackdata_raise_foreach,
 				&raise_data);
 	}
 
@@ -223,8 +223,8 @@ void irmo_callbackdata_raise_destroy(IrmoCallbackData *data,
 		object,
 	};
 
-	g_slist_foreach(data->destroy_callbacks,
-			(GFunc) callbackdata_raise_destroy_foreach,
+	irmo_slist_foreach(data->destroy_callbacks,
+			(IrmoSListIterator) callbackdata_raise_destroy_foreach,
 			&raise_data);
 
 	// recurse through superclass watches
@@ -239,8 +239,8 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 		object,
 	};
 
-	g_slist_foreach(data->new_callbacks,
-			(GFunc) callbackdata_raise_destroy_foreach,
+	irmo_slist_foreach(data->new_callbacks,
+			(IrmoSListIterator) callbackdata_raise_destroy_foreach,
 			&raise_data);
 
 	// recurse through superclass watches
@@ -249,7 +249,7 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 		irmo_callbackdata_raise_new(data->parent_data, object);
 }
 
-static GSList **find_variable(IrmoCallbackData *data, gchar *variable)
+static IrmoSListEntry **find_variable(IrmoCallbackData *data, char *variable)
 {
 	if (variable) {
 		IrmoClassVar *varspec;
@@ -271,21 +271,21 @@ static GSList **find_variable(IrmoCallbackData *data, gchar *variable)
 }
 
 static IrmoCallback *callbackdata_watch(IrmoCallbackData *data,
-					gchar *variable,
+					char *variable,
 					IrmoVarCallback func, 
-					gpointer user_data)
+					void *user_data)
 {
-	GSList **list;
+	IrmoSListEntry **list;
 
 	list = find_variable(data, variable);
 
 	if (!list)
-		return FALSE;
+		return 0;
 
 	return irmo_callbacklist_add(list, func, user_data);
 }
 
-static IrmoCallbackData *find_callback_class(IrmoWorld *world, gchar *classname)
+static IrmoCallbackData *find_callback_class(IrmoWorld *world, char *classname)
 {
 	IrmoClass *spec;
 
@@ -414,6 +414,11 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.17  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.16  2004/06/23 14:33:02  fraggle
 // Use prepend instead of append for linked lists
 //

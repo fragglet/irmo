@@ -41,29 +41,29 @@
 // <int8>	object class number
 // 
 
-static gboolean irmo_newobject_atom_verify(IrmoPacket *packet)
+static int irmo_newobject_atom_verify(IrmoPacket *packet)
 {
-	guint i;
+	unsigned int i;
 
 	if (!packet->client->world)
-		return FALSE;
+		return 0;
 
 	// object id
 
 	if (!irmo_packet_readi16(packet, &i))
-		return FALSE;
+		return 0;
 
 	// class of new object
 
 	if (!irmo_packet_readi8(packet, &i))
-		return FALSE;
+		return 0;
 
 	// check valid class
 	
 	if (i >= packet->client->world->spec->nclasses)
-		return FALSE;
+		return 0;
 
-	return TRUE;
+	return 1;
 }
 
 static IrmoSendAtom *irmo_newobject_atom_read(IrmoPacket *packet)
@@ -113,7 +113,7 @@ static void irmo_newobject_atom_run(IrmoNewObjectAtom *atom)
 	irmo_object_internal_new(client->world, objclass, atom->id);
 }
 
-static gsize irmo_newobject_atom_length(IrmoSendAtom *atom)
+static size_t irmo_newobject_atom_length(IrmoSendAtom *atom)
 {
 	// object id, class number
 
@@ -134,6 +134,11 @@ IrmoSendAtomClass irmo_newobject_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

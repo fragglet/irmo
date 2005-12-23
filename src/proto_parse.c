@@ -42,7 +42,7 @@
 
 #define RTT_ALPHA 0.9
 
-gboolean irmo_proto_use_preexec = TRUE;
+int irmo_proto_use_preexec = 1;
 
 // only the low 16 bits of the stream position is sent
 // therefore we must expand positions we get based on the
@@ -99,7 +99,7 @@ static void proto_parse_insert_atom(IrmoClient *client,
 
 static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 {
-	guint i;
+	unsigned int i;
 	int seq;
 	int start;
 	
@@ -114,8 +114,8 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 	for (seq=start;;) {
 		IrmoSendAtomClass *klass;
 		IrmoSendAtomType atomtype;
-		guint natoms;
-		guint byte;
+		unsigned int natoms;
+		unsigned int byte;
 		
 		// read type/count byte
 		// if none, end of packet
@@ -146,7 +146,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 			// because our previous ack was lost
 
 			if (seq <= client->recvwindow_start)
-				client->need_ack = TRUE;
+				client->need_ack = 1;
 			
 			// too old?
 			
@@ -269,11 +269,11 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 				  "dropped packet (failed security verification)");
 		return;
 	}
-	
+
 	// read ack field if there is one
 
 	if (packet->flags & PACKET_FLAG_ACK) {
-		guint i;
+		unsigned int i;
 
 		irmo_packet_readi16(packet, &i);
 
@@ -288,6 +288,11 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.15  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.14  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
@@ -300,7 +305,7 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 // Revision 1.11  2003/10/14 22:12:50  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
+//    unsigned int8/unsigned int16/unsigned int32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together

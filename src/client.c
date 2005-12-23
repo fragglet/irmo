@@ -54,9 +54,9 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 	// send queue
 
-	client->sendq = g_queue_new();
-	client->sendq_hashtable = g_hash_table_new(g_direct_hash,
-						   g_direct_equal);
+	client->sendq = irmo_queue_new();
+	client->sendq_hashtable = irmo_hash_table_new(irmo_pointer_hash,
+						   irmo_pointer_equal);
 	
 	// receive window
 
@@ -86,7 +86,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 	// insert into server hashtable and socket hashtable
 	
-	g_hash_table_insert(server->clients,
+	irmo_hash_table_insert(server->clients,
 			    client->addr,
 			    client);
 	
@@ -115,17 +115,17 @@ static void irmo_client_destroy(IrmoClient *client)
 
 	// clear send queue
 
-	while (!g_queue_is_empty(client->sendq)) {
+	while (!irmo_queue_is_empty(client->sendq)) {
 		IrmoSendAtom *atom;
 
-		atom = (IrmoSendAtom *) g_queue_pop_head(client->sendq);
+		atom = (IrmoSendAtom *) irmo_queue_pop_head(client->sendq);
 
 		irmo_sendatom_free(atom);
 	}
 
-	g_queue_free(client->sendq);
+	irmo_queue_free(client->sendq);
 
-	g_hash_table_destroy(client->sendq_hashtable);
+	irmo_hash_table_free(client->sendq_hashtable);
 
 	// destroy sendwindow and all data in it
 	
@@ -140,16 +140,16 @@ static void irmo_client_destroy(IrmoClient *client)
 		if (client->recvwindow[i])
 			irmo_sendatom_free(client->recvwindow[i]);
 
-	g_free(client->recvwindow);
+	free(client->recvwindow);
 
 	if (client->world)
 		irmo_world_unref(client->world);
 
 	if (client->connection_error)
-		g_free(client->connection_error);
+		free(client->connection_error);
 	
-	g_free(client->addr);
-	g_free(client);
+	free(client->addr);
+	free(client);
 }
 
 void irmo_client_internal_unref(IrmoClient *client)
@@ -357,6 +357,11 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.19  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.18  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //
@@ -477,7 +482,7 @@ const char *irmo_client_get_addr(IrmoClient *client)
 // Add universe access functions for client, connection
 //
 // Revision 1.7  2003/02/20 18:24:59  sdh300
-// Use GQueue instead of a GPtrArray for the send queue
+// Use IrmoQueue instead of a IrmoArrayList for the send queue
 // Initial change/destroy code
 //
 // Revision 1.6  2003/02/18 20:04:39  sdh300

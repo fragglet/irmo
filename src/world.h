@@ -63,7 +63,7 @@ struct _IrmoWorld {
 
 	// objects in the world, hashed by their object id
 	
-	GHashTable *objects;
+	IrmoHashTable *objects;
 
 	// the id of the last object created. objects are created
 	// with sequential ids
@@ -72,7 +72,7 @@ struct _IrmoWorld {
 
 	// servers attached to this world who are serving it.
 	
-	GPtrArray *servers;
+	IrmoArrayList *servers;
 
 	// number of references to this world
 	
@@ -81,7 +81,7 @@ struct _IrmoWorld {
 	// if true, this is a local copy of a remote world and
 	// cannot be changed
 	
-	gboolean remote;
+	int remote;
 
 	// if this is remote, this is the client from which we are
 	// getting the world state
@@ -90,12 +90,17 @@ struct _IrmoWorld {
 
 	// method callbacks
 
-	GSList **method_callbacks;
+	IrmoSListEntry **method_callbacks;
 };
 
 #endif /* #ifndef IRMO_INTERNAL_WORLD_H */
 
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //

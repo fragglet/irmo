@@ -47,49 +47,50 @@
 //		data depends on the variable type.
 //
 
-static gboolean irmo_change_atom_verify(IrmoPacket *packet)
+static int irmo_change_atom_verify(IrmoPacket *packet)
 {
 	IrmoClient *client = packet->client;
 	IrmoClass *objclass;
-	int i, n, b;
-	gboolean result;
-	gboolean *changed;
+	unsigned int i;
+        int n, b;
+	int result;
+	int *changed;
 	
 	if (!client->world)
-		return FALSE;
+		return 0;
 
 	// class
 
 	if (!irmo_packet_readi8(packet, &i))
-		return FALSE;
+		return 0;
 
 	if (i >= client->world->spec->nclasses)
-		return FALSE;
+		return 0;
 
 	objclass = client->world->spec->classes[i];
 	
 	// object id
 
 	if (!irmo_packet_readi16(packet, &i))
-		return FALSE;
+		return 0;
 
 	// read object changed bitmap
 	
-	result = TRUE;
+	result = 1;
 
-	changed = g_new0(gboolean, objclass->nvariables);
+	changed = g_new0(int, objclass->nvariables);
 
 	for (i=0, n=0; result && i<(objclass->nvariables+7) / 8; ++i) {
-		guint byte;
+		unsigned int byte;
 
 		if (!irmo_packet_readi8(packet, &byte)) {
-			result = FALSE;
+			result = 0;
 			break;
 		}
 
 		for (b=0; b<8 && n<objclass->nvariables; ++b, ++n)
 			if (byte & (1 << b))
-				changed[n] = TRUE;			
+				changed[n] = 1;			
 	}
 
 	// check new variable values
@@ -101,13 +102,13 @@ static gboolean irmo_change_atom_verify(IrmoPacket *packet)
 			
 			if (!irmo_packet_verify_value
 				(packet, objclass->variables[i]->type)) {
-				result = FALSE;
+				result = 0;
 				break;
 			}
 		}
 	}
 	
-	g_free(changed);
+	free(changed);
 
 	return result;
 }
@@ -117,9 +118,10 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 	IrmoChangeAtom *atom;
 	IrmoClient *client = packet->client;
 	IrmoClass *objclass;
-	gboolean *changed;
+	int *changed;
 	IrmoValue *newvalues;
-	int i, b, n;
+	unsigned int i;
+        int b, n;
 
 	atom = g_new0(IrmoChangeAtom, 1);
 	atom->sendatom.klass = &irmo_change_atom;
@@ -137,11 +139,11 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 	
 	// read the changed object bitmap
 
-	changed = g_new0(gboolean, objclass->nvariables);
+	changed = g_new0(int, objclass->nvariables);
 	atom->changed = changed;
 	
 	for (i=0, n=0; i<(objclass->nvariables+7) / 8; ++i) {
-		guint byte;
+		unsigned int byte;
 
 		// read the bits out of this byte in the bitmap into the
 		// changed array
@@ -150,7 +152,7 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 
 		for (b=0; b<8 && n<objclass->nvariables; ++b,++n)
 			if (byte & (1 << b))
-				changed[n] = TRUE;
+				changed[n] = 1;
 	}
 
 	// read the new values
@@ -235,13 +237,13 @@ static void irmo_change_atom_destroy(IrmoChangeAtom *atom)
                         // free strings
                                                                                 
                         if (objclass->variables[i]->type == IRMO_TYPE_STRING)
-                                g_free(atom->newvalues[i].s);
+                                free(atom->newvalues[i].s);
                 }
                                                                                 
-                g_free(atom->newvalues);
+                free(atom->newvalues);
         }
                                                                                 
-        g_free(atom->changed);
+        free(atom->changed);
 }
 
 static void irmo_change_atom_run(IrmoChangeAtom *atom)
@@ -302,7 +304,7 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 			obj->variables[i].i = newvalues[i].i;
 			break;
 		case IRMO_TYPE_STRING:
-			g_free(obj->variables[i].s);
+			free(obj->variables[i].s);
 			obj->variables[i].s = strdup(newvalues[i].s);
 			break;
 		}
@@ -314,14 +316,14 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 
 	// mark as executed
 	
-	atom->executed = TRUE;
+	atom->executed = 1;
 }
 
-static gsize irmo_change_atom_length(IrmoChangeAtom *atom)
+static size_t irmo_change_atom_length(IrmoChangeAtom *atom)
 {
         IrmoObject *obj = atom->object;
         IrmoClass *spec = obj->objclass;
-        gsize len;
+        size_t len;
         int i;
  
         len = 0;
@@ -379,6 +381,11 @@ IrmoSendAtomClass irmo_change_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.6  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.5  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

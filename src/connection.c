@@ -186,7 +186,7 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 	va_list args;
 
 	if (conn->connection_error)
-		g_free(conn->connection_error);
+		free(conn->connection_error);
 
 	va_start(args, s);
 
@@ -196,6 +196,11 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.18  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.17  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //

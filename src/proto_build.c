@@ -34,7 +34,7 @@ static void proto_atom_resent(IrmoClient *client, int i)
 {
 	// set resent flag
 	
-	client->sendwindow[i]->resent = TRUE;
+	client->sendwindow[i]->resent = 1;
 	
 	// if we are resending the first atom,
 	// use exponential backoff and double the
@@ -83,7 +83,7 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	// last acked point
 	
 	irmo_packet_writei16(packet, client->recvwindow_start & 0xffff);
-	client->need_ack = FALSE;
+	client->need_ack = 0;
 
 	// move the start back to cover all null atoms that prefix this
 	// data segment. in running games we typically repeatedly change 
@@ -166,7 +166,7 @@ static void proto_pump_client(IrmoClient *client)
 	
 	// if queue is already empty, this is a nonissue
 	
-	if (g_queue_is_empty(client->sendq))
+	if (irmo_queue_is_empty(client->sendq))
 		return;
 
 	for (i=0; i<client->sendwindow_size; ++i)
@@ -195,7 +195,7 @@ static void proto_pump_client(IrmoClient *client)
 	// adding things in until we run out of space or atoms to add
 	
 	while (current_size < sendwindow_max
-	       && !g_queue_is_empty(client->sendq)
+	       && !irmo_queue_is_empty(client->sendq)
 	       && client->sendwindow_size < MAX_SENDWINDOW) {
 		IrmoSendAtom *atom;
 
@@ -330,7 +330,7 @@ void irmo_proto_run_client(IrmoClient *client)
 		
 		irmo_packet_writei16(packet, PACKET_FLAG_ACK);
 		irmo_packet_writei16(packet, client->recvwindow_start & 0xffff);
-		client->need_ack = FALSE;
+		client->need_ack = 0;
 
 		// send packet
 
@@ -343,6 +343,11 @@ void irmo_proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.14  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.13  2003/12/01 13:07:30  fraggle
 // Split off system headers to sysheaders.h for common portability stuff
 //
@@ -355,7 +360,7 @@ void irmo_proto_run_client(IrmoClient *client)
 // Revision 1.10  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    guint8/guint16/guint32/etc.
+//    unsigned int8/unsigned int16/unsigned int32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together

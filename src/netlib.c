@@ -43,12 +43,12 @@ int irmo_sockaddr_len(int domain)
         return 0;
 }
 
-static guint sockaddr_in_hash(struct sockaddr_in *addr)
+static unsigned int sockaddr_in_hash(struct sockaddr_in *addr)
 {
 	return addr->sin_addr.s_addr ^ addr->sin_port;
 }
 
-static gint sockaddr_in_cmp(struct sockaddr_in *a,
+static int sockaddr_in_cmp(struct sockaddr_in *a,
 			  struct sockaddr_in *b)
 {
 	return a->sin_addr.s_addr == b->sin_addr.s_addr
@@ -57,14 +57,14 @@ static gint sockaddr_in_cmp(struct sockaddr_in *a,
 
 #ifdef USE_IPV6
 
-static guint sockaddr_in6_hash(struct sockaddr_in6 *addr)
+static unsigned int sockaddr_in6_hash(struct sockaddr_in6 *addr)
 {
 	guint32 *a = (guint32 *) addr->sin6_addr.s6_addr;
 	
 	return a[0] ^ a[1] ^ a[2] ^ a[3] ^ addr->sin6_port;
 }
 
-static gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
+static int sockaddr_in6_cmp(struct sockaddr_in6 *a,
 			   struct sockaddr_in6 *b)
 {
 	return !memcmp(&a->sin6_addr, &b->sin6_addr, sizeof(struct in6_addr))
@@ -73,7 +73,7 @@ static gint sockaddr_in6_cmp(struct sockaddr_in6 *a,
 
 #endif /* #ifdef USE_IPV6 */
 
-guint irmo_sockaddr_hash(struct sockaddr *addr)
+unsigned int irmo_sockaddr_hash(struct sockaddr *addr)
 {
 	switch (addr->sa_family) {
 	case AF_INET:
@@ -87,7 +87,7 @@ guint irmo_sockaddr_hash(struct sockaddr *addr)
 	return 0;
 }
 
-gint irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
+int irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 {
 	switch (a->sa_family) {
 	case AF_INET:
@@ -106,14 +106,14 @@ gint irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b)
 struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr)
 {
 	int len = irmo_sockaddr_len(addr->sa_family);
-	struct sockaddr *cp = g_malloc(len);
+	struct sockaddr *cp = malloc(len);
 
 	memcpy(cp, addr, len);
 
 	return cp;
 }
 
-static struct sockaddr *sockaddr_in_for_name(gchar *name, int port)
+static struct sockaddr *sockaddr_in_for_name(char *name, int port)
 {
 	struct hostent *hp;
 	struct sockaddr_in *addr;
@@ -133,7 +133,7 @@ static struct sockaddr *sockaddr_in_for_name(gchar *name, int port)
 
 #ifdef USE_IPV6
 
-static struct sockaddr *sockaddr_in6_for_name(gchar *name, int port)
+static struct sockaddr *sockaddr_in6_for_name(char *name, int port)
 {
 	struct hostent *hp;
 	struct addrinfo *info;
@@ -163,7 +163,7 @@ static struct sockaddr *sockaddr_in6_for_name(gchar *name, int port)
 #endif
 
 struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain, 
-					gchar *name, int port)
+					char *name, int port)
 {
 	switch (domain) {
 	case IRMO_SOCKET_AUTO:
@@ -226,6 +226,11 @@ void irmo_timeval_from_ms(int ms, GTimeVal *time)
 }
 
 // $Log$
+// Revision 1.10  2005/12/23 22:47:50  fraggle
+// Add algorithm implementations from libcalg.   Use these instead of
+// the glib equivalents.  This is the first stage in removing the dependency
+// on glib.
+//
 // Revision 1.9  2004/04/17 22:19:57  fraggle
 // Use glib memory management functions where possible
 //
