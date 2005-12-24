@@ -26,6 +26,8 @@
 #ifndef IRMO_SYSHEADERS_H
 #define IRMO_SYSHEADERS_H
 
+#include "config.h"
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,6 +77,9 @@ typedef signed long int32_t;
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
 // $Log$
+// Revision 1.4  2005/12/24 00:47:21  fraggle
+// Include the autotools config.h header so that config settings get included.
+//
 // Revision 1.3  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.
