@@ -5,6 +5,6 @@ includedir=@includedir@
 
 Name: irmo
 Description: The Irmo generalised network game library
-Version: @VERSION@
+Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lirmo
 Cflags: -I${includedir}/irmo/1
