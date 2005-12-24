@@ -188,6 +188,38 @@ int irmo_slist_length(IrmoSListEntry *list)
 	return length;
 }
 
+void **irmo_slist_to_array(IrmoSListEntry *list)
+{
+	IrmoSListEntry *rover;
+	int listlen;
+	void **array;
+	int i;
+
+	/* Allocate an array equal in size to the list length */
+	
+	listlen = irmo_slist_length(list);
+
+	array = calloc(sizeof(void *), listlen);
+	
+	/* Add all entries to the array */
+	
+	rover = list;
+	
+	for (i=0; i<listlen; ++i) {
+
+		/* Add this node's data */
+
+		array[i] = rover->data;
+		
+		/* Jump to the next list node */
+
+		rover = rover->next;
+	}
+
+	return array;
+}
+
+
 void irmo_slist_foreach(IrmoSListEntry *list, IrmoSListIterator callback, void *user_data)
 {
 	IrmoSListEntry *entry;
@@ -202,7 +234,9 @@ void irmo_slist_foreach(IrmoSListEntry *list, IrmoSListIterator callback, void *
 
 		callback(entry->data, user_data);
 
-                entry = entry->next;
+		/* Advance to the next entry */
+
+		entry = entry->next;
 	}
 }
 

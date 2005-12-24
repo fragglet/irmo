@@ -39,7 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* String hash function */
 
-unsigned long irmo_string_hash(char *string)
+unsigned long irmo_string_hash(void *string)
 {
 	/* This is the djb2 string hash function */
 
@@ -59,7 +59,7 @@ unsigned long irmo_string_hash(char *string)
 /* The same function, with a tolower on every character so that 
  * case is ignored.  This code is duplicated for performance. */
 
-unsigned long irmo_string_nocase_hash(char *string)
+unsigned long irmo_string_nocase_hash(void *string)
 {
 	unsigned long result = 5381;
 	unsigned char *p;

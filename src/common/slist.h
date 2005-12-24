@@ -188,6 +188,17 @@ void *irmo_slist_nth_data(IrmoSListEntry *list, int n);
 
 int irmo_slist_length(IrmoSListEntry *list);
 
+/**
+ * Create a C array containing the contents of a list.
+ *
+ * @param list       The list.
+ * @return           A newly-allocated C array containing all values in the
+ *                   list.  The length of the array is equal to the length
+ *                   of the list (see @ref irmo_slist_length).
+ */
+
+void **irmo_slist_to_array(IrmoSListEntry *list);
+
 /** 
  * Iterate over all entries in a list.
  *
