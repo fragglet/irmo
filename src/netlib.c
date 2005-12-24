@@ -43,7 +43,7 @@ int irmo_sockaddr_len(int domain)
         return 0;
 }
 
-static unsigned int sockaddr_in_hash(struct sockaddr_in *addr)
+static uint32_t sockaddr_in_hash(struct sockaddr_in *addr)
 {
 	return addr->sin_addr.s_addr ^ addr->sin_port;
 }
@@ -57,9 +57,9 @@ static int sockaddr_in_cmp(struct sockaddr_in *a,
 
 #ifdef USE_IPV6
 
-static unsigned int sockaddr_in6_hash(struct sockaddr_in6 *addr)
+static uint32_t sockaddr_in6_hash(struct sockaddr_in6 *addr)
 {
-	guint32 *a = (guint32 *) addr->sin6_addr.s6_addr;
+	uint32_t *a = (uint32_t *) addr->sin6_addr.s6_addr;
 	
 	return a[0] ^ a[1] ^ a[2] ^ a[3] ^ addr->sin6_port;
 }
@@ -226,6 +226,10 @@ void irmo_timeval_from_ms(int ms, GTimeVal *time)
 }
 
 // $Log$
+// Revision 1.11  2005/12/24 00:15:59  fraggle
+// Use the C99 "uintN_t" standard integer types rather than the glib
+// guint types.
+//
 // Revision 1.10  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

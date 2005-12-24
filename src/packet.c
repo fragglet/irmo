@@ -50,7 +50,7 @@ void irmo_packet_free(IrmoPacket *packet)
 	free(packet);
 }
 
-G_INLINE_FUNC void irmo_packet_resize(IrmoPacket *packet)
+static void irmo_packet_resize(IrmoPacket *packet)
 {
 	// resize exponentially bigger
 
@@ -58,7 +58,7 @@ G_INLINE_FUNC void irmo_packet_resize(IrmoPacket *packet)
 	packet->data = realloc(packet->data, packet->data_size);
 }
 
-G_INLINE_FUNC void irmo_packet_update_len(IrmoPacket *packet)
+static void irmo_packet_update_len(IrmoPacket *packet)
 {
 	if (packet->pos > packet->len)
 		packet->len = packet->pos;
@@ -133,7 +133,7 @@ int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i)
 
 int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 {
-	guint8 *data;
+	uint8_t *data;
 	
 	if (packet->pos + 2 > packet->len)
 		return 0;
@@ -151,7 +151,7 @@ int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 
 int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i)
 {
-	guint8 *data;
+	uint8_t *data;
 
 	if (packet->pos + 4 > packet->len)
 		return 0;
@@ -170,7 +170,7 @@ int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i)
 
 char *irmo_packet_readstring(IrmoPacket *packet)
 {
-	guint8 *start = packet->data + packet->pos;
+	uint8_t *start = packet->data + packet->pos;
 
 	for (; packet->pos < packet->len; ++packet->pos) {
 		if (!packet->data[packet->pos]) {
@@ -243,6 +243,10 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 }
 
 // $Log$
+// Revision 1.12  2005/12/24 00:15:59  fraggle
+// Use the C99 "uintN_t" standard integer types rather than the glib
+// guint types.
+//
 // Revision 1.11  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

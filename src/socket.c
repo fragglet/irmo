@@ -604,7 +604,7 @@ static int socket_run_client(void *key, IrmoClient *client,
 
 void irmo_socket_run(IrmoSocket *sock)
 {
-	guint8 buf[PACKET_BUFFER_LEN];
+	uint8_t buf[PACKET_BUFFER_LEN];
 	struct sockaddr *addr;
 	int addr_len;
 
@@ -691,6 +691,10 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.27  2005/12/24 00:15:59  fraggle
+// Use the C99 "uintN_t" standard integer types rather than the glib
+// guint types.
+//
 // Revision 1.26  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

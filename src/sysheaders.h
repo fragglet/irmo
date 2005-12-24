@@ -27,13 +27,31 @@
 #define IRMO_SYSHEADERS_H
 
 #include <errno.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 #include "common/common.h"
+
+// C99 integer types
+
+#ifdef _MSC_VER
+
+typedef unsigned char uint8_t;
+typedef signed char int8_t;
+typedef unsigned short uint16_t;
+typedef signed short int16_t;
+typedef unsigned long uint32_t;
+typedef signed long int32_t;
+
+#else 
+
+#include <stdint.h>
+
+#endif
+
+// sockets api
 
 #ifdef _WIN32
 
@@ -46,6 +64,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <fcntl.h>
 
 #define closesocket close
 
@@ -56,6 +75,10 @@
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
 // $Log$
+// Revision 1.3  2005/12/24 00:15:59  fraggle
+// Use the C99 "uintN_t" standard integer types rather than the glib
+// guint types.
+//
 // Revision 1.2  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

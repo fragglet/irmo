@@ -44,12 +44,12 @@ typedef struct _IrmoPacket IrmoPacket;
 struct _IrmoPacket {
 	IrmoSocket *sock;       // socket this came from
 	struct sockaddr *src;   // source address
-	unsigned char *data;           // packet data
-	size_t data_size;	// size of the buffer
-	size_t len;              // length of used data in the buffer
-	unsigned int pos;              // current position in packet
+	uint8_t *data;          // packet data
+	size_t data_size;       // size of the buffer
+	size_t len;             // length of used data in the buffer
+	unsigned int pos;       // current position in packet
 	IrmoClient *client;     // client implied by address (or NULL if none)
-	unsigned int flags;            // flags from header
+	unsigned int flags;     // flags from header
 };
 
 IrmoPacket *irmo_packet_new(void);
@@ -74,6 +74,10 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 #endif /* #ifndef IRMO_PACKET_H */
 
 // $Log$
+// Revision 1.9  2005/12/24 00:15:59  fraggle
+// Use the C99 "uintN_t" standard integer types rather than the glib
+// guint types.
+//
 // Revision 1.8  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

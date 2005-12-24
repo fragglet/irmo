@@ -303,6 +303,10 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.7  2005/12/24 00:15:59  fraggle
+// Use the C99 "uintN_t" standard integer types rather than the glib
+// guint types.
+//
 // Revision 1.6  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency
@@ -323,7 +327,7 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 // Revision 1.1  2003/10/14 22:12:49  fraggle
 // Major internal refactoring:
 //  - API for packet functions now uses straight integers rather than
-//    unsigned int8/unsigned int16/unsigned int32/etc.
+//    guint8/guint16/guint32/etc.
 //  - What was sendatom.c is now client_sendq.c.
 //  - IrmoSendAtoms are now in an object oriented model. Functions
 //    to do with particular "classes" of sendatom are now grouped together

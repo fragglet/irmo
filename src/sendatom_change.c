@@ -193,7 +193,7 @@ static void irmo_change_atom_write(IrmoChangeAtom *atom, IrmoPacket *packet)
 	bitmap_size = (obj->objclass->nvariables + 7) / 8;
 
 	for (i=0; i<bitmap_size; ++i) {
-		guint8 b;
+		uint8_t b;
 
 		// build a byte at a time
 
@@ -381,6 +381,10 @@ IrmoSendAtomClass irmo_change_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.7  2005/12/24 00:15:59  fraggle
+// Use the C99 "uintN_t" standard integer types rather than the glib
+// guint types.
+//
 // Revision 1.6  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency
