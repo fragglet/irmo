@@ -72,11 +72,14 @@ typedef signed long int32_t;
 
 #endif
 
-//#include <glib.h>
+#include <glib.h>
 
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
 // $Log$
+// Revision 1.6  2005/12/25 00:49:50  fraggle
+// Undo last commit; add back glib.h
+//
 // Revision 1.5  2005/12/25 00:48:29  fraggle
 // Use internal memory functions, rather than the glib ones
 //
