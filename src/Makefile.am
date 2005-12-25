@@ -15,12 +15,13 @@ SRC= \
   if_spec_reflect.c                         \
   method.c              method.h            \
   netlib.c              netlib.h            \
+  object.c              object.h            \
   packet.c              packet.h            \
   protocol.h                                \
   proto_build.c                             \
   proto_parse.c                             \
   proto_verify.c                            \
-  sendatom.h                                \
+  sendatom.c            sendatom.h          \
   sendatom_change.c                         \
   sendatom_destroy.c                        \
   sendatom_method.c                         \
