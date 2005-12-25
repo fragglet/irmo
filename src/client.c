@@ -70,8 +70,8 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 	// initial rtt mean/stddev
 
-	client->rtt = 3000;
-	client->rtt_deviation = 1000;
+	client->rtt = 1000;
+	client->rtt_deviation = 200;
 
 	// backoff
 
