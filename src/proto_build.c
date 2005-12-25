@@ -42,7 +42,7 @@ static void proto_atom_resent(IrmoClient *client, int i)
 	
 	if (i == 0) {
 
-		// if this is the first time we have missed a packet, its
+		// if this is the first time we have missed a packet, it's
 		// possible we're experiencing congestion.
 		// reset the send window size back to one packet and save the 
 		// slow-start threshold
@@ -225,33 +225,34 @@ static void proto_pump_client(IrmoClient *client)
 void irmo_proto_run_client(IrmoClient *client)
 {
         unsigned int nowtime;
-        unsigned int timeout_time;
-	int timeout_length_ms;
+	int timeout_length;
 	int i;
 
-	// if we have been trying to resend for too long, give up and
-	// time out
+	// If we have been trying to resend for too long, give up and
+	// time out.
 
-	timeout_length_ms = irmo_client_timeout_time(client) * client->backoff;
+	timeout_length = irmo_client_timeout_time(client) * client->backoff;
 
-	if (timeout_length_ms > MAX_TIMEOUT) {
+	if (timeout_length > MAX_TIMEOUT) {
+
+                // Disconnect the dead client.
+
 		client->state = CLIENT_DISCONNECTED;
 		irmo_client_callback_raise(client->disconnect_callbacks,
 					   client);
 	}
 	
-	// pump new atoms to send window
+	// Pump new atoms to send window.
 	
 	proto_pump_client(client);
 
-        // all atoms which have a send time < timeout_time have
-        // timed out and should be resent.
-
+        // All atoms where nowtime >= atom->sendtime + timeout_length
+        // need to be resent.
+     
         nowtime = irmo_get_time();
-        timeout_time = nowtime - timeout_length_ms;
-	
+
 	//printf("timeout for client: %i ms (%i, %i)\n",
-	//timeout_length_ms,
+	//timeout_length,
 	//(int) client->rtt,
 	//(int) client->rtt_deviation);
 	
@@ -268,37 +269,71 @@ void irmo_proto_run_client(IrmoClient *client)
 		
 		// search forward until we find the start of a block
 
-		while (i<client->sendwindow_size
-                   && client->sendwindow[i]->sendtime > timeout_time) {
+		while (i<client->sendwindow_size) {
+
+                        if (client->sendwindow[i]->sendtime == IRMO_ATOM_UNSENT
+                         || nowtime >= client->sendwindow[i]->sendtime + timeout_length) {
+
+                                // This atom has either not yet been
+                                // sent, or has timed out.  Therefore, this
+                                // atom needs to be sent, and marks the start
+                                // of a block of atoms to be sent.
+                                break;
+                        }
+
 			//printf("atom %i not expired yet\n", i);
 			++i;
 		}
 
-		// no more atoms?
-		
+                // Reached the end of the send window size?
+
 		if (i >= client->sendwindow_size)
 			break;
 
-		//printf("find end\n");
+                // Find the end point of a packet.  Keep searching forward
+                // in the send window until an atom is found which does
+                // not need to be sent.  Also, count the number of bytes
+                // of data, so we do not exceed the maximum packet size.
 		
 		start = i;
 		len = 0;
 		
-		while (i<client->sendwindow_size
-                    && client->sendwindow[i]->sendtime <= timeout_time
-		    && len < PACKET_THRESHOLD) {
+		while (i<client->sendwindow_size) {
+
+                        if (nowtime < client->sendwindow[i]->sendtime + timeout_length
+                         && client->sendwindow[i]->sendtime != IRMO_ATOM_UNSENT) {
+                                // This packet does not need to be sent.
+                                // This is the end of our run of packets to
+                                // send.
+
+                                break;
+                        }
+
+                        if (len >= PACKET_THRESHOLD) {
+                                // We have exceeded the maximum size of 
+                                // a packet.  No more atoms can be added
+                                // to this packet.
+                            
+                                break;
+                        }
+                        
+                        // add this atom
+
 			//printf("atom %i out of date\n", i);
 			len += client->sendwindow[i]->len;
 			++i;
 		}
 
 		//printf("packet %i->%i\n", start, i-1);
+
 		// build a packet 
 
 		packet = proto_build_packet(client, start, i-1);
 
 		//printf("sendpacket: %i->%i\n", start, i-1);
 		
+                // Transmit the packet.
+
 		irmo_socket_sendpacket(client->server->socket,
 				       client->addr,
 				       packet);
@@ -312,9 +347,9 @@ void irmo_proto_run_client(IrmoClient *client)
 
 	//printf("finished\n");
 
-	// possibly we need to send an ack for something we have received
-	// if we have nothing in our send window to send, we still need
-	// to send an ack back
+	// Possibly we need to send an ack for something we have received.
+	// If we have nothing in our send window to send, we still need
+	// to send an acknowledgement back.
 
 	if (client->need_ack) {
 		IrmoPacket *packet;
