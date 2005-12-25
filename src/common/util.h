@@ -40,12 +40,12 @@ void *irmo_malloc0(int bytes);
 // name and array size, and zeroing the contents of the array
 
 #define irmo_new0(typename, count)                             \
-        ((typename) irmo_malloc0(sizeof(typename) * count))
+        ((typename *) irmo_malloc0(sizeof(typename) * count))
 
 // resize an array of structures
 
 #define irmo_renew(typename, oldmem, count)                  \
-        ((typename) realloc((oldmem), sizeof(typename) * (count)))
+        ((typename *) realloc((oldmem), sizeof(typename) * (count)))
 
 //
 // Debugging macros
