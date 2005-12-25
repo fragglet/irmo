@@ -95,7 +95,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 void irmo_client_ref(IrmoClient *client)
 {
-	g_return_if_fail(client != NULL);
+	irmo_return_if_fail(client != NULL);
 	
 	// when you reference a client, you're effectively referencing
 	// the server its part of
@@ -162,7 +162,7 @@ void irmo_client_internal_unref(IrmoClient *client)
 
 void irmo_client_unref(IrmoClient *client)
 {
-	g_return_if_fail(client != NULL);
+	irmo_return_if_fail(client != NULL);
 
 	irmo_client_internal_unref(client);
 	
@@ -283,7 +283,7 @@ void irmo_client_run(IrmoClient *client)
 
 IrmoWorld *irmo_client_get_world(IrmoClient *client)
 {
-	g_return_val_if_fail(client != NULL, NULL);
+	irmo_return_val_if_fail(client != NULL, NULL);
 	
 	return client->world;
 }
@@ -305,8 +305,8 @@ IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
 					   IrmoClientCallback func,
 					   void *user_data)
 {
-	g_return_val_if_fail(client != NULL, NULL);
-	g_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(client != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
 	
 	return irmo_callbacklist_add(&client->disconnect_callbacks,
 				     func, user_data);
@@ -319,14 +319,14 @@ int irmo_client_timeout_time(IrmoClient *client)
 
 int irmo_client_ping_time(IrmoClient *client)
 {
-	g_return_val_if_fail(client != NULL, -1);
+	irmo_return_val_if_fail(client != NULL, -1);
 	
 	return (int) client->rtt;
 }
 
 void irmo_client_set_max_sendwindow(IrmoClient *client, int max)
 {
-	g_return_if_fail(client != NULL);
+	irmo_return_if_fail(client != NULL);
 
 	client->local_sendwindow_max = max;
 
@@ -339,7 +339,7 @@ const char *irmo_client_get_addr(IrmoClient *client)
 {
 	static char buf[128];
 
-	g_return_val_if_fail(client != NULL, NULL);
+	irmo_return_val_if_fail(client != NULL, NULL);
 
 	switch (client->addr->sa_family) {
 	case AF_INET: {
@@ -357,6 +357,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.20  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.19  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

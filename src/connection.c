@@ -40,7 +40,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 	IrmoServer *server;
 	IrmoClient *client;
 
-	g_return_val_if_fail(location != NULL, NULL);
+	irmo_return_val_if_fail(location != NULL, NULL);
 
 	if (domain == IRMO_SOCKET_AUTO) {
 
@@ -125,7 +125,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 
 void irmo_disconnect(IrmoConnection *conn)
 {
-	g_return_if_fail(conn != NULL);
+	irmo_return_if_fail(conn != NULL);
 	
 	// keep a watch on the client and stop it being destroyed
 	
@@ -148,35 +148,35 @@ void irmo_disconnect(IrmoConnection *conn)
 
 IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn)
 {
-	g_return_val_if_fail(conn != NULL, NULL);
+	irmo_return_val_if_fail(conn != NULL, NULL);
 	
 	return conn->server->socket;
 }
 
 void irmo_connection_run(IrmoConnection *conn)
 {
-	g_return_if_fail(conn != NULL);
+	irmo_return_if_fail(conn != NULL);
 	
 	irmo_socket_run(conn->server->socket);
 }
 
 IrmoWorld *irmo_connection_get_world(IrmoConnection *conn)
 {
-	g_return_val_if_fail(conn != NULL, NULL);
+	irmo_return_val_if_fail(conn != NULL, NULL);
 	
 	return conn->world;
 }
 
 void irmo_connection_ref(IrmoConnection *conn)
 {
-	g_return_if_fail(conn != NULL);
+	irmo_return_if_fail(conn != NULL);
 	
 	irmo_client_ref(conn);
 }
 
 void irmo_connection_unref(IrmoConnection *conn)
 {
-	g_return_if_fail(conn != NULL);
+	irmo_return_if_fail(conn != NULL);
 
 	irmo_client_unref(conn);
 }
@@ -196,6 +196,9 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 }
 
 // $Log$
+// Revision 1.19  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.18  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

@@ -37,9 +37,9 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 {
 	IrmoMethod *spec;
 
-	g_return_val_if_fail(world != NULL, NULL);
-	g_return_val_if_fail(method_name != NULL, NULL);
-	g_return_val_if_fail(method != NULL, NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(method_name != NULL, NULL);
+	irmo_return_val_if_fail(method != NULL, NULL);
 	
 	spec = irmo_interface_spec_get_method(world->spec, method_name);
 
@@ -73,15 +73,15 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 
 		switch (arg->type) {
 		case IRMO_TYPE_INT8:
-			g_return_if_fail(value->i >= 0 && value->i <= 0xff);
+			irmo_return_if_fail(value->i >= 0 && value->i <= 0xff);
 			break;
 		case IRMO_TYPE_INT16:
-			g_return_if_fail(value->i >= 0 && value->i <= 0xffff);
+			irmo_return_if_fail(value->i >= 0 && value->i <= 0xffff);
 			break;
 		case IRMO_TYPE_INT32:
 			break;
 		case IRMO_TYPE_STRING:
-			g_return_if_fail(value->s != NULL);
+			irmo_return_if_fail(value->s != NULL);
 			break;
 		}
 	}
@@ -108,8 +108,8 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 	va_list arglist;
 	int i;
 
-	g_return_if_fail(world != NULL);
-	g_return_if_fail(method != NULL);
+	irmo_return_if_fail(world != NULL);
+	irmo_return_if_fail(method != NULL);
 	
 	spec = irmo_interface_spec_get_method(world->spec, method);
 
@@ -156,8 +156,8 @@ void irmo_world_method_call2(IrmoWorld *world, char *method,
 	IrmoMethodData method_data;
 	IrmoMethod *spec;
 
-	g_return_if_fail(world != NULL);
-	g_return_if_fail(method != NULL);
+	irmo_return_if_fail(world != NULL);
+	irmo_return_if_fail(method != NULL);
 	
 	spec = irmo_interface_spec_get_method(world->spec, method);
 
@@ -177,7 +177,7 @@ void irmo_world_method_call2(IrmoWorld *world, char *method,
 
 IrmoClient *irmo_method_get_source(IrmoMethodData *data)
 {
-	g_return_val_if_fail(data != NULL, NULL);
+	irmo_return_val_if_fail(data != NULL, NULL);
 	
 	return data->src;
 }
@@ -186,8 +186,8 @@ char *irmo_method_arg_string(IrmoMethodData *data, char *argname)
 {
 	IrmoMethodArg *spec;
 
-	g_return_val_if_fail(data != NULL, NULL);
-	g_return_val_if_fail(argname != NULL, NULL);
+	irmo_return_val_if_fail(data != NULL, NULL);
+	irmo_return_val_if_fail(argname != NULL, NULL);
 	
 	spec = irmo_method_get_argument(data->spec, argname);
 
@@ -212,8 +212,8 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 {
 	IrmoMethodArg *spec;
 
-	g_return_val_if_fail(data != NULL, -1);
-	g_return_val_if_fail(argname != NULL, -1);
+	irmo_return_val_if_fail(data != NULL, -1);
+	irmo_return_val_if_fail(argname != NULL, -1);
 	
 	spec = irmo_method_get_argument(data->spec, argname);
 
@@ -238,6 +238,9 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 }
 
 // $Log$
+// Revision 1.16  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.15  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

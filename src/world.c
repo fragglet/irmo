@@ -39,7 +39,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 	IrmoWorld *world;
 	int i;
 
-	g_return_val_if_fail(spec != NULL, NULL);
+	irmo_return_val_if_fail(spec != NULL, NULL);
 	
 	world = g_new0(IrmoWorld, 1);
 
@@ -79,7 +79,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 
 void irmo_world_ref(IrmoWorld *world)
 {
-	g_return_if_fail(world != NULL);
+	irmo_return_if_fail(world != NULL);
 	
 	++world->refcount;
 }
@@ -96,7 +96,7 @@ static void irmo_world_unref_foreach(IrmoObjectID id, IrmoObject *object,
 
 void irmo_world_unref(IrmoWorld *world)
 {
-	g_return_if_fail(world != NULL);
+	irmo_return_if_fail(world != NULL);
 	
 	--world->refcount;
 
@@ -144,7 +144,7 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 {
 	IrmoObject *object;
 
-	g_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
 	
 	object = irmo_hash_table_lookup(world->objects, (void *) id);
 
@@ -180,8 +180,8 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 		user_data,
 	};
 
-	g_return_if_fail(world != NULL);
-	g_return_if_fail(func != NULL);
+	irmo_return_if_fail(world != NULL);
+	irmo_return_if_fail(func != NULL);
 	
 	if (classname) {
 		spec = irmo_interface_spec_get_class(world->spec, classname);
@@ -204,12 +204,15 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 
 IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 {
-	g_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
 
 	return world->spec;
 }
 
 // $Log$
+// Revision 1.11  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.10  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

@@ -40,6 +40,7 @@
 // noyywrap: Only read one file at a time
 // 
 
+#include <assert.h>
 #include <setjmp.h>
 
 #include "sysheaders.h"
@@ -128,7 +129,7 @@ WHITESPACE [[:space:]]+
 
 static void cleanup_push(void *func, void *data)
 {
-	g_assert(cleanup_stack_pos < CLEANUP_STACK_SIZE);
+	assert(cleanup_stack_pos < CLEANUP_STACK_SIZE);
 
 	cleanup_stack[cleanup_stack_pos].func = (cleanup_func) func;
 	cleanup_stack[cleanup_stack_pos].data = data;
@@ -603,7 +604,7 @@ IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 {
 	IrmoInterfaceSpec *spec;
 
-	g_return_val_if_fail(filename != NULL, NULL);
+	irmo_return_val_if_fail(filename != NULL, NULL);
 
 	yyin = fopen(filename, "r");
 
@@ -632,14 +633,14 @@ IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 
 void irmo_interface_spec_ref(IrmoInterfaceSpec *spec)
 {
-	g_return_if_fail(spec != NULL);
+	irmo_return_if_fail(spec != NULL);
 
 	++spec->refcount;
 }
 
 void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 {
-	g_return_if_fail(spec != NULL);
+	irmo_return_if_fail(spec != NULL);
 
 	--spec->refcount;
 
@@ -648,6 +649,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.16  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.15  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

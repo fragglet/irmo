@@ -155,9 +155,9 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 	IrmoClass *spec;
 	int id;
 
-	g_return_val_if_fail(world != NULL, NULL);
-	g_return_val_if_fail(type_name != NULL, NULL);
-	g_return_val_if_fail(world->remote == 0, NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(type_name != NULL, NULL);
+	irmo_return_val_if_fail(world->remote == 0, NULL);
 	
 	spec = irmo_interface_spec_get_class(world->spec, type_name);
 
@@ -234,8 +234,8 @@ void irmo_object_internal_destroy(IrmoObject *object,
 
 void irmo_object_destroy(IrmoObject *object)
 {
-	g_return_if_fail(object != NULL);
-	g_return_if_fail(object->world->remote == 0);
+	irmo_return_if_fail(object != NULL);
+	irmo_return_if_fail(object->world->remote == 0);
 	
 	// destroy object
 	// notify callbacks and remove from world
@@ -245,21 +245,21 @@ void irmo_object_destroy(IrmoObject *object)
 
 IrmoObjectID irmo_object_get_id(IrmoObject *object)
 {
-	g_return_val_if_fail(object != NULL, -1);
+	irmo_return_val_if_fail(object != NULL, -1);
 	
 	return object->id;
 }
 
 char *irmo_object_get_class(IrmoObject *object)
 {
-	g_return_val_if_fail(object != NULL, NULL);
+	irmo_return_val_if_fail(object != NULL, NULL);
 	
 	return object->objclass->name;
 }
 
 IrmoClass *irmo_object_get_class_obj(IrmoObject *object)
 {
-	g_return_val_if_fail(object != NULL, NULL);
+	irmo_return_val_if_fail(object != NULL, NULL);
 
 	return object->objclass;
 }
@@ -309,9 +309,9 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 	IrmoClassVar *spec;
 	IrmoValue *obj_var;
 
-	g_return_if_fail(object != NULL);
-	g_return_if_fail(variable != NULL);
-	g_return_if_fail(object->world->remote == 0);
+	irmo_return_if_fail(object != NULL);
+	irmo_return_if_fail(variable != NULL);
+	irmo_return_if_fail(object->world->remote == 0);
 	
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -327,11 +327,11 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 
 	switch (spec->type) {
 	case IRMO_TYPE_INT8:
-		g_return_if_fail(value >= 0 && value <= 0xff);
+		irmo_return_if_fail(value >= 0 && value <= 0xff);
 		obj_var->i = value;
 		break;
 	case IRMO_TYPE_INT16:
-		g_return_if_fail(value >= 0 && value <= 0xffff);
+		irmo_return_if_fail(value >= 0 && value <= 0xffff);
 		obj_var->i = value;
 		break;
 	case IRMO_TYPE_INT32:
@@ -351,10 +351,10 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 {
 	IrmoClassVar *spec;
 
-	g_return_if_fail(object != NULL);
-	g_return_if_fail(variable != NULL);
-	g_return_if_fail(value != NULL);
-	g_return_if_fail(object->world->remote == 0);
+	irmo_return_if_fail(object != NULL);
+	irmo_return_if_fail(variable != NULL);
+	irmo_return_if_fail(value != NULL);
+	irmo_return_if_fail(object->world->remote == 0);
 	
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -387,8 +387,8 @@ unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 {
 	IrmoClassVar *spec;
 
-	g_return_val_if_fail(object != NULL, -1);
-	g_return_val_if_fail(variable != NULL, -1);
+	irmo_return_val_if_fail(object != NULL, -1);
+	irmo_return_val_if_fail(variable != NULL, -1);
 	
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -420,8 +420,8 @@ char *irmo_object_get_string(IrmoObject *object, char *variable)
 {
 	IrmoClassVar *spec;
 
-	g_return_val_if_fail(object != NULL, NULL);
-	g_return_val_if_fail(variable != NULL, NULL);
+	irmo_return_val_if_fail(object != NULL, NULL);
+	irmo_return_val_if_fail(variable != NULL, NULL);
 
 	spec = irmo_class_get_variable(object->objclass, variable);
 
@@ -446,7 +446,7 @@ char *irmo_object_get_string(IrmoObject *object, char *variable)
 
 IrmoWorld *irmo_object_get_world(IrmoObject *obj)
 {
-	g_return_val_if_fail(obj != NULL, NULL);
+	irmo_return_val_if_fail(obj != NULL, NULL);
 
 	return obj->world;
 }
@@ -455,8 +455,8 @@ unsigned int irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
 {
 	IrmoClass *c;
 	
-	g_return_val_if_fail(obj != NULL, 0);
-	g_return_val_if_fail(klass != NULL, 0);
+	irmo_return_val_if_fail(obj != NULL, 0);
+	irmo_return_val_if_fail(klass != NULL, 0);
 
 	// search through all parent classes
 
@@ -472,8 +472,8 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 {
 	IrmoClass *klass;
 
-	g_return_val_if_fail(obj != NULL, 0);
-	g_return_val_if_fail(classname != NULL, 0);
+	irmo_return_val_if_fail(obj != NULL, 0);
+	irmo_return_val_if_fail(classname != NULL, 0);
 
 	klass = irmo_interface_spec_get_class(obj->world->spec, classname);
 
@@ -487,6 +487,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.22  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.21  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

@@ -34,8 +34,8 @@
 IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec, 
 					 char *class_name)
 {
-	g_return_val_if_fail(spec != NULL, NULL);
-	g_return_val_if_fail(class_name != NULL, NULL);
+	irmo_return_val_if_fail(spec != NULL, NULL);
+	irmo_return_val_if_fail(class_name != NULL, NULL);
 
 	return irmo_hash_table_lookup(spec->class_hash, class_name);
 }
@@ -43,8 +43,8 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
 IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
 					   char *method_name)
 {
-	g_return_val_if_fail(spec != NULL, NULL);
-	g_return_val_if_fail(method_name != NULL, NULL);
+	irmo_return_val_if_fail(spec != NULL, NULL);
+	irmo_return_val_if_fail(method_name != NULL, NULL);
 
 	return irmo_hash_table_lookup(spec->method_hash, method_name);
 }
@@ -55,8 +55,8 @@ void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec,
 {
 	int i;
 
-	g_return_if_fail(spec != NULL);
-	g_return_if_fail(func != NULL);
+	irmo_return_if_fail(spec != NULL);
+	irmo_return_if_fail(func != NULL);
 
 	for (i=0; i<spec->nclasses; ++i) 
 		func(spec->classes[i], user_data);
@@ -68,8 +68,8 @@ void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec,
 {
 	int i;
 
-	g_return_if_fail(spec != NULL);
-	g_return_if_fail(func != NULL);
+	irmo_return_if_fail(spec != NULL);
+	irmo_return_if_fail(func != NULL);
 
 	for (i=0; i<spec->nmethods; ++i) 
 		func(spec->methods[i], user_data);
@@ -82,14 +82,14 @@ void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec,
 
 char *irmo_class_get_name(IrmoClass *klass)
 {
-	g_return_val_if_fail(klass != NULL, NULL);
+	irmo_return_val_if_fail(klass != NULL, NULL);
 
 	return klass->name;
 }
 
 int irmo_class_num_variables(IrmoClass *klass)
 {
-	g_return_val_if_fail(klass != NULL, -1);
+	irmo_return_val_if_fail(klass != NULL, -1);
 
 	if (klass->parent_class)
 		return klass->nvariables - klass->parent_class->nvariables;
@@ -99,8 +99,8 @@ int irmo_class_num_variables(IrmoClass *klass)
 
 IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name)
 {
-	g_return_val_if_fail(klass != NULL, NULL);
-	g_return_val_if_fail(var_name != NULL, NULL);
+	irmo_return_val_if_fail(klass != NULL, NULL);
+	irmo_return_val_if_fail(var_name != NULL, NULL);
 
 	return irmo_hash_table_lookup(klass->variable_hash, var_name);
 }
@@ -112,8 +112,8 @@ void irmo_class_foreach_variable(IrmoClass *klass,
 	int i;
 	int start;
 
-	g_return_if_fail(klass != NULL);
-	g_return_if_fail(func != NULL);
+	irmo_return_if_fail(klass != NULL);
+	irmo_return_if_fail(func != NULL);
 
 	if (klass->parent_class)
 		start = klass->parent_class->nvariables;
@@ -126,21 +126,21 @@ void irmo_class_foreach_variable(IrmoClass *klass,
 
 IrmoClass *irmo_class_parent_class(IrmoClass *klass)
 {
-	g_return_val_if_fail(klass != NULL, NULL);
+	irmo_return_val_if_fail(klass != NULL, NULL);
 
 	return klass->parent_class;
 }
 
 void irmo_class_ref(IrmoClass *klass)
 {
-	g_return_if_fail(klass != NULL);
+	irmo_return_if_fail(klass != NULL);
 
 	irmo_interface_spec_ref(klass->parent);
 }
 
 void irmo_class_unref(IrmoClass *klass)
 {
-	g_return_if_fail(klass != NULL);
+	irmo_return_if_fail(klass != NULL);
 
 	irmo_interface_spec_unref(klass->parent);
 }
@@ -152,28 +152,28 @@ void irmo_class_unref(IrmoClass *klass)
 
 char *irmo_class_var_get_name(IrmoClassVar *var)
 {
-	g_return_val_if_fail(var != NULL, NULL);
+	irmo_return_val_if_fail(var != NULL, NULL);
 
 	return var->name;
 }
 
 IrmoValueType irmo_class_var_get_type(IrmoClassVar *var)
 {
-	g_return_val_if_fail(var != NULL, IRMO_TYPE_UNKNOWN);
+	irmo_return_val_if_fail(var != NULL, IRMO_TYPE_UNKNOWN);
 
 	return var->type;
 }
 
 void irmo_class_var_ref(IrmoClassVar *var)
 {
-	g_return_if_fail(var != NULL);
+	irmo_return_if_fail(var != NULL);
 
 	irmo_interface_spec_ref(var->parent->parent);
 }
 
 void irmo_class_var_unref(IrmoClassVar *var)
 {
-	g_return_if_fail(var != NULL);
+	irmo_return_if_fail(var != NULL);
 
 	irmo_interface_spec_unref(var->parent->parent);
 }
@@ -184,30 +184,30 @@ void irmo_class_var_unref(IrmoClassVar *var)
 
 char *irmo_method_get_name(IrmoMethod *method)
 {
-	g_return_val_if_fail(method != NULL, NULL);
+	irmo_return_val_if_fail(method != NULL, NULL);
 
 	return method->name;
 }
 
 int irmo_method_num_arguments(IrmoMethod *method)
 {
-	g_return_val_if_fail(method != NULL, -1);
+	irmo_return_val_if_fail(method != NULL, -1);
 
 	return method->narguments;
 }
 
 IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, char *arg_name)
 {
-	g_return_val_if_fail(method != NULL, NULL);
-	g_return_val_if_fail(arg_name != NULL, NULL);
+	irmo_return_val_if_fail(method != NULL, NULL);
+	irmo_return_val_if_fail(arg_name != NULL, NULL);
 
 	return irmo_hash_table_lookup(method->argument_hash, arg_name);
 }
 
 IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number)
 {
-	g_return_val_if_fail(method != NULL, NULL);
-	g_return_val_if_fail(arg_number >= 0 && arg_number < method->narguments,
+	irmo_return_val_if_fail(method != NULL, NULL);
+	irmo_return_val_if_fail(arg_number >= 0 && arg_number < method->narguments,
 			     NULL);
 
 	return method->arguments[arg_number];
@@ -219,8 +219,8 @@ void irmo_method_foreach_argument(IrmoMethod *method,
 {
 	int i;
 
-	g_return_if_fail(method != NULL);
-	g_return_if_fail(func != NULL);
+	irmo_return_if_fail(method != NULL);
+	irmo_return_if_fail(func != NULL);
 
 	for (i=0; i<method->narguments; ++i)
 		func(method->arguments[i], user_data);
@@ -228,14 +228,14 @@ void irmo_method_foreach_argument(IrmoMethod *method,
 
 void irmo_method_ref(IrmoMethod *method)
 {
-	g_return_if_fail(method != NULL);
+	irmo_return_if_fail(method != NULL);
 
 	irmo_interface_spec_ref(method->parent);
 }
 
 void irmo_method_unref(IrmoMethod *method)
 {
-	g_return_if_fail(method != NULL);
+	irmo_return_if_fail(method != NULL);
 
 	irmo_interface_spec_unref(method->parent);
 }
@@ -246,33 +246,36 @@ void irmo_method_unref(IrmoMethod *method)
 
 char *irmo_method_arg_get_name(IrmoMethodArg *arg)
 {
-	g_return_val_if_fail(arg != NULL, NULL);
+	irmo_return_val_if_fail(arg != NULL, NULL);
 
 	return arg->name;
 }
 
 IrmoValueType irmo_method_arg_get_type(IrmoMethodArg *arg)
 {
-	g_return_val_if_fail(arg != NULL, IRMO_TYPE_UNKNOWN);
+	irmo_return_val_if_fail(arg != NULL, IRMO_TYPE_UNKNOWN);
 
 	return arg->type;
 }
 
 void irmo_method_arg_ref(IrmoMethodArg *arg)
 {
-	g_return_if_fail(arg != NULL);
+	irmo_return_if_fail(arg != NULL);
 
 	irmo_interface_spec_ref(arg->parent->parent);
 }
 
 void irmo_method_arg_unref(IrmoMethodArg *arg)
 {
-	g_return_if_fail(arg != NULL);
+	irmo_return_if_fail(arg != NULL);
 
 	irmo_interface_spec_unref(arg->parent->parent);
 }
 
 // $Log$
+// Revision 1.13  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.12  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

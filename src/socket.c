@@ -161,14 +161,14 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 
 void irmo_socket_ref(IrmoSocket *sock)
 {
-	g_return_if_fail(sock != NULL);
+	irmo_return_if_fail(sock != NULL);
 	
 	++sock->refcount;
 }
 
 void irmo_socket_shutdown(IrmoSocket *sock)
 {
-	g_return_if_fail(sock->shutdown != 1);
+	irmo_return_if_fail(sock->shutdown != 1);
 	
 	// close socket
 
@@ -179,7 +179,7 @@ void irmo_socket_shutdown(IrmoSocket *sock)
 
 void irmo_socket_unref(IrmoSocket *sock)
 {
-	g_return_if_fail(sock != NULL);
+	irmo_return_if_fail(sock != NULL);
 	
 	--sock->refcount;
 
@@ -608,7 +608,7 @@ void irmo_socket_run(IrmoSocket *sock)
 	struct sockaddr *addr;
 	int addr_len;
 
-	g_return_if_fail(sock != NULL);
+	irmo_return_if_fail(sock != NULL);
 	
 	addr_len = irmo_sockaddr_len(socket_type_to_domain(sock->domain));
 	addr = malloc(addr_len);
@@ -660,8 +660,8 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 	int max;
 	int i;
 	
-	g_return_if_fail(sockets != NULL);
-	g_return_if_fail(nsockets >= 0);
+	irmo_return_if_fail(sockets != NULL);
+	irmo_return_if_fail(nsockets >= 0);
 	
 	FD_ZERO(&set);
 
@@ -680,17 +680,20 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 		result = select(max+1, &set, NULL, NULL, NULL);
 	}
 	
-	g_return_if_fail(result >= 0);
+	irmo_return_if_fail(result >= 0);
 }
 
 void irmo_socket_block(IrmoSocket *socket, int timeout)
 {
-	g_return_if_fail(socket != NULL);
+	irmo_return_if_fail(socket != NULL);
 
 	irmo_socket_block_set(&socket, 1, timeout);
 }
 
 // $Log$
+// Revision 1.28  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.27  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.

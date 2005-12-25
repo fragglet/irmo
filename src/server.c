@@ -92,7 +92,7 @@ IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
 
 void irmo_server_ref(IrmoServer *server)
 {
-	g_return_if_fail(server != NULL);
+	irmo_return_if_fail(server != NULL);
 	
 	++server->refcount;
 }
@@ -144,7 +144,7 @@ static void irmo_server_internal_shutdown(IrmoServer *server)
 
 void irmo_server_unref(IrmoServer *server)
 {
-	g_return_if_fail(server != NULL);
+	irmo_return_if_fail(server != NULL);
 	
 	--server->refcount;
 
@@ -173,8 +173,8 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 					IrmoClientCallback func,
 					void *user_data)
 {
-	g_return_val_if_fail(server != NULL, NULL);
-	g_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(server != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
 	
 	return irmo_callbacklist_add(&server->connect_callbacks, 
 				     func, user_data);
@@ -221,8 +221,8 @@ void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
 		user_data
 	};
 
-	g_return_if_fail(server != NULL);
-	g_return_if_fail(callback != NULL);
+	irmo_return_if_fail(server != NULL);
+	irmo_return_if_fail(callback != NULL);
 
 	irmo_hash_table_foreach(server->clients, 
 			     (IrmoHashTableIterator) server_foreach_foreach,
@@ -236,7 +236,7 @@ static void server_shutdown_foreach(IrmoClient *client, void *user_data)
 
 void irmo_server_shutdown(IrmoServer *server)
 {
-	g_return_if_fail(server != NULL);
+	irmo_return_if_fail(server != NULL);
 
 	// disconnect all clients
 
@@ -254,19 +254,22 @@ void irmo_server_shutdown(IrmoServer *server)
 
 IrmoSocket *irmo_server_get_socket(IrmoServer *server)
 {
-	g_return_val_if_fail(server != NULL, NULL);
+	irmo_return_val_if_fail(server != NULL, NULL);
 
 	return server->socket;
 }
 
 void irmo_server_run(IrmoServer *server)
 {
-	g_return_if_fail(server != NULL);
+	irmo_return_if_fail(server != NULL);
 
 	irmo_socket_run(server->socket);
 }
 
 // $Log$
+// Revision 1.20  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.19  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

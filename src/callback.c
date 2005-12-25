@@ -78,7 +78,7 @@ void irmo_callback_unset(IrmoCallback *callback)
 {
         IrmoSListEntry **list = callback->list;
 
-	g_return_if_fail(callback != NULL);
+	irmo_return_if_fail(callback != NULL);
 
 	irmo_slist_remove_data(list, irmo_pointer_equal, callback);
 
@@ -307,8 +307,8 @@ IrmoCallback *irmo_world_watch_new(IrmoWorld *world, char *classname,
 {
 	IrmoCallbackData *data;
 
-	g_return_val_if_fail(world != NULL, NULL);
-	g_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
 	
 	// find the class
 
@@ -332,9 +332,9 @@ IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
 	IrmoCallbackData *data;
 	IrmoCallback *callback = NULL;
 	
-	g_return_val_if_fail(world != NULL, NULL);
-	g_return_val_if_fail(func != NULL, NULL);
-	g_return_val_if_fail(!(classname == NULL && variable != NULL), NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(!(classname == NULL && variable != NULL), NULL);
 	
 	// find the class
 	
@@ -366,8 +366,8 @@ IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world,
 	IrmoCallbackData *data;
 	IrmoCallback *callback = NULL;
 
-	g_return_val_if_fail(world != NULL, NULL);
-	g_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
 	
 	data = find_callback_class(world, classname);
 
@@ -387,8 +387,8 @@ IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
 {
         IrmoCallback *callback;
 
-	g_return_val_if_fail(object != NULL, NULL);
-	g_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(object != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
 
 	callback = callbackdata_watch(object->callbacks, variable,
 				      func, user_data);
@@ -406,14 +406,17 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 					IrmoObjCallback func, 
 					void *user_data)
 {
-	g_return_val_if_fail(object != NULL, NULL);
-	g_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(object != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
 	
 	return irmo_callbacklist_add(&object->callbacks->destroy_callbacks,
 				     func, user_data);
 }
 
 // $Log$
+// Revision 1.18  2005/12/25 00:38:18  fraggle
+// Use internal macros instead of glib ones for assertation checks
+//
 // Revision 1.17  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency
