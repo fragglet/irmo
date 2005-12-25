@@ -22,18 +22,24 @@
 //
 //---------------------------------------------------------------------
 
-#ifndef IRMO_COMMON_COMMON_H
-#define IRMO_COMMON_COMMON_H 
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "arraylist.h"
-#include "compare-pointer.h"
-#include "compare-string.h"
-#include "hash-pointer.h"
-#include "hash-string.h"
-#include "hashtable.h"
-#include "queue.h"
-#include "slist.h"
 #include "util.h"
 
-#endif /* #ifndef IRMO_COMMON_COMMON_H */
+void *irmo_malloc0(int bytes)
+{
+        void *p;
+
+        p = malloc(bytes);
+        memset(p, 0, bytes);
+
+        return p;
+}
+
+void irmo_assert_fail_message(const char *function_name, char *assertation)
+{
+        fprintf(stderr, "%s: Warning: assertation '%s' failed.\n", 
+                        function_name, assertation);
+}
 
