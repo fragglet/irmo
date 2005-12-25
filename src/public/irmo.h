@@ -40,26 +40,3 @@
 
 #endif /* #ifndef IRMO_H */
 
-// $Log$
-// Revision 1.3  2003/09/01 14:21:20  fraggle
-// Use "world" instead of "universe". Rename everything.
-//
-// Revision 1.2  2003/07/24 01:25:27  fraggle
-// Add an error reporting API
-//
-// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
-// Initial sourceforge import
-//
-// Revision 1.4  2003/06/09 21:06:55  sdh300
-// Add CVS Id tag and copyright/license notices
-//
-// Revision 1.3  2003/03/16 01:56:09  sdh300
-// Add method.h to irmo.h include
-//
-// Revision 1.2  2003/03/07 12:45:27  sdh300
-// Dont include irmo/irmo.h
-//
-// Revision 1.1  2003/03/07 01:46:21  sdh300
-// Add a meta-include file to include all the others
-//
-

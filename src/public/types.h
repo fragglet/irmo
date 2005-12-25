@@ -347,19 +347,3 @@ typedef void (*IrmoCallbackCallback)(IrmoCallback *callback,
 	
 #endif /* #ifndef IRMO_TYPES_H */
 
-// $Log$
-// Revision 1.4  2003/12/30 05:58:27  fraggle
-// Clear up documentation in a few places
-//
-// Revision 1.3  2003/12/27 19:01:49  fraggle
-// irmo_callback_watch_destroy
-//
-// Revision 1.2  2003/11/21 18:10:18  fraggle
-// Fix up doxygen documentation; move section documentation into headers
-// from 'sections.doxygen'
-//
-// Revision 1.1  2003/11/21 17:46:18  fraggle
-// Restructure header files: move type definitions into "types.h"; move
-// callback prototypes into their appropriate headers instead of
-// callback.h; make headers C++-safe
-//

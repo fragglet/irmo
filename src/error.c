@@ -50,25 +50,3 @@ char *irmo_error_get(void)
 	return last_error;
 }
 
-// $Log$
-// Revision 1.6  2005/12/23 22:47:50  fraggle
-// Add algorithm implementations from libcalg.   Use these instead of
-// the glib equivalents.  This is the first stage in removing the dependency
-// on glib.
-//
-// Revision 1.5  2004/04/17 22:19:57  fraggle
-// Use glib memory management functions where possible
-//
-// Revision 1.4  2003/12/01 13:07:30  fraggle
-// Split off system headers to sysheaders.h for common portability stuff
-//
-// Revision 1.3  2003/11/20 00:19:17  fraggle
-// Add some fixes to get compiling under windows
-//
-// Revision 1.2  2003/08/13 18:32:40  fraggle
-// Convert () in function definitions to the more explicit (void)
-//
-// Revision 1.1  2003/07/24 01:32:08  fraggle
-// Add error reporting modules
-//
-

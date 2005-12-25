@@ -32,8 +32,3 @@ void irmo_error_report(char *function_name, char *format, ...);
 
 #endif /* #ifndef IRMO_INTERNAL_ERROR_H */
 
-// $Log$
-// Revision 1.1  2003/07/24 01:32:08  fraggle
-// Add error reporting modules
-//
-

@@ -59,20 +59,3 @@ char *irmo_error_get(void);
 
 #endif /* #ifndef IRMO_ERROR_H */
 
-// $Log$
-// Revision 1.4  2003/11/21 18:10:18  fraggle
-// Fix up doxygen documentation; move section documentation into headers
-// from 'sections.doxygen'
-//
-// Revision 1.3  2003/11/21 17:46:18  fraggle
-// Restructure header files: move type definitions into "types.h"; move
-// callback prototypes into their appropriate headers instead of
-// callback.h; make headers C++-safe
-//
-// Revision 1.2  2003/08/13 18:32:40  fraggle
-// Convert () in function definitions to the more explicit (void)
-//
-// Revision 1.1  2003/07/24 01:32:08  fraggle
-// Add error reporting modules
-//
-

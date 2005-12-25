@@ -111,33 +111,3 @@ IrmoSendAtomClass irmo_destroy_atom = {
 	NULL,
 };
 
-//---------------------------------------------------------------------
-//
-// $Log$
-// Revision 1.7  2005/12/25 00:48:29  fraggle
-// Use internal memory functions, rather than the glib ones
-//
-// Revision 1.6  2005/12/23 22:47:50  fraggle
-// Add algorithm implementations from libcalg.   Use these instead of
-// the glib equivalents.  This is the first stage in removing the dependency
-// on glib.
-//
-// Revision 1.5  2003/12/01 13:07:30  fraggle
-// Split off system headers to sysheaders.h for common portability stuff
-//
-// Revision 1.4  2003/12/01 12:46:05  fraggle
-// Fix under NetBSD
-//
-// Revision 1.3  2003/11/18 18:14:46  fraggle
-// Get compilation under windows to work, almost
-//
-// Revision 1.2  2003/11/05 04:05:44  fraggle
-// Cast functions rather than casting arguments to functions
-//
-// Revision 1.1  2003/10/22 16:13:10  fraggle
-// Split off sendatom classes into separate files
-//
-//
-//---------------------------------------------------------------------
-
-

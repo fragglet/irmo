@@ -51,38 +51,3 @@ int irmo_proto_client_timeout_time(IrmoClient *client);
 
 #endif /* #ifndef IRMO_PROTO_H */
 
-// $Log$
-// Revision 1.6  2005/12/23 22:47:50  fraggle
-// Add algorithm implementations from libcalg.   Use these instead of
-// the glib equivalents.  This is the first stage in removing the dependency
-// on glib.
-//
-// Revision 1.5  2004/01/06 01:36:18  fraggle
-// Remove vhosting. Simplify the server API.
-//
-// Revision 1.4  2003/10/18 01:34:45  fraggle
-// Better error reporting for connecting, allow server to send back an
-// error message when refusing connections
-//
-// Revision 1.3  2003/10/17 23:33:05  fraggle
-// protocol version checking
-//
-// Revision 1.2  2003/09/03 15:28:30  fraggle
-// Add irmo_ prefix to all internal global functions (namespacing)
-//
-// Revision 1.1.1.1  2003/06/09 21:33:25  fraggle
-// Initial sourceforge import
-//
-// Revision 1.4  2003/06/09 21:06:52  sdh300
-// Add CVS Id tag and copyright/license notices
-//
-// Revision 1.3  2003/03/21 17:21:46  sdh300
-// Round Trip Time estimatation and adaptive timeout times
-//
-// Revision 1.2  2003/03/14 01:07:23  sdh300
-// Initial packet verification code
-//
-// Revision 1.1  2003/03/07 12:31:51  sdh300
-// Add protocol.h
-//
-
