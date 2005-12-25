@@ -78,9 +78,9 @@ static void proto_parse_insert_atom(IrmoClient *client,
 		int newsize = index+1;
 
 		client->recvwindow
-			= g_renew(IrmoSendAtom *,
-				  client->recvwindow,
-				  newsize);
+			= irmo_renew(IrmoSendAtom *,
+				     client->recvwindow,
+				     newsize);
 
 		for (i=client->recvwindow_size; i<newsize; ++i)
 			client->recvwindow[i] = NULL;
@@ -288,6 +288,9 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.17  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.16  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.

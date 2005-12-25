@@ -79,7 +79,7 @@ static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 	IrmoMethod *method;
 	unsigned int i;
 
-	atom = g_new0(IrmoMethodAtom, 1);
+	atom = irmo_new0(IrmoMethodAtom, 1);
 	atom->sendatom.klass = &irmo_method_atom;
 	
 	// read method number
@@ -90,7 +90,7 @@ static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 
 	// read arguments
 	
-	atom->method.args = g_new0(IrmoValue, method->narguments);
+	atom->method.args = irmo_new0(IrmoValue, method->narguments);
 
 	for (i=0; i<method->narguments; ++i) {
 		irmo_packet_read_value(packet, &atom->method.args[i],
@@ -189,6 +189,9 @@ IrmoSendAtomClass irmo_method_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.7  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.6  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

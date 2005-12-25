@@ -60,7 +60,7 @@ static IrmoSendAtom *irmo_destroy_atom_read(IrmoPacket *packet)
 {
 	IrmoDestroyAtom *atom;
 
-	atom = g_new0(IrmoDestroyAtom, 1);
+	atom = irmo_new0(IrmoDestroyAtom, 1);
 	atom->sendatom.klass = &irmo_destroy_atom;
 
 	// object id to destroy
@@ -114,6 +114,9 @@ IrmoSendAtomClass irmo_destroy_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.7  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.6  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

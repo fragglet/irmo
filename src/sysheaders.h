@@ -72,11 +72,14 @@ typedef signed long int32_t;
 
 #endif
 
-#include <glib.h>
+//#include <glib.h>
 
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
 // $Log$
+// Revision 1.5  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.4  2005/12/24 00:47:21  fraggle
 // Include the autotools config.h header so that config settings get included.
 //

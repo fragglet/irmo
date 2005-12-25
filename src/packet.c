@@ -33,7 +33,7 @@
 
 IrmoPacket *irmo_packet_new(void)
 {
-	IrmoPacket *packet = g_new0(IrmoPacket, 1);
+	IrmoPacket *packet = irmo_new0(IrmoPacket, 1);
 
 	packet->data_size = 256;
 	packet->data = malloc(packet->data_size);
@@ -243,6 +243,9 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 }
 
 // $Log$
+// Revision 1.13  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.12  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.

@@ -53,7 +53,7 @@ static IrmoSendAtom *irmo_sendwindow_atom_read(IrmoPacket *packet)
 {
 	IrmoSendWindowAtom *atom;
 
-	atom = g_new0(IrmoSendWindowAtom, 1);
+	atom = irmo_new0(IrmoSendWindowAtom, 1);
 	atom->sendatom.klass = &irmo_sendwindow_atom;
 	
 	// read window advertisement
@@ -94,6 +94,9 @@ IrmoSendAtomClass irmo_sendwindow_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.7  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.6  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

@@ -119,7 +119,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 		return;
 	}
 
-	args = g_new0(IrmoValue, spec->narguments);
+	args = irmo_new0(IrmoValue, spec->narguments);
 
 	// read each of the arguments
 	
@@ -238,6 +238,9 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 }
 
 // $Log$
+// Revision 1.17  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.16  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //

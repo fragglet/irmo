@@ -107,7 +107,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 	// make object
 	
-	object = g_new0(IrmoObject, 1);
+	object = irmo_new0(IrmoObject, 1);
 
 	object->id = id;
 	object->objclass = objclass;
@@ -116,9 +116,9 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	
 	// member variables:
 
-	object->variables = g_new0(IrmoValue, objclass->nvariables);
+	object->variables = irmo_new0(IrmoValue, objclass->nvariables);
 
-	// int variables will be initialised to 0 by g_new0
+	// int variables will be initialised to 0 by irmo_new0
 	// string values must be initialised to the empty string ("")
 	
 	for (i=0; i<objclass->nvariables; ++i)
@@ -144,7 +144,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	// if a remote world, create variable_time array
 
 	if (world->remote)
-		object->variable_time = g_new0(int, objclass->nvariables);
+		object->variable_time = irmo_new0(int, objclass->nvariables);
 	
 	return object;
 }
@@ -487,6 +487,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 }
 
 // $Log$
+// Revision 1.23  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.22  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //

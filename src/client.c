@@ -44,7 +44,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 {
 	IrmoClient *client;
 
-	client = g_new0(IrmoClient, 1);
+	client = irmo_new0(IrmoClient, 1);
 
 	client->state = CLIENT_CONNECTING;
 	client->server = server;
@@ -62,7 +62,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 	client->recvwindow_start = 0;
 	client->recvwindow_size = 64;
-	client->recvwindow = g_new0(IrmoSendAtom *, client->recvwindow_size);
+	client->recvwindow = irmo_new0(IrmoSendAtom *, client->recvwindow_size);
 
 	// start at one ref, from the server this is part of 
 
@@ -357,6 +357,9 @@ const char *irmo_client_get_addr(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.21  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.20  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //

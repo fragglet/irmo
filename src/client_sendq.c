@@ -98,7 +98,7 @@ void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 {
 	IrmoNewObjectAtom *atom;
 
-	atom = g_new0(IrmoNewObjectAtom, 1);
+	atom = irmo_new0(IrmoNewObjectAtom, 1);
 
 	atom->sendatom.klass = &irmo_newobject_atom;
 	atom->id = object->id;
@@ -154,12 +154,12 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 				   (void *) object->id);
 
 	if (!atom) {
-		atom = g_new0(IrmoChangeAtom, 1);
+		atom = irmo_new0(IrmoChangeAtom, 1);
 		IRMO_SENDATOM(atom)->klass = &irmo_change_atom;
 
 		atom->id = object->id;
 		atom->object = object;
-		atom->changed = g_new0(int, object->objclass->nvariables);
+		atom->changed = irmo_new0(int, object->objclass->nvariables);
 		atom->nchanged = 0;
 		
 		irmo_client_sendq_push(client, IRMO_SENDATOM(atom));
@@ -212,7 +212,7 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	
 	// create a destroy atom
 
-	atom = g_new0(IrmoDestroyAtom, 1);
+	atom = irmo_new0(IrmoDestroyAtom, 1);
 	atom->sendatom.klass = &irmo_destroy_atom;
 
 	atom->id = object->id;
@@ -228,13 +228,13 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 	
 	// create a new method atom
 	
-	atom = g_new0(IrmoMethodAtom, 1);
+	atom = irmo_new0(IrmoMethodAtom, 1);
 	atom->sendatom.klass = &irmo_method_atom;
 	atom->method.spec = data->spec;
 
 	// copy arguments
 
-	atom->method.args = g_new0(IrmoValue, method->narguments);
+	atom->method.args = irmo_new0(IrmoValue, method->narguments);
 	memcpy(atom->method.args,
 	       data->args,
 	       sizeof(IrmoValue) * method->narguments);
@@ -258,7 +258,7 @@ void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max)
 {
 	IrmoSendWindowAtom *atom;
 
-	atom = g_new0(IrmoSendWindowAtom, 1);
+	atom = irmo_new0(IrmoSendWindowAtom, 1);
 	atom->sendatom.klass = &irmo_sendwindow_atom;
 
 	atom->max = max;
@@ -303,6 +303,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.8  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.7  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.

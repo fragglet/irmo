@@ -41,6 +41,7 @@
 // 
 
 #include <assert.h>
+#include <stdarg.h>
 #include <setjmp.h>
 
 #include "sysheaders.h"
@@ -232,7 +233,7 @@ static int eat_class_var_statement(IrmoClass *klass)
 		parse_assert(klass->nvariables < MAX_VARIABLES,
 			     "maximum of %i variables per class", MAX_VARIABLES);
 
-		var = g_new0(IrmoClassVar, 1);
+		var = irmo_new0(IrmoClassVar, 1);
 		var->type = vartype;
 		var->index = klass->nvariables;
 		var->name = strdup(yytext);
@@ -311,9 +312,9 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 		     "multiple definitions of '%s'",
 		     yytext);
 
-	klass = g_new0(IrmoClass, 1); 
+	klass = irmo_new0(IrmoClass, 1); 
 	klass->name = strdup(yytext);
-	klass->variables = g_new0(IrmoClassVar *, MAX_VARIABLES);
+	klass->variables = irmo_new0(IrmoClassVar *, MAX_VARIABLES);
 	klass->nvariables = 0;
 	klass->variable_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 	klass->parent = spec;
@@ -359,7 +360,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 
 	if (klass->nvariables < MAX_VARIABLES)
 		klass->variables 
-		   = g_realloc(klass->variables, klass->nvariables * sizeof(IrmoClassVar *));
+                   = irmo_renew(IrmoClassVar *, klass->variables, klass->nvariables);
 
 	//printf("read class: name '%s', %i variables\n", klass->name, i);
 
@@ -402,7 +403,7 @@ static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 
 	parse_assert(yylex() == TOKEN_ID, "expecting argument name");
 
-	arg = g_new0(IrmoMethodArg, 1); 
+	arg = irmo_new0(IrmoMethodArg, 1); 
 	arg->name = strdup(yytext);
 	arg->type = argtype;
 	arg->index = method->narguments;
@@ -464,9 +465,9 @@ static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 	parse_assert(irmo_interface_spec_get_method(spec, yytext) == NULL,
 		     "multiple definitions of '%s'", yytext);
 	
-	method = g_new0(IrmoMethod, 1); 
+	method = irmo_new0(IrmoMethod, 1); 
 	method->name = strdup(yytext);
-	method->arguments = g_new0(IrmoMethodArg *, MAX_ARGUMENTS);
+	method->arguments = irmo_new0(IrmoMethodArg *, MAX_ARGUMENTS);
 	method->argument_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 	method->narguments = 0;
 	method->parent = spec;
@@ -479,8 +480,9 @@ static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 	while (eat_method_arg(method));
 
 	if (method->narguments < MAX_ARGUMENTS) {
-		method->arguments = g_realloc(method->arguments,
-					      sizeof(IrmoMethodArg) * method->narguments);
+		method->arguments = irmo_renew(IrmoMethodArg *, 
+                                               method->arguments,
+                                               method->narguments);
 	}
 
 	parse_assert(yylex() == TOKEN_SEMICOLON,
@@ -539,9 +541,9 @@ static IrmoInterfaceSpec *eat_interface()
 	IrmoInterfaceSpec *spec;
 	int token;
 
-	spec = g_new0(IrmoInterfaceSpec, 1); 
-	spec->classes = g_new0(IrmoClass *, MAX_CLASSES);
-	spec->methods = g_new0(IrmoMethod *, MAX_METHODS);
+	spec = irmo_new0(IrmoInterfaceSpec, 1); 
+	spec->classes = irmo_new0(IrmoClass *, MAX_CLASSES);
+	spec->methods = irmo_new0(IrmoMethod *, MAX_METHODS);
 	spec->nclasses = spec->nmethods = 0;
 	spec->refcount = 1;
 	
@@ -585,11 +587,9 @@ static IrmoInterfaceSpec *eat_interface()
 	}
 
 	if (spec->nclasses < MAX_METHODS)
-		spec->classes = g_realloc(spec->classes,
-					  sizeof(IrmoClass *) * spec->nclasses);
+		spec->classes = irmo_renew(IrmoClass *, spec->classes, spec->nclasses);
 	if (spec->nmethods < MAX_METHODS)
-		spec->methods = g_realloc(spec->methods,
-					  sizeof(IrmoMethod *) * spec->nmethods);
+		spec->methods = irmo_renew(IrmoMethod *, spec->methods, spec->nmethods);
 
 	spec->hash = irmo_interface_spec_hash(spec);
 
@@ -649,6 +649,9 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
 }
 
 // $Log$
+// Revision 1.17  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.16  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //

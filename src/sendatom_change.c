@@ -78,7 +78,7 @@ static int irmo_change_atom_verify(IrmoPacket *packet)
 	
 	result = 1;
 
-	changed = g_new0(int, objclass->nvariables);
+	changed = irmo_new0(int, objclass->nvariables);
 
 	for (i=0, n=0; result && i<(objclass->nvariables+7) / 8; ++i) {
 		unsigned int byte;
@@ -123,7 +123,7 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 	unsigned int i;
         int b, n;
 
-	atom = g_new0(IrmoChangeAtom, 1);
+	atom = irmo_new0(IrmoChangeAtom, 1);
 	atom->sendatom.klass = &irmo_change_atom;
 
 	// read class
@@ -139,7 +139,7 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 	
 	// read the changed object bitmap
 
-	changed = g_new0(int, objclass->nvariables);
+	changed = irmo_new0(int, objclass->nvariables);
 	atom->changed = changed;
 	
 	for (i=0, n=0; i<(objclass->nvariables+7) / 8; ++i) {
@@ -157,7 +157,7 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 
 	// read the new values
 
-	newvalues = g_new0(IrmoValue, objclass->nvariables);
+	newvalues = irmo_new0(IrmoValue, objclass->nvariables);
 	atom->newvalues = newvalues;
 
 	for (i=0; i<objclass->nvariables; ++i) {
@@ -381,6 +381,9 @@ IrmoSendAtomClass irmo_change_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.8  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.7  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.

@@ -151,7 +151,7 @@ static IrmoSocket *_socket_new(IrmoSocketDomain type)
 	
 	// wrap it all up in an IrmoSocket object
 
-	irmosock = g_new0(IrmoSocket, 1);
+	irmosock = irmo_new0(IrmoSocket, 1);
 	irmosock->refcount = 1;
 	irmosock->domain = type;
 	irmosock->sock = sock;
@@ -224,7 +224,7 @@ IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port)
 	// try to bind to the port
 
 	addr_len = irmo_sockaddr_len(socket_type_to_domain(sock->domain));
-	addr = (struct sockaddr *) g_malloc0(addr_len);
+	addr = (struct sockaddr *) irmo_malloc0(addr_len);
 
 	switch (sock->domain) {
 	case IRMO_SOCKET_IPV4:
@@ -691,6 +691,9 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.29  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.28  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //

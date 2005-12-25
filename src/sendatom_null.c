@@ -48,7 +48,7 @@ static IrmoSendAtom *irmo_null_atom_read(IrmoPacket *packet)
 {
 	IrmoSendAtom *atom;
 	
-	atom = g_new0(IrmoSendAtom, 1);
+	atom = irmo_new0(IrmoSendAtom, 1);
 	atom->klass = &irmo_null_atom;
 
 	return atom;
@@ -82,6 +82,9 @@ IrmoSendAtomClass irmo_null_atom = {
 //---------------------------------------------------------------------
 //
 // $Log$
+// Revision 1.5  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.4  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

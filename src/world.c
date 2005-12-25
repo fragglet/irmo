@@ -41,7 +41,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 
 	irmo_return_val_if_fail(spec != NULL, NULL);
 	
-	world = g_new0(IrmoWorld, 1);
+	world = irmo_new0(IrmoWorld, 1);
 
 	world->spec = spec;
 	world->objects = irmo_hash_table_new(irmo_pointer_hash, irmo_pointer_equal);
@@ -54,7 +54,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 
 	// create a callback for each class
 	
-	world->callbacks = g_new0(IrmoCallbackData *, spec->nclasses);
+	world->callbacks = irmo_new0(IrmoCallbackData *, spec->nclasses);
 
 	for (i=0; i<spec->nclasses; ++i) {
 		IrmoCallbackData *parent_data;
@@ -72,7 +72,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 
 	// method callbacks
 	
-	world->method_callbacks = g_new0(IrmoSListEntry *, spec->nmethods);
+	world->method_callbacks = irmo_new0(IrmoSListEntry *, spec->nmethods);
 
 	return world;
 }
@@ -210,6 +210,9 @@ IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
 }
 
 // $Log$
+// Revision 1.12  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.11  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //

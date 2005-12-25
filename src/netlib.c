@@ -123,7 +123,7 @@ static struct sockaddr *sockaddr_in_for_name(char *name, int port)
 	if (!hp)
 		return NULL;
 
-	addr = g_new0(struct sockaddr_in, 1);
+	addr = irmo_new0(struct sockaddr_in, 1);
 	addr->sin_family = AF_INET;
 	addr->sin_port = htons(port);
 	memcpy(&addr->sin_addr, hp->h_addr, hp->h_length);
@@ -146,7 +146,7 @@ static struct sockaddr *sockaddr_in6_for_name(char *name, int port)
 	hints.ai_protocol = 0;
         
 	if (getaddrinfo(name, "0", &hints, &info) == 0 && info) {
-		addr = g_new0(struct sockaddr_in6, 1);
+		addr = irmo_new0(struct sockaddr_in6, 1);
 
 		memcpy(addr, info->ai_addr, sizeof(struct sockaddr_in6));
 
@@ -226,6 +226,9 @@ void irmo_timeval_from_ms(int ms, GTimeVal *time)
 }
 
 // $Log$
+// Revision 1.12  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.11  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.

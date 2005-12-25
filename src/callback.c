@@ -39,7 +39,7 @@ IrmoCallback *irmo_callbacklist_add(IrmoSListEntry **list,
 {
 	IrmoCallback *callback;
 	
-	callback = g_new0(IrmoCallback, 1);
+	callback = irmo_new0(IrmoCallback, 1);
 	callback->func = func;
 	callback->user_data = user_data;
 	callback->list = list;
@@ -115,7 +115,7 @@ IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass,
 {
 	IrmoCallbackData *data;
 
-	data = g_new0(IrmoCallbackData, 1);
+	data = irmo_new0(IrmoCallbackData, 1);
 
 	data->objclass = objclass;
 
@@ -127,7 +127,7 @@ IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass,
 
 	if (objclass)
 		data->variable_callbacks 
-			= g_new0(IrmoSListEntry *, objclass->nvariables);
+			= irmo_new0(IrmoSListEntry *, objclass->nvariables);
 
 	return data;
 }
@@ -414,6 +414,9 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 }
 
 // $Log$
+// Revision 1.19  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.18  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //

@@ -40,7 +40,7 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 
 	// create new server
 	
-	server = g_new0(IrmoServer, 1);
+	server = irmo_new0(IrmoServer, 1);
 	server->refcount = 1;
 	server->socket = sock;
 	server->world = world;
@@ -267,6 +267,9 @@ void irmo_server_run(IrmoServer *server)
 }
 
 // $Log$
+// Revision 1.21  2005/12/25 00:48:29  fraggle
+// Use internal memory functions, rather than the glib ones
+//
 // Revision 1.20  2005/12/25 00:38:18  fraggle
 // Use internal macros instead of glib ones for assertation checks
 //
