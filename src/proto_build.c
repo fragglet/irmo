@@ -60,13 +60,13 @@ static void proto_atom_resent(IrmoClient *client, int i)
 
 static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 {
-	GTimeVal nowtime;
 	IrmoPacket *packet;
 	int i, n;
 	int backstart;
+        unsigned int nowtime;
 
-	g_get_current_time(&nowtime);
-	
+        nowtime = irmo_get_time();
+
 	// make a new packet
 	
 	packet = irmo_packet_new();
@@ -137,7 +137,7 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 			// if this is a prefixed NULL atom, ignore the
 			// resend code. we are resending deliberately
 
-			if (client->sendwindow[i]->sendtime.tv_sec
+			if (client->sendwindow[i]->sendtime != IRMO_ATOM_UNSENT
 			 && i >= start)
 				proto_atom_resent(client, i);
 			
@@ -202,7 +202,7 @@ static void proto_pump_client(IrmoClient *client)
 		// pop another from the sendq and add to the sendwindow
 
 		atom = irmo_client_sendq_pop(client);		
-		atom->sendtime.tv_sec = 0;
+		atom->sendtime = IRMO_ATOM_UNSENT;
 		
 		client->sendwindow[client->sendwindow_size] = atom;
 		atom->seqnum = client->sendwindow_start
@@ -224,7 +224,8 @@ static void proto_pump_client(IrmoClient *client)
 
 void irmo_proto_run_client(IrmoClient *client)
 {
-	GTimeVal nowtime, timeout_time, timeout_length;
+        unsigned int nowtime;
+        unsigned int timeout_time;
 	int timeout_length_ms;
 	int i;
 
@@ -243,21 +244,19 @@ void irmo_proto_run_client(IrmoClient *client)
 	
 	proto_pump_client(client);
 
-	g_get_current_time(&nowtime);
-	
-	irmo_timeval_from_ms(timeout_length_ms, &timeout_length);
+        // all atoms which have a send time < timeout_time have
+        // timed out and should be resent.
 
+        nowtime = irmo_get_time();
+        timeout_time = nowtime - timeout_length_ms;
+	
 	//printf("timeout for client: %i ms (%i, %i)\n",
 	//timeout_length_ms,
 	//(int) client->rtt,
 	//(int) client->rtt_deviation);
 	
-	irmo_timeval_sub(&nowtime, &timeout_length, &timeout_time);
-
-	//printf("-- %i\n", timeout_time.tv_sec);
-
 	//for (i=0; i<client->sendwindow_size; ++i) {
-	//printf("%i: %i\n", i, client->sendwindow[i]->sendtime.tv_sec);
+	//printf("%i: %i\n", i, client->sendwindow[i]->sendtime);
 	//}
 
 	for (i=0; i<client->sendwindow_size; ) {
@@ -270,8 +269,7 @@ void irmo_proto_run_client(IrmoClient *client)
 		// search forward until we find the start of a block
 
 		while (i<client->sendwindow_size
-		       && irmo_timeval_cmp(&client->sendwindow[i]->sendtime,
-					   &timeout_time) > 0) {
+                   && client->sendwindow[i]->sendtime > timeout_time) {
 			//printf("atom %i not expired yet\n", i);
 			++i;
 		}
@@ -287,9 +285,8 @@ void irmo_proto_run_client(IrmoClient *client)
 		len = 0;
 		
 		while (i<client->sendwindow_size
-		       && irmo_timeval_cmp(&client->sendwindow[i]->sendtime,
-					   &timeout_time) <= 0
-		       && len < PACKET_THRESHOLD) {
+                    && client->sendwindow[i]->sendtime <= timeout_time
+		    && len < PACKET_THRESHOLD) {
 			//printf("atom %i out of date\n", i);
 			len += client->sendwindow[i]->len;
 			++i;
@@ -343,6 +340,11 @@ void irmo_proto_run_client(IrmoClient *client)
 }
 
 // $Log$
+// Revision 1.16  2005/12/25 21:33:19  fraggle
+// Perform all internal time calculations in terms of millisecond counters
+// instead of using timeval structures.  Remove use of glib time functions.
+// Create a new architecture-specific directory containing time code.
+//
 // Revision 1.15  2005/12/24 00:15:59  fraggle
 // Use the C99 "uintN_t" standard integer types rather than the glib
 // guint types.

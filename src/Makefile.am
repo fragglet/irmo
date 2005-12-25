@@ -2,21 +2,39 @@ lib_LTLIBRARIES=libirmo.la
 
 INCLUDES=$(MODULES_CFLAGS)
 
-SUBDIRS=common public
+SUBDIRS=arch common public
 
 SRC= \
-  callback.c    connection.c  netlib.c   packet.h       server.c	\
-  callback.h    connection.h  netlib.h   proto_build.c  server.h	\
-  client.c      if_spec.h     object.c   proto_parse.c  socket.c	\
-  client.h      if_spec.l     object.h   sendatom.c     socket.h	\
-  client_run.c  packet.c      sendatom.h world.c			\
-  world.h       protocol.h    proto_verify.c            method.c	\
-  method.h	error.c	      error.h    if_spec_reflect.c	        \
-  client_sendq.c							\
-  sendatom_change.c   sendatom_method.c     sendatom_null.c		\
-  sendatom_destroy.c  sendatom_newobject.c  sendatom_sendwindow.c	\
-  sysheaders.h
+  callback.c            callback.h          \
+  connection.c          connection.h        \
+  client.c              client.h            \
+  client_run.c                              \
+  client_sendq.c                            \
+  error.c               error.h             \
+  if_spec.l             if_spec.h           \
+  if_spec_reflect.c                         \
+  method.c              method.h            \
+  netlib.c              netlib.h            \
+  packet.c              packet.h            \
+  protocol.h                                \
+  proto_build.c                             \
+  proto_parse.c                             \
+  proto_verify.c                            \
+  sendatom.h                                \
+  sendatom_change.c                         \
+  sendatom_destroy.c                        \
+  sendatom_method.c                         \
+  sendatom_newobject.c                      \
+  sendatom_null.c                           \
+  sendatom_sendwindow.c                     \
+  socket.c              socket.h            \
+  server.c              server.h            \
+  sysheaders.h                              \
+  world.c               world.h
 
 libirmo_la_SOURCES= $(SRC)
-libirmo_la_LIBADD=common/libirmocommon.a $(MODULES_LIBS) @LEXLIB@
+libirmo_la_LIBADD=\
+  arch/libirmoarch.a                        \
+  common/libirmocommon.a                    \
+  $(MODULES_LIBS) @LEXLIB@
 

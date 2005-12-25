@@ -40,30 +40,14 @@ struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr);
 struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain, 
 					char *name, int port);
 
-// time functions
-
-// add two timevals (result = a + b)
-
-void irmo_timeval_add(GTimeVal *a, GTimeVal *b,
-		      GTimeVal *result);
-
-// subtract timevals (result = a - b)
-
-void irmo_timeval_sub(GTimeVal *a, GTimeVal *b,
-		      GTimeVal *result);
-
-// compare timevals
-
-int irmo_timeval_cmp(GTimeVal *a, GTimeVal *b);
-
-// conversion to milliseconds
-
-int irmo_timeval_to_ms(GTimeVal *a);
-void irmo_timeval_from_ms(int ms, GTimeVal *a);
-
 #endif /* #ifndef IRMO_NETLIB_H */
 
 // $Log$
+// Revision 1.11  2005/12/25 21:33:19  fraggle
+// Perform all internal time calculations in terms of millisecond counters
+// instead of using timeval structures.  Remove use of glib time functions.
+// Create a new architecture-specific directory containing time code.
+//
 // Revision 1.10  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

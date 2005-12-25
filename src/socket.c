@@ -654,8 +654,7 @@ void irmo_socket_run(IrmoSocket *sock)
 void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 {
 	fd_set set;
-	GTimeVal tv_timeout;
-	struct timeval tv_timeout2;
+	struct timeval tv_timeout;
 	int result;
 	int max;
 	int i;
@@ -672,10 +671,10 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)
 	}
 
 	if (timeout > 0) {
-		irmo_timeval_from_ms(timeout, &tv_timeout);
-		tv_timeout2.tv_sec = tv_timeout.tv_sec;
-		tv_timeout2.tv_usec = tv_timeout.tv_usec;
-		result = select(max+1, &set, NULL, NULL, &tv_timeout2);
+		tv_timeout.tv_sec = timeout / 1000;
+		tv_timeout.tv_usec = timeout % 1000;
+
+		result = select(max+1, &set, NULL, NULL, &tv_timeout);
 	} else {
 		result = select(max+1, &set, NULL, NULL, NULL);
 	}
@@ -691,6 +690,11 @@ void irmo_socket_block(IrmoSocket *socket, int timeout)
 }
 
 // $Log$
+// Revision 1.30  2005/12/25 21:33:19  fraggle
+// Perform all internal time calculations in terms of millisecond counters
+// instead of using timeval structures.  Remove use of glib time functions.
+// Create a new architecture-specific directory containing time code.
+//
 // Revision 1.29  2005/12/25 00:48:29  fraggle
 // Use internal memory functions, rather than the glib ones
 //

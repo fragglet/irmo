@@ -48,6 +48,11 @@ typedef enum {
 	NUM_SENDATOM_TYPES,
 } IrmoSendAtomType;
 
+// time value which indicates an atom has not yet been sent
+
+#define IRMO_ATOM_UNSENT UINT_MAX
+
+#include <limits.h>
 #include "client.h"
 #include "if_spec.h"
 #include "method.h"
@@ -100,8 +105,10 @@ struct _IrmoSendAtom {
 	IrmoClient *client;  
 
 	// time atom was last sent
+        // if this is equal to IRMO_ATOM_UNSENT, it has not yet 
+        // been transmitted.
 
-	GTimeVal sendtime;
+	unsigned int sendtime;
 
 	// true if this atom was resent
 
@@ -198,6 +205,11 @@ extern IrmoSendAtomClass *irmo_sendatom_types[];
 #endif /* #ifndef IRMO_SENDATOM_H */
 
 // $Log$
+// Revision 1.14  2005/12/25 21:33:19  fraggle
+// Perform all internal time calculations in terms of millisecond counters
+// instead of using timeval structures.  Remove use of glib time functions.
+// Create a new architecture-specific directory containing time code.
+//
 // Revision 1.13  2005/12/23 22:47:50  fraggle
 // Add algorithm implementations from libcalg.   Use these instead of
 // the glib equivalents.  This is the first stage in removing the dependency

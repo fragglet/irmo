@@ -220,20 +220,17 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	// If the atom was resent, this cannot be used.
 
 	if (!client->sendwindow[0]->resent) {
-		GTimeVal nowtime, rtt;
-		int rtt_ms, deviation;
+		unsigned int nowtime, rtt;
+		int deviation;
 		
-		g_get_current_time(&nowtime);
+                nowtime = irmo_get_time();
 
-		irmo_timeval_sub(&nowtime, &client->sendwindow[0]->sendtime,
-				 &rtt);
+                rtt = nowtime - client->sendwindow[0]->sendtime;
 
-		rtt_ms = irmo_timeval_to_ms(&rtt);
-
-		deviation = abs(rtt_ms - client->rtt);
+		deviation = abs(rtt - client->rtt);
 		
 		client->rtt = RTT_ALPHA * client->rtt
-			+ (1-RTT_ALPHA) * rtt_ms;
+			+ (1-RTT_ALPHA) * rtt;
 
 		client->rtt_deviation = RTT_ALPHA * client->rtt_deviation
 			+ (1-RTT_ALPHA) * deviation;
@@ -288,6 +285,11 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 }
 
 // $Log$
+// Revision 1.18  2005/12/25 21:33:19  fraggle
+// Perform all internal time calculations in terms of millisecond counters
+// instead of using timeval structures.  Remove use of glib time functions.
+// Create a new architecture-specific directory containing time code.
+//
 // Revision 1.17  2005/12/25 00:48:29  fraggle
 // Use internal memory functions, rather than the glib ones
 //

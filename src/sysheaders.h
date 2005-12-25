@@ -34,7 +34,13 @@
 #include <string.h>
 #include <time.h>
 
+// Common algorithms and utility functions
+
 #include "common/common.h"
+
+// Architecture-specific code
+
+#include "arch/arch.h"
 
 // C99 integer types
 
@@ -77,6 +83,11 @@ typedef signed long int32_t;
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
 // $Log$
+// Revision 1.7  2005/12/25 21:33:19  fraggle
+// Perform all internal time calculations in terms of millisecond counters
+// instead of using timeval structures.  Remove use of glib time functions.
+// Create a new architecture-specific directory containing time code.
+//
 // Revision 1.6  2005/12/25 00:49:50  fraggle
 // Undo last commit; add back glib.h
 //
