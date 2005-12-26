@@ -51,7 +51,7 @@ extern "C" {
  * \brief Create a new server
  *
  * Create a new \ref IrmoServer listening for connections on a
- * particular vhost.
+ * particular port.
  *
  * \param domain      The type of socket to listen on 
  *                    (see \ref IrmoSocketDomain)

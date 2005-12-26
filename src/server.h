@@ -43,10 +43,6 @@ struct _IrmoServer {
 	
 	int running;
 	
-	// vhost hostname
-
-	char *hostname;
-
 	// socket this server is using
 
 	IrmoSocket *socket;
