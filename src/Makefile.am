@@ -1,7 +1,5 @@
 lib_LTLIBRARIES=libirmo.la
 
-INCLUDES=$(MODULES_CFLAGS)
-
 SUBDIRS=arch common public
 
 SRC= \
@@ -37,5 +35,5 @@ libirmo_la_SOURCES= $(SRC)
 libirmo_la_LIBADD=\
   arch/libirmoarch.a                        \
   common/libirmocommon.a                    \
-  $(MODULES_LIBS) @LEXLIB@
+  @LEXLIB@
 

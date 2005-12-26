@@ -26,6 +26,7 @@
 #define IRMO_ARCH_ARCH_H 
 
 #include "arch-time.h"
+#include "arch-asprintf.h"
 
 #endif /* #ifndef IRMO_ARCH_ARCH_H */
 

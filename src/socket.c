@@ -274,7 +274,7 @@ static void socket_send_refuse(IrmoSocket *sock,
 
 	va_start(args, s);
 
-	message = g_strdup_printf(s, args);
+	message = irmo_vasprintf(s, args);
 
 	va_end(args);
 

@@ -3,8 +3,7 @@
 //
 // $Id$
 //
-// Copyright (C) 2002-2003 University of Southampton
-// Copyright (C) 2003 Simon Howard
+// Copyright (C) 2005 Simon Howard
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,30 +22,24 @@
 //
 //---------------------------------------------------------------------
 
-#include "sysheaders.h"
+#ifndef IRMO_ARCH_ASPRINTF_H
+#define IRMO_ARCH_ASPRINTF_H
 
-#include "error.h"
+#include <stdarg.h>
 
-static char *last_error = NULL;
+// 
+// Printf to string, allocating the string automatically to the size 
+// needed.
+//
 
-void irmo_error_report(char *function_name, char *format, ...)
-{
-	va_list args;
+char *irmo_asprintf(char *format, ...);
 
-	va_start(args, format);
+//
+// Printf to string, as irmo_asprintf, taking a varargs list.
+//
 
-	if (last_error)
-		free(last_error);
+char *irmo_vasprintf(char *format, va_list args);
 
-	last_error = irmo_vasprintf(format, args);
 
-	va_end(args);
-
-	fprintf(stderr, "%s: %s\n", function_name, last_error);
-}
-
-char *irmo_error_get(void)
-{
-	return last_error;
-}
+#endif /* #ifndef IRMO_ARCH_ASPRINTF_H */
 

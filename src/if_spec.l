@@ -155,7 +155,7 @@ static void parse_assert(int expr, char *msg, ...)
 
 		va_start(l, msg);
 
-		error_string = g_strdup_vprintf(msg, l);
+		error_string = irmo_vasprintf(msg, l);
 
 		irmo_error_report("irmo_interface_spec_new", "%s: %i: %s",
 				  yyin_filename, line_num,
@@ -175,13 +175,13 @@ static void parse_assert(int expr, char *msg, ...)
 	}
 }
 
-G_INLINE_FUNC int is_type_token(int i)
+static int is_type_token(int i)
 {
 	return i == TOKEN_INT8 || i == TOKEN_INT16 
 	    || i == TOKEN_INT32 || i == TOKEN_STRING;
 }
 
-G_INLINE_FUNC IrmoValueType type_token_to_spec(int i)
+static IrmoValueType type_token_to_spec(int i)
 {
 	switch(i) {
 		case TOKEN_INT8: return IRMO_TYPE_INT8;
@@ -276,7 +276,7 @@ static void class_free(IrmoClass *spec)
 	free(spec);
 }
 
-G_INLINE_FUNC unsigned int rotate(unsigned int i)
+static unsigned int rotate(unsigned int i)
 {
 	return (i << 1) | (i >> 31);
 }

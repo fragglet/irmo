@@ -190,7 +190,7 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 
 	va_start(args, s);
 
-	conn->connection_error = g_strdup_vprintf(s, args);
+	conn->connection_error = irmo_vasprintf(s, args);
 
 	va_end(args);
 }

@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <time.h>
 
@@ -78,7 +79,9 @@ typedef signed long int32_t;
 
 #endif
 
-#include <glib.h>
+extern char *g_strdup_printf(char *fmt, ...);
+extern char *g_strdup_vprintf(char *fmt, va_list args);
+
 
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
