@@ -30,7 +30,7 @@
 
 #include "arch-asprintf.h"
 
-#ifdef HAVE_VASPRINTF1
+#ifdef HAVE_VASPRINTF
 
 char *irmo_vasprintf(char *format, va_list args)
 {
