@@ -1,5 +1,3 @@
-// Emacs style mode select -*- C++ -*-
-//---------------------------------------------------------------------
 //
 // Copyright (C) 2002-3 Simon Howard
 //
@@ -18,7 +16,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 // 02111-1307, USA.
 //
-//---------------------------------------------------------------------
 
 #include "sysheaders.h"
 
