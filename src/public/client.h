@@ -1,8 +1,6 @@
 // Emacs style mode select -*- C++ -*-
 //---------------------------------------------------------------------
 //
-// $Id$
-//
 // Copyright (C) 2002-3 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
