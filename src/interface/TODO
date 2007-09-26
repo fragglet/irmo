@@ -1,0 +1,4 @@
+Import/export to blob
+Separate parser into a separate library
+Compiler (interface to blob)
+
