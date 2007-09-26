@@ -11,12 +11,13 @@ SUBDIRS=algo         \
 
 
 libirmo_la_SOURCES= 
-libirmo_la_LIBADD=\
-  algo/libirmoalgo.a           \
-  base/libirmobase.a           \
-  interface/libirmointerface.a \
-  net/libirmonet.a             \
-  netbase/libirmonetbase.a     \
-  world/libirmoworld.a         \
+libirmo_la_LIBADD=                \
+  arch/libirmoarch.la             \
+  algo/libirmoalgo.la             \
+  base/libirmobase.la             \
+  interface/libirmointerface.la   \
+  net/libirmonet.la               \
+  netbase/libirmonetbase.la       \
+  world/libirmoworld.la           \
   @LEXLIB@
 

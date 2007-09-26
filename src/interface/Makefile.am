@@ -1,7 +1,7 @@
-noinst_LIBRARIES=libirmointerface.a
+noinst_LTLIBRARIES=libirmointerface.la
 
-libirmointerface_a_CFLAGS=-I.. -I../include
-libirmointerface_a_SOURCES=                                 \
+libirmointerface_la_CFLAGS=-I.. -I../include
+libirmointerface_la_SOURCES=                                \
        interface.c            interface.h                   \
        method.c               method.h                      \
        method-arg.c           method-arg.h                  \

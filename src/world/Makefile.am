@@ -1,7 +1,7 @@
-noinst_LIBRARIES=libirmoworld.a
+noinst_LTLIBRARIES=libirmoworld.la
 
-libirmoworld_a_CFLAGS=-I.. -I../include
-libirmoworld_a_SOURCES=                                     \
+libirmoworld_la_CFLAGS=-I.. -I../include
+libirmoworld_la_SOURCES=                                    \
        world.c                world.h                       \
        method.c               method.h                      \
        callback.c             callback.h                    \

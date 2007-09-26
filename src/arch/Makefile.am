@@ -1,7 +1,7 @@
-noinst_LIBRARIES=libirmoarch.a
+noinst_LTLIBRARIES=libirmoarch.la
 
-libirmoarch_a_CFLAGS=-I.. -I../include
-libirmoarch_a_SOURCES=                                      \
+libirmoarch_la_CFLAGS=-I.. -I../include
+libirmoarch_la_SOURCES=                                     \
        arch-asprintf.c        arch-asprintf.h               \
                               arch.h                        \
                               sysheaders.h                  \

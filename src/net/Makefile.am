@@ -1,7 +1,7 @@
-noinst_LIBRARIES=libirmonet.a
+noinst_LTLIBRARIES=libirmonet.la
 
-libirmonet_a_CFLAGS=-I.. -I../include
-libirmonet_a_SOURCES=                                       \
+libirmonet_la_CFLAGS=-I.. -I../include
+libirmonet_la_SOURCES=                                      \
        sendatom_method.c                                    \
        sendatom_change.c                                    \
        socket.c               socket.h                      \
