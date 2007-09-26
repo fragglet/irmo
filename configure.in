@@ -57,6 +57,7 @@ AC_OUTPUT([
         src/net/Makefile
         src/netbase/Makefile
         src/world/Makefile
+        tests/Makefile
 	irmo.pc
 ])
 
