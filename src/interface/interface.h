@@ -52,5 +52,8 @@ struct _IrmoInterface {
 	unsigned int hash;
 };
 
+uint32_t irmo_interface_hash(IrmoInterface *iface);
+void _irmo_interface_free(IrmoInterface *iface);
+
 #endif /* #ifndef IRMO_INTERFACE_INTERFACE_H */
 

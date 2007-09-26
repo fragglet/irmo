@@ -37,5 +37,8 @@ struct _IrmoClassVar {
 	char *name;
 };
 
+uint32_t irmo_class_var_hash(IrmoClassVar *class_var);
+void _irmo_class_var_free(IrmoClassVar *var);
+
 #endif /* #ifndef IRMO_INTERFACE_CLASS_VAR_H */
 

@@ -18,6 +18,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/util.h"
 
 #include "interface.h"
 
@@ -88,5 +89,47 @@ void irmo_class_unref(IrmoClass *klass)
 	irmo_return_if_fail(klass != NULL);
 
 	irmo_interface_unref(klass->parent);
+}
+
+uint32_t irmo_class_hash(IrmoClass *klass)
+{
+	uint32_t hash = 0;
+	int i;
+	
+	for (i=0; i<klass->nvariables; ++i) {
+		hash = irmo_rotate_int(hash)
+                     ^ irmo_class_var_hash(klass->variables[i]);
+	}
+
+	hash ^= irmo_string_hash(klass->name);
+
+	if (klass->parent_class) {
+		hash = irmo_rotate_int(hash) ^ klass->parent_class->index;
+        }
+
+	return hash;
+}
+
+void _irmo_class_free(IrmoClass *klass)
+{
+	int i;
+	int start;
+
+	irmo_hash_table_free(klass->variable_hash);
+
+	// find the start of the range of variables to free
+	// (dont free variables from parent class)
+
+	if (klass->parent_class)
+		start = klass->parent_class->nvariables;
+	else
+		start = 0;
+	
+	for (i=start; i<klass->nvariables; ++i)
+		_irmo_class_var_free(klass->variables[i]);
+
+	free(klass->variables);
+	free(klass->name);
+	free(klass);
 }
 

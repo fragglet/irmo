@@ -18,6 +18,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/util.h"
 
 #include "interface.h"
 
@@ -69,4 +70,67 @@ void irmo_interface_foreach_method(IrmoInterface *iface,
 		func(iface->methods[i], user_data);
 }
 
+void _irmo_interface_free(IrmoInterface *iface)
+{
+	int i;
+	
+	irmo_hash_table_free(iface->class_hash);
+	irmo_hash_table_free(iface->method_hash);
+
+	// free classes.
+	// this must be done in reverse order, so classes lower in the
+	// hierarchy are freed first
+
+	for (i=iface->nclasses-1; i>=0; --i)
+		_irmo_class_free(iface->classes[i]);
+
+	free(iface->classes);
+
+	for (i=0; i<iface->nmethods; ++i)
+		_irmo_method_free(iface->methods[i]);
+
+	free(iface->methods);
+	free(iface);
+}
+
+void irmo_interface_ref(IrmoInterface *iface)
+{
+	irmo_return_if_fail(iface != NULL);
+
+	++iface->refcount;
+}
+
+void irmo_interface_unref(IrmoInterface *iface)
+{
+	irmo_return_if_fail(iface != NULL);
+
+	--iface->refcount;
+
+	if (iface->refcount <= 0)
+		_irmo_interface_free(iface);
+}
+
+uint32_t irmo_interface_hash(IrmoInterface *iface)
+{
+	uint32_t hash = 0;
+	int i;
+
+	for (i=0; i<iface->nclasses; ++i) {
+		hash = irmo_rotate_int(hash)
+                     ^ irmo_class_hash(iface->classes[i]);
+        }
+
+	for (i=0; i<iface->nmethods; ++i) {
+		hash = irmo_rotate_int(hash)
+                     ^ irmo_method_hash(iface->methods[i]);
+        }
+
+        // Hash must always be non-zero, as zero has a special meaning
+        // as NULL interface.
+
+	if (hash == 0)
+		hash = 1;
+
+	return hash;
+}
 

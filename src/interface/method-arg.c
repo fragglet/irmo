@@ -18,6 +18,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/util.h"
 
 #include "interface.h"
 
@@ -51,5 +52,16 @@ void irmo_method_arg_unref(IrmoMethodArg *arg)
 	irmo_return_if_fail(arg != NULL);
 
 	irmo_interface_unref(arg->parent->parent);
+}
+
+uint32_t irmo_method_arg_hash(IrmoMethodArg *method_arg)
+{
+        return method_arg->type ^ irmo_string_hash(method_arg->name);
+}
+
+void _irmo_method_arg_free(IrmoMethodArg *arg)
+{
+	free(arg->name);
+	free(arg);
 }
 

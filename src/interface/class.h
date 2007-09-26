@@ -49,5 +49,8 @@ struct _IrmoClass {
 	IrmoHashTable *variable_hash;
 };
 
+uint32_t irmo_class_hash(IrmoClass *klass);
+void _irmo_class_free(IrmoClass *klass);
+
 #endif /* #ifndef IRMO_INTERFACE_CLASS_H */
 

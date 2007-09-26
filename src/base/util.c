@@ -17,6 +17,8 @@
 // 02111-1307, USA.
 //
 
+#include "arch/sysheaders.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -36,5 +38,10 @@ void irmo_assert_fail_message(const char *function_name, char *assertation)
 {
         fprintf(stderr, "%s: Warning: assertation '%s' failed.\n", 
                         function_name, assertation);
+}
+
+uint32_t irmo_rotate_int(uint32_t i)
+{
+	return (i << 1) | (i >> 31);
 }
 

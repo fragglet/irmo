@@ -67,6 +67,7 @@ void *irmo_malloc0(int bytes);
         } while(0)
 
 void irmo_assert_fail_message(const char *function_name, char *assertation);
+uint32_t irmo_rotate_int(uint32_t i);
 
 #endif /* #ifndef IRMO_COMMON_UTIL_H */
 

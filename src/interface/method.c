@@ -18,6 +18,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/util.h"
 
 #include "interface.h"
 
@@ -83,3 +84,31 @@ void irmo_method_unref(IrmoMethod *method)
 	irmo_interface_unref(method->parent);
 }
 
+uint32_t irmo_method_hash(IrmoMethod *method)
+{
+	uint32_t hash = 0;
+	int i;
+
+	for (i=0; i<method->narguments; ++i) {
+		hash = irmo_rotate_int(hash)
+                     ^ irmo_method_arg_hash(method->arguments[i]);
+	}
+
+	hash ^= irmo_string_hash(method->name);
+	
+	return hash;
+}
+
+void _irmo_method_free(IrmoMethod *method)
+{
+	int i;
+	
+	irmo_hash_table_free(method->argument_hash);
+
+	for (i=0; i<method->narguments; ++i) 
+		_irmo_method_arg_free(method->arguments[i]);
+	
+	free(method->arguments);
+	free(method->name);
+	free(method);
+}

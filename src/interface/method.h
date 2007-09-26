@@ -43,5 +43,8 @@ struct _IrmoMethod {
 	IrmoHashTable *argument_hash;
 };
 
+uint32_t irmo_method_hash(IrmoMethod *method);
+void _irmo_method_free(IrmoMethod *method);
+
 #endif /* #ifndef IRMO_INTERFACE_METHOD_H */
 

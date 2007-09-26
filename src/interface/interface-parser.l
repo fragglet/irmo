@@ -42,6 +42,7 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 #include "interface.h"
 
 typedef enum {
@@ -190,12 +191,6 @@ static IrmoValueType type_token_to_type(int i)
 	}
 }
 
-static void class_var_free(IrmoClassVar *var)
-{
-	free(var->name);
-	free(var);
-}
-
 static int eat_class_var_statement(IrmoClass *klass)
 {
 	IrmoValueType vartype;
@@ -250,53 +245,6 @@ static int eat_class_var_statement(IrmoClass *klass)
 	return 1;
 }
 
-static void class_free(IrmoClass *klass)
-{
-	int i;
-	int start;
-
-	irmo_hash_table_free(klass->variable_hash);
-
-	// find the start of the range of variables to free
-	// (dont free variables from parent class)
-
-	if (klass->parent_class)
-		start = klass->parent_class->nvariables;
-	else
-		start = 0;
-	
-	for (i=start; i<klass->nvariables; ++i)
-		class_var_free(klass->variables[i]);
-
-	free(klass->variables);
-	free(klass->name);
-	free(klass);
-}
-
-static unsigned int rotate(unsigned int i)
-{
-	return (i << 1) | (i >> 31);
-}
-
-static unsigned int class_hash(IrmoClass *klass)
-{
-	unsigned int hash = 0;
-	int i;
-	
-	for (i=0; i<klass->nvariables; ++i) {
-		hash = rotate(hash) +
-			+ (klass->variables[i]->type ^
-			   irmo_string_hash(klass->variables[i]->name));
-	}
-
-	hash ^= irmo_string_hash(klass->name);
-
-	if (klass->parent_class)
-		hash = rotate(hash) ^ klass->parent_class->index;
-	
-	return hash;
-}
-
 static IrmoClass *eat_class(IrmoInterface *iface)
 {
 	token_t token;
@@ -316,7 +264,7 @@ static IrmoClass *eat_class(IrmoInterface *iface)
 	klass->variable_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 	klass->parent = iface;
 
-	cleanup_push(class_free, klass);
+	cleanup_push(_irmo_class_free, klass);
 
 	token = yylex();
 
@@ -368,12 +316,6 @@ static IrmoClass *eat_class(IrmoInterface *iface)
 	return klass;
 }
 
-static void method_arfree(IrmoMethodArg *arg)
-{
-	free(arg->name);
-	free(arg);
-}
-
 static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 {
 	token_t token = yylex();
@@ -406,7 +348,7 @@ static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 	arg->index = method->narguments;
 	arg->parent = method;
 
-	cleanup_push(method_arfree, arg);
+	cleanup_push(_irmo_method_arg_free, arg);
 
 	parse_assert(irmo_method_get_argument(method, yytext) == NULL,
 		     "multiple definitions of '%s'", yytext);
@@ -422,40 +364,9 @@ static IrmoMethodArg *eat_method_arg(IrmoMethod *method)
 	return arg;
 }
 
-static void method_free(IrmoMethod *method)
-{
-	int i;
-	
-	irmo_hash_table_free(method->argument_hash);
-
-	for (i=0; i<method->narguments; ++i) 
-		method_arfree(method->arguments[i]);
-	
-	free(method->arguments);
-	free(method->name);
-	free(method);
-}
-
-static unsigned int method_hash(IrmoMethod *method)
-{
-	unsigned int hash = 0;
-	int i;
-
-	for (i=0; i<method->narguments; ++i) {
-		hash = rotate(hash)
-			+ (method->arguments[i]->type ^
-			   irmo_string_hash(method->arguments[i]->name));
-	}
-
-	hash ^= irmo_string_hash(method->name);
-	
-	return hash;
-}
-
 static IrmoMethod *eat_method(IrmoInterface *iface)
 {
 	IrmoMethod *method;
-	int i;
 	
 	parse_assert(yylex() == TOKEN_ID, "function name expected");
 
@@ -469,7 +380,7 @@ static IrmoMethod *eat_method(IrmoInterface *iface)
 	method->narguments = 0;
 	method->parent = iface;
 
-	cleanup_push(method_free, method);
+	cleanup_push(_irmo_method_free, method);
 	
 	parse_assert(yylex() == TOKEN_LPAREN,
 		     "expecting '(' open parentheses");
@@ -493,46 +404,6 @@ static IrmoMethod *eat_method(IrmoInterface *iface)
 	return method;
 }
 
-static void irmo_interface_free(IrmoInterface *iface)
-{
-	int i;
-	
-	irmo_hash_table_free(iface->class_hash);
-	irmo_hash_table_free(iface->method_hash);
-
-	// free classes.
-	// this must be done in reverse order, so classes lower in the
-	// hierarchy are freed first
-
-	for (i=iface->nclasses-1; i>=0; --i)
-		class_free(iface->classes[i]);
-
-	free(iface->classes);
-
-	for (i=0; i<iface->nmethods; ++i)
-		method_free(iface->methods[i]);
-
-	free(iface->methods);
-	free(iface);
-}
-
-static unsigned int irmo_interface_hash(IrmoInterface *iface)
-{
-	unsigned int hash = 0;
-	int i;
-
-	for (i=0; i<iface->nclasses; ++i)
-		hash = rotate(hash) + class_hash(iface->classes[i]);
-
-	for (i=0; i<iface->nmethods; ++i)
-		hash = rotate(hash) + method_hash(iface->methods[i]);
-
-	if (hash == 0)
-		hash = 1;
-
-	return hash;
-}
-
 static IrmoInterface *eat_interface()
 {
 	IrmoInterface *iface;
@@ -547,7 +418,7 @@ static IrmoInterface *eat_interface()
 	iface->class_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 	iface->method_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 
-	cleanup_push(irmo_interface_free, iface);
+	cleanup_push(_irmo_interface_free, iface);
 
 	while ((token = yylex())) {
 		if (token == TOKEN_CLASS) {
@@ -583,7 +454,7 @@ static IrmoInterface *eat_interface()
 		}
 	}
 
-	if (iface->nclasses < MAX_METHODS)
+	if (iface->nclasses < MAX_CLASSES)
 		iface->classes = irmo_renew(IrmoClass *, iface->classes, iface->nclasses);
 	if (iface->nmethods < MAX_METHODS)
 		iface->methods = irmo_renew(IrmoMethod *, iface->methods, iface->nmethods);
@@ -626,22 +497,5 @@ IrmoInterface *irmo_interface_new(char *filename)
 	fclose(yyin);
 
 	return iface;
-}
-
-void irmo_interface_ref(IrmoInterface *iface)
-{
-	irmo_return_if_fail(iface != NULL);
-
-	++iface->refcount;
-}
-
-void irmo_interface_unref(IrmoInterface *iface)
-{
-	irmo_return_if_fail(iface != NULL);
-
-	--iface->refcount;
-
-	if (iface->refcount <= 0)
-		irmo_interface_free(iface);
 }
 

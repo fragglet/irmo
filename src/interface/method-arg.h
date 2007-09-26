@@ -37,5 +37,8 @@ struct _IrmoMethodArg {
 	char *name;
 };
 
+uint32_t irmo_method_arg_hash(IrmoMethodArg *method_arg);
+void _irmo_method_arg_free(IrmoMethodArg *arg);
+
 #endif /* #ifndef IRMO_INTERFACE_METHOD_ARG_H */
 

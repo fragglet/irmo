@@ -18,6 +18,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/util.h"
 
 #include "interface.h"
 
@@ -51,5 +52,17 @@ void irmo_class_var_unref(IrmoClassVar *var)
 	irmo_return_if_fail(var != NULL);
 
 	irmo_interface_unref(var->parent->parent);
+}
+
+uint32_t irmo_class_var_hash(IrmoClassVar *class_var)
+{
+        return class_var->type
+             ^ irmo_string_hash(class_var->name);
+}
+
+void _irmo_class_var_free(IrmoClassVar *var)
+{
+	free(var->name);
+	free(var);
 }
 
