@@ -40,6 +40,12 @@ void irmo_assert_fail_message(const char *function_name, char *assertation)
                         function_name, assertation);
 }
 
+void irmo_bug_abort(char *file, int line)
+{
+        fprintf(stderr, "Irmo BUG at %s:%i!\n", file, line);
+        abort();
+}
+
 uint32_t irmo_rotate_int(uint32_t i)
 {
 	return (i << 1) | (i >> 31);

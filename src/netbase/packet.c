@@ -183,7 +183,7 @@ char *irmo_packet_readstring(IrmoPacket *packet)
 }
 
 int irmo_packet_verify_value(IrmoPacket *packet,
-				  IrmoValueType type)
+                             IrmoValueType type)
 {
 	switch (type) {
 	case IRMO_TYPE_INT8:
@@ -194,9 +194,10 @@ int irmo_packet_verify_value(IrmoPacket *packet,
 		return irmo_packet_readi32(packet, NULL);
 	case IRMO_TYPE_STRING:
 		return irmo_packet_readstring(packet) != NULL;
+        default:
+                irmo_bug();
+                return 0;
 	}
-
-	return 0;
 }
 
 void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
@@ -215,6 +216,8 @@ void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value,
 	case IRMO_TYPE_STRING:
 		value->s = strdup(irmo_packet_readstring(packet));
 		break;
+        default:
+                irmo_bug();
 	}
 }
 
@@ -234,6 +237,8 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 	case IRMO_TYPE_STRING:
 		irmo_packet_writestring(packet, value->s);
 		break;
+        default:
+                irmo_bug();
 	}
 }
 

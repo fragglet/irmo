@@ -66,7 +66,11 @@ void *irmo_malloc0(int bytes);
                 }                                                      \
         } while(0)
 
+#define irmo_bug()                                                     \
+        irmo_bug_abort(__FILE__, __LINE__)
+
 void irmo_assert_fail_message(const char *function_name, char *assertation);
+void irmo_bug_abort(char *file, int line);
 uint32_t irmo_rotate_int(uint32_t i);
 
 #endif /* #ifndef IRMO_COMMON_UTIL_H */

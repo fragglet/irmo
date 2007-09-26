@@ -236,6 +236,8 @@ IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port)
 		
 		break;
 #endif
+        default:
+                break;
 	}
 	
 	result = bind(sock->sock, addr, addr_len);
@@ -294,7 +296,6 @@ static void socket_run_syn(IrmoPacket *packet)
 	unsigned int local_hash, server_hash;
 	unsigned int protocol_version;
 	unsigned int local_hash_expected=0, server_hash_expected=0;
-	char *s;
 
 	// if this is a client socket, dont let people connect
 	// to us!

@@ -26,7 +26,6 @@
 
 static int proto_verify_packet_cluster(IrmoPacket *packet)
 {
-	IrmoClient *client = packet->client;
 	unsigned int i;
 
 	// start position

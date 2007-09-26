@@ -219,25 +219,25 @@ static void irmo_change_atom_write(IrmoChangeAtom *atom, IrmoPacket *packet)
 static void irmo_change_atom_destroy(IrmoChangeAtom *atom)
 {
         int i;
-                                                                                
+
         if (atom->newvalues) {
                 IrmoClass *objclass = atom->objclass;
-                                                                                
+
                 for (i=0; i<objclass->nvariables; ++i) {
                         // only changed values are stored
-                                                                                
+
                         if (!atom->changed[i])
                                 continue;
-                                                                                
+
                         // free strings
-                                                                                
+
                         if (objclass->variables[i]->type == IRMO_TYPE_STRING)
                                 free(atom->newvalues[i].s);
                 }
-                                                                                
+
                 free(atom->newvalues);
         }
-                                                                                
+
         free(atom->changed);
 }
 
@@ -302,6 +302,8 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 			free(obj->variables[i].s);
 			obj->variables[i].s = strdup(newvalues[i].s);
 			break;
+                default:
+                        irmo_bug();
 		}
 
 		irmo_object_set_raise(obj, i);
@@ -338,7 +340,7 @@ static size_t irmo_change_atom_length(IrmoChangeAtom *atom)
         // add up sizes of variables
          
         for (i=0; i<klass->nvariables; ++i) {
-                                                                                
+
                 // only variables which have changed
                  
                 if (!atom->changed[i])
@@ -357,6 +359,8 @@ static size_t irmo_change_atom_length(IrmoChangeAtom *atom)
                 case IRMO_TYPE_STRING:
                         len += strlen(obj->variables[i].s) + 1;
                         break;
+                default:
+                        irmo_bug();
                 }
         }
  

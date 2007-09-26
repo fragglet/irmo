@@ -130,7 +130,6 @@ static struct sockaddr *sockaddr_in_for_name(char *name, int port)
 
 static struct sockaddr *sockaddr_in6_for_name(char *name, int port)
 {
-	struct hostent *hp;
 	struct addrinfo *info;
 	struct addrinfo hints;
 	struct sockaddr_in6 *addr;

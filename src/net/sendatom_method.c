@@ -165,6 +165,8 @@ static size_t irmo_method_atom_length(IrmoMethodAtom *atom)
                 case IRMO_TYPE_STRING:
                         len += strlen(atom->method_data.args[i].s) + 1;
                         break;
+                default:
+                        irmo_bug();
                 }
         }
 

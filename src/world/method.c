@@ -78,6 +78,8 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 		case IRMO_TYPE_STRING:
 			irmo_return_if_fail(value->s != NULL);
 			break;
+                default:
+                        irmo_return_if_fail(0);
 		}
 	}
 	
@@ -104,7 +106,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 	int i;
 
 	irmo_return_if_fail(world != NULL);
-	irmo_return_if_fail(method != NULL);
+	irmo_return_if_fail(method_name != NULL);
 	
 	method = irmo_interface_get_method(world->iface, method_name);
 
@@ -130,6 +132,9 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 		case IRMO_TYPE_STRING:
 			args[i].s = va_arg(arglist, char *);
 			break;
+                default:
+                        irmo_bug();
+                        break;
 		}
 	}
 
@@ -152,7 +157,7 @@ void irmo_world_method_call2(IrmoWorld *world, char *method_name,
 	IrmoMethod *method;
 
 	irmo_return_if_fail(world != NULL);
-	irmo_return_if_fail(method != NULL);
+	irmo_return_if_fail(method_name != NULL);
 	
 	method = irmo_interface_get_method(world->iface, method_name);
 
