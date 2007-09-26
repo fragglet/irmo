@@ -19,12 +19,60 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "interface.h"
 
 //
 // IrmoMethodArg
 //
+
+IrmoMethodArg *irmo_method_new_argument(IrmoMethod *method,
+                                        char *arg_name,
+                                        IrmoValueType arg_type)
+{
+        IrmoMethodArg *method_arg;
+
+        irmo_return_val_if_fail(method != NULL, NULL);
+        irmo_return_val_if_fail(arg_name != NULL, NULL);
+        irmo_return_val_if_fail(arg_type != IRMO_TYPE_UNKNOWN
+                             && arg_type != IRMO_NUM_TYPES, NULL);
+
+        if (method->narguments >= MAX_VARIABLES) {
+                irmo_error_report("irmo_method_new_argument", 
+                                  "Maximum of %i variables per class",
+                                  MAX_VARIABLES);
+                return NULL;
+        }
+
+        if (irmo_hash_table_lookup(method->argument_hash, arg_name) != NULL) {
+                irmo_error_report("irmo_method_new_argument", 
+                                  "Variable named '%s' already declared in "
+                                  "class '%s'.",
+                                  arg_name, method->name);
+                return NULL;
+        }
+
+        // Allocate a new class variable.
+
+        method_arg = irmo_new0(IrmoMethodArg, 1);
+
+        method_arg->name = strdup(arg_name);
+        method_arg->type = arg_type;
+        method_arg->index = method->narguments;
+
+        // Add to the class.
+
+        method->arguments = irmo_renew(IrmoMethodArg *, method->arguments,
+                                       method->narguments + 1);
+        method->arguments[method->narguments] = method_arg;
+        ++method->narguments;
+
+        irmo_hash_table_insert(method->argument_hash, 
+                               method_arg->name, method_arg);
+
+        return method_arg;
+}
 
 char *irmo_method_arg_get_name(IrmoMethodArg *arg)
 {

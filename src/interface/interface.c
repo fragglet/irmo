@@ -34,8 +34,8 @@ IrmoInterface *irmo_interface_new(void)
 
 	iface = irmo_new0(IrmoInterface, 1); 
 
-	iface->classes = irmo_new0(IrmoClass *, MAX_CLASSES);
-	iface->methods = irmo_new0(IrmoMethod *, MAX_METHODS);
+	iface->classes = NULL;
+	iface->methods = NULL;
 	iface->nclasses = iface->nmethods = 0;
 	iface->refcount = 1;
 	

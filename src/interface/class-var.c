@@ -19,12 +19,60 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "interface.h"
 
 //
 // IrmoClassVar
 //
+
+IrmoClassVar *irmo_class_new_variable(IrmoClass *klass,
+                                      char *var_name,
+                                      IrmoValueType var_type)
+{
+        IrmoClassVar *class_var;
+
+        irmo_return_val_if_fail(klass != NULL, NULL);
+        irmo_return_val_if_fail(var_name != NULL, NULL);
+        irmo_return_val_if_fail(var_type != IRMO_TYPE_UNKNOWN
+                             && var_type != IRMO_NUM_TYPES, NULL);
+
+        if (klass->nvariables >= MAX_VARIABLES) {
+                irmo_error_report("irmo_class_new_variable", 
+                                  "Maximum of %i variables per class",
+                                  MAX_VARIABLES);
+                return NULL;
+        }
+
+        if (irmo_hash_table_lookup(klass->variable_hash, var_name) != NULL) {
+                irmo_error_report("irmo_class_new_variable", 
+                                  "Variable named '%s' already declared "
+                                  "in class '%s'",
+                                  var_name, klass->name);
+                return NULL;
+        }
+
+        // Allocate a new class variable.
+
+        class_var = irmo_new0(IrmoClassVar, 1);
+
+        class_var->name = strdup(var_name);
+        class_var->type = var_type;
+        class_var->index = klass->nvariables;
+
+        // Add to the class.
+
+        klass->variables = irmo_renew(IrmoClassVar *, klass->variables,
+                                      klass->nvariables + 1);
+        klass->variables[klass->nvariables] = class_var;
+        ++klass->nvariables;
+
+        irmo_hash_table_insert(klass->variable_hash, 
+                               class_var->name, class_var);
+
+        return class_var;
+}
 
 char *irmo_class_var_get_name(IrmoClassVar *var)
 {

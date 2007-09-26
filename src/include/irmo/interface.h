@@ -133,6 +133,32 @@ void irmo_interface_foreach_method(IrmoInterface *iface,
 					IrmoMethodCallback func, 
 					void *user_data);
 
+/*!
+ * \brief Create a new method in an \ref IrmoInterface.
+ *
+ * \param iface         The interface.
+ * \param name          The name of the new method.
+ *
+ * \return              A pointer to the new method
+ */
+
+IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
+                                      char *name);
+
+/*!
+ * \brief Create a new class in an \ref IrmoInterface.
+ *
+ * \param iface         The interface.
+ * \param name          The name of the new class.
+ * \param parent        Parent class, or NULL for no parent.
+ *
+ * \return              A pointer to the new class
+ */
+
+IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
+                                    char *name,
+                                    IrmoClass *parent);
+
 /*! 
  * \brief Get the name of a \ref IrmoClass object
  */
@@ -168,6 +194,20 @@ IrmoClass *irmo_class_parent_class(IrmoClass *klass);
  */
 
 IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name);
+
+/*!
+ * Create a new class variable in the given class.
+ *
+ * \param klass         The \ref IrmoClass object representing the class.
+ * \param var_name      The name of the new variable.
+ * \param var_type      The type of the new variable.
+ *
+ * \return              A pointer to the new IrmoClassVar object.
+ */
+
+IrmoClassVar *irmo_class_new_variable(IrmoClass *klass,
+                                      char *var_name,
+                                      IrmoValueType var_type);
 
 /*!
  * \brief Add a reference to a \ref IrmoClass object
@@ -266,6 +306,20 @@ IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number);
 void irmo_method_foreach_argument(IrmoMethod *method,
 				  IrmoMethodArgCallback func, 
 				  void *user_data);
+
+/*!
+ * Add a new argument to a method.
+ *
+ * \param method        The method.
+ * \param arg_name      The name of the new argument.
+ * \param arg_type      The type of the new argument.
+ *
+ * \return              A new \ref IrmoMethodArg object.
+ */
+
+IrmoMethodArg *irmo_method_new_argument(IrmoMethod *method,
+                                        char *arg_name,
+                                        IrmoValueType arg_type);
 
 /*!
  * \brief Add a reference to an \ref IrmoMethod object

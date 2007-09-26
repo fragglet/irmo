@@ -19,12 +19,71 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
+
+#include "algo/algo.h"
 
 #include "interface.h"
 
 //
 // IrmoMethod
 //
+
+/*!
+ * \brief Create a new method in an \ref IrmoInterface.
+ *
+ * \param iface         The interface.
+ * \param name          The name of the new method.
+ *
+ * \return              A pointer to the new method
+ */
+
+IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
+                                      char *name)
+{
+        IrmoMethod *method;
+
+        irmo_return_val_if_fail(iface != NULL, NULL);
+        irmo_return_val_if_fail(name != NULL, NULL);
+
+        if (iface->nmethods >= MAX_METHODS) {
+                irmo_error_report("irmo_interface_new_method",
+                                  "Maximum of %i methods per interface.",
+                                  MAX_METHODS);
+                return NULL;
+        }
+
+        // Already declared?
+
+        if (irmo_hash_table_lookup(iface->method_hash, name) != NULL) {
+                irmo_error_report("irmo_interface_new_method",
+                                  "Method named '%s' already declared.",
+                                  name);
+                return NULL;
+        }
+
+        // Allocate a new IrmoMethod.
+
+        method = irmo_new0(IrmoMethod, 1);
+        method->name = strdup(name);
+        method->arguments = NULL;
+        method->argument_hash = irmo_hash_table_new(irmo_string_hash, 
+                                                    irmo_string_equal);
+        method->narguments = 0;
+        method->parent = iface;
+        method->index = iface->nmethods;
+
+        // Add to the array in the interface.
+
+        iface->methods = irmo_renew(IrmoMethod *, iface->methods, 
+                                    iface->nmethods + 1);
+        iface->methods[iface->nmethods] = method;
+        ++iface->nmethods;
+
+        irmo_hash_table_insert(iface->method_hash, method->name, method);
+
+        return method;
+}
 
 char *irmo_method_get_name(IrmoMethod *method)
 {

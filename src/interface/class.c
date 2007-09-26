@@ -19,12 +19,87 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "interface.h"
 
 //
 // IrmoClass
 //
+
+static void copy_parent_variables(IrmoClass *klass)
+{
+        IrmoClass *parent;
+        IrmoClassVar *class_var;
+        int i;
+
+        parent = klass->parent_class;
+
+        // Copy all the parent's variables into the new class.
+ 
+        for (i=0; i<parent->nvariables; ++i) {
+                class_var = parent->variables[i];
+
+                irmo_class_new_variable(klass, class_var->name, 
+                                        class_var->type);
+        }
+}
+
+IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
+                                    char *class_name,
+                                    IrmoClass *parent_class)
+{
+        IrmoClass *klass;
+
+        irmo_return_val_if_fail(iface != NULL, NULL);
+        irmo_return_val_if_fail(class_name != NULL, NULL);
+
+        if (iface->nclasses >= MAX_CLASSES) {
+                irmo_error_report("irmo_interface_new_class",
+                                  "Maximum of %i classes per interface.",
+                                  MAX_CLASSES);
+                return NULL;
+        }
+
+        // Is this already defined?
+
+        if (irmo_hash_table_lookup(iface->class_hash, class_name) != NULL) {
+                irmo_error_report("irmo_interface_new_class",
+                                  "Class named '%s' already declared.",
+                                  class_name);
+                return NULL;
+        }
+
+        // Allocate a new IrmoClass and populate.
+
+        klass = irmo_new0(IrmoClass, 1);
+        klass->name = strdup(class_name);
+        klass->variables = NULL;
+        klass->nvariables = 0;
+        klass->variable_hash = irmo_hash_table_new(irmo_string_hash,
+                                                   irmo_string_equal);
+        klass->parent = iface;
+        klass->parent_class = parent_class;
+        klass->index = iface->nclasses;
+
+        // If this class has a parent class, copy all the variables 
+        // of the parent class.
+
+        if (parent_class != NULL) {
+                copy_parent_variables(klass);
+        }
+
+        // Add to the IrmoInterface.
+      
+        iface->classes = irmo_renew(IrmoClass *, iface->classes, 
+                                    iface->nclasses + 1);
+        iface->classes[iface->nclasses] = klass;
+        ++iface->nclasses;
+
+        irmo_hash_table_insert(iface->class_hash, klass->name, klass);
+
+        return klass;
+}
 
 char *irmo_class_get_name(IrmoClass *klass)
 {
