@@ -17,40 +17,31 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERFACE_INTERFACE_H
-#define IRMO_INTERFACE_INTERFACE_H
+#ifndef IRMO_INTERFACE_METHOD_H
+#define IRMO_INTERFACE_METHOD_H
 
 #include <irmo/interface.h>
 
 #include "algo/algo.h"
 
-#include "class.h"
-#include "class-var.h"
-#include "method.h"
-#include "method-arg.h"
+// Maximum number of methods per interface.
+// Limit imposed by the network protocol.
 
-struct _IrmoInterface {
+#define MAX_METHODS 256
 
-	int refcount;
+// method declaration
+
+struct _IrmoMethod {
+	IrmoInterface *parent;
+
+	int index;
+	char *name;			// method name
 	
-	// classes:
-	
-	IrmoClass **classes;
-	int nclasses;
+	IrmoMethodArg **arguments;
+	int narguments;
 
-	IrmoHashTable *class_hash;
-
-	// methods:
-	
-	IrmoMethod **methods;
-	int nmethods;
-
-	IrmoHashTable *method_hash;
-
-	// unique (or should be) hash value
-
-	unsigned int hash;
+	IrmoHashTable *argument_hash;
 };
 
-#endif /* #ifndef IRMO_INTERFACE_INTERFACE_H */
+#endif /* #ifndef IRMO_INTERFACE_METHOD_H */
 

@@ -17,40 +17,39 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERFACE_INTERFACE_H
-#define IRMO_INTERFACE_INTERFACE_H
+#include "arch/sysheaders.h"
 
-#include <irmo/interface.h>
+#include "interface.h"
 
-#include "algo/algo.h"
+//
+// IrmoClassVar
+//
 
-#include "class.h"
-#include "class-var.h"
-#include "method.h"
-#include "method-arg.h"
+char *irmo_class_var_get_name(IrmoClassVar *var)
+{
+	irmo_return_val_if_fail(var != NULL, NULL);
 
-struct _IrmoInterface {
+	return var->name;
+}
 
-	int refcount;
-	
-	// classes:
-	
-	IrmoClass **classes;
-	int nclasses;
+IrmoValueType irmo_class_var_get_type(IrmoClassVar *var)
+{
+	irmo_return_val_if_fail(var != NULL, IRMO_TYPE_UNKNOWN);
 
-	IrmoHashTable *class_hash;
+	return var->type;
+}
 
-	// methods:
-	
-	IrmoMethod **methods;
-	int nmethods;
+void irmo_class_var_ref(IrmoClassVar *var)
+{
+	irmo_return_if_fail(var != NULL);
 
-	IrmoHashTable *method_hash;
+	irmo_interface_ref(var->parent->parent);
+}
 
-	// unique (or should be) hash value
+void irmo_class_var_unref(IrmoClassVar *var)
+{
+	irmo_return_if_fail(var != NULL);
 
-	unsigned int hash;
-};
-
-#endif /* #ifndef IRMO_INTERFACE_INTERFACE_H */
+	irmo_interface_unref(var->parent->parent);
+}
 

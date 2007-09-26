@@ -17,40 +17,25 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERFACE_INTERFACE_H
-#define IRMO_INTERFACE_INTERFACE_H
+#ifndef IRMO_INTERFACE_CLASS_VAR_H
+#define IRMO_INTERFACE_CLASS_VAR_H
 
 #include <irmo/interface.h>
 
-#include "algo/algo.h"
+// Maximum variables per class.
+// Imposed by the limits of the network protocol:
 
-#include "class.h"
-#include "class-var.h"
-#include "method.h"
-#include "method-arg.h"
+#define MAX_VARIABLES 256
 
-struct _IrmoInterface {
+// class member variable
 
-	int refcount;
-	
-	// classes:
-	
-	IrmoClass **classes;
-	int nclasses;
+struct _IrmoClassVar {
+	IrmoClass *parent;
 
-	IrmoHashTable *class_hash;
-
-	// methods:
-	
-	IrmoMethod **methods;
-	int nmethods;
-
-	IrmoHashTable *method_hash;
-
-	// unique (or should be) hash value
-
-	unsigned int hash;
+	int index;                      // index in variable list
+	IrmoValueType type;
+	char *name;
 };
 
-#endif /* #ifndef IRMO_INTERFACE_INTERFACE_H */
+#endif /* #ifndef IRMO_INTERFACE_CLASS_VAR_H */
 
