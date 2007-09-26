@@ -1,4 +1,4 @@
-libirmoincludedir = $(includedir)/irmo/1
+libirmoincludedir = $(includedir)/irmo/2
 libirmoinclude2dir = $(libirmoincludedir)/irmo
 
 libirmoinclude2_HEADERS=                                        \

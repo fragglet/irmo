@@ -1,6 +1,6 @@
 SUBDIRS=irmo
 
-libirmoincludedir = $(includedir)/irmo/1
+libirmoincludedir = $(includedir)/irmo/2
 
 libirmoinclude_HEADERS=irmo.h
 
