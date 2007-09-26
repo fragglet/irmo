@@ -30,37 +30,37 @@
 #include "callback.h"
 #include "world.h"
 
-IrmoWorld *irmo_world_new(IrmoInterface *spec)
+IrmoWorld *irmo_world_new(IrmoInterface *iface)
 {
 	IrmoWorld *world;
 	int i;
 
-	irmo_return_val_if_fail(spec != NULL, NULL);
+	irmo_return_val_if_fail(iface != NULL, NULL);
 	
 	world = irmo_new0(IrmoWorld, 1);
 
-	world->spec = spec;
+	world->iface = iface;
 	world->objects = irmo_hash_table_new(irmo_pointer_hash, irmo_pointer_equal);
 	world->refcount = 1;
 	world->lastid = 0;
 	world->servers = irmo_arraylist_new(1);
 	world->remote = 0;
 	
-	irmo_interface_ref(spec);
+	irmo_interface_ref(iface);
 
 	// create a callback for each class
 	
-	world->callbacks = irmo_new0(IrmoCallbackData *, spec->nclasses);
+	world->callbacks = irmo_new0(IrmoCallbackData *, iface->nclasses);
 
-	for (i=0; i<spec->nclasses; ++i) {
+	for (i=0; i<iface->nclasses; ++i) {
 		IrmoCallbackData *parent_data;
 
-		if (spec->classes[i]->parent_class)
-			parent_data = world->callbacks[spec->classes[i]->parent_class->index];
+		if (iface->classes[i]->parent_class)
+			parent_data = world->callbacks[iface->classes[i]->parent_class->index];
 		else
 			parent_data = NULL;
 		
-		world->callbacks[i] = irmo_callbackdata_new(spec->classes[i],
+		world->callbacks[i] = irmo_callbackdata_new(iface->classes[i],
 							    parent_data);
 	}
 
@@ -68,7 +68,7 @@ IrmoWorld *irmo_world_new(IrmoInterface *spec)
 
 	// method callbacks
 	
-	world->method_callbacks = irmo_new0(IrmoSListEntry *, spec->nmethods);
+	world->method_callbacks = irmo_new0(IrmoSListEntry *, iface->nmethods);
 
 	return world;
 }
@@ -113,7 +113,7 @@ void irmo_world_unref(IrmoWorld *world)
 
 		// delete callbacks
 		
-		for (i=0; i<world->spec->nclasses; ++i)
+		for (i=0; i<world->iface->nclasses; ++i)
 			irmo_callbackdata_free(world->callbacks[i]);
 
 		irmo_callbackdata_free(world->callbacks_all);
@@ -122,14 +122,14 @@ void irmo_world_unref(IrmoWorld *world)
 
 		// method callbacks
 		
-		for (i=0; i<world->spec->nmethods; ++i)
+		for (i=0; i<world->iface->nmethods; ++i)
 			irmo_callbacklist_free(world->method_callbacks[i]);
 
 		free(world->method_callbacks);
 
-		// no longer using the interface spec
+		// no longer using the interface 
 		
-		irmo_interface_unref(world->spec);
+		irmo_interface_unref(world->iface);
 		
 		free(world);
 	}
@@ -148,7 +148,7 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 }
 
 struct world_foreach_data {
-	IrmoClass *spec;
+	IrmoClass *klass;
 	IrmoObjCallback func;
 	void *user_data;
 };
@@ -160,7 +160,7 @@ static void world_foreach_foreach(int key,
 	// only call callback if this is of the particular class
 	// or if no class was specified
 	
-	if (!data->spec || irmo_object_is_a2(object, data->spec)) {
+	if (!data->klass || irmo_object_is_a2(object, data->klass)) {
 		data->func(object, data->user_data);
 	}
 }
@@ -169,7 +169,7 @@ static void world_foreach_foreach(int key,
 void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 			       IrmoObjCallback func, void *user_data)
 {
-	IrmoClass *spec;
+	IrmoClass *klass;
 	struct world_foreach_data data = {
 		NULL,
 		func,
@@ -180,28 +180,28 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 	irmo_return_if_fail(func != NULL);
 	
 	if (classname) {
-		spec = irmo_interface_get_class(world->spec, classname);
+		klass = irmo_interface_get_class(world->iface, classname);
 
-		if (!spec) {
+		if (!klass) {
 			irmo_error_report("irmo_world_foreach_object",
 					  "unknown class '%s'", classname);
 			return;
 		}
 	} else {
-		spec = NULL;
+		klass = NULL;
 	}
 
-	data.spec = spec;
+	data.klass = klass;
 	
 	irmo_hash_table_foreach(world->objects,
 			     (IrmoHashTableIterator) world_foreach_foreach,
 			     &data);			     
 }
 
-IrmoInterface *irmo_world_get_spec(IrmoWorld *world)
+IrmoInterface *irmo_world_get_interface(IrmoWorld *world)
 {
 	irmo_return_val_if_fail(world != NULL, NULL);
 
-	return world->spec;
+	return world->iface;
 }
 

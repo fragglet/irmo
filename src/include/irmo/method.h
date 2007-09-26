@@ -31,7 +31,7 @@ extern "C" {
  * Method calls can be defined and invoked on \ref IrmoWorld objects.
  * Callback functions can be set to be called when methods are invoked.
  * The methods and their arguments are declared in the Interface 
- * Specification for the World.
+ * for the World.
  *
  * \addtogroup method
  * \{
@@ -99,7 +99,7 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data);
  * a remote machine the call will be forwarded to the remote machine.
  *
  * Following the function arguments are the method arguments, in the order
- * specified in the interface specification.
+ * specified in the interface.
  * 
  * \param world  The world object on which to invoke the method
  * \param method    The name of the method

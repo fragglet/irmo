@@ -40,9 +40,9 @@
 
 struct _IrmoWorld {
 
-	// specification this world implements
+	// interface this world implements
 	
-	IrmoInterface *spec;
+	IrmoInterface *iface;
 
 	// world-global callback objects, 1 per class
 	// used for eg. "watch creation of objects of class my_class"

@@ -32,9 +32,9 @@ extern "C" {
  * The key function is \ref irmo_connect which establishes a new
  * connection.
  * 
- * In using irmo_connect, the 'spec' object is used to specify the
- * world being served by the remote server. The specification
- * file must be identical; if the specification objects differ
+ * In using irmo_connect, the 'iface' object is used to specify the
+ * world being served by the remote server. The interface
+ * file must be identical; if the interfaces differ
  * on the client and the server, the server will refuse the connection.
  *
  * The client may serve a world back to the server by setting
@@ -53,7 +53,7 @@ extern "C" {
  * If successful, an IrmoConnection object is returned representing
  * the connection to the server.
  *
- * Care must be taken in the interface specification and the local 
+ * Care must be taken with the interface and the local 
  * world: their types must match those expected by the server.
  * (see \ref irmo_server_new)
  *
@@ -63,9 +63,9 @@ extern "C" {
  * \param location       The hostname of the remote machine to connect to.
  * \param port           The port on the remote machine on which the server
  *                       is running.
- * \param spec           An interface specification object describing the
- *                       remove world served by the server, or NULL if
- *                       the server is not serving a world.
+ * \param iface          An interface describing the remote world served by
+ *                       the server, or NULL if the server is not serving
+ *                       a world.
  * \param local_world    A local world to serve back to the server, or
  *                       NULL not to serve any world back.
  * \return               A IrmoConnection object representing the
@@ -74,7 +74,7 @@ extern "C" {
  */
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, char *location, int port,
-                             IrmoInterface *spec,
+                             IrmoInterface *iface,
 			     IrmoWorld *local_world);
 
 /*!

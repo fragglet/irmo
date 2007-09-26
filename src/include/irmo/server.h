@@ -35,7 +35,7 @@ extern "C" {
  * 
  * The clients themselves may also serve a world back to the 
  * server. The client world to serve is specified using the
- * 'spec' field of the irmo_server_new constructor.
+ * 'client_interface' field of the irmo_server_new constructor.
  *
  * \addtogroup server
  * \{
@@ -47,17 +47,17 @@ extern "C" {
  * Create a new \ref IrmoServer listening for connections on a
  * particular port.
  *
- * \param domain      The type of socket to listen on 
- *                    (see \ref IrmoSocketDomain)
- * \param port        The port number to listen on
- * \param world       The world the server will serve.
- * \param client_spec An interface specification describing the interface
- *                    for the client world of the connecting clients.
- * \return            A new IrmoServer or NULL if the function fails.
+ * \param domain           The type of socket to listen on 
+ *                         (see \ref IrmoSocketDomain)
+ * \param port             The port number to listen on
+ * \param world            The world the server will serve.
+ * \param client_interface An interface object describing the 
+ *                         client world of the connecting clients.
+ * \return                 A new IrmoServer or NULL if the function fails.
  */
 
 IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
-			    IrmoWorld *world, IrmoInterface *client_spec);
+			    IrmoWorld *world, IrmoInterface *client_interface);
 
 /*!
  * \brief Watch new connections to a server

@@ -167,7 +167,7 @@ struct _IrmoSendWindowAtom {
 struct _IrmoMethodAtom {
 	IrmoSendAtom sendatom;
 
-	IrmoMethodData method;
+	IrmoMethodData method_data;
 };
 
 void irmo_sendatom_free(IrmoSendAtom *atom);

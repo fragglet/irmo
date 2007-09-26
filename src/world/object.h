@@ -43,7 +43,7 @@ struct _IrmoObject {
 	IrmoCallbackData *callbacks;
 
 	// the class of this object, one of the classes specified
-	// in the interface spec for the world this object exists
+	// in the interface for the world this object exists
 	// in.
 	
 	IrmoClass *objclass;

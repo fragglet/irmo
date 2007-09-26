@@ -346,13 +346,12 @@ static void socket_run_syn(IrmoPacket *packet)
 
 	server = packet->sock->server;
 
-	// if there is a server, get the hashes for the interface
-	// specs
+	// if there is a server, get the hashes for the interfaces
 
 	local_hash_expected 
-		= server->client_spec ? server->client_spec->hash : 0;
+		= server->client_interface ? server->client_interface->hash : 0;
 	server_hash_expected 
-		= server->world ? server->world->spec->hash : 0;
+		= server->world ? server->world->iface->hash : 0;
 
 	if (local_hash != local_hash_expected) {
 		socket_send_refuse(packet->sock, packet->src,
@@ -404,9 +403,9 @@ static void socket_run_synack(IrmoPacket *packet)
 
 		// create the remote world object
 
-		if (client->server->client_spec) {
+		if (client->server->client_interface) {
 			client->world
-			  = irmo_world_new(client->server->client_spec);
+			  = irmo_world_new(client->server->client_interface);
 
 			// mark this as a remote world
 			

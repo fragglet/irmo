@@ -25,48 +25,48 @@
 // IrmoInterface
 //
 
-IrmoClass *irmo_interface_get_class(IrmoInterface *spec, 
+IrmoClass *irmo_interface_get_class(IrmoInterface *iface, 
 					 char *class_name)
 {
-	irmo_return_val_if_fail(spec != NULL, NULL);
+	irmo_return_val_if_fail(iface != NULL, NULL);
 	irmo_return_val_if_fail(class_name != NULL, NULL);
 
-	return irmo_hash_table_lookup(spec->class_hash, class_name);
+	return irmo_hash_table_lookup(iface->class_hash, class_name);
 }
 
-IrmoMethod *irmo_interface_get_method(IrmoInterface *spec, 
+IrmoMethod *irmo_interface_get_method(IrmoInterface *iface, 
 					   char *method_name)
 {
-	irmo_return_val_if_fail(spec != NULL, NULL);
+	irmo_return_val_if_fail(iface != NULL, NULL);
 	irmo_return_val_if_fail(method_name != NULL, NULL);
 
-	return irmo_hash_table_lookup(spec->method_hash, method_name);
+	return irmo_hash_table_lookup(iface->method_hash, method_name);
 }
 
-void irmo_interface_foreach_class(IrmoInterface *spec, 
+void irmo_interface_foreach_class(IrmoInterface *iface, 
 				       IrmoClassCallback func, 
 				       void *user_data)
 {
 	int i;
 
-	irmo_return_if_fail(spec != NULL);
+	irmo_return_if_fail(iface != NULL);
 	irmo_return_if_fail(func != NULL);
 
-	for (i=0; i<spec->nclasses; ++i) 
-		func(spec->classes[i], user_data);
+	for (i=0; i<iface->nclasses; ++i) 
+		func(iface->classes[i], user_data);
 }
 
-void irmo_interface_foreach_method(IrmoInterface *spec, 
+void irmo_interface_foreach_method(IrmoInterface *iface, 
 					IrmoMethodCallback func, 
 					void *user_data)
 {
 	int i;
 
-	irmo_return_if_fail(spec != NULL);
+	irmo_return_if_fail(iface != NULL);
 	irmo_return_if_fail(func != NULL);
 
-	for (i=0; i<spec->nmethods; ++i) 
-		func(spec->methods[i], user_data);
+	for (i=0; i<iface->nmethods; ++i) 
+		func(iface->methods[i], user_data);
 }
 
 

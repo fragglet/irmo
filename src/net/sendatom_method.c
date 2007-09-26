@@ -52,10 +52,10 @@ static int irmo_method_atom_verify(IrmoPacket *packet)
 
 	// sanity check method index
 
-	if (i >= client->server->world->spec->nmethods)
+	if (i >= client->server->world->iface->nmethods)
 		return 0;
 
-	method = client->server->world->spec->methods[i];
+	method = client->server->world->iface->methods[i];
 
 	// read arguments
 
@@ -80,15 +80,15 @@ static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 	// read method number
 	
 	irmo_packet_readi8(packet, &i);
-	atom->method.spec = method 
-		= packet->client->server->world->spec->methods[i];
+        method = packet->client->server->world->iface->methods[i];
+	atom->method_data.method = method;
 
 	// read arguments
 	
-	atom->method.args = irmo_new0(IrmoValue, method->narguments);
+	atom->method_data.args = irmo_new0(IrmoValue, method->narguments);
 
 	for (i=0; i<method->narguments; ++i) {
-		irmo_packet_read_value(packet, &atom->method.args[i],
+		irmo_packet_read_value(packet, &atom->method_data.args[i],
 				       method->arguments[i]->type);
 	}
 
@@ -97,8 +97,8 @@ static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 
 static void irmo_method_atom_write(IrmoMethodAtom *atom, IrmoPacket *packet)
 {
-	IrmoMethod *method = atom->method.spec;
-	IrmoValue *args = atom->method.args;
+	IrmoMethod *method = atom->method_data.method;
+	IrmoValue *args = atom->method_data.args;
 	int i;
 	
 	// send method index
@@ -116,27 +116,27 @@ static void irmo_method_atom_run(IrmoMethodAtom *atom)
 {
 	IrmoClient *client = atom->sendatom.client;
 
-	atom->method.src = client;
+	atom->method_data.src = client;
 	
-	irmo_method_invoke(client->server->world, &atom->method);
+	irmo_method_invoke(client->server->world, &atom->method_data);
 }
 
 static void irmo_method_atom_destroy(IrmoMethodAtom *atom)
 {
-        IrmoMethod *method = atom->method.spec;
+        IrmoMethod *method = atom->method_data.method;
         int i;
  
         for (i=0; i<method->narguments; ++i) {
                 if (method->arguments[i]->type == IRMO_TYPE_STRING)
-                        free(atom->method.args[i].s);
+                        free(atom->method_data.args[i].s);
         }
  
-        free(atom->method.args);
+        free(atom->method_data.args);
 }
 
 static size_t irmo_method_atom_length(IrmoMethodAtom *atom)
 {
-	IrmoMethod *method = atom->method.spec;
+	IrmoMethod *method = atom->method_data.method;
 	int i;
 	size_t len;
 
@@ -163,7 +163,7 @@ static size_t irmo_method_atom_length(IrmoMethodAtom *atom)
                         len += 4;
                         break;
                 case IRMO_TYPE_STRING:
-                        len += strlen(atom->method.args[i].s) + 1;
+                        len += strlen(atom->method_data.args[i].s) + 1;
                         break;
                 }
         }

@@ -218,7 +218,7 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 
 void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 {
-	IrmoMethod *method = data->spec;
+	IrmoMethod *method = data->method;
 	IrmoMethodAtom *atom;
 	int i;
 	
@@ -226,12 +226,12 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 	
 	atom = irmo_new0(IrmoMethodAtom, 1);
 	atom->sendatom.klass = &irmo_method_atom;
-	atom->method.spec = data->spec;
+	atom->method_data.method = method;
 
 	// copy arguments
 
-	atom->method.args = irmo_new0(IrmoValue, method->narguments);
-	memcpy(atom->method.args,
+	atom->method_data.args = irmo_new0(IrmoValue, method->narguments);
+	memcpy(atom->method_data.args,
 	       data->args,
 	       sizeof(IrmoValue) * method->narguments);
 
@@ -239,8 +239,8 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 	
 	for (i=0; i<method->narguments; ++i) {
 		if (method->arguments[i]->type == IRMO_TYPE_STRING)
-			atom->method.args[i].s
-				= strdup(atom->method.args[i].s);
+			atom->method_data.args[i].s
+				= strdup(atom->method_data.args[i].s);
 	}
 
 	// add to queue

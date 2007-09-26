@@ -46,9 +46,9 @@ struct _IrmoServer {
 	
 	IrmoWorld *world;
 
-	// spec for client worlds
+	// interface for client worlds
 
-	IrmoInterface *client_spec;
+	IrmoInterface *client_interface;
 	
 	// connected IrmoClients hashed by IP
 	
@@ -62,7 +62,7 @@ struct _IrmoServer {
 // make a new server using an existing socket object
 
 IrmoServer *irmo_server_new_from(IrmoSocket *sock, IrmoWorld *world,
-				 IrmoInterface *client_spec);
+				 IrmoInterface *client_interface);
 
 // invoke IrmoClientCallback callback functions in a list
 

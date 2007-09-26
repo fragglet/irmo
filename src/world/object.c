@@ -148,16 +148,16 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 {
-	IrmoClass *spec;
+	IrmoClass *klass;
 	int id;
 
 	irmo_return_val_if_fail(world != NULL, NULL);
 	irmo_return_val_if_fail(type_name != NULL, NULL);
 	irmo_return_val_if_fail(world->remote == 0, NULL);
 	
-	spec = irmo_interface_get_class(world->spec, type_name);
+	klass = irmo_interface_get_class(world->iface, type_name);
 
-	if (!spec) {
+	if (!klass) {
 		irmo_error_report("irmo_object_new", 
 				  "unknown type '%s'", type_name);
 		return NULL;
@@ -172,7 +172,7 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 		return NULL;
 	}
 
-	return irmo_object_internal_new(world, spec, id);
+	return irmo_object_internal_new(world, klass, id);
 }
 
 // internal object destroy function
@@ -278,7 +278,7 @@ static void object_set_notify_foreach(IrmoClient *client,
 void irmo_object_set_raise(IrmoObject *object, int variable)
 {
 	IrmoClass *objclass = object->objclass;
-	IrmoClassVar *spec = objclass->variables[variable];
+	IrmoClassVar *var = objclass->variables[variable];
 	struct set_notify_data data = {
 		object,
 		variable,
@@ -286,7 +286,7 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 
 	// call callback functions for change
 
-	irmo_callbackdata_raise(object->callbacks, object, spec->index);
+	irmo_callbackdata_raise(object->callbacks, object, var->index);
 	irmo_callbackdata_raise(object->world->callbacks[objclass->index],
 				object, variable);
 	irmo_callbackdata_raise(object->world->callbacks_all,
@@ -302,16 +302,16 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 void irmo_object_set_int(IrmoObject *object, char *variable, 
 			 unsigned int value)
 {
-	IrmoClassVar *spec;
-	IrmoValue *obj_var;
+	IrmoClassVar *var;
+	IrmoValue *obj_value;
 
 	irmo_return_if_fail(object != NULL);
 	irmo_return_if_fail(variable != NULL);
 	irmo_return_if_fail(object->world->remote == 0);
 	
-	spec = irmo_class_get_variable(object->objclass, variable);
+	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!spec) {
+	if (!var) {
 		irmo_error_report("irmo_object_set_int",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -319,19 +319,19 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 		return;
 	}
 
-	obj_var = &object->variables[spec->index];
+	obj_value = &object->variables[var->index];
 
-	switch (spec->type) {
+	switch (var->type) {
 	case IRMO_TYPE_INT8:
 		irmo_return_if_fail(value >= 0 && value <= 0xff);
-		obj_var->i = value;
+		obj_value->i = value;
 		break;
 	case IRMO_TYPE_INT16:
 		irmo_return_if_fail(value >= 0 && value <= 0xffff);
-		obj_var->i = value;
+		obj_value->i = value;
 		break;
 	case IRMO_TYPE_INT32:
-		obj_var->i = value;
+		obj_value->i = value;
 		break;
 	default:
 		irmo_error_report("irmo_object_set_int",
@@ -340,21 +340,21 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 		return;
 	}
 
-	irmo_object_set_raise(object, spec->index);
+	irmo_object_set_raise(object, var->index);
 }
 
 void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 {
-	IrmoClassVar *spec;
+	IrmoClassVar *var;
 
 	irmo_return_if_fail(object != NULL);
 	irmo_return_if_fail(variable != NULL);
 	irmo_return_if_fail(value != NULL);
 	irmo_return_if_fail(object->world->remote == 0);
 	
-	spec = irmo_class_get_variable(object->objclass, variable);
+	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!spec) {
+	if (!var) {
 		irmo_error_report("irmo_object_set_string",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -363,32 +363,32 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 		return;
 	}
 
-	if (spec->type != IRMO_TYPE_STRING) {
+	if (var->type != IRMO_TYPE_STRING) {
 		irmo_error_report("irmo_object_set_string",
 				  "variable '%s' in class '%s' is not string type",
 				  variable, object->objclass->name);
 		return;
 	}
 
-	free(object->variables[spec->index].s);
+	free(object->variables[var->index].s);
 
-	object->variables[spec->index].s = strdup(value);
+	object->variables[var->index].s = strdup(value);
 
-	irmo_object_set_raise(object, spec->index);
+	irmo_object_set_raise(object, var->index);
 }
 
 // get int value
 
 unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 {
-	IrmoClassVar *spec;
+	IrmoClassVar *var;
 
 	irmo_return_val_if_fail(object != NULL, -1);
 	irmo_return_val_if_fail(variable != NULL, -1);
 	
-	spec = irmo_class_get_variable(object->objclass, variable);
+	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!spec) {
+	if (!var) {
 		irmo_error_report("irmo_object_get_int",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -397,11 +397,11 @@ unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 		return -1;
 	}
 
-	switch (spec->type) {
+	switch (var->type) {
 	case IRMO_TYPE_INT8:
 	case IRMO_TYPE_INT16:
 	case IRMO_TYPE_INT32:
-		return object->variables[spec->index].i;
+		return object->variables[var->index].i;
 	default:
 		irmo_error_report("irmo_object_get_int",
 				  "variable '%s' in class '%s' is not an int type",
@@ -414,14 +414,14 @@ unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 
 char *irmo_object_get_string(IrmoObject *object, char *variable)
 {
-	IrmoClassVar *spec;
+	IrmoClassVar *var;
 
 	irmo_return_val_if_fail(object != NULL, NULL);
 	irmo_return_val_if_fail(variable != NULL, NULL);
 
-	spec = irmo_class_get_variable(object->objclass, variable);
+	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!spec) {
+	if (!var) {
 		irmo_error_report("irmo_object_get_string",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -430,14 +430,14 @@ char *irmo_object_get_string(IrmoObject *object, char *variable)
 		return NULL;
 	}
 
-	if (spec->type != IRMO_TYPE_STRING) {
+	if (var->type != IRMO_TYPE_STRING) {
 		irmo_error_report("irmo_object_get_string",
 				  "variable '%s' in class '%s' is not a string type",
 				  variable, object->objclass->name);
 		return NULL;
 	}
 
-	return object->variables[spec->index].s;
+	return object->variables[var->index].s;
 }
 
 IrmoWorld *irmo_object_get_world(IrmoObject *obj)
@@ -471,7 +471,7 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 	irmo_return_val_if_fail(obj != NULL, 0);
 	irmo_return_val_if_fail(classname != NULL, 0);
 
-	klass = irmo_interface_get_class(obj->world->spec, classname);
+	klass = irmo_interface_get_class(obj->world->iface, classname);
 
 	if (!klass) {
 		irmo_error_report("irmo_object_is_a",

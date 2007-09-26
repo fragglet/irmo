@@ -28,12 +28,13 @@ extern "C" {
 
 /*!
  *
- * An \ref IrmoInterface object defines an interface specification 
- * comprising specification for several object classes and methods.
- * The specification can then be used to create an \ref IrmoWorld
+ * An \ref IrmoInterface object defines an interface specifying
+ * object classes and methods.
+ *
+ * The interface can then be used to create an \ref IrmoWorld
  * where the classes can be instantiated as \ref IrmoObject objects.
  *
- * The InterfaceSpec is defined in a seperate file. This has a C-like
+ * The interface is defined in a seperate file. This has a C-like
  * syntax and is quite simple. The file is loaded with the 
  * \ref irmo_interface_new function.
  *
@@ -47,7 +48,7 @@ extern "C" {
  * A file is parsed with the interface described in a simple
  * C-style syntax.
  *
- * \param filename	The filename of the specification file
+ * \param filename	The filename of the interface file
  * \return		A new IrmoInterface object or NULL for failure
  */
 
@@ -62,65 +63,65 @@ IrmoInterface *irmo_interface_new(char *filename);
  * reference count starts at 1. When the reference count reaches 0, the
  * object is destroyed.
  *
- * \param spec		The object to reference
+ * \param iface		The object to reference
  */
 
-void irmo_interface_ref(IrmoInterface *spec);
+void irmo_interface_ref(IrmoInterface *iface);
 
 /*!
  * \brief Remove a reference to an IrmoInterface object
  *
  * See \ref irmo_interface_ref
  *
- * \param spec		The object to unreference
+ * \param iface		The object to unreference
  */
 
-void irmo_interface_unref(IrmoInterface *spec);
+void irmo_interface_unref(IrmoInterface *iface);
 
 /*!
  * \brief Get the \ref IrmoClass object representing a particular class
  *
- * \param spec		The interface specification
+ * \param iface		The interface 
  * \param class_name 	The name of the class
  *
  * \return 		A pointer to the object or NULL if it does not exist
  */
 
-IrmoClass *irmo_interface_get_class(IrmoInterface *spec, 
+IrmoClass *irmo_interface_get_class(IrmoInterface *iface, 
 					 char *class_name);
 
 /*!
- * \brief Iterate over all classes in a specification
+ * \brief Iterate over all classes in an interface.
  * 
- * \param spec		The specification object
+ * \param iface		The interface
  * \param func		A user function to call for each class
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_interface_foreach_class(IrmoInterface *spec, 
+void irmo_interface_foreach_class(IrmoInterface *iface, 
 				       IrmoClassCallback func, 
 				       void *user_data);
 /*!
  * \brief Get the \ref IrmoMethod object representing a particular method
  *
- * \param spec		The interface specification
+ * \param iface		The interface.
  * \param method_name 	The name of the method
  *
  * \return 		A pointer to the object or NULL if it does not exist
  */
 
-IrmoMethod *irmo_interface_get_method(IrmoInterface *spec, 
+IrmoMethod *irmo_interface_get_method(IrmoInterface *iface, 
 					   char *method_name);
 
 /*!
- * \brief Iterate over all methods in a specification
+ * \brief Iterate over all methods in an interface.
  * 
- * \param spec		The specification object
+ * \param iface		The interface.
  * \param func		A user function to call for each method
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_interface_foreach_method(IrmoInterface *spec, 
+void irmo_interface_foreach_method(IrmoInterface *iface, 
 					IrmoMethodCallback func, 
 					void *user_data);
 

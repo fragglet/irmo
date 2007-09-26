@@ -248,17 +248,17 @@ void irmo_callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 static IrmoSListEntry **find_variable(IrmoCallbackData *data, char *variable)
 {
 	if (variable) {
-		IrmoClassVar *varspec;
+		IrmoClassVar *classvar;
 
 		// cannot specify a variable name and no classname
 
 		if (data->objclass)
 			return NULL;
 
-		varspec = irmo_class_get_variable(data->objclass, variable);
+		classvar = irmo_class_get_variable(data->objclass, variable);
 
-		if (varspec)
-			return &data->variable_callbacks[varspec->index];
+		if (classvar)
+			return &data->variable_callbacks[classvar->index];
 		else 
 			return NULL;
 	} else {
@@ -283,17 +283,17 @@ static IrmoCallback *callbackdata_watch(IrmoCallbackData *data,
 
 static IrmoCallbackData *find_callback_class(IrmoWorld *world, char *classname)
 {
-	IrmoClass *spec;
+	IrmoClass *klass;
 
 	if (classname == NULL) 
 		return world->callbacks_all;
 
-	spec = irmo_interface_get_class(world->spec, classname);
+	klass = irmo_interface_get_class(world->iface, classname);
 
-	if (!spec)
+	if (!klass)
 		return NULL;
 
-	return world->callbacks[spec->index];
+	return world->callbacks[klass->index];
 }
 
 // watch creation of new objects of a particular class

@@ -56,7 +56,7 @@ static int irmo_newobject_atom_verify(IrmoPacket *packet)
 
 	// check valid class
 	
-	if (i >= packet->client->world->spec->nclasses)
+	if (i >= packet->client->world->iface->nclasses)
 		return 0;
 
 	return 1;
@@ -90,8 +90,8 @@ static void irmo_newobject_atom_write(IrmoNewObjectAtom *atom,
 static void irmo_newobject_atom_run(IrmoNewObjectAtom *atom)
 {
 	IrmoClient *client = atom->sendatom.client;
-	IrmoInterface *spec = client->world->spec;
-	IrmoClass *objclass = spec->classes[atom->classnum];
+	IrmoInterface *iface = client->world->iface;
+	IrmoClass *objclass = iface->classes[atom->classnum];
 	
 	// sanity check
 

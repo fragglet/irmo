@@ -32,9 +32,9 @@ extern "C" {
 
 /*!
  *
- * An IrmoWorld defines a data structure which implements an Interface
- * Specification. Inside an IrmoWorld, objects (see \ref IrmoObject)
- * of classes defined within that specification can be created. These 
+ * An IrmoWorld defines a data structure which implements an Interface.
+ * Inside an IrmoWorld, objects (see \ref IrmoObject)
+ * of classes defined within that interface can be created. These 
  * objects can be used to hold data of various types.
  *
  * Callback functions can be set to be called automatically when particular
@@ -47,15 +47,15 @@ extern "C" {
 /*!
  * \brief Create a new World
  *
- * Create a new World from an Interface Specification. The classes
- * defined in the specification can then be instantiated as objects
+ * Create a new World from an Interface. The classes
+ * defined in the interface can then be instantiated as objects
  * within the world.
  *
- * \param spec	The Interface Specification to use.
+ * \param iface	The Interface to use.
  * \return	The new world.
  */
 
-IrmoWorld *irmo_world_new(IrmoInterface *spec);
+IrmoWorld *irmo_world_new(IrmoInterface *iface);
 
 /*!
  * \brief Find an object by its ID
@@ -93,16 +93,16 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 			       IrmoObjCallback func, void *user_data);
 
 /*!
- * \brief	Get the specification for a World
+ * \brief	Get the interface for a World
  *
- * Returns the \ref IrmoInterface specification object for a
+ * Returns the \ref IrmoInterface object specifying the interface for a
  * given world.
  *
  * \param world	The world to query
  * \return		The interface object
  */
 
-IrmoInterface *irmo_world_get_spec(IrmoWorld *world);
+IrmoInterface *irmo_world_get_interface(IrmoWorld *world);
 
 /*!
  * \brief	Add a reference to a World.

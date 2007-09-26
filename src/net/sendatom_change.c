@@ -59,10 +59,10 @@ static int irmo_change_atom_verify(IrmoPacket *packet)
 	if (!irmo_packet_readi8(packet, &i))
 		return 0;
 
-	if (i >= client->world->spec->nclasses)
+	if (i >= client->world->iface->nclasses)
 		return 0;
 
-	objclass = client->world->spec->classes[i];
+	objclass = client->world->iface->classes[i];
 	
 	// object id
 
@@ -125,7 +125,7 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
 	
 	irmo_packet_readi8(packet, &i);
 
-	objclass = client->world->spec->classes[i];
+	objclass = client->world->iface->classes[i];
 	atom->objclass = objclass;
 
 	// read object id
@@ -317,7 +317,7 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 static size_t irmo_change_atom_length(IrmoChangeAtom *atom)
 {
         IrmoObject *obj = atom->object;
-        IrmoClass *spec = obj->objclass;
+        IrmoClass *klass = obj->objclass;
         size_t len;
         int i;
  
@@ -333,18 +333,18 @@ static size_t irmo_change_atom_length(IrmoChangeAtom *atom)
          
         // leading bitmap
          
-        len += (spec->nvariables + 7) / 8;
+        len += (klass->nvariables + 7) / 8;
  
         // add up sizes of variables
          
-        for (i=0; i<spec->nvariables; ++i) {
+        for (i=0; i<klass->nvariables; ++i) {
                                                                                 
                 // only variables which have changed
                  
                 if (!atom->changed[i])
                         continue;
                  
-                switch (spec->variables[i]->type) {
+                switch (klass->variables[i]->type) {
                 case IRMO_TYPE_INT8:
                         len += 1;
                         break;

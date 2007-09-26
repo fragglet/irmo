@@ -27,25 +27,25 @@
 
 IrmoCallback *irmo_world_method_watch(IrmoWorld *world, 
 				      char *method_name,
-				      IrmoInvokeCallback method, 
+				      IrmoInvokeCallback callback, 
 				      void *user_data)
 {
-	IrmoMethod *spec;
+	IrmoMethod *method;
 
 	irmo_return_val_if_fail(world != NULL, NULL);
 	irmo_return_val_if_fail(method_name != NULL, NULL);
-	irmo_return_val_if_fail(method != NULL, NULL);
+	irmo_return_val_if_fail(callback != NULL, NULL);
 	
-	spec = irmo_interface_get_method(world->spec, method_name);
+	method = irmo_interface_get_method(world->iface, method_name);
 
-	if (!spec) {
+	if (!method) {
 		irmo_error_report("irmo_world_method_watch",
 				  "unknown method '%s'", method_name);
 		return NULL;
 	}
 
-	return irmo_callbacklist_add(&world->method_callbacks[spec->index],
-				     method, user_data);
+	return irmo_callbacklist_add(&world->method_callbacks[method->index],
+				     callback, user_data);
 }
 
 static void method_invoke_foreach(IrmoCallback *data,
@@ -62,8 +62,8 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 	
 	// check all the arguments for sanity
 	
-	for (i=0; i<data->spec->narguments; ++i) {
-		IrmoMethodArg *arg = data->spec->arguments[i];
+	for (i=0; i<data->method->narguments; ++i) {
+		IrmoMethodArg *arg = data->method->arguments[i];
 		IrmoValue *value = &data->args[i];
 
 		switch (arg->type) {
@@ -90,15 +90,15 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 	
 	// invoke callback functions
 	
-	irmo_slist_foreach(world->method_callbacks[data->spec->index],
+	irmo_slist_foreach(world->method_callbacks[data->method->index],
 			(IrmoSListIterator) method_invoke_foreach,
 			data);
 }
 
-void irmo_world_method_call(IrmoWorld *world, char *method, ...)
+void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 {
 	IrmoMethodData method_data;
-	IrmoMethod *spec;
+	IrmoMethod *method;
 	IrmoValue *args;
 	va_list arglist;
 	int i;
@@ -106,22 +106,22 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 	irmo_return_if_fail(world != NULL);
 	irmo_return_if_fail(method != NULL);
 	
-	spec = irmo_interface_get_method(world->spec, method);
+	method = irmo_interface_get_method(world->iface, method_name);
 
-	if (!spec) {
+	if (!method) {
 		irmo_error_report("irmo_world_method_call",
-				  "unknown method '%s'", method);
+				  "unknown method '%s'", method_name);
 		return;
 	}
 
-	args = irmo_new0(IrmoValue, spec->narguments);
+	args = irmo_new0(IrmoValue, method->narguments);
 
 	// read each of the arguments
 	
-	va_start(arglist, method);
+	va_start(arglist, method_name);
 	
-	for (i=0; i<spec->narguments; ++i) {
-		switch (spec->arguments[i]->type) {
+	for (i=0; i<method->narguments; ++i) {
+		switch (method->arguments[i]->type) {
 		case IRMO_TYPE_INT8:
 		case IRMO_TYPE_INT16:
 		case IRMO_TYPE_INT32:
@@ -135,7 +135,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 
 	va_end(arglist);
 
-	method_data.spec = spec;
+	method_data.method = method;
 	method_data.args = args;
 	method_data.src = NULL;
 
@@ -145,24 +145,24 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 }
 
 
-void irmo_world_method_call2(IrmoWorld *world, char *method,
+void irmo_world_method_call2(IrmoWorld *world, char *method_name,
 			     IrmoValue *arguments)
 {
 	IrmoMethodData method_data;
-	IrmoMethod *spec;
+	IrmoMethod *method;
 
 	irmo_return_if_fail(world != NULL);
 	irmo_return_if_fail(method != NULL);
 	
-	spec = irmo_interface_get_method(world->spec, method);
+	method = irmo_interface_get_method(world->iface, method_name);
 
-	if (!spec) {
+	if (!method) {
 		irmo_error_report("irmo_world_method_call2",
-				  "unknown method '%s'", method);
+				  "unknown method '%s'", method_name);
 		return;
 	}
 
-	method_data.spec = spec;
+	method_data.method = method;
 	method_data.args = arguments;
 	method_data.src = NULL;
 
@@ -179,55 +179,55 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data)
 
 char *irmo_method_arg_string(IrmoMethodData *data, char *argname)
 {
-	IrmoMethodArg *spec;
+	IrmoMethodArg *arg;
 
 	irmo_return_val_if_fail(data != NULL, NULL);
 	irmo_return_val_if_fail(argname != NULL, NULL);
 	
-	spec = irmo_method_get_argument(data->spec, argname);
+	arg = irmo_method_get_argument(data->method, argname);
 
-	if (!spec) {
+	if (!arg) {
 		irmo_error_report("irmo_method_arg_string",
 				  "unknown method argument '%s' for '%s' method",
-				  data->spec->name, argname);
+				  data->method->name, argname);
 		return NULL;
 	}
 
-	if (spec->type != IRMO_TYPE_STRING) {
+	if (arg->type != IRMO_TYPE_STRING) {
 		irmo_error_report("irmo_method_arg_string",
 				  "'%s' argument for '%s' method is not a string type",
-				  argname, data->spec->name);
+				  argname, data->method->name);
 		return NULL;
 	}
 
-	return data->args[spec->index].s;		
+	return data->args[arg->index].s;		
 }
 
 unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 {
-	IrmoMethodArg *spec;
+	IrmoMethodArg *arg;
 
 	irmo_return_val_if_fail(data != NULL, -1);
 	irmo_return_val_if_fail(argname != NULL, -1);
 	
-	spec = irmo_method_get_argument(data->spec, argname);
+	arg = irmo_method_get_argument(data->method, argname);
 
-	if (!spec) {
+	if (!arg) {
 		irmo_error_report("irmo_method_arg_int",
 				  "unknown method argument '%s' for '%s' method",
-				  data->spec->name, argname);
+				  data->method->name, argname);
 		return 0;
 	}
 
-	switch (spec->type) {
+	switch (arg->type) {
 	case IRMO_TYPE_INT8:
 	case IRMO_TYPE_INT16:
 	case IRMO_TYPE_INT32:
-		return data->args[spec->index].i;
+		return data->args[arg->index].i;
 	default:
 		irmo_error_report("irmo_method_arg_int",
 				  "'%s' argument for '%s' method is not an integer type",
-				  argname, data->spec->name);
+				  argname, data->method->name);
 		return 0;
 	}
 }

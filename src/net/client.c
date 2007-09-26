@@ -187,7 +187,7 @@ static void client_run_connecting(IrmoClient *client)
 		if (client->server->socket->type == SOCKET_CLIENT) {
 			IrmoWorld *local_world
 				= client->server->world;
-			IrmoInterface *spec = client->server->client_spec;
+			IrmoInterface *iface = client->server->client_interface;
 
 			packet = irmo_packet_new(); 
 
@@ -198,8 +198,8 @@ static void client_run_connecting(IrmoClient *client)
 			irmo_packet_writei16(packet, IRMO_PROTOCOL_VERSION);
 			irmo_packet_writei32(packet,
 					     local_world ?
-					     local_world->spec->hash : 0);
-			irmo_packet_writei32(packet, spec ? spec->hash : 0);
+					     local_world->iface->hash : 0);
+			irmo_packet_writei32(packet, iface ? iface->hash : 0);
 
 			// no hostname yet, fixme
 		} else {

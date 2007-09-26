@@ -28,7 +28,7 @@
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, 
 			     char *location, int port,
-			     IrmoInterface *spec, 
+			     IrmoInterface *iface, 
 			     IrmoWorld *local_world)
 {
 	IrmoSocket *sock;
@@ -45,7 +45,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 #ifdef USE_IPV6
 		// try IPv6
 		
-		conn = irmo_connect(IRMO_SOCKET_IPV6, location, port, spec,
+		conn = irmo_connect(IRMO_SOCKET_IPV6, location, port, iface,
 				    local_world);
 
 		if (conn)
@@ -53,7 +53,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 #endif
 		// fall back to v4
 
-		return irmo_connect(IRMO_SOCKET_IPV4, location, port, spec,
+		return irmo_connect(IRMO_SOCKET_IPV4, location, port, iface,
 				    local_world);
 	}
 	
@@ -75,7 +75,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 	// local world the server is seen as a client connecting
 	// to our own local server (symmetrical)
 	
-	server = irmo_server_new_from(sock, local_world, spec);
+	server = irmo_server_new_from(sock, local_world, iface);
 
 	// only the server is using this socket 
 	

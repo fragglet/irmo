@@ -28,7 +28,7 @@
 #include "object.h"
 
 struct _IrmoMethodData {
-	IrmoMethod *spec;
+	IrmoMethod *method;
 	IrmoClient *src;
 	IrmoValue *args;
 };
