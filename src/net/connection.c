@@ -19,11 +19,11 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "netbase/netlib.h"
 
 #include "connection.h"
-#include "error.h"
 #include "socket.h"
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, 

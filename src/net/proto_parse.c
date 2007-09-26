@@ -27,10 +27,10 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "netbase/packet.h"
 
-#include "error.h"
 #include "protocol.h"
 #include "sendatom.h"
 

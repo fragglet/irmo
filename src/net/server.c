@@ -19,10 +19,10 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "netbase/netlib.h"
 
-#include "error.h"
 #include "server.h"
 
 // create a new server using an existing IrmoSocket object

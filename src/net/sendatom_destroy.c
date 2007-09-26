@@ -19,13 +19,13 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "netbase/netlib.h"
 #include "netbase/packet.h"
 
 #include "world/object.h"
 
-#include "error.h"
 
 //
 // IrmoDestroyAtom

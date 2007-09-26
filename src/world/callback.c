@@ -19,11 +19,11 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "interface/if_spec.h"
 
 #include "callback.h"
-#include "error.h"
 #include "object.h"
 #include "world.h"
 

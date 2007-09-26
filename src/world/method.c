@@ -19,9 +19,9 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "callback.h"
-#include "error.h"
 #include "method.h"
 #include "world.h"
 

@@ -23,11 +23,11 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/error.h"
 
 #include "interface/if_spec.h"
 
 #include "callback.h"
-#include "error.h"
 #include "world.h"
 
 IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
