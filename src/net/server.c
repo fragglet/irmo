@@ -30,7 +30,7 @@
 
 IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 				 IrmoWorld *world, 
-				 IrmoInterfaceSpec *client_spec)
+				 IrmoInterface *client_spec)
 {
 	IrmoServer *server;
 
@@ -46,7 +46,7 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 	irmo_socket_ref(sock);
 
 	if (client_spec)
-		irmo_interface_spec_ref(client_spec);
+		irmo_interface_ref(client_spec);
 	
 	// we can have a server which does not serve a world
 	// store this server in the list of servers attached to this
@@ -69,7 +69,7 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 
 IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
                             IrmoWorld *world, 
-			    IrmoInterfaceSpec *client_spec)
+			    IrmoInterface *client_spec)
 {
 	IrmoSocket *sock;
 	IrmoServer *server;
@@ -156,7 +156,7 @@ void irmo_server_unref(IrmoServer *server)
 		irmo_socket_unref(server->socket);
 		
 		if (server->client_spec)
-			irmo_interface_spec_unref(server->client_spec);
+			irmo_interface_unref(server->client_spec);
 
 		if (server->world)
 			irmo_world_unref(server->world);

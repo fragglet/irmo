@@ -55,7 +55,7 @@ extern "C" {
  * \return	The new world.
  */
 
-IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec);
+IrmoWorld *irmo_world_new(IrmoInterface *spec);
 
 /*!
  * \brief Find an object by its ID
@@ -95,14 +95,14 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 /*!
  * \brief	Get the specification for a World
  *
- * Returns the \ref IrmoInterfaceSpec specification object for a
+ * Returns the \ref IrmoInterface specification object for a
  * given world.
  *
  * \param world	The world to query
  * \return		The interface object
  */
 
-IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world);
+IrmoInterface *irmo_world_get_spec(IrmoWorld *world);
 
 /*!
  * \brief	Add a reference to a World.

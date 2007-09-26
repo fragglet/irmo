@@ -21,7 +21,7 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 
 #include "callback.h"
 #include "object.h"
@@ -288,7 +288,7 @@ static IrmoCallbackData *find_callback_class(IrmoWorld *world, char *classname)
 	if (classname == NULL) 
 		return world->callbacks_all;
 
-	spec = irmo_interface_spec_get_class(world->spec, classname);
+	spec = irmo_interface_get_class(world->spec, classname);
 
 	if (!spec)
 		return NULL;

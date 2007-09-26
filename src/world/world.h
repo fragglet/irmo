@@ -27,7 +27,7 @@
 #include <irmo/world.h>
 
 #include "net/client.h"
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 
 #include "callback.h"
 #include "object.h"
@@ -42,7 +42,7 @@ struct _IrmoWorld {
 
 	// specification this world implements
 	
-	IrmoInterfaceSpec *spec;
+	IrmoInterface *spec;
 
 	// world-global callback objects, 1 per class
 	// used for eg. "watch creation of objects of class my_class"

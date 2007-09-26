@@ -48,7 +48,7 @@ typedef enum {
 
 #include <limits.h>
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 #include "world/method.h"
 #include "world/object.h"
 #include "netbase/netlib.h"

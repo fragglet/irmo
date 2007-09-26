@@ -26,7 +26,7 @@
 
 #include <irmo/object.h>
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 
 #include "callback.h"
 

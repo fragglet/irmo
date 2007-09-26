@@ -28,7 +28,7 @@ typedef struct _IrmoCallbackData IrmoCallbackData;
 
 #include <irmo/callback.h>
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 #include "net/client.h"
 
 #include "object.h"

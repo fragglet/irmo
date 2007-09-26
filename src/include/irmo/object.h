@@ -34,7 +34,7 @@ extern "C" {
  *
  * An \ref IrmoObject exists within a World (see \ref IrmoWorld). They 
  * have a class which defines member variables which hold data. The
- * classes are defined by the \ref IrmoInterfaceSpec which the World
+ * classes are defined by the \ref IrmoInterface which the World
  * is using. The object member variables can hold several different 
  * types of data (int, string) and the values of the variables can
  * be changed and retrieved. Callback functions can be set to watch
@@ -79,7 +79,7 @@ IrmoObjectID irmo_object_get_id(IrmoObject *object);
  * \brief Get the class of an object
  *
  * All objects have a class, which is one of the classes defined in the
- * IrmoInterfaceSpec for the World the object exists in. This retrieves
+ * IrmoInterface for the World the object exists in. This retrieves
  * the name of the class for a particular object.
  *
  * \param object The object to query.

@@ -20,7 +20,7 @@
 #ifndef IRMO_INTERNAL_IF_SPEC_H
 #define IRMO_INTERNAL_IF_SPEC_H
 
-#include <irmo/if_spec.h>
+#include <irmo/interface.h>
 
 #include "algo/algo.h"
 
@@ -45,7 +45,7 @@ struct _IrmoMethodArg {
 // method declaration
 
 struct _IrmoMethod {
-	IrmoInterfaceSpec *parent;
+	IrmoInterface *parent;
 
 	int index;
 	char *name;			// method name
@@ -72,7 +72,7 @@ struct _IrmoClass {
 
 	// parent object
 
-	IrmoInterfaceSpec *parent;
+	IrmoInterface *parent;
 
 	// parent class or NULL for base class
 	
@@ -90,7 +90,7 @@ struct _IrmoClass {
 
 // overall interface
 
-struct _IrmoInterfaceSpec {
+struct _IrmoInterface {
 
 	int refcount;
 	

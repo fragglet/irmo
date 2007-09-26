@@ -25,7 +25,7 @@
 #include <irmo/client.h>
 #include <irmo/connection.h>
 #include <irmo/error.h>
-#include <irmo/if_spec.h>
+#include <irmo/interface.h>
 #include <irmo/method.h>
 #include <irmo/object.h>
 #include <irmo/server.h>

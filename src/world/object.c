@@ -155,7 +155,7 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 	irmo_return_val_if_fail(type_name != NULL, NULL);
 	irmo_return_val_if_fail(world->remote == 0, NULL);
 	
-	spec = irmo_interface_spec_get_class(world->spec, type_name);
+	spec = irmo_interface_get_class(world->spec, type_name);
 
 	if (!spec) {
 		irmo_error_report("irmo_object_new", 
@@ -471,7 +471,7 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 	irmo_return_val_if_fail(obj != NULL, 0);
 	irmo_return_val_if_fail(classname != NULL, 0);
 
-	klass = irmo_interface_spec_get_class(obj->world->spec, classname);
+	klass = irmo_interface_get_class(obj->world->spec, classname);
 
 	if (!klass) {
 		irmo_error_report("irmo_object_is_a",

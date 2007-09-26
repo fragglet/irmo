@@ -25,12 +25,12 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 
 #include "callback.h"
 #include "world.h"
 
-IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
+IrmoWorld *irmo_world_new(IrmoInterface *spec)
 {
 	IrmoWorld *world;
 	int i;
@@ -46,7 +46,7 @@ IrmoWorld *irmo_world_new(IrmoInterfaceSpec *spec)
 	world->servers = irmo_arraylist_new(1);
 	world->remote = 0;
 	
-	irmo_interface_spec_ref(spec);
+	irmo_interface_ref(spec);
 
 	// create a callback for each class
 	
@@ -129,7 +129,7 @@ void irmo_world_unref(IrmoWorld *world)
 
 		// no longer using the interface spec
 		
-		irmo_interface_spec_unref(world->spec);
+		irmo_interface_unref(world->spec);
 		
 		free(world);
 	}
@@ -180,7 +180,7 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 	irmo_return_if_fail(func != NULL);
 	
 	if (classname) {
-		spec = irmo_interface_spec_get_class(world->spec, classname);
+		spec = irmo_interface_get_class(world->spec, classname);
 
 		if (!spec) {
 			irmo_error_report("irmo_world_foreach_object",
@@ -198,7 +198,7 @@ void irmo_world_foreach_object(IrmoWorld *world, char *classname,
 			     &data);			     
 }
 
-IrmoInterfaceSpec *irmo_world_get_spec(IrmoWorld *world)
+IrmoInterface *irmo_world_get_spec(IrmoWorld *world)
 {
 	irmo_return_val_if_fail(world != NULL, NULL);
 

@@ -19,13 +19,13 @@
 
 #include "arch/sysheaders.h"
 
-#include "if_spec.h"
+#include "interface.h"
 
 //
-// IrmoInterfaceSpec
+// IrmoInterface
 //
 
-IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec, 
+IrmoClass *irmo_interface_get_class(IrmoInterface *spec, 
 					 char *class_name)
 {
 	irmo_return_val_if_fail(spec != NULL, NULL);
@@ -34,7 +34,7 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
 	return irmo_hash_table_lookup(spec->class_hash, class_name);
 }
 
-IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
+IrmoMethod *irmo_interface_get_method(IrmoInterface *spec, 
 					   char *method_name)
 {
 	irmo_return_val_if_fail(spec != NULL, NULL);
@@ -43,7 +43,7 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
 	return irmo_hash_table_lookup(spec->method_hash, method_name);
 }
 
-void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec, 
+void irmo_interface_foreach_class(IrmoInterface *spec, 
 				       IrmoClassCallback func, 
 				       void *user_data)
 {
@@ -56,7 +56,7 @@ void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec,
 		func(spec->classes[i], user_data);
 }
 
-void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec, 
+void irmo_interface_foreach_method(IrmoInterface *spec, 
 					IrmoMethodCallback func, 
 					void *user_data)
 {
@@ -129,14 +129,14 @@ void irmo_class_ref(IrmoClass *klass)
 {
 	irmo_return_if_fail(klass != NULL);
 
-	irmo_interface_spec_ref(klass->parent);
+	irmo_interface_ref(klass->parent);
 }
 
 void irmo_class_unref(IrmoClass *klass)
 {
 	irmo_return_if_fail(klass != NULL);
 
-	irmo_interface_spec_unref(klass->parent);
+	irmo_interface_unref(klass->parent);
 }
 
 
@@ -162,14 +162,14 @@ void irmo_class_var_ref(IrmoClassVar *var)
 {
 	irmo_return_if_fail(var != NULL);
 
-	irmo_interface_spec_ref(var->parent->parent);
+	irmo_interface_ref(var->parent->parent);
 }
 
 void irmo_class_var_unref(IrmoClassVar *var)
 {
 	irmo_return_if_fail(var != NULL);
 
-	irmo_interface_spec_unref(var->parent->parent);
+	irmo_interface_unref(var->parent->parent);
 }
 
 //
@@ -224,14 +224,14 @@ void irmo_method_ref(IrmoMethod *method)
 {
 	irmo_return_if_fail(method != NULL);
 
-	irmo_interface_spec_ref(method->parent);
+	irmo_interface_ref(method->parent);
 }
 
 void irmo_method_unref(IrmoMethod *method)
 {
 	irmo_return_if_fail(method != NULL);
 
-	irmo_interface_spec_unref(method->parent);
+	irmo_interface_unref(method->parent);
 }
 
 //
@@ -256,13 +256,13 @@ void irmo_method_arg_ref(IrmoMethodArg *arg)
 {
 	irmo_return_if_fail(arg != NULL);
 
-	irmo_interface_spec_ref(arg->parent->parent);
+	irmo_interface_ref(arg->parent->parent);
 }
 
 void irmo_method_arg_unref(IrmoMethodArg *arg)
 {
 	irmo_return_if_fail(arg != NULL);
 
-	irmo_interface_spec_unref(arg->parent->parent);
+	irmo_interface_unref(arg->parent->parent);
 }
 

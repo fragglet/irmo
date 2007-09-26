@@ -31,22 +31,22 @@ extern "C" {
 
 //---------------------------------------------------------------------
 //
-// IrmoInterfaceSpec
+// IrmoInterface
 //
 //---------------------------------------------------------------------
 
 /*!
  *
- * \addtogroup if_spec
+ * \addtogroup iface
  * \{
  */
 
 /*!
- * \brief An IrmoInterfaceSpec object
- * \ingroup if_spec
+ * \brief An IrmoInterface object
+ * \ingroup iface
  */
 
-typedef struct _IrmoInterfaceSpec IrmoInterfaceSpec;
+typedef struct _IrmoInterface IrmoInterface;
 
 /*!
  * \brief An object representing a class in an interface

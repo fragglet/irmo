@@ -57,7 +57,7 @@ extern "C" {
  */
 
 IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
-			    IrmoWorld *world, IrmoInterfaceSpec *client_spec);
+			    IrmoWorld *world, IrmoInterface *client_spec);
 
 /*!
  * \brief Watch new connections to a server

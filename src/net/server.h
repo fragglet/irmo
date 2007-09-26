@@ -22,7 +22,7 @@
 
 #include <irmo/server.h>
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 #include "world/world.h"
 
 #include "client.h"
@@ -48,7 +48,7 @@ struct _IrmoServer {
 
 	// spec for client worlds
 
-	IrmoInterfaceSpec *client_spec;
+	IrmoInterface *client_spec;
 	
 	// connected IrmoClients hashed by IP
 	
@@ -62,7 +62,7 @@ struct _IrmoServer {
 // make a new server using an existing socket object
 
 IrmoServer *irmo_server_new_from(IrmoSocket *sock, IrmoWorld *world,
-				 IrmoInterfaceSpec *client_spec);
+				 IrmoInterface *client_spec);
 
 // invoke IrmoClientCallback callback functions in a list
 

@@ -20,7 +20,7 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 #include "netbase/netlib.h"
 #include "world/object.h"
 

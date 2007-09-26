@@ -28,54 +28,54 @@ extern "C" {
 
 /*!
  *
- * An \ref IrmoInterfaceSpec object defines an interface specification 
+ * An \ref IrmoInterface object defines an interface specification 
  * comprising specification for several object classes and methods.
  * The specification can then be used to create an \ref IrmoWorld
  * where the classes can be instantiated as \ref IrmoObject objects.
  *
  * The InterfaceSpec is defined in a seperate file. This has a C-like
  * syntax and is quite simple. The file is loaded with the 
- * \ref irmo_interface_spec_new function.
+ * \ref irmo_interface_new function.
  *
- * \addtogroup if_spec
+ * \addtogroup iface
  * \{
  */
 
 /*!
- * \brief Create a new IrmoInterfaceSpec object
+ * \brief Create a new IrmoInterface object
  *
  * A file is parsed with the interface described in a simple
  * C-style syntax.
  *
  * \param filename	The filename of the specification file
- * \return		A new IrmoInterfaceSpec object or NULL for failure
+ * \return		A new IrmoInterface object or NULL for failure
  */
 
-IrmoInterfaceSpec *irmo_interface_spec_new(char *filename);
+IrmoInterface *irmo_interface_new(char *filename);
 
 /*!
- * \brief Add a reference to an IrmoInterfaceSpec object
+ * \brief Add a reference to an IrmoInterface object
  *
- * Reference counting is implemented for IrmoInterfaceSpec objects. Every time 
+ * Reference counting is implemented for IrmoInterface objects. Every time 
  * a new reference is kept, call this to increment the reference count.
- * When a reference is removed, call \ref irmo_interface_spec_unref. The 
+ * When a reference is removed, call \ref irmo_interface_unref. The 
  * reference count starts at 1. When the reference count reaches 0, the
  * object is destroyed.
  *
  * \param spec		The object to reference
  */
 
-void irmo_interface_spec_ref(IrmoInterfaceSpec *spec);
+void irmo_interface_ref(IrmoInterface *spec);
 
 /*!
- * \brief Remove a reference to an IrmoInterfaceSpec object
+ * \brief Remove a reference to an IrmoInterface object
  *
- * See \ref irmo_interface_spec_ref
+ * See \ref irmo_interface_ref
  *
  * \param spec		The object to unreference
  */
 
-void irmo_interface_spec_unref(IrmoInterfaceSpec *spec);
+void irmo_interface_unref(IrmoInterface *spec);
 
 /*!
  * \brief Get the \ref IrmoClass object representing a particular class
@@ -86,7 +86,7 @@ void irmo_interface_spec_unref(IrmoInterfaceSpec *spec);
  * \return 		A pointer to the object or NULL if it does not exist
  */
 
-IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec, 
+IrmoClass *irmo_interface_get_class(IrmoInterface *spec, 
 					 char *class_name);
 
 /*!
@@ -97,7 +97,7 @@ IrmoClass *irmo_interface_spec_get_class(IrmoInterfaceSpec *spec,
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec, 
+void irmo_interface_foreach_class(IrmoInterface *spec, 
 				       IrmoClassCallback func, 
 				       void *user_data);
 /*!
@@ -109,7 +109,7 @@ void irmo_interface_spec_foreach_class(IrmoInterfaceSpec *spec,
  * \return 		A pointer to the object or NULL if it does not exist
  */
 
-IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec, 
+IrmoMethod *irmo_interface_get_method(IrmoInterface *spec, 
 					   char *method_name);
 
 /*!
@@ -120,7 +120,7 @@ IrmoMethod *irmo_interface_spec_get_method(IrmoInterfaceSpec *spec,
  * \param user_data	Extra data to pass to the function
  */
 
-void irmo_interface_spec_foreach_method(IrmoInterfaceSpec *spec, 
+void irmo_interface_foreach_method(IrmoInterface *spec, 
 					IrmoMethodCallback func, 
 					void *user_data);
 

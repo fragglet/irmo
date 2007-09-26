@@ -187,7 +187,7 @@ static void client_run_connecting(IrmoClient *client)
 		if (client->server->socket->type == SOCKET_CLIENT) {
 			IrmoWorld *local_world
 				= client->server->world;
-			IrmoInterfaceSpec *spec = client->server->client_spec;
+			IrmoInterface *spec = client->server->client_spec;
 
 			packet = irmo_packet_new(); 
 

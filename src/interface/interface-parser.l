@@ -18,7 +18,7 @@
  *
  */
 
-%option prefix="irmo_if_spec"
+%option prefix="irmo_interface_parser"
 %option outfile="lex.yy.c"
 %option noyywrap
 
@@ -42,7 +42,7 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
-#include "if_spec.h"
+#include "interface.h"
 
 typedef enum {
 	TOKEN_NONE,
@@ -154,7 +154,7 @@ static void parse_assert(int expr, char *msg, ...)
 
 		error_string = irmo_vasprintf(msg, l);
 
-		irmo_error_report("irmo_interface_spec_new", "%s: %i: %s",
+		irmo_error_report("irmo_interface_new", "%s: %i: %s",
 				  yyin_filename, line_num,
 				  error_string);
 
@@ -297,7 +297,7 @@ static unsigned int class_hash(IrmoClass *spec)
 	return hash;
 }
 
-static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
+static IrmoClass *eat_class(IrmoInterface *spec)
 {
 	token_t token;
 	IrmoClass *klass;
@@ -305,7 +305,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 
 	parse_assert(yylex() == TOKEN_ID, "class name expected");
 
-	parse_assert(irmo_interface_spec_get_class(spec, yytext) == NULL,
+	parse_assert(irmo_interface_get_class(spec, yytext) == NULL,
 		     "multiple definitions of '%s'",
 		     yytext);
 
@@ -329,7 +329,7 @@ static IrmoClass *eat_class(IrmoInterfaceSpec *spec)
 
 		parse_assert(token == TOKEN_ID, "name of parent class expected");
 
-		parent_class = irmo_interface_spec_get_class(spec, yytext);
+		parent_class = irmo_interface_get_class(spec, yytext);
 
 		parse_assert(parent_class != NULL,
 			     "unknown class '%s'", yytext);
@@ -452,14 +452,14 @@ static unsigned int method_hash(IrmoMethod *spec)
 	return hash;
 }
 
-static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
+static IrmoMethod *eat_method(IrmoInterface *spec)
 {
 	IrmoMethod *method;
 	int i;
 	
 	parse_assert(yylex() == TOKEN_ID, "function name expected");
 
-	parse_assert(irmo_interface_spec_get_method(spec, yytext) == NULL,
+	parse_assert(irmo_interface_get_method(spec, yytext) == NULL,
 		     "multiple definitions of '%s'", yytext);
 	
 	method = irmo_new0(IrmoMethod, 1); 
@@ -493,7 +493,7 @@ static IrmoMethod *eat_method(IrmoInterfaceSpec *spec)
 	return method;
 }
 
-static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
+static void irmo_interface_free(IrmoInterface *spec)
 {
 	int i;
 	
@@ -516,7 +516,7 @@ static void irmo_interface_spec_free(IrmoInterfaceSpec *spec)
 	free(spec);
 }
 
-static unsigned int irmo_interface_spec_hash(IrmoInterfaceSpec *spec)
+static unsigned int irmo_interface_hash(IrmoInterface *spec)
 {
 	unsigned int hash = 0;
 	int i;
@@ -533,12 +533,12 @@ static unsigned int irmo_interface_spec_hash(IrmoInterfaceSpec *spec)
 	return hash;
 }
 
-static IrmoInterfaceSpec *eat_interface()
+static IrmoInterface *eat_interface()
 {
-	IrmoInterfaceSpec *spec;
+	IrmoInterface *spec;
 	int token;
 
-	spec = irmo_new0(IrmoInterfaceSpec, 1); 
+	spec = irmo_new0(IrmoInterface, 1); 
 	spec->classes = irmo_new0(IrmoClass *, MAX_CLASSES);
 	spec->methods = irmo_new0(IrmoMethod *, MAX_METHODS);
 	spec->nclasses = spec->nmethods = 0;
@@ -547,7 +547,7 @@ static IrmoInterfaceSpec *eat_interface()
 	spec->class_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 	spec->method_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
 
-	cleanup_push(irmo_interface_spec_free, spec);
+	cleanup_push(irmo_interface_free, spec);
 
 	while ((token = yylex())) {
 		if (token == TOKEN_CLASS) {
@@ -588,7 +588,7 @@ static IrmoInterfaceSpec *eat_interface()
 	if (spec->nmethods < MAX_METHODS)
 		spec->methods = irmo_renew(IrmoMethod *, spec->methods, spec->nmethods);
 
-	spec->hash = irmo_interface_spec_hash(spec);
+	spec->hash = irmo_interface_hash(spec);
 
 	// interface spec is complete
 
@@ -597,16 +597,16 @@ static IrmoInterfaceSpec *eat_interface()
 	return spec;
 }
 
-IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
+IrmoInterface *irmo_interface_new(char *filename)
 {
-	IrmoInterfaceSpec *spec;
+	IrmoInterface *spec;
 
 	irmo_return_val_if_fail(filename != NULL, NULL);
 
 	yyin = fopen(filename, "r");
 
 	if (!yyin) {
-		irmo_error_report("irmo_interface_spec_new",
+		irmo_error_report("irmo_interface_new",
 				  "cannot open '%s'", filename);
 		return NULL;
 	}
@@ -628,20 +628,20 @@ IrmoInterfaceSpec *irmo_interface_spec_new(char *filename)
 	return spec;
 }
 
-void irmo_interface_spec_ref(IrmoInterfaceSpec *spec)
+void irmo_interface_ref(IrmoInterface *spec)
 {
 	irmo_return_if_fail(spec != NULL);
 
 	++spec->refcount;
 }
 
-void irmo_interface_spec_unref(IrmoInterfaceSpec *spec)
+void irmo_interface_unref(IrmoInterface *spec)
 {
 	irmo_return_if_fail(spec != NULL);
 
 	--spec->refcount;
 
 	if (spec->refcount <= 0)
-		irmo_interface_spec_free(spec);
+		irmo_interface_free(spec);
 }
 

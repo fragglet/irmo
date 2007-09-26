@@ -22,7 +22,7 @@
 
 #include <irmo/method.h>
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 #include "net/client.h"
 
 #include "object.h"

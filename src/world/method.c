@@ -36,7 +36,7 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 	irmo_return_val_if_fail(method_name != NULL, NULL);
 	irmo_return_val_if_fail(method != NULL, NULL);
 	
-	spec = irmo_interface_spec_get_method(world->spec, method_name);
+	spec = irmo_interface_get_method(world->spec, method_name);
 
 	if (!spec) {
 		irmo_error_report("irmo_world_method_watch",
@@ -106,7 +106,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...)
 	irmo_return_if_fail(world != NULL);
 	irmo_return_if_fail(method != NULL);
 	
-	spec = irmo_interface_spec_get_method(world->spec, method);
+	spec = irmo_interface_get_method(world->spec, method);
 
 	if (!spec) {
 		irmo_error_report("irmo_world_method_call",
@@ -154,7 +154,7 @@ void irmo_world_method_call2(IrmoWorld *world, char *method,
 	irmo_return_if_fail(world != NULL);
 	irmo_return_if_fail(method != NULL);
 	
-	spec = irmo_interface_spec_get_method(world->spec, method);
+	spec = irmo_interface_get_method(world->spec, method);
 
 	if (!spec) {
 		irmo_error_report("irmo_world_method_call2",

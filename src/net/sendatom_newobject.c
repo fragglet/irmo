@@ -90,7 +90,7 @@ static void irmo_newobject_atom_write(IrmoNewObjectAtom *atom,
 static void irmo_newobject_atom_run(IrmoNewObjectAtom *atom)
 {
 	IrmoClient *client = atom->sendatom.client;
-	IrmoInterfaceSpec *spec = client->world->spec;
+	IrmoInterface *spec = client->world->spec;
 	IrmoClass *objclass = spec->classes[atom->classnum];
 	
 	// sanity check

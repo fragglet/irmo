@@ -28,7 +28,7 @@
 
 IrmoConnection *irmo_connect(IrmoSocketDomain domain, 
 			     char *location, int port,
-			     IrmoInterfaceSpec *spec, 
+			     IrmoInterface *spec, 
 			     IrmoWorld *local_world)
 {
 	IrmoSocket *sock;

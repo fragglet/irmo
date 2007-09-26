@@ -22,7 +22,7 @@
 
 #include <irmo/connection.h>
 
-#include "interface/if_spec.h"
+#include "interface/interface.h"
 #include "world/world.h"
 
 #include "server.h"
