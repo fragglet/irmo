@@ -409,14 +409,7 @@ static IrmoInterface *eat_interface()
 	IrmoInterface *iface;
 	int token;
 
-	iface = irmo_new0(IrmoInterface, 1); 
-	iface->classes = irmo_new0(IrmoClass *, MAX_CLASSES);
-	iface->methods = irmo_new0(IrmoMethod *, MAX_METHODS);
-	iface->nclasses = iface->nmethods = 0;
-	iface->refcount = 1;
-	
-	iface->class_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
-	iface->method_hash = irmo_hash_table_new(irmo_string_hash, irmo_string_equal);
+        iface = irmo_interface_new();
 
 	cleanup_push(_irmo_interface_free, iface);
 
@@ -468,7 +461,7 @@ static IrmoInterface *eat_interface()
 	return iface;
 }
 
-IrmoInterface *irmo_interface_new(char *filename)
+IrmoInterface *irmo_interface_parse(char *filename)
 {
 	IrmoInterface *iface;
 

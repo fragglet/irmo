@@ -26,6 +26,27 @@
 // IrmoInterface
 //
 
+// Create a new, empty, IrmoInterface.
+
+IrmoInterface *irmo_interface_new(void)
+{
+        IrmoInterface *iface;
+
+	iface = irmo_new0(IrmoInterface, 1); 
+
+	iface->classes = irmo_new0(IrmoClass *, MAX_CLASSES);
+	iface->methods = irmo_new0(IrmoMethod *, MAX_METHODS);
+	iface->nclasses = iface->nmethods = 0;
+	iface->refcount = 1;
+	
+	iface->class_hash = irmo_hash_table_new(irmo_string_hash, 
+                                                irmo_string_equal);
+	iface->method_hash = irmo_hash_table_new(irmo_string_hash, 
+                                                 irmo_string_equal);
+
+        return iface;
+}
+
 IrmoClass *irmo_interface_get_class(IrmoInterface *iface, 
 					 char *class_name)
 {

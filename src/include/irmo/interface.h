@@ -43,7 +43,15 @@ extern "C" {
  */
 
 /*!
- * \brief Create a new IrmoInterface object
+ * \brief Create a new, empty IrmoInterface object.
+ *
+ * \return              A new IrmoInterface object.
+ */
+
+IrmoInterface *irmo_interface_new(void);
+
+/*!
+ * \brief Create a new IrmoInterface object, from parsing an interface file.
  *
  * A file is parsed with the interface described in a simple
  * C-style syntax.
@@ -52,7 +60,7 @@ extern "C" {
  * \return		A new IrmoInterface object or NULL for failure
  */
 
-IrmoInterface *irmo_interface_new(char *filename);
+IrmoInterface *irmo_interface_parse(char *filename);
 
 /*!
  * \brief Add a reference to an IrmoInterface object
