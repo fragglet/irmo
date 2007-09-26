@@ -1,0 +1,8 @@
+libirmoincludedir = $(includedir)/irmo/1
+libirmoinclude2dir = $(libirmoincludedir)/irmo
+
+libirmoinclude2_HEADERS=                                        \
+        callback.h  connection.h  object.h  socket.h            \
+        client.h    if_spec.h     server.h  world.h             \
+        method.h    error.h       types.h
+

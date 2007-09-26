@@ -39,8 +39,14 @@ AC_OUTPUT([
 	doc/Makefile
 	src/Makefile
         src/arch/Makefile
-        src/common/Makefile
-	src/public/Makefile
+        src/algo/Makefile
+        src/base/Makefile
+        src/include/Makefile
+        src/include/irmo/Makefile
+        src/interface/Makefile
+        src/net/Makefile
+        src/netbase/Makefile
+        src/world/Makefile
 	irmo.pc
 ])
 

@@ -7,4 +7,4 @@ Name: irmo
 Description: The Irmo generalised network game library
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lirmo
-Cflags: -I${includedir}/irmo/1
+Cflags: -I${includedir}/irmo/2
