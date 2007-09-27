@@ -92,14 +92,14 @@ void irmo_method_arg_ref(IrmoMethodArg *arg)
 {
 	irmo_return_if_fail(arg != NULL);
 
-	irmo_interface_ref(arg->parent->parent);
+	irmo_interface_ref(arg->method->iface);
 }
 
 void irmo_method_arg_unref(IrmoMethodArg *arg)
 {
 	irmo_return_if_fail(arg != NULL);
 
-	irmo_interface_unref(arg->parent->parent);
+	irmo_interface_unref(arg->method->iface);
 }
 
 uint32_t irmo_method_arg_hash(IrmoMethodArg *method_arg)

@@ -92,14 +92,14 @@ void irmo_class_var_ref(IrmoClassVar *var)
 {
 	irmo_return_if_fail(var != NULL);
 
-	irmo_interface_ref(var->parent->parent);
+	irmo_interface_ref(var->klass->iface);
 }
 
 void irmo_class_var_unref(IrmoClassVar *var)
 {
 	irmo_return_if_fail(var != NULL);
 
-	irmo_interface_unref(var->parent->parent);
+	irmo_interface_unref(var->klass->iface);
 }
 
 uint32_t irmo_class_var_hash(IrmoClassVar *class_var)

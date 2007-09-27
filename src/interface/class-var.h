@@ -30,7 +30,7 @@
 // class member variable
 
 struct _IrmoClassVar {
-	IrmoClass *parent;
+	IrmoClass *klass;
 
 	int index;                      // index in variable list
 	IrmoValueType type;

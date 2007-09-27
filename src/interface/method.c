@@ -70,7 +70,7 @@ IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
         method->argument_hash = irmo_hash_table_new(irmo_string_hash, 
                                                     irmo_string_equal);
         method->narguments = 0;
-        method->parent = iface;
+        method->iface = iface;
         method->index = iface->nmethods;
 
         // Add to the array in the interface.
@@ -133,14 +133,14 @@ void irmo_method_ref(IrmoMethod *method)
 {
 	irmo_return_if_fail(method != NULL);
 
-	irmo_interface_ref(method->parent);
+	irmo_interface_ref(method->iface);
 }
 
 void irmo_method_unref(IrmoMethod *method)
 {
 	irmo_return_if_fail(method != NULL);
 
-	irmo_interface_unref(method->parent);
+	irmo_interface_unref(method->iface);
 }
 
 uint32_t irmo_method_hash(IrmoMethod *method)

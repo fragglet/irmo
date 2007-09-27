@@ -30,7 +30,7 @@
 // an argument to a method
 
 struct _IrmoMethodArg {
-	IrmoMethod *parent;
+	IrmoMethod *method;
 
 	int index;
 	IrmoValueType type;

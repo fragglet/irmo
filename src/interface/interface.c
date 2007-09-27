@@ -99,16 +99,18 @@ void _irmo_interface_free(IrmoInterface *iface)
 	irmo_hash_table_free(iface->method_hash);
 
 	// free classes.
-	// this must be done in reverse order, so classes lower in the
-	// hierarchy are freed first
 
-	for (i=iface->nclasses-1; i>=0; --i)
+	for (i=0; i<iface->nclasses; ++i) {
 		_irmo_class_free(iface->classes[i]);
+        }
 
 	free(iface->classes);
 
-	for (i=0; i<iface->nmethods; ++i)
+        // free methods.
+   
+	for (i=0; i<iface->nmethods; ++i) {
 		_irmo_method_free(iface->methods[i]);
+        }
 
 	free(iface->methods);
 	free(iface);

@@ -78,7 +78,7 @@ IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
         klass->nvariables = 0;
         klass->variable_hash = irmo_hash_table_new(irmo_string_hash,
                                                    irmo_string_equal);
-        klass->parent = iface;
+        klass->iface = iface;
         klass->parent_class = parent_class;
         klass->index = iface->nclasses;
 
@@ -112,10 +112,7 @@ int irmo_class_num_variables(IrmoClass *klass)
 {
 	irmo_return_val_if_fail(klass != NULL, -1);
 
-	if (klass->parent_class)
-		return klass->nvariables - klass->parent_class->nvariables;
-	else
-		return klass->nvariables;
+        return klass->nvariables;
 }
 
 IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name)
@@ -131,18 +128,13 @@ void irmo_class_foreach_variable(IrmoClass *klass,
 				 void *user_data)
 {
 	int i;
-	int start;
 
 	irmo_return_if_fail(klass != NULL);
 	irmo_return_if_fail(func != NULL);
 
-	if (klass->parent_class)
-		start = klass->parent_class->nvariables;
-	else
-		start = 0;
-
-	for (i=start; i<klass->nvariables; ++i)
+	for (i=0; i<klass->nvariables; ++i) {
 		func(klass->variables[i], user_data);
+        }
 }
 
 IrmoClass *irmo_class_parent_class(IrmoClass *klass)
@@ -156,14 +148,14 @@ void irmo_class_ref(IrmoClass *klass)
 {
 	irmo_return_if_fail(klass != NULL);
 
-	irmo_interface_ref(klass->parent);
+	irmo_interface_ref(klass->iface);
 }
 
 void irmo_class_unref(IrmoClass *klass)
 {
 	irmo_return_if_fail(klass != NULL);
 
-	irmo_interface_unref(klass->parent);
+	irmo_interface_unref(klass->iface);
 }
 
 uint32_t irmo_class_hash(IrmoClass *klass)
@@ -188,19 +180,10 @@ uint32_t irmo_class_hash(IrmoClass *klass)
 void _irmo_class_free(IrmoClass *klass)
 {
 	int i;
-	int start;
 
 	irmo_hash_table_free(klass->variable_hash);
 
-	// find the start of the range of variables to free
-	// (dont free variables from parent class)
-
-	if (klass->parent_class)
-		start = klass->parent_class->nvariables;
-	else
-		start = 0;
-	
-	for (i=start; i<klass->nvariables; ++i)
+	for (i=0; i<klass->nvariables; ++i)
 		_irmo_class_var_free(klass->variables[i]);
 
 	free(klass->variables);

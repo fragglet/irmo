@@ -31,9 +31,9 @@
 
 struct _IrmoClass {
 
-	// parent object
+	// parent interface
 
-	IrmoInterface *parent;
+	IrmoInterface *iface;
 
 	// parent class or NULL for base class
 	

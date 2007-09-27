@@ -32,7 +32,7 @@
 // method declaration
 
 struct _IrmoMethod {
-	IrmoInterface *parent;
+	IrmoInterface *iface;
 
 	int index;
 	char *name;			// method name
