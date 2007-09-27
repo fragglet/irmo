@@ -324,22 +324,42 @@ static void socket_run_syn(IrmoSocket *sock,
         }
 }
 
+static int socket_check_hashes(IrmoSocket *sock,
+                               unsigned int local_hash,
+                               unsigned int server_hash)
+{
+	unsigned int local_hash_expected=0, server_hash_expected=0;
+	IrmoServer *server;
+
+	server = sock->server;
+
+        // Get the expected hashes.
+
+        if (server->client_interface != NULL) {
+                local_hash_expected = server->client_interface->hash;
+        } else { 
+                local_hash_expected = 0;
+        }
+
+        if (server->world != NULL) {
+                server_hash_expected = server->world->iface->hash;
+        } else {
+                server_hash_expected = 0;
+        }
+
+        // Check the hashes received against our local hashes.
+
+        return local_hash == local_hash_expected
+            && server_hash == server_hash_expected;
+}
+
 static void socket_run_initial_syn(IrmoSocket *sock, 
                                    IrmoPacket *packet,
                                    struct sockaddr *src)
 {
-	IrmoServer *server;
 	unsigned int local_hash, server_hash;
 	unsigned int protocol_version;
-	unsigned int local_hash_expected=0, server_hash_expected=0;
         IrmoClient *client;
-
-	// If this is a client socket, dont let people connect
-	// to us!
-
-	if (sock->type == SOCKET_CLIENT) {
-		return;
-        }
 
 	// Read packet data
 	
@@ -361,28 +381,10 @@ static void socket_run_initial_syn(IrmoSocket *sock,
 		return;
 	}
 
-	server = sock->server;
-
-        // Get the expected hashes.
-
-	local_hash_expected 
-		= server->client_interface ? server->client_interface->hash : 0;
-	server_hash_expected 
-		= server->world ? server->world->iface->hash : 0;
-
-        // Check the hashes received against our local hashes.
-
-	if (local_hash != local_hash_expected) {
+        if (!socket_check_hashes(sock, local_hash, server_hash)) {
 		socket_send_refuse(sock, src,
 				   "client side and server side client "
-				   "interface specifications do not match");
-		return;
-	}
-
-	if (server_hash != server_hash_expected) {
-		socket_send_refuse(sock, src,
-				   "client side and server side server "
-				   "interface specifications do not match");
+				   "interfaces do not match");
 		return;
 	}
 
@@ -542,9 +544,9 @@ static void socket_run_packet(IrmoSocket *sock,
 		return;
 	}
 
-	// check for syn
+	// Check for SYN
 
-	if (flags == PACKET_FLAG_SYN) {
+	if (sock->type == SOCKET_SERVER && flags == PACKET_FLAG_SYN) {
 
                 // Run a different function based on whether this is the
                 // initial SYN, or we already have a client.
