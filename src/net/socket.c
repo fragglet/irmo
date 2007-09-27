@@ -290,24 +290,13 @@ static void socket_send_refuse(IrmoSocket *sock,
 
 static void socket_run_syn(IrmoSocket *sock,
                            IrmoPacket *packet, 
-                           IrmoClient *client,
-                           struct sockaddr *src)
+                           IrmoClient *client)
 {
-	IrmoServer *server;
 	IrmoPacket *sendpacket;
-	unsigned int local_hash, server_hash;
-	unsigned int protocol_version;
-	unsigned int local_hash_expected=0, server_hash_expected=0;
 
-	// if this is a client socket, dont let people connect
-	// to us!
+	if (client->state == CLIENT_DISCONNECTED) {
 
-	if (sock->type == SOCKET_CLIENT)
-		return;
-
-	if (client && client->state == CLIENT_DISCONNECTED) {
-
-		// there was previously a client connected from the
+		// There was previously a client connected from the
 		// same port. possibly the the player disconnected
 		// and reconnected and the OS gave the same random
 		// port. remove the old client and destroy it, so
@@ -316,22 +305,47 @@ static void socket_run_syn(IrmoSocket *sock,
 		// remove from hash tables
 
 		irmo_hash_table_remove(client->server->clients,
-				    client->addr);
+                                       client->addr);
 
 		irmo_client_internal_unref(client);
 
-		client = NULL;
-	}
+	} else if (client->state == CLIENT_CONNECTING) {
 
-	// once client is connected, do not allow more SYNs
+                // Send a SYN/ACK reply
 
-	if (client && client->state != CLIENT_CONNECTING)
+                sendpacket = irmo_packet_new();
+
+                irmo_packet_writei16(sendpacket, 
+                                     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+
+                irmo_socket_sendpacket(sock, client->addr, sendpacket);
+                        
+                irmo_packet_free(sendpacket);
+        }
+}
+
+static void socket_run_initial_syn(IrmoSocket *sock, 
+                                   IrmoPacket *packet,
+                                   struct sockaddr *src)
+{
+	IrmoServer *server;
+	unsigned int local_hash, server_hash;
+	unsigned int protocol_version;
+	unsigned int local_hash_expected=0, server_hash_expected=0;
+        IrmoClient *client;
+
+	// If this is a client socket, dont let people connect
+	// to us!
+
+	if (sock->type == SOCKET_CLIENT) {
 		return;
+        }
+
+	// Read packet data
 	
-	// read packet data
-	
-	if (!irmo_packet_readi16(packet, &protocol_version))
+	if (!irmo_packet_readi16(packet, &protocol_version)) {
 		return;
+        }
 
 	if (protocol_version != IRMO_PROTOCOL_VERSION) {
 		socket_send_refuse(sock, src,
@@ -349,12 +363,14 @@ static void socket_run_syn(IrmoSocket *sock,
 
 	server = sock->server;
 
-	// if there is a server, get the hashes for the interfaces
+        // Get the expected hashes.
 
 	local_hash_expected 
 		= server->client_interface ? server->client_interface->hash : 0;
 	server_hash_expected 
 		= server->world ? server->world->iface->hash : 0;
+
+        // Check the hashes received against our local hashes.
 
 	if (local_hash != local_hash_expected) {
 		socket_send_refuse(sock, src,
@@ -370,25 +386,16 @@ static void socket_run_syn(IrmoSocket *sock,
 		return;
 	}
 
-	// valid syn
+	// Valid SYN!
 		
-	// if this is the first syn we have received,
-	// create a new client object
+        // This is the first SYN that we have received. 
+	// Create a new client object.
 
-	if (!client) {
-		client = irmo_client_new(server, src);
-	}
-		
-	// send a reply
+        client = irmo_client_new(server, src);
 
-	sendpacket = irmo_packet_new();
-
-	irmo_packet_writei16(sendpacket, 
-			     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
-
-	irmo_socket_sendpacket(sock, src, sendpacket);
-		
-	irmo_packet_free(sendpacket);
+        // Send a response back to the new client.
+ 
+        socket_run_syn(sock, packet, client);
 }
 
 // handle syn-ack connection acknowledgements
@@ -538,7 +545,15 @@ static void socket_run_packet(IrmoSocket *sock,
 	// check for syn
 
 	if (flags == PACKET_FLAG_SYN) {
-		socket_run_syn(sock, packet, client, src);
+
+                // Run a different function based on whether this is the
+                // initial SYN, or we already have a client.
+
+                if (client == NULL) {
+                        socket_run_initial_syn(sock, packet, src);
+                } else {
+                        socket_run_syn(sock, packet, client);
+                }
 
 		return;
 	}
