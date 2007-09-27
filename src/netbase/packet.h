@@ -48,6 +48,7 @@ struct _IrmoPacket {
 };
 
 IrmoPacket *irmo_packet_new(void);
+IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len);
 void irmo_packet_free(IrmoPacket *packet);
 
 int irmo_packet_writei8(IrmoPacket *packet, unsigned int i);

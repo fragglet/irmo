@@ -38,6 +38,20 @@ IrmoPacket *irmo_packet_new(void)
 	return packet;
 }
 
+IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
+{
+        IrmoPacket *packet;
+
+        packet = irmo_new0(IrmoPacket, 1);
+
+        packet->data = data;
+        packet->data_size = data_len;
+        packet->len = data_len;
+        packet->pos = 0;
+
+        return packet;
+}
+
 void irmo_packet_free(IrmoPacket *packet)
 {
 	free(packet->data);
