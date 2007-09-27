@@ -32,14 +32,11 @@ typedef struct _IrmoPacket IrmoPacket;
 #include "netlib.h"
 
 struct _IrmoPacket {
-	IrmoSocket *sock;       // socket this came from
-	struct sockaddr *src;   // source address
 	uint8_t *data;          // packet data
 	size_t data_size;       // size of the buffer
 	size_t len;             // length of used data in the buffer
 	unsigned int pos;       // current position in packet
-	IrmoClient *client;     // client implied by address (or NULL if none)
-	unsigned int flags;     // flags from header
+        IrmoClient *client;
 };
 
 IrmoPacket *irmo_packet_new(void);

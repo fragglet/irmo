@@ -55,7 +55,6 @@ IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
 void irmo_packet_free(IrmoPacket *packet)
 {
 	free(packet->data);
-	free(packet->src);
 	free(packet);
 }
 

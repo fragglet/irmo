@@ -69,7 +69,7 @@ static int proto_verify_packet_cluster(IrmoPacket *packet)
 	return 1;
 }
 
-int irmo_proto_verify_packet(IrmoPacket *packet)
+int irmo_proto_verify_packet(IrmoPacket *packet, unsigned int flags)
 {
 	int result = 1;
 	unsigned int origpos = packet->pos;
@@ -78,14 +78,14 @@ int irmo_proto_verify_packet(IrmoPacket *packet)
 	
 	// read ack
 	
-	if (packet->flags & PACKET_FLAG_ACK) {
+	if (flags & PACKET_FLAG_ACK) {
 		unsigned int ack;
 
 		if (!irmo_packet_readi16(packet, &ack))
 			result = 0;
 	}
 
-	if (result && packet->flags & PACKET_FLAG_DTA) {
+	if (result && (flags & PACKET_FLAG_DTA) != 0) {
 		if (!proto_verify_packet_cluster(packet))
 			result = 0;
 	}

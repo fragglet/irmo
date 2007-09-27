@@ -288,9 +288,11 @@ static void socket_send_refuse(IrmoSocket *sock,
 	free(message);
 }
 
-static void socket_run_syn(IrmoPacket *packet)
+static void socket_run_syn(IrmoSocket *sock,
+                           IrmoPacket *packet, 
+                           IrmoClient *client,
+                           struct sockaddr *src)
 {
-	IrmoClient *client = packet->client;
 	IrmoServer *server;
 	IrmoPacket *sendpacket;
 	unsigned int local_hash, server_hash;
@@ -300,7 +302,7 @@ static void socket_run_syn(IrmoPacket *packet)
 	// if this is a client socket, dont let people connect
 	// to us!
 
-	if (packet->sock->type == SOCKET_CLIENT)
+	if (sock->type == SOCKET_CLIENT)
 		return;
 
 	if (client && client->state == CLIENT_DISCONNECTED) {
@@ -332,7 +334,7 @@ static void socket_run_syn(IrmoPacket *packet)
 		return;
 
 	if (protocol_version != IRMO_PROTOCOL_VERSION) {
-		socket_send_refuse(packet->sock, packet->src,
+		socket_send_refuse(sock, src,
 				   "client and server side protocol versions "
 				   "do not match");
 		return;
@@ -345,7 +347,7 @@ static void socket_run_syn(IrmoPacket *packet)
 		return;
 	}
 
-	server = packet->sock->server;
+	server = sock->server;
 
 	// if there is a server, get the hashes for the interfaces
 
@@ -355,14 +357,14 @@ static void socket_run_syn(IrmoPacket *packet)
 		= server->world ? server->world->iface->hash : 0;
 
 	if (local_hash != local_hash_expected) {
-		socket_send_refuse(packet->sock, packet->src,
+		socket_send_refuse(sock, src,
 				   "client side and server side client "
 				   "interface specifications do not match");
 		return;
 	}
 
 	if (server_hash != server_hash_expected) {
-		socket_send_refuse(packet->sock, packet->src,
+		socket_send_refuse(sock, src,
 				   "client side and server side server "
 				   "interface specifications do not match");
 		return;
@@ -374,7 +376,7 @@ static void socket_run_syn(IrmoPacket *packet)
 	// create a new client object
 
 	if (!client) {
-		client = irmo_client_new(server, packet->src);
+		client = irmo_client_new(server, src);
 	}
 		
 	// send a reply
@@ -384,19 +386,17 @@ static void socket_run_syn(IrmoPacket *packet)
 	irmo_packet_writei16(sendpacket, 
 			     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-	irmo_socket_sendpacket(packet->sock,
-			       packet->src,
-			       sendpacket);
+	irmo_socket_sendpacket(sock, src, sendpacket);
 		
 	irmo_packet_free(sendpacket);
 }
 
 // handle syn-ack connection acknowledgements
 
-static void socket_run_synack(IrmoPacket *packet)
+static void socket_run_synack(IrmoSocket *sock,
+                              IrmoPacket *packet, 
+                              IrmoClient *client)
 {
-	IrmoClient *client = packet->client;
-	
 	if (client->state == CLIENT_CONNECTING) {
 		// this is the first synack we have received
 		
@@ -433,15 +433,13 @@ static void socket_run_synack(IrmoPacket *packet)
 	// we need to send a syn ack back so it can complete
 	// its connection.
 
-	if (packet->sock->type == SOCKET_CLIENT) {
+	if (sock->type == SOCKET_CLIENT) {
 		IrmoPacket *sendpacket = irmo_packet_new();
 
 		irmo_packet_writei16(sendpacket, 
 				     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		irmo_socket_sendpacket(packet->sock,
-				       packet->src,
-				       sendpacket);
+		irmo_socket_sendpacket(sock, client->addr, sendpacket);
 
 		irmo_packet_free(sendpacket);
 	}
@@ -452,9 +450,10 @@ static void socket_run_synack(IrmoPacket *packet)
 
 // run SYN FIN (disconnect)
 
-static void socket_run_synfin(IrmoPacket *packet)
+static void socket_run_synfin(IrmoSocket *sock,
+                              IrmoPacket *packet,
+                              IrmoClient *client)
 {
-	IrmoClient *client = packet->client;
 	IrmoPacket *sendpacket;
 	
 	// connection refused?
@@ -494,18 +493,16 @@ static void socket_run_synfin(IrmoPacket *packet)
 				     PACKET_FLAG_SYN | PACKET_FLAG_FIN
 						     | PACKET_FLAG_ACK);
 
-		irmo_socket_sendpacket(client->server->socket,
-				       client->addr,
-				       sendpacket);
+		irmo_socket_sendpacket(sock, client->addr, sendpacket);
 
 		irmo_packet_free(sendpacket);
 	}
 }
 
-static void socket_run_synfinack(IrmoPacket *packet)
+static void socket_run_synfinack(IrmoSocket *soc,
+                                 IrmoPacket *packet,
+                                 IrmoClient *client)
 {
-	IrmoClient *client = packet->client;
-	
 	if (client->state == CLIENT_DISCONNECTING) {
 		client->state = CLIENT_DISCONNECTED;
 		irmo_client_callback_raise(client->disconnect_callbacks,
@@ -513,16 +510,21 @@ static void socket_run_synfinack(IrmoPacket *packet)
 	}
 }
 
-static void socket_run_packet(IrmoPacket *packet)
+static void socket_run_packet(IrmoSocket *sock, 
+                              IrmoPacket *packet, 
+                              struct sockaddr *src)
 {
 	unsigned int flags;
 	IrmoClient *client;
 
 	// find a client from the socket hashtable
 
-	packet->client = client
-		= irmo_hash_table_lookup(packet->sock->server->clients, 
-				      packet->src);
+	client = irmo_hash_table_lookup(sock->server->clients, 
+                                        src);
+
+        // TODO: remove this:
+
+        packet->client = client;
 
 	// read packet header
 	
@@ -533,12 +535,10 @@ static void socket_run_packet(IrmoPacket *packet)
 		return;
 	}
 
-	packet->flags = flags;
-
 	// check for syn
 
 	if (flags == PACKET_FLAG_SYN) {
-		socket_run_syn(packet);
+		socket_run_syn(sock, packet, client, src);
 
 		return;
 	}
@@ -553,25 +553,26 @@ static void socket_run_packet(IrmoPacket *packet)
 	// check for syn ack connection acknowledgements
 	
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_ACK)) {
-		socket_run_synack(packet);
+		socket_run_synack(sock, packet, client);
 		return;
 	}
 
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_FIN)) {
-		socket_run_synfin(packet);
+		socket_run_synfin(sock, packet, client);
 		return;
 	}
 
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_FIN|PACKET_FLAG_ACK)) {
-		socket_run_synfinack(packet);
+		socket_run_synfinack(sock, packet, client);
 		return;
 	}
+
 	if (client->state != CLIENT_CONNECTED)
 		return;
 	
 	// pass it to the protocol parsing code
 	
-	irmo_proto_parse_packet(packet);
+	irmo_proto_parse_packet(packet, flags);
 }
 
 static int socket_run_client(void *key, IrmoClient *client,
@@ -631,13 +632,11 @@ void irmo_socket_run(IrmoSocket *sock)
 
 		// stick it in a packet
 
-		packet.sock = sock;
-		packet.src = addr;
 		packet.data = buf;
 		packet.len = result;
 		packet.pos = 0;
 
-		socket_run_packet(&packet);
+		socket_run_packet(sock, &packet, addr);
       	}
 
 	free(addr);

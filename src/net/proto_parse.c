@@ -251,13 +251,13 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	client->sendwindow_size -= relative;
 }
 
-void irmo_proto_parse_packet(IrmoPacket *packet)
+void irmo_proto_parse_packet(IrmoPacket *packet, unsigned int flags)
 {
 	IrmoClient *client = packet->client;
 
 	// verify packet before parsing for security
 	
-	if (!irmo_proto_verify_packet(packet)) {
+	if (!irmo_proto_verify_packet(packet, flags)) {
 		irmo_error_report("proto_parse_packet",
 				  "dropped packet (failed security verification)");
 		return;
@@ -265,7 +265,7 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 
 	// read ack field if there is one
 
-	if (packet->flags & PACKET_FLAG_ACK) {
+	if (flags & PACKET_FLAG_ACK) {
 		unsigned int i;
 
 		irmo_packet_readi16(packet, &i);
@@ -273,7 +273,7 @@ void irmo_proto_parse_packet(IrmoPacket *packet)
 		proto_parse_ack(client, i);
 	}
 
-	if (packet->flags & PACKET_FLAG_DTA) {
+	if (flags & PACKET_FLAG_DTA) {
 		proto_parse_packet_cluster(client, packet);
 
 		irmo_client_run_recvwindow(client);

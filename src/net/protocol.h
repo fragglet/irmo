@@ -37,11 +37,11 @@
 
 // verifying integrity of received packets before parsing
 
-int irmo_proto_verify_packet(IrmoPacket *packet);
+int irmo_proto_verify_packet(IrmoPacket *packet, unsigned int flags);
 
 // parsing received packets
 
-void irmo_proto_parse_packet(IrmoPacket *packet);
+void irmo_proto_parse_packet(IrmoPacket *packet, unsigned int flags);
 
 // running client to build and send packets
 
