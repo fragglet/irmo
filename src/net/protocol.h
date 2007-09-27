@@ -28,6 +28,13 @@
 
 #define IRMO_PROTOCOL_VERSION 4
 
+// Packet header flags
+
+#define PACKET_FLAG_SYN 0x01
+#define PACKET_FLAG_ACK 0x02
+#define PACKET_FLAG_FIN 0x04
+#define PACKET_FLAG_DTA 0x08
+
 // verifying integrity of received packets before parsing
 
 int irmo_proto_verify_packet(IrmoPacket *packet);

@@ -24,6 +24,8 @@
 
 #include "netbase/packet.h"
 
+#include "protocol.h"
+
 static int proto_verify_packet_cluster(IrmoPacket *packet)
 {
 	unsigned int i;

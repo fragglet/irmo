@@ -31,11 +31,6 @@ typedef struct _IrmoPacket IrmoPacket;
 
 #include "netlib.h"
 
-#define	PACKET_FLAG_SYN 0x01
-#define	PACKET_FLAG_ACK 0x02
-#define	PACKET_FLAG_FIN 0x04
-#define PACKET_FLAG_DTA 0x08
-
 struct _IrmoPacket {
 	IrmoSocket *sock;       // socket this came from
 	struct sockaddr *src;   // source address
