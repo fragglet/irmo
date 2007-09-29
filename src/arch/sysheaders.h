@@ -50,7 +50,7 @@ typedef signed long int32_t;
 
 #else 
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #endif
 
@@ -72,10 +72,6 @@ typedef signed long int32_t;
 #define closesocket close
 
 #endif
-
-extern char *g_strdup_printf(char *fmt, ...);
-extern char *g_strdup_vprintf(char *fmt, va_list args);
-
 
 #endif /* #ifndef IRMO_SYSHEADERS_H */
 
