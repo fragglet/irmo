@@ -33,7 +33,7 @@ struct _IrmoPacket {
         // Size of the buffer (malloced)
         // If data_size < 0, the packet does not own the buffer,
         // and should not free the buffer when freed.
-	size_t data_size;
+	int data_size;
 
         // Length of used data in the buffer
 	size_t len;
