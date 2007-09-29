@@ -23,8 +23,6 @@
 
 #include "algo/algo.h"
 
-#include "packet.h"
-
 #include <irmo/net-module.h>
 
 #ifndef _WIN32
@@ -238,8 +236,8 @@ static int ipv4_send_packet(void *handle, void *_address,
         dest.sin_port = htons(port);
 
         status = sendto(sock->sock,
-                        packet->data,
-                        packet->len,
+                        irmo_packet_get_buffer(packet),
+                        irmo_packet_get_length(packet),
                         0,
                         (struct sockaddr *) &dest,
                         sizeof(struct sockaddr_in));

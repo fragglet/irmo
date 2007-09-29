@@ -27,10 +27,7 @@
 #include "client.h"
 #include "server.h"
 
-// fixme: packet.h is supposed to be internal and should not be here
-// split off internal socket stuff to a seperate header
-
-#include "netbase/packet.h"
+#include <irmo/packet.h>
 
 typedef enum {
 	SOCKET_SERVER,

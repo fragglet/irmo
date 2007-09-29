@@ -21,6 +21,7 @@
 #define IRMO_NET_MODULE_H
 
 #include "types.h"
+#include "packet.h"
 
 #ifdef __cplusplus
 extern "C" {

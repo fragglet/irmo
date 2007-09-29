@@ -20,7 +20,7 @@
 #ifndef IRMO_PROTO_H
 #define IRMO_PROTO_H
 
-#include "netbase/packet.h"
+#include <irmo/packet.h>
 
 #include "client.h"
 

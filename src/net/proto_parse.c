@@ -29,7 +29,7 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "netbase/packet.h"
+#include <irmo/packet.h>
 
 #include "protocol.h"
 #include "sendatom.h"

@@ -22,7 +22,7 @@
 
 #include "arch/sysheaders.h"
 
-#include "netbase/packet.h"
+#include <irmo/packet.h>
 
 #include "protocol.h"
 
@@ -73,7 +73,9 @@ int irmo_proto_verify_packet(IrmoPacket *packet, IrmoClient *client,
                              unsigned int flags)
 {
 	int result = 1;
-	unsigned int origpos = packet->pos;
+	unsigned int origpos;
+
+        origpos = irmo_packet_get_position(packet);
 	
 	//printf("verify packet\n");
 	
@@ -93,7 +95,7 @@ int irmo_proto_verify_packet(IrmoPacket *packet, IrmoClient *client,
 
 	// restore start position
 
-	packet->pos = origpos;
+        irmo_packet_set_position(packet, origpos);
 
 	return result;		
 }

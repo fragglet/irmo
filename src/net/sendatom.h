@@ -52,7 +52,7 @@ typedef enum {
 #include "world/method.h"
 #include "world/object.h"
 #include "netbase/netlib.h"
-#include "netbase/packet.h"
+#include <irmo/packet.h>
 
 #include "client.h"
 

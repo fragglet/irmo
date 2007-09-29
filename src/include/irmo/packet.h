@@ -204,6 +204,28 @@ unsigned char *irmo_packet_get_buffer(IrmoPacket *packet);
 
 unsigned int irmo_packet_get_length(IrmoPacket *packet);
 
+/*!
+ * Get the current read/write position in a packet.
+ *
+ * \param packet     The packet.
+ * \return           The current offset (in bytes) from the start of the
+ *                   packet where we are reading/writing data.
+ */
+
+unsigned int irmo_packet_get_position(IrmoPacket *packet);
+
+/*!
+ * Set the current read/write position in a packet.
+ * The position must be within the range of the length of the packet
+ * (pos < irmo_packet_get_length(packet))
+ *
+ * \param packet     The packet.
+ * \param pos        The position to set within the packet.
+ * \return           Non-zero if successful, zero if unsuccessful.
+ */
+
+int irmo_packet_set_position(IrmoPacket *packet, unsigned int pos);
+
 //! \}
 
 #ifdef __cplusplus

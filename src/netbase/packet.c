@@ -24,7 +24,23 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 
-#include "packet.h"
+#include <irmo/packet.h>
+
+struct _IrmoPacket {
+        // Packet data
+	uint8_t *data;
+
+        // Size of the buffer (malloced)
+        // If data_size < 0, the packet does not own the buffer,
+        // and should not free the buffer when freed.
+	size_t data_size;
+
+        // Length of used data in the buffer
+	size_t len;
+
+        // Current position in packet
+	unsigned int pos;
+};
 
 IrmoPacket *irmo_packet_new(void)
 {
@@ -276,4 +292,19 @@ unsigned int irmo_packet_get_length(IrmoPacket *packet)
 {
         return packet->len;
 }
+
+unsigned int irmo_packet_get_position(IrmoPacket *packet)
+{
+        return packet->pos;
+}
+
+int irmo_packet_set_position(IrmoPacket *packet, unsigned int pos)
+{
+        irmo_return_val_if_fail(pos < packet->len, 0);
+
+        packet->pos = pos;
+
+        return 1;
+}
+
 

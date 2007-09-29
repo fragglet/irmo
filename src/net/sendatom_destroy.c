@@ -22,7 +22,7 @@
 #include "base/error.h"
 
 #include "netbase/netlib.h"
-#include "netbase/packet.h"
+#include <irmo/packet.h>
 
 #include "world/object.h"
 

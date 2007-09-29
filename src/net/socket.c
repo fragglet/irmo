@@ -26,7 +26,7 @@
 #include "base/error.h"
 
 #include "netbase/netlib.h"
-#include "netbase/packet.h"
+#include <irmo/packet.h>
 
 #include "connection.h"
 #include "protocol.h"
@@ -45,8 +45,8 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 	int result;
 
 	result = sendto(sock->sock,
-			packet->data,
-			packet->len,
+			irmo_packet_get_buffer(packet),
+			irmo_packet_get_length(packet),
 			0,
 			dest,
 			irmo_sockaddr_len(dest->sa_family));
@@ -624,7 +624,7 @@ void irmo_socket_run(IrmoSocket *sock)
 	addr = malloc(addr_len);
 	
 	while (1) {
-		IrmoPacket packet;
+		IrmoPacket *packet;
 		int result;
 		unsigned int tmp_addr_len = addr_len;
 		
@@ -645,11 +645,11 @@ void irmo_socket_run(IrmoSocket *sock)
 
 		// stick it in a packet
 
-		packet.data = buf;
-		packet.len = result;
-		packet.pos = 0;
+                packet = irmo_packet_new_from(buf, result);
 
-		socket_run_packet(sock, &packet, addr);
+		socket_run_packet(sock, packet, addr);
+
+                irmo_packet_free(packet);
       	}
 
 	free(addr);
