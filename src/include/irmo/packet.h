@@ -186,6 +186,24 @@ void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value,
 void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value, 
 			     IrmoValueType type);
 
+/*!
+ * Get the packet buffer used by a packet.
+ *
+ * \param packet     The packet.
+ * \return           A pointer to the packet buffer.
+ */
+
+unsigned char *irmo_packet_get_buffer(IrmoPacket *packet);
+
+/*!
+ * Get the length of a packet.
+ *
+ * \param packet     The packet
+ * \return           The length of the packet.
+ */
+
+unsigned int irmo_packet_get_length(IrmoPacket *packet);
+
 //! \}
 
 #ifdef __cplusplus

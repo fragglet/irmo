@@ -267,3 +267,13 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 	}
 }
 
+unsigned char *irmo_packet_get_buffer(IrmoPacket *packet)
+{
+        return packet->data;
+}
+
+unsigned int irmo_packet_get_length(IrmoPacket *packet)
+{
+        return packet->len;
+}
+
