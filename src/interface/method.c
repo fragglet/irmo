@@ -29,15 +29,6 @@
 // IrmoMethod
 //
 
-/*!
- * \brief Create a new method in an \ref IrmoInterface.
- *
- * \param iface         The interface.
- * \param name          The name of the new method.
- *
- * \return              A pointer to the new method
- */
-
 IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
                                       char *name)
 {
