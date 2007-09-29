@@ -36,11 +36,11 @@ extern "C" {
  * \{
  */
 
-typedef struct _IrmoNetModule IrmoNetModule;
-
 /*!
  * A network module.
  */
+
+typedef struct _IrmoNetModule IrmoNetModule;
 
 struct _IrmoNetModule {
 
