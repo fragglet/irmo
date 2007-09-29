@@ -83,12 +83,16 @@ struct _IrmoNetModule {
          *
          * \param module   Pointer to this module.
          * \param address  Address to resolve.
+         * \param port     Port at the remote address.  Depending on the
+         *                 protocol, this may be ignored.
          *
          * \return         Handle to the address, or NULL if unable to
          *                 resolve the address. 
          */
 
-        void *(*resolve_address)(IrmoNetModule *module, char *address);
+        void *(*resolve_address)(IrmoNetModule *module,
+                                 char *address,
+                                 int port);
 
         /*!
          * Free an address.
@@ -103,27 +107,25 @@ struct _IrmoNetModule {
          *
          * \param handle   Handle to the socket to transmit on.
          * \param address  Address to transmit to.
-         * \param port     Port to transmit to.
          * \param packet   Packet to transmit.
          *
          * \return         Non-zero for success, zero for failure.
          */
 
         int (*send_packet)(void *handle, void *address,
-                           int port, IrmoPacket *packet);
+                           IrmoPacket *packet);
 
         /*!
          * Receive a packet.
          *
          * \param handle   Socket to receive on.
          * \param address  Pointer to a variable to save the source address.
-         * \param port     Pointer to a variable to save the source port.
          *
          * \return         A new IrmoPacket, or NULL if no packet was 
          *                 received.
          */
 
-        IrmoPacket *(*recv_packet)(void *handle, void **address, int *port);
+        IrmoPacket *(*recv_packet)(void *handle, void **address);
 };
 
 //! \}
