@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Import source from libcalg, renaming functions and types to add 
+# the Irmo prefix.
+#
+
+FILES="\
+  arraylist.c arraylist.h             \
+  slist.c slist.h                     \
+  hashtable.c hashtable.h             \
+  queue.c queue.h                     \
+  hash-string.c hash-string.h         \
+  compare-string.c compare-string.h   \
+  hash-pointer.c hash-pointer.h       \
+  compare-pointer.c compare-pointer.h \
+"
+
+FUNC_PREFIX="slist_ hash_table_ arraylist_ queue_ pointer_ string_"
+TYPE_PREFIX="SList HashTable ArrayList Queue"
+
+if [ "$1" = "" ]; then
+        echo "Usage: $0 <c-algorithms source dir>"
+        exit 0
+fi
+
+for f in $FILES; do
+        cp $1/src/$f tmp.c
+
+        for p in $FUNC_PREFIX; do
+                sed "s/$p/irmo_$p/g" < tmp.c > tmp2.c
+                mv tmp2.c tmp.c
+        done
+        for p in $TYPE_PREFIX; do
+                sed "s/$p/Irmo$p/g" < tmp.c > tmp2.c
+                mv tmp2.c tmp.c
+        done
+
+        sed "s/ALGORITHM_/IRMO_ALGO_/g" < tmp.c > tmp2.c
+        mv tmp2.c tmp.c
+
+        mv tmp.c $f
+done
+
