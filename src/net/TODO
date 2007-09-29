@@ -1,3 +1,5 @@
 Change to use priority queue.
+Investigate using TCP Vegas-style congestion avoidance.
+Send ACKs even if we missed a previous packet.
 Synchronisation points.
 

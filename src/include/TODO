@@ -1,0 +1,7 @@
+Clean up documentation.  All function descriptions should be properly-formed
+sentences terminated with a full stop(".").  Clean up style for consistency
+where necessary.
+Switch to javadoc-style eg. @param, not \param.
+Turn on auto-brief mode and remove all \brief tags.
+Code examples in documentation to demonstrate usage?
+
