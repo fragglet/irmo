@@ -129,7 +129,7 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 		for (i=0; i<natoms; ++i, ++seq) {
 			IrmoSendAtom *atom;
 
-			atom = klass->read(packet);
+			atom = klass->read(packet, client);
 			atom->client = client;
 			atom->seqnum = seq;
 
@@ -251,13 +251,13 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	client->sendwindow_size -= relative;
 }
 
-void irmo_proto_parse_packet(IrmoPacket *packet, unsigned int flags)
+void irmo_proto_parse_packet(IrmoPacket *packet,
+                             IrmoClient *client,
+                             unsigned int flags)
 {
-	IrmoClient *client = packet->client;
-
 	// verify packet before parsing for security
 	
-	if (!irmo_proto_verify_packet(packet, flags)) {
+	if (!irmo_proto_verify_packet(packet, client, flags)) {
 		irmo_error_report("proto_parse_packet",
 				  "dropped packet (failed security verification)");
 		return;

@@ -21,43 +21,26 @@
 // Safe packet handling code
 //
 
-#ifndef IRMO_PACKET_H
-#define IRMO_PACKET_H
+#ifndef IRMO_NETBASE_PACKET_H
+#define IRMO_NETBASE_PACKET_H
 
-typedef struct _IrmoPacket IrmoPacket;
-
-#include "net/socket.h"
-#include "world/object.h"
-
-#include "netlib.h"
+#include <irmo/packet.h>
 
 struct _IrmoPacket {
-	uint8_t *data;          // packet data
-	size_t data_size;       // size of the buffer
-	size_t len;             // length of used data in the buffer
-	unsigned int pos;       // current position in packet
-        IrmoClient *client;
+        // Packet data
+	uint8_t *data;
+
+        // Size of the buffer (malloced)
+        // If data_size < 0, the packet does not own the buffer,
+        // and should not free the buffer when freed.
+	size_t data_size;
+
+        // Length of used data in the buffer
+	size_t len;
+
+        // Current position in packet
+	unsigned int pos;
 };
 
-IrmoPacket *irmo_packet_new(void);
-IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len);
-void irmo_packet_free(IrmoPacket *packet);
-
-int irmo_packet_writei8(IrmoPacket *packet, unsigned int i);
-int irmo_packet_writei16(IrmoPacket *packet, unsigned int i);
-int irmo_packet_writei32(IrmoPacket *packet, unsigned int i);
-int irmo_packet_writestring(IrmoPacket *packet, char *s);
-
-int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i);
-int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i);
-int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i);
-char *irmo_packet_readstring(IrmoPacket *packet);
-
-int irmo_packet_verify_value(IrmoPacket *packet, IrmoValueType type);
-void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
-			    IrmoValueType type);
-void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value, 
-			     IrmoValueType type);
-
-#endif /* #ifndef IRMO_PACKET_H */
+#endif /* #ifndef IRMO_NETBASE_PACKET_H */
 

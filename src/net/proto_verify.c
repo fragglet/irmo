@@ -26,7 +26,7 @@
 
 #include "protocol.h"
 
-static int proto_verify_packet_cluster(IrmoPacket *packet)
+static int proto_verify_packet_cluster(IrmoPacket *packet, IrmoClient *client)
 {
 	unsigned int i;
 
@@ -58,7 +58,7 @@ static int proto_verify_packet_cluster(IrmoPacket *packet)
 		//printf("%i atoms, %i\n", natoms, atomtype);
 
 		for (i=0; i<natoms; ++i) {
-			if (!klass->verify(packet)) {
+			if (!klass->verify(packet, client)) {
 				//printf("\t\tfailed\n");
 				return 0;
 			}
@@ -69,7 +69,8 @@ static int proto_verify_packet_cluster(IrmoPacket *packet)
 	return 1;
 }
 
-int irmo_proto_verify_packet(IrmoPacket *packet, unsigned int flags)
+int irmo_proto_verify_packet(IrmoPacket *packet, IrmoClient *client, 
+                             unsigned int flags)
 {
 	int result = 1;
 	unsigned int origpos = packet->pos;
@@ -86,7 +87,7 @@ int irmo_proto_verify_packet(IrmoPacket *packet, unsigned int flags)
 	}
 
 	if (result && (flags & PACKET_FLAG_DTA) != 0) {
-		if (!proto_verify_packet_cluster(packet))
+		if (!proto_verify_packet_cluster(packet, client))
 			result = 0;
 	}
 

@@ -393,7 +393,7 @@ static void socket_run_initial_syn(IrmoSocket *sock,
         // This is the first SYN that we have received. 
 	// Create a new client object.
 
-        client = irmo_client_new(server, src);
+        client = irmo_client_new(sock->server, src);
 
         // Send a response back to the new client.
  
@@ -531,10 +531,6 @@ static void socket_run_packet(IrmoSocket *sock,
 	client = irmo_hash_table_lookup(sock->server->clients, 
                                         src);
 
-        // TODO: remove this:
-
-        packet->client = client;
-
 	// read packet header
 	
 	if (!irmo_packet_readi16(packet, &flags)) {
@@ -589,7 +585,7 @@ static void socket_run_packet(IrmoSocket *sock,
 	
 	// pass it to the protocol parsing code
 	
-	irmo_proto_parse_packet(packet, flags);
+	irmo_proto_parse_packet(packet, client, flags);
 }
 
 static int socket_run_client(void *key, IrmoClient *client,

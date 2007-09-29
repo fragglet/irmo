@@ -36,7 +36,7 @@
 // <int16>	new send window size in bytes
 //
 
-static int irmo_sendwindow_atom_verify(IrmoPacket *packet)
+static int irmo_sendwindow_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	unsigned int i;
 
@@ -45,7 +45,8 @@ static int irmo_sendwindow_atom_verify(IrmoPacket *packet)
 	return irmo_packet_readi16(packet, &i);
 }
 
-static IrmoSendAtom *irmo_sendwindow_atom_read(IrmoPacket *packet)
+static IrmoSendAtom *irmo_sendwindow_atom_read(IrmoPacket *packet,
+                                               IrmoClient *client)
 {
 	IrmoSendWindowAtom *atom;
 

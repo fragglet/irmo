@@ -36,9 +36,8 @@
 //		data depends on the argument type
 //
 
-static int irmo_method_atom_verify(IrmoPacket *packet)
+static int irmo_method_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
-	IrmoClient *client = packet->client;
 	IrmoMethod *method;
 	unsigned int i;
 
@@ -68,7 +67,8 @@ static int irmo_method_atom_verify(IrmoPacket *packet)
 	return 1;
 }
 
-static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
+static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet, 
+                                           IrmoClient *client)
 {
 	IrmoMethodAtom *atom;
 	IrmoMethod *method;
@@ -80,7 +80,7 @@ static IrmoSendAtom *irmo_method_atom_read(IrmoPacket *packet)
 	// read method number
 	
 	irmo_packet_readi8(packet, &i);
-        method = packet->client->server->world->iface->methods[i];
+        method = client->server->world->iface->methods[i];
 	atom->method_data.method = method;
 
 	// read arguments
@@ -114,7 +114,7 @@ static void irmo_method_atom_write(IrmoMethodAtom *atom, IrmoPacket *packet)
 
 static void irmo_method_atom_run(IrmoMethodAtom *atom)
 {
-	IrmoClient *client = atom->sendatom.client;
+        IrmoClient *client = atom->sendatom.client;
 
 	atom->method_data.src = client;
 	

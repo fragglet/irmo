@@ -37,11 +37,11 @@
 // <int16>	object id of object to destroy
 //
 
-static int irmo_destroy_atom_verify(IrmoPacket *packet)
+static int irmo_destroy_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	unsigned int i;
 
-	if (!packet->client->world)
+	if (!client->world)
 		return 0;
 
 	// object id
@@ -52,7 +52,8 @@ static int irmo_destroy_atom_verify(IrmoPacket *packet)
 	return 1;
 }
 
-static IrmoSendAtom *irmo_destroy_atom_read(IrmoPacket *packet)
+static IrmoSendAtom *irmo_destroy_atom_read(IrmoPacket *packet,
+                                            IrmoClient *client)
 {
 	IrmoDestroyAtom *atom;
 
@@ -73,7 +74,7 @@ static void irmo_destroy_atom_write(IrmoDestroyAtom *atom, IrmoPacket *packet)
 
 static void irmo_destroy_atom_run(IrmoDestroyAtom *atom)
 {
-	IrmoClient *client = atom->sendatom.client;
+        IrmoClient *client = atom->sendatom.client;
 	IrmoObject *obj;
 
 	// sanity check

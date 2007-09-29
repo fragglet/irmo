@@ -35,12 +35,12 @@
 //  (empty)
 //
 
-static int irmo_null_atom_verify(IrmoPacket *packet)
+static int irmo_null_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	return 1;
 }
 
-static IrmoSendAtom *irmo_null_atom_read(IrmoPacket *packet)
+static IrmoSendAtom *irmo_null_atom_read(IrmoPacket *packet, IrmoClient *client)
 {
 	IrmoSendAtom *atom;
 	

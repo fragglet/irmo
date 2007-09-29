@@ -37,11 +37,11 @@
 // <int8>	object class number
 // 
 
-static int irmo_newobject_atom_verify(IrmoPacket *packet)
+static int irmo_newobject_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	unsigned int i;
 
-	if (!packet->client->world)
+	if (!client->world)
 		return 0;
 
 	// object id
@@ -56,13 +56,14 @@ static int irmo_newobject_atom_verify(IrmoPacket *packet)
 
 	// check valid class
 	
-	if (i >= packet->client->world->iface->nclasses)
+	if (i >= client->world->iface->nclasses)
 		return 0;
 
 	return 1;
 }
 
-static IrmoSendAtom *irmo_newobject_atom_read(IrmoPacket *packet)
+static IrmoSendAtom *irmo_newobject_atom_read(IrmoPacket *packet, 
+                                              IrmoClient *client)
 {
 	IrmoNewObjectAtom *atom;
 

@@ -45,7 +45,7 @@ IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
         packet = irmo_new0(IrmoPacket, 1);
 
         packet->data = data;
-        packet->data_size = data_len;
+        packet->data_size = -1;
         packet->len = data_len;
         packet->pos = 0;
 
@@ -54,7 +54,9 @@ IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
 
 void irmo_packet_free(IrmoPacket *packet)
 {
-	free(packet->data);
+        if (packet->data_size > 0) {
+	        free(packet->data);
+        }
 	free(packet);
 }
 
@@ -74,6 +76,8 @@ static void irmo_packet_update_len(IrmoPacket *packet)
 
 int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 {
+        irmo_return_val_if_fail(packet->data_size > 0, 0);
+
 	if (packet->pos + 1 > packet->data_size)
 		irmo_packet_resize(packet);
 	
@@ -86,8 +90,11 @@ int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 {
-	if (packet->pos + 2 > packet->data_size)
+        irmo_return_val_if_fail(packet->data_size > 0, 0);
+
+	if (packet->pos + 2 > packet->data_size) {
 		irmo_packet_resize(packet);
+        }
 
 	packet->data[packet->pos++] = (i >> 8) & 0xff;
 	packet->data[packet->pos++] = (i) & 0xff;
@@ -99,8 +106,11 @@ int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 {
-	if (packet->pos + 4 > packet->data_size)
+        irmo_return_val_if_fail(packet->data_size > 0, 0);
+
+	if (packet->pos + 4 > packet->data_size) {
 		irmo_packet_resize(packet);
+        }
 
 	packet->data[packet->pos++] = (i >> 24) & 0xff;
 	packet->data[packet->pos++] = (i >> 16) & 0xff;
@@ -114,6 +124,8 @@ int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writestring(IrmoPacket *packet, char *s)
 {
+        irmo_return_val_if_fail(packet->data_size > 0, 0);
+
 	if (packet->pos + strlen(s) + 1 > packet->data_size)
 		irmo_packet_resize(packet);
 

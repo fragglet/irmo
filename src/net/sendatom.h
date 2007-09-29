@@ -56,8 +56,8 @@ typedef enum {
 
 #include "client.h"
 
-typedef int (*IrmoSendAtomVerifyFunc)(IrmoPacket *packet);
-typedef IrmoSendAtom *(*IrmoSendAtomReadFunc)(IrmoPacket *packet);
+typedef int (*IrmoSendAtomVerifyFunc)(IrmoPacket *packet, IrmoClient *client);
+typedef IrmoSendAtom *(*IrmoSendAtomReadFunc)(IrmoPacket *packet, IrmoClient *clientt);
 typedef void (*IrmoSendAtomWriteFunc)(IrmoSendAtom *atom, IrmoPacket *packet);
 typedef void (*IrmoSendAtomRunFunc)(IrmoSendAtom *atom);
 typedef size_t (*IrmoSendAtomLengthFunc)(IrmoSendAtom *atom);

@@ -42,9 +42,8 @@
 //		data depends on the variable type.
 //
 
-static int irmo_change_atom_verify(IrmoPacket *packet)
+static int irmo_change_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
-	IrmoClient *client = packet->client;
 	IrmoClass *objclass;
 	unsigned int i;
         int n, b;
@@ -108,10 +107,10 @@ static int irmo_change_atom_verify(IrmoPacket *packet)
 	return result;
 }
 
-static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet)
+static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet, 
+                                           IrmoClient *client)
 {
 	IrmoChangeAtom *atom;
-	IrmoClient *client = packet->client;
 	IrmoClass *objclass;
 	int *changed;
 	IrmoValue *newvalues;
@@ -243,7 +242,7 @@ static void irmo_change_atom_destroy(IrmoChangeAtom *atom)
 
 static void irmo_change_atom_run(IrmoChangeAtom *atom)
 {
-	IrmoClient *client = atom->sendatom.client;
+        IrmoClient *client = atom->sendatom.client;
 	IrmoObject *obj;
 	IrmoClass *objclass;
 	IrmoValue *newvalues;
