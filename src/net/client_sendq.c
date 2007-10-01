@@ -24,6 +24,8 @@
 #include "netbase/netlib.h"
 #include "world/object.h"
 
+#include <irmo/iterator.h>
+
 #include "sendatom.h"
 
 IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
@@ -266,35 +268,41 @@ void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max)
 // this is used for when new clients connect to retrieve the entire
 // current world state
 
-static void client_sendq_add_objects(IrmoObject *object, IrmoClient *client)
-{
-	irmo_client_sendq_add_new(client, object);
-}
-
-static void client_sendq_add_variables(IrmoObject *object, 
-				       IrmoClient *client)
-{
-	int i;
-
-	// queue up variables
-
-	for (i=0; i<object->objclass->nvariables; ++i)
-		irmo_client_sendq_add_change(client, object, i);
-}
-
 void irmo_client_sendq_add_state(IrmoClient *client)
 {
+        IrmoIterator *iter;
+        IrmoObject *object;
+        int i;
+
 	// create all the objects first
-	// this is done all together and seperately from sending the
+	// this is done all together and separately from sending the
 	// variable state, as the rle encoding in the packets will
 	// better compress the atoms this way
-	irmo_world_foreach_object(client->server->world, NULL,
-				     (IrmoObjCallback) client_sendq_add_objects,
-				     client);
 
-	// send variable states
-	irmo_world_foreach_object(client->server->world, NULL,
-				     (IrmoObjCallback) client_sendq_add_variables,
-				     client);
+        iter = irmo_world_iterate_objects(client->server->world, NULL);
+
+        while (irmo_iterator_has_more(iter)) {
+                object = irmo_iterator_next(iter);
+
+                irmo_client_sendq_add_new(client, object);
+        }
+
+        irmo_iterator_free(iter);
+
+        // Now set the variable states
+        
+        iter = irmo_world_iterate_objects(client->server->world, NULL);
+
+        while (irmo_iterator_has_more(iter)) {
+                object = irmo_iterator_next(iter);
+
+                // Add change for all variables in this object.
+
+                for (i=0; i<object->objclass->nvariables; ++i) {
+                        irmo_client_sendq_add_change(client, object, i);
+                }
+        }
+
+        irmo_iterator_free(iter);
 }
 

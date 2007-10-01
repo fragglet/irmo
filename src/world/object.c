@@ -36,40 +36,39 @@
 
 typedef void (*ClientCallback) (IrmoClient *client, void *user_data);
 
-struct foreach_client_data {
-	IrmoWorld *world;
-	ClientCallback func;
-	void *user_data;
-};
-
-static void foreach_client_foreach(void *key, IrmoClient *client,
-				   struct foreach_client_data *data)
+static void server_foreach_client(IrmoServer *server,
+                                  ClientCallback func,
+                                  void *user_data)
 {
-	// only do this for clients which are full connected
+        IrmoHashTableIterator *iter;
+        IrmoClient *client;
 
-	if (client->state != CLIENT_CONNECTED)
-		return;
+        iter = irmo_hash_table_iterate(server->clients);
 
-	data->func(client, data->user_data);
+        while (irmo_hash_table_iter_has_more(iter)) {
+                client = irmo_hash_table_iter_next(iter);
+
+                // Ignore clients that are not fully connected
+
+                if (client->state == CLIENT_CONNECTED) {
+                        func(client, user_data);
+                }
+        }
+
+        irmo_hash_table_iter_free(iter);
 }
 
 static void foreach_client(IrmoWorld *world,
-			   ClientCallback func, void *user_data)
+			   ClientCallback func,
+                           void *user_data)
 {
-	struct foreach_client_data data = {
-		world,
-		func,
-		user_data,
-	};
 	int i;
 
 	for (i=0; i<world->servers->length; ++i) {
 		IrmoServer *server
 			= (IrmoServer *) world->servers->data[i];
 
-		irmo_hash_table_foreach(server->clients,
-				     (IrmoHashTableIterator) foreach_client_foreach,
-				     &data);
+                server_foreach_client(server, func, user_data);
 	}
 }		   
 

@@ -26,6 +26,7 @@
 #include <irmo/connection.h>
 #include <irmo/error.h>
 #include <irmo/interface.h>
+#include <irmo/iterator.h>
 #include <irmo/method.h>
 #include <irmo/object.h>
 #include <irmo/server.h>

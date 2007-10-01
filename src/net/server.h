@@ -66,7 +66,7 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock, IrmoWorld *world,
 
 // invoke IrmoClientCallback callback functions in a list
 
-void irmo_client_callback_raise(IrmoSListEntry *list, IrmoClient *client);
+void irmo_client_callback_raise(IrmoSListEntry **list, IrmoClient *client);
 
 // raise callback functions on new client connect
 

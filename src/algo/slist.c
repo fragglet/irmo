@@ -40,8 +40,16 @@ POSSIBILITY OF SUCH DAMAGE.
 /* A singly-linked list */
 
 struct _IrmoSListEntry {
-	void *data;
+	IrmoSListValue data;
 	IrmoSListEntry *next;
+};
+
+/* Iterator for iterating over a singly-linked list. */
+
+struct _IrmoSListIterator {
+	IrmoSListEntry **list;
+	IrmoSListEntry **prev_next;
+	IrmoSListEntry *current;
 };
 
 void irmo_slist_free(IrmoSListEntry *list)
@@ -64,13 +72,18 @@ void irmo_slist_free(IrmoSListEntry *list)
 	}
 }
 
-IrmoSListEntry *irmo_slist_prepend(IrmoSListEntry **list, void *data)
+IrmoSListEntry *irmo_slist_prepend(IrmoSListEntry **list, IrmoSListValue data)
 {
 	IrmoSListEntry *newentry;
 
 	/* Create new entry */
 
 	newentry = malloc(sizeof(IrmoSListEntry));
+
+	if (newentry == NULL) {
+		return NULL;
+	}
+	
 	newentry->data = data;
 
 	/* Hook into the list start */
@@ -81,7 +94,7 @@ IrmoSListEntry *irmo_slist_prepend(IrmoSListEntry **list, void *data)
 	return newentry;
 }
 
-IrmoSListEntry *irmo_slist_append(IrmoSListEntry **list, void *data)
+IrmoSListEntry *irmo_slist_append(IrmoSListEntry **list, IrmoSListValue data)
 {
 	IrmoSListEntry *rover;
 	IrmoSListEntry *newentry;
@@ -89,6 +102,11 @@ IrmoSListEntry *irmo_slist_append(IrmoSListEntry **list, void *data)
 	/* Create new list entry */
 
 	newentry = malloc(sizeof(IrmoSListEntry));
+
+	if (newentry == NULL) {
+		return NULL;
+	}
+	
 	newentry->data = data;
 	newentry->next = NULL;
 	
@@ -114,7 +132,7 @@ IrmoSListEntry *irmo_slist_append(IrmoSListEntry **list, void *data)
 	return newentry;
 }
 
-void *irmo_slist_data(IrmoSListEntry *listentry)
+IrmoSListValue irmo_slist_data(IrmoSListEntry *listentry)
 {
 	return listentry->data;
 }
@@ -151,7 +169,7 @@ IrmoSListEntry *irmo_slist_nth_entry(IrmoSListEntry *list, int n)
 	return entry;
 }
 
-void *irmo_slist_nth_data(IrmoSListEntry *list, int n)
+IrmoSListValue irmo_slist_nth_data(IrmoSListEntry *list, int n)
 {
 	IrmoSListEntry *entry;
 
@@ -162,7 +180,7 @@ void *irmo_slist_nth_data(IrmoSListEntry *list, int n)
 	/* If out of range, return NULL, otherwise return the data */
 
 	if (entry == NULL) {
-		return NULL;
+		return SLIST_NULL;
 	} else {
 		return entry->data;
 	}
@@ -188,18 +206,22 @@ int irmo_slist_length(IrmoSListEntry *list)
 	return length;
 }
 
-void **irmo_slist_to_array(IrmoSListEntry *list)
+IrmoSListValue *irmo_slist_to_array(IrmoSListEntry *list)
 {
 	IrmoSListEntry *rover;
 	int listlen;
-	void **array;
+	IrmoSListValue *array;
 	int i;
 
 	/* Allocate an array equal in size to the list length */
 	
 	listlen = irmo_slist_length(list);
 
-	array = calloc(sizeof(void *), listlen);
+	array = malloc(sizeof(IrmoSListValue) * listlen);
+
+	if (array == NULL) {
+		return NULL;
+	}
 	
 	/* Add all entries to the array */
 	
@@ -217,27 +239,6 @@ void **irmo_slist_to_array(IrmoSListEntry *list)
 	}
 
 	return array;
-}
-
-
-void irmo_slist_foreach(IrmoSListEntry *list, IrmoSListIterator callback, void *user_data)
-{
-	IrmoSListEntry *entry;
-
-	/* Iterate over each entry in the list */
-
-	entry = list;
-
-	while (entry != NULL) {
-
-		/* Invoke the callback function */
-
-		callback(entry->data, user_data);
-
-		/* Advance to the next entry */
-
-		entry = entry->next;
-	}
 }
 
 int irmo_slist_remove_entry(IrmoSListEntry **list, IrmoSListEntry *entry)
@@ -292,7 +293,7 @@ int irmo_slist_remove_entry(IrmoSListEntry **list, IrmoSListEntry *entry)
 	return 1;
 }
 
-int irmo_slist_remove_data(IrmoSListEntry **list, IrmoSListEqualFunc callback, void *data)
+int irmo_slist_remove_data(IrmoSListEntry **list, IrmoSListEqualFunc callback, IrmoSListValue data)
 {
 	IrmoSListEntry **rover;
 	IrmoSListEntry *next;
@@ -424,7 +425,7 @@ void irmo_slist_sort(IrmoSListEntry **list, IrmoSListCompareFunc compare_func)
 
 IrmoSListEntry *irmo_slist_find_data(IrmoSListEntry *list,
                             IrmoSListEqualFunc callback,
-                            void *data)
+                            IrmoSListValue data)
 {
 	IrmoSListEntry *rover;
 
@@ -441,5 +442,121 @@ IrmoSListEntry *irmo_slist_find_data(IrmoSListEntry *list,
 	return NULL;
 }
 
+IrmoSListIterator *irmo_slist_iterate(IrmoSListEntry **list)
+{
+	IrmoSListIterator *iter;
+
+	/* Allocate the new structure */
+
+	iter = malloc(sizeof(IrmoSListIterator));
+
+	if (iter == NULL) {
+		return NULL;
+	}
+
+	/* Save the list location */
+
+	iter->list = list;
+
+	/* These are NULL as we have not read the first item yet */
+
+	iter->prev_next = NULL;
+	iter->current = NULL;
+
+	return iter;
+}
+
+int irmo_slist_iter_has_more(IrmoSListIterator *iter)
+{
+	if (iter->prev_next == NULL) {
 		
+		/* The iterator has just been created.  irmo_slist_iter_next
+		 * has not been called yet.  There are more entries if 
+		 * the list itself is not empty. */
+
+		return *iter->list != NULL;
+		
+	} else if (*iter->prev_next != iter->current) {
+
+		/* The entry last returned from irmo_slist_iter_next has been
+		 * deleted.  The next entry is indicated by prev_next. */
+
+		return *iter->prev_next != NULL;
+
+	} else {
+	
+		/* The current entry has not been deleted.  There
+		 * is a next entry if current->next is not NULL. */
+
+		return iter->current->next != NULL;
+
+	}
+}
+
+IrmoSListValue irmo_slist_iter_next(IrmoSListIterator *iter)
+{
+	if (iter->prev_next == NULL) {
+
+		/* This is the first call to irmo_slist_iter_next. */
+
+		/* Initial prev_next is the list start variable */
+
+		iter->prev_next = iter->list;
+
+		/* Start at the first element */
+
+		iter->current = *iter->list;
+
+	} else if (*iter->prev_next != iter->current) {
+
+		/* The value last returned by irmo_slist_iter_next was
+		 * deleted.  Use prev_next to find the next
+		 * entry. */
+
+		iter->current = *iter->prev_next;
+
+	} else {
+
+		/* Last value returned from irmo_slist_iter_next was not
+		 * deleted. Advance to the next entry. */
+
+		if (iter->current != NULL) {
+			iter->prev_next = &iter->current->next;
+			iter->current = iter->current->next;
+		}
+	}
+
+	if (iter->current == NULL) {
+		return SLIST_NULL;
+	} else {
+		return iter->current->data;
+	}
+
+}
+
+void irmo_slist_iter_remove(IrmoSListIterator *iter)
+{
+	if (iter->prev_next == NULL) {
+
+		/* irmo_slist_iter_next has not been called yet. */
+
+	} else if (*iter->prev_next != iter->current) {
+		
+		/* Current entry was already deleted */
+
+	} else {
+		
+		/* Remove the current entry */
+
+		if (iter->current != NULL) {
+			*iter->prev_next = iter->current->next;
+			free(iter->current);
+		}
+	}
+}
+
+void irmo_slist_iter_free(IrmoSListIterator *iter)
+{
+	free(iter);
+}
 

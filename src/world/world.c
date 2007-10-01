@@ -24,6 +24,7 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 #include "base/error.h"
+#include "base/iterator.h"
 
 #include "interface/interface.h"
 
@@ -80,14 +81,20 @@ void irmo_world_ref(IrmoWorld *world)
 	++world->refcount;
 }
 
-static void irmo_world_unref_foreach(IrmoObjectID id, IrmoObject *object,
-				     void *user_data)
+static void irmo_world_destroy_all_objects(IrmoWorld *world)
 {
-	// destroy object. do not notify objects. do not remove
-	// from world as this may upset the foreach function
-	// we are in.
-	
-	irmo_object_internal_destroy(object, 0, 0);
+        IrmoHashTableIterator *iter;
+        IrmoObject *obj;
+
+        iter = irmo_hash_table_iterate(world->objects);
+
+        while (irmo_hash_table_iter_has_more(iter)) {
+                obj = irmo_hash_table_iter_next(iter);
+        
+                irmo_object_internal_destroy(obj, 0, 0);
+        }
+
+        irmo_hash_table_iter_free(iter);
 }
 
 void irmo_world_unref(IrmoWorld *world)
@@ -104,11 +111,9 @@ void irmo_world_unref(IrmoWorld *world)
 
 		irmo_arraylist_free(world->servers);
 		
-		// delete all objects
+		// destroy all objects and the objects hash table.
 		
-		irmo_hash_table_foreach(world->objects,
-				     (IrmoHashTableIterator) irmo_world_unref_foreach, 
-				     NULL);
+                irmo_world_destroy_all_objects(world);
 		irmo_hash_table_free(world->objects);
 
 		// delete callbacks
@@ -123,7 +128,7 @@ void irmo_world_unref(IrmoWorld *world)
 		// method callbacks
 		
 		for (i=0; i<world->iface->nmethods; ++i)
-			irmo_callbacklist_free(world->method_callbacks[i]);
+			irmo_callbacklist_free(&world->method_callbacks[i]);
 
 		free(world->method_callbacks);
 
@@ -147,55 +152,45 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 	return object;
 }
 
-struct world_foreach_data {
-	IrmoClass *klass;
-	IrmoObjCallback func;
-	void *user_data;
-};
+// Filter function used by irmo_world_iterate_objects when we
+// only want to iterate over objects of a certain class.
 
-static void world_foreach_foreach(int key,
-				  IrmoObject *object,
-				  struct world_foreach_data *data)
+static int irmo_object_iterator_filter(void *_obj, void *_klass)
 {
-	// only call callback if this is of the particular class
-	// or if no class was specified
-	
-	if (!data->klass || irmo_object_is_a2(object, data->klass)) {
-		data->func(object, data->user_data);
-	}
+        IrmoObject *obj = _obj;
+        IrmoClass *klass = _klass;
+
+        return irmo_object_is_a2(obj, klass);
 }
-					    
 
-void irmo_world_foreach_object(IrmoWorld *world, char *classname,
-			       IrmoObjCallback func, void *user_data)
+IrmoIterator *irmo_world_iterate_objects(IrmoWorld *world, char *classname)
 {
+        IrmoIterator *iter;
 	IrmoClass *klass;
-	struct world_foreach_data data = {
-		NULL,
-		func,
-		user_data,
-	};
 
-	irmo_return_if_fail(world != NULL);
-	irmo_return_if_fail(func != NULL);
+	irmo_return_val_if_fail(world != NULL, NULL);
 	
 	if (classname) {
 		klass = irmo_interface_get_class(world->iface, classname);
 
 		if (!klass) {
-			irmo_error_report("irmo_world_foreach_object",
+			irmo_error_report("irmo_world_iterate_objects",
 					  "unknown class '%s'", classname);
-			return;
+			return NULL;
 		}
 	} else {
 		klass = NULL;
 	}
 
-	data.klass = klass;
-	
-	irmo_hash_table_foreach(world->objects,
-			     (IrmoHashTableIterator) world_foreach_foreach,
-			     &data);			     
+        iter = irmo_iterate_hash_table(world->objects);
+
+        if (klass != NULL) {
+                irmo_iterator_set_filter(iter,
+                                         irmo_object_iterator_filter,
+                                         klass);
+        }
+
+        return iter;
 }
 
 IrmoInterface *irmo_world_get_interface(IrmoWorld *world)

@@ -59,6 +59,12 @@ extern "C" {
 #endif
 
 /**
+ * A value to be stored in an @ref IrmoArrayList.
+ */
+
+typedef void *IrmoArrayListValue;
+
+/**
  * An IrmoArrayList structure.  New IrmoArrayLists can be created using the 
  * irmo_arraylist_new function.
  *
@@ -69,7 +75,7 @@ typedef struct _IrmoArrayList {
 
 	/** Entries in the array */
 	
-	void **data;
+	IrmoArrayListValue *data;
 
 	/** Length of the array */
 	
@@ -86,7 +92,7 @@ typedef struct _IrmoArrayList {
  * @return Non-zero if the values are not equal, zero if they are equal.
  */
 
-typedef int (*IrmoArrayListEqualFunc)(void *data1, void *data2);
+typedef int (*IrmoArrayListEqualFunc)(IrmoArrayListValue data1, IrmoArrayListValue data2);
 
 /**
  * Compare two values in an arraylist.  Used by @ref irmo_arraylist_sort
@@ -100,14 +106,15 @@ typedef int (*IrmoArrayListEqualFunc)(void *data1, void *data2);
  *                            are equal.
  */
 
-typedef int (*IrmoArrayListCompareFunc)(void *data1, void *data2);
+typedef int (*IrmoArrayListCompareFunc)(IrmoArrayListValue data1, IrmoArrayListValue data2);
 
 /**
  * Allocate a new IrmoArrayList for use.
  *
  * @param length         Hint to the initialise function as to the amount
  *                       of memory to allocate initially to the IrmoArrayList.
- *
+ * @return               A new arraylist, or NULL if it was not possible
+ *                       to allocate the memory.
  * @see irmo_arraylist_free
  */
 
@@ -126,18 +133,24 @@ void irmo_arraylist_free(IrmoArrayList *arraylist);
  *
  * @param arraylist      The IrmoArrayList.
  * @param data           The data to append.
+ * @return               Non-zero if the request was successful, zero
+ *                       if it was not possible to allocate more memory
+ *                       for the new entry.
  */
 
-void irmo_arraylist_append(IrmoArrayList *arraylist, void *data);
+int irmo_arraylist_append(IrmoArrayList *arraylist, IrmoArrayListValue data);
 
 /** 
  * Prepend data to the beginning of an IrmoArrayList.
  *
  * @param arraylist      The IrmoArrayList.
  * @param data           The data to prepend.
+ * @return               Non-zero if the request was successful, zero
+ *                       if it was not possible to allocate more memory
+ *                       for the new entry.
  */
 
-void irmo_arraylist_prepend(IrmoArrayList *arraylist, void *data);
+int irmo_arraylist_prepend(IrmoArrayList *arraylist, IrmoArrayListValue data);
 
 /**
  * Remove the entry at the specified location in an IrmoArrayList.
@@ -167,10 +180,11 @@ void irmo_arraylist_remove_range(IrmoArrayList *arraylist, int index, int length
  * @param index          The index at which to insert the data.
  * @param data           The data.
  * @return               Returns zero if unsuccessful, else non-zero 
- *                       if successful.
+ *                       if successful (due to an invalid index or 
+ *                       if it was impossible to allocate more memory).
  */
 
-int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, void *data);
+int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, IrmoArrayListValue data);
 
 /**
  * Find the index of a particular pointer in an IrmoArrayList.
@@ -184,7 +198,7 @@ int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, void *data);
 
 int irmo_arraylist_index_of(IrmoArrayList *arraylist, 
                        IrmoArrayListEqualFunc callback, 
-                       void *data);
+                       IrmoArrayListValue data);
 
 /** 
  * Remove all entries from an IrmoArrayList.

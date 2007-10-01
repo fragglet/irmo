@@ -73,6 +73,12 @@ typedef struct _IrmoMethod IrmoMethod;
 typedef struct _IrmoMethodArg IrmoMethodArg;
 
 /*!
+ * \brief An iterator for iterating over values in a collection.
+ */
+
+typedef struct _IrmoIterator IrmoIterator;
+
+/*!
  * \brief Variable types
  */
 

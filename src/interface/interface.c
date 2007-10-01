@@ -19,6 +19,7 @@
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
+#include "base/iterator.h"
 
 #include "interface.h"
 
@@ -65,30 +66,18 @@ IrmoMethod *irmo_interface_get_method(IrmoInterface *iface,
 	return irmo_hash_table_lookup(iface->method_hash, method_name);
 }
 
-void irmo_interface_foreach_class(IrmoInterface *iface, 
-				       IrmoClassCallback func, 
-				       void *user_data)
+IrmoIterator *irmo_interface_iterate_classes(IrmoInterface *iface)
 {
-	int i;
+	irmo_return_val_if_fail(iface != NULL, NULL);
 
-	irmo_return_if_fail(iface != NULL);
-	irmo_return_if_fail(func != NULL);
-
-	for (i=0; i<iface->nclasses; ++i) 
-		func(iface->classes[i], user_data);
+        return irmo_iterate_array((void **) iface->classes, iface->nclasses);
 }
 
-void irmo_interface_foreach_method(IrmoInterface *iface, 
-					IrmoMethodCallback func, 
-					void *user_data)
+IrmoIterator *irmo_interface_iterate_methods(IrmoInterface *iface)
 {
-	int i;
+	irmo_return_val_if_fail(iface != NULL, NULL);
 
-	irmo_return_if_fail(iface != NULL);
-	irmo_return_if_fail(func != NULL);
-
-	for (i=0; i<iface->nmethods; ++i) 
-		func(iface->methods[i], user_data);
+        return irmo_iterate_array((void **) iface->methods, iface->nmethods);
 }
 
 void _irmo_interface_free(IrmoInterface *iface)

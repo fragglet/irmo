@@ -20,6 +20,7 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 #include "base/error.h"
+#include "base/iterator.h"
 
 #include "algo/algo.h"
 
@@ -107,17 +108,12 @@ IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number)
 	return method->arguments[arg_number];
 }
 
-void irmo_method_foreach_argument(IrmoMethod *method,
-				  IrmoMethodArgCallback func, 
-				  void *user_data)
+IrmoIterator *irmo_method_iterate_arguments(IrmoMethod *method)
 {
-	int i;
+	irmo_return_val_if_fail(method != NULL, NULL);
 
-	irmo_return_if_fail(method != NULL);
-	irmo_return_if_fail(func != NULL);
-
-	for (i=0; i<method->narguments; ++i)
-		func(method->arguments[i], user_data);
+        return irmo_iterate_array((void **) method->arguments, 
+                                  method->narguments);
 }
 
 void irmo_method_ref(IrmoMethod *method)

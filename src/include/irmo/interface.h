@@ -102,13 +102,12 @@ IrmoClass *irmo_interface_get_class(IrmoInterface *iface,
  * \brief Iterate over all classes in an interface.
  * 
  * \param iface		The interface
- * \param func		A user function to call for each class
- * \param user_data	Extra data to pass to the function
+ * \return              Pointer to an \ref IrmoIterator to iterate over
+ *                      all classes in the interface.
  */
 
-void irmo_interface_foreach_class(IrmoInterface *iface, 
-				       IrmoClassCallback func, 
-				       void *user_data);
+IrmoIterator *irmo_interface_iterate_classes(IrmoInterface *iface);
+
 /*!
  * \brief Get the \ref IrmoMethod object representing a particular method
  *
@@ -125,13 +124,11 @@ IrmoMethod *irmo_interface_get_method(IrmoInterface *iface,
  * \brief Iterate over all methods in an interface.
  * 
  * \param iface		The interface.
- * \param func		A user function to call for each method
- * \param user_data	Extra data to pass to the function
+ * \return              Pointer to an \ref IrmoIterator object to iterate 
+ *                      over all methods in the interface.
  */
 
-void irmo_interface_foreach_method(IrmoInterface *iface, 
-					IrmoMethodCallback func, 
-					void *user_data);
+IrmoIterator *irmo_interface_iterate_methods(IrmoInterface *iface);
 
 /*!
  * \brief Create a new method in an \ref IrmoInterface.
@@ -224,18 +221,12 @@ void irmo_class_unref(IrmoClass *klass);
 /*!
  * \brief Iterate over variables in a class
  *
- * This function iterates over variables in a class. It only iterates
- * over variables unique to that class; variables inherited from the
- * parent class are not included.
- * 
  * \param klass		The class object
- * \param func		A user function to call for each variable
- * \param user_data	Extra data to pass to the function
+ * \return              Pointer to an \ref IrmoIterator object to iterate
+ *                      over all variables in the class.
  */
 
-void irmo_class_foreach_variable(IrmoClass *klass, 
-				 IrmoClassVarCallback func, 
-				 void *user_data);
+IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass);
 
 /*!
  * \brief Get the name of a \ref IrmoClassVar object
@@ -299,13 +290,11 @@ IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number);
  * \brief Iterate over all arguments to a method
  * 
  * \param method	The class object
- * \param func		A user function to call for each variable
- * \param user_data	Extra data to pass to the function
+ * \return              Pointer to an \ref IrmoIterator object to iterate over
+ *                      all arguments in the method.
  */
 
-void irmo_method_foreach_argument(IrmoMethod *method,
-				  IrmoMethodArgCallback func, 
-				  void *user_data);
+IrmoIterator *irmo_method_iterate_arguments(IrmoMethod *method);
 
 /*!
  * Add a new argument to a method.

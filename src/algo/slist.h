@@ -61,8 +61,6 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * To sort a list into an order, use @ref irmo_slist_sort.
  *
- * To iterate over a list, use @ref irmo_slist_foreach.
- *
  * To find a particular entry in a list by its index, use 
  * @ref irmo_slist_nth_entry.
  *
@@ -87,10 +85,22 @@ POSSIBILITY OF SUCH DAMAGE.
 typedef struct _IrmoSListEntry IrmoSListEntry;
 
 /**
- * Callback function used for iterating over a list
+ * Structure used to iterate over a list.
  */
 
-typedef void (*IrmoSListIterator)(void *data, void *user_data);
+typedef struct _IrmoSListIterator IrmoSListIterator;
+
+/**
+ * Value stored in a @ref IrmoSList.
+ */
+
+typedef void *IrmoSListValue;
+
+/**
+ * A null @ref IrmoSListValue.
+ */
+
+#define SLIST_NULL ((void *) 0)
 
 /**
  * Callback function used to compare values in a list when sorting.
@@ -100,7 +110,7 @@ typedef void (*IrmoSListIterator)(void *data, void *user_data);
  *           zero if data1 and data2 are equal.
  */
 
-typedef int (*IrmoSListCompareFunc)(void *data1, void *data2);
+typedef int (*IrmoSListCompareFunc)(IrmoSListValue data1, IrmoSListValue data2);
 
 /**
  * Callback function used to determine of two values in a list are
@@ -110,7 +120,7 @@ typedef int (*IrmoSListCompareFunc)(void *data1, void *data2);
  *           are not equal.
  */
 
-typedef int (*IrmoSListEqualFunc)(void *data1, void *data2);
+typedef int (*IrmoSListEqualFunc)(IrmoSListValue data1, IrmoSListValue data2);
 
 /**
  * Free an entire list.
@@ -125,20 +135,22 @@ void irmo_slist_free(IrmoSListEntry *list);
  *
  * @param list      Pointer to the list to prepend to.
  * @param data      Data to prepend.
- * @return          The new entry in the list.
+ * @return          The new entry in the list, or NULL if it was not possible
+ *                  to allocate a new entry.
  */
 
-IrmoSListEntry *irmo_slist_prepend(IrmoSListEntry **list, void *data);
+IrmoSListEntry *irmo_slist_prepend(IrmoSListEntry **list, IrmoSListValue data);
 
 /**
  * Append data to the end of a list.
  *
  * @param list      Pointer to the list to append to.
  * @param data      Data to append.
- * @return          The new entry in the list.
+ * @return          The new entry in the list, or NULL if it was not possible
+ *                  to allocate a new entry.
  */
 
-IrmoSListEntry *irmo_slist_append(IrmoSListEntry **list, void *data);
+IrmoSListEntry *irmo_slist_append(IrmoSListEntry **list, IrmoSListValue data);
 
 /** 
  * Retrieve the next entry in a list.
@@ -156,7 +168,7 @@ IrmoSListEntry *irmo_slist_next(IrmoSListEntry *listentry);
  * @return             The data at the list entry.
  */
 
-void *irmo_slist_data(IrmoSListEntry *listentry);
+IrmoSListValue irmo_slist_data(IrmoSListEntry *listentry);
 
 /** 
  * Retrieve the entry at a specified index in a list.
@@ -173,11 +185,11 @@ IrmoSListEntry *irmo_slist_nth_entry(IrmoSListEntry *list, int n);
  *
  * @param list       The list.
  * @param n          The index into the list .
- * @return           The data at the specified index, or NULL if 
+ * @return           The data at the specified index, or @ref SLIST_NULL if 
  *                   unsuccessful.
  */
 
-void *irmo_slist_nth_data(IrmoSListEntry *list, int n);
+IrmoSListValue irmo_slist_nth_data(IrmoSListEntry *list, int n);
 
 /** 
  * Find the length of a list.
@@ -193,21 +205,12 @@ int irmo_slist_length(IrmoSListEntry *list);
  *
  * @param list       The list.
  * @return           A newly-allocated C array containing all values in the
- *                   list.  The length of the array is equal to the length
- *                   of the list (see @ref irmo_slist_length).
+ *                   list, or NULL if it was not possible to allocate the 
+ *                   memory for the array.  The length of the array is 
+ *                   equal to the length of the list (see @ref irmo_slist_length).
  */
 
-void **irmo_slist_to_array(IrmoSListEntry *list);
-
-/** 
- * Iterate over all entries in a list.
- *
- * @param list       The list.
- * @param callback   Callback function to invoke for each entry in the list.
- * @param user_data  Extra data to pass to the callback function.
- */
-
-void irmo_slist_foreach(IrmoSListEntry *list, IrmoSListIterator callback, void *user_data);
+IrmoSListValue *irmo_slist_to_array(IrmoSListEntry *list);
 
 /**
  * Remove an entry from a list.
@@ -230,7 +233,7 @@ int irmo_slist_remove_entry(IrmoSListEntry **list, IrmoSListEntry *entry);
  * @return           The number of entries removed from the list.
  */
 
-int irmo_slist_remove_data(IrmoSListEntry **list, IrmoSListEqualFunc callback, void *data);
+int irmo_slist_remove_data(IrmoSListEntry **list, IrmoSListEqualFunc callback, IrmoSListValue data);
 
 /**
  * Sort a list.
@@ -254,7 +257,58 @@ void irmo_slist_sort(IrmoSListEntry **list, IrmoSListCompareFunc compare_func);
 
 IrmoSListEntry *irmo_slist_find_data(IrmoSListEntry *list, 
                             IrmoSListEqualFunc callback,
-                            void *data);
+                            IrmoSListValue data);
+
+/** 
+ * Create a new @ref IrmoSListIterator structure to iterate over a list.
+ * The iterator should be freed once iterating has completed, using
+ * the function @ref list_iter_free.
+ *
+ * @param list           Pointer to the list to iterate over.
+ * @return               A new @ref IrmoSListIterator.
+ */
+
+IrmoSListIterator *irmo_slist_iterate(IrmoSListEntry **list);
+
+/**
+ * Determine if there are more values in the list to iterate over.  When
+ * iteration is finished, the iterator should be freed using 
+ * @ref irmo_slist_iter_free.
+ *
+ * @param iterator       The list iterator.
+ * @return               Zero if there are no more values in the list to
+ *                       iterate over, non-zero if there are more values to
+ *                       read.
+ */
+
+int irmo_slist_iter_has_more(IrmoSListIterator *iterator);
+
+/**
+ * Using a list iterator, retrieve the next value from the list. 
+ *
+ * @param iterator       The list iterator.
+ * @return               The next value from the list, or SLIST_NULL if 
+ *                       there are no more values in the list.
+ */
+        
+IrmoSListValue irmo_slist_iter_next(IrmoSListIterator *iterator);
+
+/** 
+ * Delete the current entry in the list (the value last returned from
+ * @ref irmo_slist_iter_next)
+ *
+ * @param iterator       The list iterator.
+ */
+
+void irmo_slist_iter_remove(IrmoSListIterator *iterator);
+
+/**
+ * Free back a list iterator.
+ *
+ * @param iterator       The list iterator.
+ */
+
+void irmo_slist_iter_free(IrmoSListIterator *iterator);
 
 #endif /* #ifndef IRMO_ALGO_SLIST_H */
 

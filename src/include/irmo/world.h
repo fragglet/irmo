@@ -80,20 +80,18 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
  * object. The function can be used to iterate over ALL objects or
  * just ones of a particular class.
  *
- * \param world	The world to iterate over
- * \param classname	The name of the class of objects to iterate over.
- * 			If you want to iterate over ALL objects, pass
- * 			NULL for this value.
- * \param func		The callback function to call.
- * \param user_data	Extra data to pass to the functions when they 
- * 			are called.
+ * \param world	        The world to iterate over
+ * \param classname     The name of the class of objects to iterate over.
+ *                      If you want to iterate over ALL objects, pass
+ *                      NULL for this value.
+ * \return              Pointer to an \ref IrmoIterator object to iterate
+ *                      over objects in the world.
  */
 
-void irmo_world_foreach_object(IrmoWorld *world, char *classname,
-			       IrmoObjCallback func, void *user_data);
+IrmoIterator *irmo_world_iterate_objects(IrmoWorld *world, char *classname);
 
 /*!
- * \brief	Get the interface for a World
+ * \brief Get the interface for a World
  *
  * Returns the \ref IrmoInterface object specifying the interface for a
  * given world.

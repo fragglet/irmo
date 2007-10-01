@@ -20,6 +20,7 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 #include "base/error.h"
+#include "base/iterator.h"
 
 #include "netbase/netlib.h"
 
@@ -93,16 +94,24 @@ void irmo_server_ref(IrmoServer *server)
 	++server->refcount;
 }
 
-static int remove_each_client(void *key, IrmoClient *client,
-				   void *user_data)
+static void irmo_server_remove_all_clients(IrmoServer *server)
 {
-	// destroy
+        IrmoHashTableIterator *iter;
+        IrmoClient *client;
 
-	irmo_client_internal_unref(client);
-	
-	// remove from server list
-	
-	return 1;
+        iter = irmo_hash_table_iterate(server->clients);
+
+        while (irmo_hash_table_iter_has_more(iter)) {
+                client = irmo_hash_table_iter_next(iter);
+
+                // Remove this client from the hash table and destroy it.
+
+                irmo_hash_table_remove(server->clients, client->addr);
+
+                irmo_client_internal_unref(client);
+        }
+
+        irmo_hash_table_iter_free(iter);
 }
 
 // remove ourselves from the socket
@@ -117,10 +126,8 @@ static void irmo_server_internal_shutdown(IrmoServer *server)
 
 	// remove clients
 
-	irmo_hash_table_foreach_remove(server->clients,
-				    (IrmoHashTableRemoveIterator) remove_each_client,
-				    NULL);
-		
+        irmo_server_remove_all_clients(server);
+
 	// shutdown the socket we're using
 
 	irmo_socket_shutdown(server->socket);
@@ -151,7 +158,7 @@ void irmo_server_unref(IrmoServer *server)
 
 		// destroy callbacks
 
-		irmo_callbacklist_free(server->connect_callbacks);
+		irmo_callbacklist_free(&server->connect_callbacks);
 
 		irmo_socket_unref(server->socket);
 		
@@ -176,58 +183,53 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 				     func, user_data);
 }
 
-static void client_callback_raise_foreach(IrmoCallback *data,
-					 IrmoClient *client)
+void irmo_client_callback_raise(IrmoSListEntry **list, IrmoClient *client)
 {
-	IrmoClientCallback func = (IrmoClientCallback) data->func;
+        IrmoSListIterator *iter;
+        IrmoClientCallback func;
+        IrmoCallback *callback;
 
-	func(client, data->user_data);
-}
+        // Invoke all callbacks
 
-void irmo_client_callback_raise(IrmoSListEntry *list, IrmoClient *client)
-{
-	irmo_slist_foreach(list,
-			(IrmoSListIterator) client_callback_raise_foreach,
-			client);
+        iter = irmo_slist_iterate(list);
+
+        while (irmo_slist_iter_has_more(iter)) {
+                callback = irmo_slist_iter_next(iter);
+
+                func = (IrmoClientCallback) callback->func;
+                func(client, callback->user_data);
+        }
+
+        irmo_slist_iter_free(iter);
 }
 
 void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
 {
-	irmo_client_callback_raise(server->connect_callbacks, client);
+	irmo_client_callback_raise(&server->connect_callbacks, client);
 }
 
-struct server_foreach_data {
-	IrmoClientCallback func;
-	void *user_data;	
-};
-
-static void server_foreach_foreach(void *key,
-				   IrmoClient *client,
-				   struct server_foreach_data *data)
+IrmoIterator *irmo_server_iterate_clients(IrmoServer *server)
 {
-	if (client->state == CLIENT_CONNECTED)
-		data->func(client, data->user_data);
+	irmo_return_val_if_fail(server != NULL, NULL);
+
+        return irmo_iterate_hash_table(server->clients);
 }
 
-void irmo_server_foreach_client(IrmoServer *server, IrmoClientCallback callback,
-				void *user_data)
+static void server_disconnect_all_clients(IrmoServer *server)
 {
-	struct server_foreach_data foreach_data = {
-		callback,
-		user_data
-	};
+        IrmoHashTableIterator *iter;
+        IrmoClient *client;
 
-	irmo_return_if_fail(server != NULL);
-	irmo_return_if_fail(callback != NULL);
+        iter = irmo_hash_table_iterate(server->clients);
 
-	irmo_hash_table_foreach(server->clients, 
-			     (IrmoHashTableIterator) server_foreach_foreach,
-			     &foreach_data);
-}
+        while (irmo_hash_table_iter_has_more(iter)) {
 
-static void server_shutdown_foreach(IrmoClient *client, void *user_data)
-{
-	irmo_client_disconnect(client);
+                client = irmo_hash_table_iter_next(iter);
+
+                irmo_client_disconnect(client);
+        }
+
+        irmo_hash_table_iter_free(iter);
 }
 
 void irmo_server_shutdown(IrmoServer *server)
@@ -236,7 +238,7 @@ void irmo_server_shutdown(IrmoServer *server)
 
 	// disconnect all clients
 
-	irmo_server_foreach_client(server, server_shutdown_foreach, NULL);
+        server_disconnect_all_clients(server);
 
 	// run the socket until all clients are disconnected
 	

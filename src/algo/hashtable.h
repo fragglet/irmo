@@ -66,6 +66,30 @@ extern "C" {
 typedef struct _IrmoHashTable IrmoHashTable;
 
 /**
+ * Structure used to iterate over a hash table.
+ */
+
+typedef struct _IrmoHashTableIterator IrmoHashTableIterator;
+
+/**
+ * A key to look up a value in a @ref IrmoHashTable.
+ */
+
+typedef void *IrmoHashTableKey;
+
+/**
+ * A value stored in a @ref IrmoHashTable.
+ */
+
+typedef void *IrmoHashTableValue;
+
+/**
+ * A null @ref IrmoHashTableValue. 
+ */
+
+#define HASH_TABLE_NULL ((void *) 0)
+
+/**
  * Hash function used to generate hash values for keys used in a hash
  * table.
  *
@@ -73,7 +97,7 @@ typedef struct _IrmoHashTable IrmoHashTable;
  * @return       The hash value.
  */
 
-typedef unsigned long (*IrmoHashTableHashFunc)(void *data);
+typedef unsigned long (*IrmoHashTableHashFunc)(IrmoHashTableKey data);
 
 /**
  * Function used to compare two keys for equality.
@@ -82,44 +106,21 @@ typedef unsigned long (*IrmoHashTableHashFunc)(void *data);
  *           not equal.
  */
 
-typedef int (*IrmoHashTableEqualFunc)(void *data1, void *data2);
+typedef int (*IrmoHashTableEqualFunc)(IrmoHashTableKey data1, IrmoHashTableKey data2);
 
 /**
- * Type of function used to free keys and values when entries are
- * removed from a hash table.
+ * Type of function used to free keys when entries are removed from a 
+ * hash table.
  */
 
-typedef void (*IrmoHashTableFreeFunc)(void *data);
+typedef void (*IrmoHashTableKeyFreeFunc)(IrmoHashTableKey data);
 
 /**
- * Type of function used as a callback when iterating over data.
- * See @ref irmo_hash_table_foreach.
- *
- * @param key            The key to the current element being iterated over.
- * @param value          The value of the current element being iterated over.
- * @param user_data      Extra data passed to the @ref irmo_hash_table_foreach
- *                       function.
+ * Type of function used to free values when entries are removed from a 
+ * hash table.
  */
 
-typedef void (*IrmoHashTableIterator)(void *key, void *value, void *user_data);
-
-/**
- * Type of function used as a callback when iterating over a hash table,
- * selectively removing entries.
- * See @ref irmo_hash_table_foreach_remove.
- *
- * @param key            The key to the current element being iterated over.
- * @param value          The value of the current element being iterated over.
- * @param user_data      Extra data passed to the @ref irmo_hash_table_foreach
- *                       function.
- * @return               Non-zero (true) if the entry should be removed
- *                       from the hash table.  Zero (false) if the entry 
- *                       should not be removed from the hash table.
- */
-
-typedef int (*IrmoHashTableRemoveIterator)(void *key, 
-                                       void *value, 
-                                       void *user_data);
+typedef void (*IrmoHashTableValueFreeFunc)(IrmoHashTableValue data);
 
 /**
  * Create a new hash table.
@@ -128,7 +129,9 @@ typedef int (*IrmoHashTableRemoveIterator)(void *key,
  *                             keys used in the table.
  * @param equal_func           Function used to test keys used in the table 
  *                             for equality.
- * @return                     A new hash table structure.
+ * @return                     A new hash table structure, or NULL if it 
+ *                             was not possible to allocate the new hash
+ *                             table.
  */
 
 IrmoHashTable *irmo_hash_table_new(IrmoHashTableHashFunc hash_func, 
@@ -152,8 +155,8 @@ void irmo_hash_table_free(IrmoHashTable *hashtable);
  */
 
 void irmo_hash_table_register_free_functions(IrmoHashTable *hashtable,
-                                        IrmoHashTableFreeFunc key_free_func,
-                                        IrmoHashTableFreeFunc value_free_func);
+                                        IrmoHashTableKeyFreeFunc key_free_func,
+                                        IrmoHashTableValueFreeFunc value_free_func);
 
 /**
  * Insert a value into a hash table, overwriting any existing entry 
@@ -162,20 +165,23 @@ void irmo_hash_table_register_free_functions(IrmoHashTable *hashtable,
  * @param hashtable            The hash table.
  * @param key                  The key for the new value.
  * @param value                The value to insert.
+ * @return                     Non-zero if the value was added successfully,
+ *                             or zero if it was not possible to allocate
+ *                             memory for the new entry.
  */
 
-void irmo_hash_table_insert(IrmoHashTable *hashtable, void *key, void *value);
+int irmo_hash_table_insert(IrmoHashTable *hashtable, IrmoHashTableKey key, IrmoHashTableValue value);
 
 /**
  * Look up a value in a hash table by key.
  *
  * @param hashtable           The hash table.
  * @param key                 The key of the value to look up.
- * @return                    The value, or NULL if there is no value with
- *                            that key in the hash table.
+ * @return                    The value, or @ref HASH_TABLE_NULL if there 
+ *                            is no value with that key in the hash table.
  */
 
-void *irmo_hash_table_lookup(IrmoHashTable *hashtable, void *key);
+IrmoHashTableValue irmo_hash_table_lookup(IrmoHashTable *hashtable, IrmoHashTableKey key);
 
 /**
  * Remove a value from a hash table.
@@ -186,7 +192,7 @@ void *irmo_hash_table_lookup(IrmoHashTable *hashtable, void *key);
  *                            specified key was not found in the hash table.
  */
 
-int irmo_hash_table_remove(IrmoHashTable *hashtable, void *key);
+int irmo_hash_table_remove(IrmoHashTable *hashtable, IrmoHashTableKey key);
 
 /** 
  * Retrieve the number of entries in a hash table.
@@ -198,32 +204,50 @@ int irmo_hash_table_remove(IrmoHashTable *hashtable, void *key);
 int irmo_hash_table_num_entries(IrmoHashTable *hashtable);
 
 /**
- * Iterate over all key-value pairs in a hash table.
+ * Create a new @ref IrmoHashTableIterator to iterate over a hash table.
+ * Note: iterators should be freed back with 
+ * @ref irmo_hash_table_iter_free once iterating has completed.
  *
  * @param hashtable           The hash table.
- * @param iterator            Callback function to invoke for each element.
- * @param user_data           Extra data to pass to the iterator function
- *                            as context.
+ * @return                    A pointer to a new @ref IrmoHashTableIterator 
+ *                            to iterate over the hash table, or NULL
+ *                            if it was not possible to allocate the
+ *                            memory.
  */
 
-void irmo_hash_table_foreach(IrmoHashTable *hashtable, IrmoHashTableIterator iterator,
-                        void *user_data);
+IrmoHashTableIterator *irmo_hash_table_iterate(IrmoHashTable *hashtable);
 
 /**
- * Iterate over all key-value pairs in a hash table, selectively
- * removing entries.
+ * Determine if there are more keys in the hash table to iterate
+ * over. 
  *
- * @param hashtable           The hash table.
- * @param iterator            Callback function to invoke for each element.
- * @param user_data           Extra data to pass to the iterator function
- *                            as context.
- * @return                    The total number of entries removed from
- *                            the hash table.
+ * @param iterator            The hash table iterator.
+ * @return                    Zero if there are no more values to iterate
+ *                            over, non-zero if there are more values to 
+ *                            iterate over.
  */
 
-int irmo_hash_table_foreach_remove(IrmoHashTable *hashtable, 
-                              IrmoHashTableRemoveIterator iterator,
-                              void *user_data);
+int irmo_hash_table_iter_has_more(IrmoHashTableIterator *iterator);
+
+/**
+ * Using a hash table iterator, retrieve the next key.
+ *
+ * @param iterator            The hash table iterator.
+ * @return                    The next key from the hash table, or 
+ *                            @ref HASH_TABLE_NULL if there are no more 
+ *                            keys to iterate over.
+ */
+
+IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator);
+
+/**
+ * Free back a hash table iterator object.  This must be done once
+ * iterating has completed.
+ * 
+ * @param iterator            The hash table iterator.
+ */
+
+void irmo_hash_table_iter_free(IrmoHashTableIterator *iterator);
 
 #ifdef __cplusplus
 }

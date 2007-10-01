@@ -45,12 +45,23 @@ IrmoCallback *irmo_callbacklist_add(IrmoSListEntry **list,
 	return callback;
 }
 
-static void irmo_callback_destroy_foreach(IrmoCallback *callback,
-					  IrmoCallback *parent)
+static void irmo_invoke_destroy_callbacks(IrmoCallback *parent,
+                                          IrmoSListEntry **list)
 {
-	IrmoCallbackCallback func = callback->func;
+        IrmoSListIterator *iter;
+        IrmoCallback *callback;
+	IrmoCallbackCallback func;
 
-	func(parent, callback->user_data);
+        iter = irmo_slist_iterate(list);
+
+        while (irmo_slist_iter_has_more(iter)) {
+                callback = irmo_slist_iter_next(iter);
+
+                func = callback->func;
+                func(parent, callback->user_data);
+        }
+
+        irmo_slist_iter_free(iter);
 }
 
 static void irmo_callback_destroy(IrmoCallback *callback)
@@ -58,13 +69,11 @@ static void irmo_callback_destroy(IrmoCallback *callback)
 	// invoke all the callbacks watching for this callback
 	// being destroyed
 
-	irmo_slist_foreach(callback->destroy_callbacks, 
-			(IrmoSListIterator) irmo_callback_destroy_foreach, 
-			callback);
+        irmo_invoke_destroy_callbacks(callback, &callback->destroy_callbacks);
 
 	// free callback data
 
-	irmo_callbacklist_free(callback->destroy_callbacks);
+	irmo_callbacklist_free(&callback->destroy_callbacks);
 	free(callback);
 }
 
@@ -81,16 +90,22 @@ void irmo_callback_unset(IrmoCallback *callback)
 	irmo_callback_destroy(callback);
 }
 
-static void callbacklist_free_foreach(IrmoCallback *callback,
-				      void *user_data)
+void irmo_callbacklist_free(IrmoSListEntry **list)
 {
-	irmo_callback_destroy(callback);
-}
+        IrmoSListIterator *iter;
+        IrmoCallback *callback;
 
-void irmo_callbacklist_free(IrmoSListEntry *list)
-{
-	irmo_slist_foreach(list, (IrmoSListIterator) callbacklist_free_foreach, NULL);
-	irmo_slist_free(list);
+        iter = irmo_slist_iterate(list);
+
+        while (irmo_slist_iter_has_more(iter)) {
+                callback = irmo_slist_iter_next(iter);
+
+                irmo_callback_destroy(callback);
+        }
+
+        irmo_slist_iter_free(iter);
+
+	irmo_slist_free(*list);
 }
 
 // watch for when a callback is destroyed
@@ -134,22 +149,22 @@ void irmo_callbackdata_free(IrmoCallbackData *data)
 	
 	// free all class callbacks
 
-	irmo_callbacklist_free(data->class_callbacks);
+	irmo_callbacklist_free(&data->class_callbacks);
 
 	// free new object callbacks
 	
-	irmo_callbacklist_free(data->new_callbacks);
+	irmo_callbacklist_free(&data->new_callbacks);
 
 	// free destroy callbacks
 
-	irmo_callbacklist_free(data->destroy_callbacks);
+	irmo_callbacklist_free(&data->destroy_callbacks);
 	
 	if (data->objclass) {
 
 		// free all variable callbacks
 
 		for (i=0; i<data->objclass->nvariables; ++i) {
-			irmo_callbacklist_free(data->variable_callbacks[i]);
+			irmo_callbacklist_free(&data->variable_callbacks[i]);
 		}
 
 		free(data->variable_callbacks);
@@ -158,40 +173,43 @@ void irmo_callbackdata_free(IrmoCallbackData *data)
 	free(data);
 }
 
-struct raise_data {
-	IrmoObject *object;
-	char *variable;
-};
-
-static void callbackdata_raise_foreach(IrmoCallback *callback, 
-				       struct raise_data *raise_data)
+static void irmo_callbackdata_invoke_callbacks(IrmoSListEntry **list,
+                                               IrmoObject *obj,
+                                               char *variable)
 {
-	IrmoVarCallback func = (IrmoVarCallback) callback->func;
+        IrmoSListIterator *iter;
+        IrmoCallback *callback;
+	IrmoVarCallback func;
 
-	func(raise_data->object, raise_data->variable,
-	     callback->user_data);
+        iter = irmo_slist_iterate(list);
+
+        while (irmo_slist_iter_has_more(iter)) {
+                callback = irmo_slist_iter_next(iter);
+
+                func = (IrmoVarCallback) callback->func;
+                func(obj, variable, callback->user_data);
+        }
+
+        irmo_slist_iter_free(iter);
 }
 
 void irmo_callbackdata_raise(IrmoCallbackData *data,
 			     IrmoObject *object, int variable_index)
 {
-	struct raise_data raise_data = {
-		object,
-		object->objclass->variables[variable_index]->name,
-	};
+        char *variable_name = 
+		object->objclass->variables[variable_index]->name;
 
 	// call class callbacks
-	
-	irmo_slist_foreach(data->class_callbacks,
-			(IrmoSListIterator) callbackdata_raise_foreach,
-			&raise_data);
+       	
+        irmo_callbackdata_invoke_callbacks(&data->class_callbacks,
+                                           object, variable_name);
 
 	if (data->objclass) {
 		// variable callbacks
 
-		irmo_slist_foreach(data->variable_callbacks[variable_index],
-				(IrmoSListIterator) callbackdata_raise_foreach,
-				&raise_data);
+                irmo_callbackdata_invoke_callbacks(
+                                &data->variable_callbacks[variable_index],
+                                object, variable_name);
 	}
 
 	// recurse through superclass watches
@@ -204,45 +222,52 @@ void irmo_callbackdata_raise(IrmoCallbackData *data,
 	}
 }
 
-static void callbackdata_raise_destroy_foreach(IrmoCallback *callback,
-						struct raise_data *raise_data)
+// Used by raise_new and raise_destroy, below.
+// Go through a list of IrmoObjCallback callback functions and invoke 
+// them all.
+
+static void irmo_callbackdata_invoke_obj_callbacks(IrmoSListEntry **list,
+                                                   IrmoObject *object)
 {
-	IrmoObjCallback func = (IrmoObjCallback) callback->func;
-	
-	func(raise_data->object, callback->user_data);
+        IrmoSListIterator *iter;
+        IrmoCallback *callback;
+	IrmoObjCallback func;
+
+        iter = irmo_slist_iterate(list);
+
+        while (irmo_slist_iter_has_more(iter)) {
+
+                callback = irmo_slist_iter_next(iter);
+
+                func = (IrmoObjCallback) callback->func;
+                func(object, callback->user_data);
+        }
+
+        irmo_slist_iter_free(iter);
 }
 
 void irmo_callbackdata_raise_destroy(IrmoCallbackData *data,
 				     IrmoObject *object)
 {
-	struct raise_data raise_data = {
-		object,
-	};
-
-	irmo_slist_foreach(data->destroy_callbacks,
-			(IrmoSListIterator) callbackdata_raise_destroy_foreach,
-			&raise_data);
+        irmo_callbackdata_invoke_obj_callbacks(&data->destroy_callbacks,
+                                               object);
 
 	// recurse through superclass watches
 
-	if (data->parent_data)
+	if (data->parent_data) {
 		irmo_callbackdata_raise_destroy(data->parent_data, object);
+        }
 }
 
 void irmo_callbackdata_raise_new(IrmoCallbackData *data, IrmoObject *object)
 {
-	struct raise_data raise_data = {
-		object,
-	};
-
-	irmo_slist_foreach(data->new_callbacks,
-			(IrmoSListIterator) callbackdata_raise_destroy_foreach,
-			&raise_data);
+        irmo_callbackdata_invoke_obj_callbacks(&data->new_callbacks, object);
 
 	// recurse through superclass watches
 
-	if (data->parent_data)
+	if (data->parent_data) {
 		irmo_callbackdata_raise_new(data->parent_data, object);
+        }
 }
 
 static IrmoSListEntry **find_variable(IrmoCallbackData *data, char *variable)

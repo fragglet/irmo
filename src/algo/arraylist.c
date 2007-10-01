@@ -54,14 +54,24 @@ IrmoArrayList *irmo_arraylist_new(int length)
 	 * initially no entries. */
 
 	new_arraylist = (IrmoArrayList *) malloc(sizeof(IrmoArrayList));
+
+	if (new_arraylist == NULL) {
+		return NULL;
+	}
+	
 	new_arraylist->_alloced = length;
 	new_arraylist->length = 0;
 
 	/* Allocate the data array */
 
-	new_arraylist->data = calloc(length, sizeof(void *));
+	new_arraylist->data = malloc(length * sizeof(IrmoArrayListValue));
 
-	return new_arraylist;    
+	if (new_arraylist->data == NULL) {
+		free(new_arraylist);
+		return NULL;
+	}
+
+	return new_arraylist;
 }
 
 void irmo_arraylist_free(IrmoArrayList *arraylist)
@@ -74,19 +84,30 @@ void irmo_arraylist_free(IrmoArrayList *arraylist)
 	}
 }
 
-static void irmo_arraylist_enlarge(IrmoArrayList *arraylist)
+static int irmo_arraylist_enlarge(IrmoArrayList *arraylist)
 {
+	IrmoArrayListValue *data;
+	int newsize;
+
 	/* Double the allocated size */
 
-	arraylist->_alloced *= 2;
+	newsize = arraylist->_alloced * 2;
 	
 	/* Reallocate the array to the new size */
 
-	arraylist->data = realloc(arraylist->data, 
-	                          sizeof(void *) * arraylist->_alloced);
+	data = realloc(arraylist->data, sizeof(IrmoArrayListValue) * newsize);
+
+	if (data == NULL) {
+		return 0;
+	} else {
+		arraylist->data = data;
+		arraylist->_alloced = newsize;
+
+		return 1;
+	}
 }
 
-int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, void *data)
+int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, IrmoArrayListValue data)
 {
 	/* Sanity check the index */
 
@@ -97,7 +118,9 @@ int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, void *data)
 	/* Increase the size if necessary */
 	
 	if (arraylist->length + 1 > arraylist->_alloced) {
-		irmo_arraylist_enlarge(arraylist);
+		if (!irmo_arraylist_enlarge(arraylist)) {
+			return 0;
+		}
 	}
 
 	/* Move the contents of the array forward from the index
@@ -105,7 +128,7 @@ int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, void *data)
 
 	memmove(&arraylist->data[index + 1], 
 	        &arraylist->data[index],
-	        (arraylist->length - index) * sizeof(void *));
+	        (arraylist->length - index) * sizeof(IrmoArrayListValue));
 
 	/* Insert the new entry at the index */
 
@@ -115,14 +138,14 @@ int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, void *data)
 	return 1;
 }
 
-void irmo_arraylist_append(IrmoArrayList *arraylist, void *data)
+int irmo_arraylist_append(IrmoArrayList *arraylist, IrmoArrayListValue data)
 {
-	irmo_arraylist_insert(arraylist, arraylist->length, data);
+	return irmo_arraylist_insert(arraylist, arraylist->length, data);
 }
 
-void irmo_arraylist_prepend(IrmoArrayList *arraylist, void *data)
+int irmo_arraylist_prepend(IrmoArrayList *arraylist, IrmoArrayListValue data)
 {
-	irmo_arraylist_insert(arraylist, 0, data);
+	return irmo_arraylist_insert(arraylist, 0, data);
 }
 
 void irmo_arraylist_remove_range(IrmoArrayList *arraylist, int index, int length)
@@ -137,7 +160,7 @@ void irmo_arraylist_remove_range(IrmoArrayList *arraylist, int index, int length
 
 	memmove(&arraylist->data[index],
 	        &arraylist->data[index + length],
-	        (arraylist->length - (index + length)) * sizeof(void *));
+	        (arraylist->length - (index + length)) * sizeof(IrmoArrayListValue));
 
 	/* Decrease the counter */
 
@@ -151,7 +174,7 @@ void irmo_arraylist_remove(IrmoArrayList *arraylist, int index)
 
 int irmo_arraylist_index_of(IrmoArrayList *arraylist, 
                        IrmoArrayListEqualFunc callback,
-                       void *data)
+                       IrmoArrayListValue data)
 {
 	int i;
 
@@ -170,11 +193,11 @@ void irmo_arraylist_clear(IrmoArrayList *arraylist)
 	arraylist->length = 0;
 }
 
-static void irmo_arraylist_sort_internal(void **list_data, int list_length,
+static void irmo_arraylist_sort_internal(IrmoArrayListValue *list_data, int list_length,
                                     IrmoArrayListCompareFunc compare_func)
 {
-	void *pivot;
-	void *tmp;
+	IrmoArrayListValue pivot;
+	IrmoArrayListValue tmp;
 	int i;
 	int list1_length;
 	int list2_length;

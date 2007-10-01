@@ -76,7 +76,7 @@ struct _IrmoCallbackData {
 
 IrmoCallback *irmo_callbacklist_add(IrmoSListEntry **list, void *func, 
 				    void *user_data);
-void irmo_callbacklist_free(IrmoSListEntry *list);
+void irmo_callbacklist_free(IrmoSListEntry **list);
 
 IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass, 
 					IrmoCallbackData *parent_data);

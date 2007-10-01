@@ -68,9 +68,22 @@ extern "C" {
 typedef struct _IrmoQueue IrmoQueue;
 
 /**
+ * A value stored in a @ref IrmoQueue.
+ */
+
+typedef void *IrmoQueueValue;
+
+/**
+ * A null @ref IrmoQueueValue.
+ */
+
+#define QUEUE_NULL ((void *) 0)
+
+/**
  * Create a new double-ended queue.
  *
- * @return           A new queue.
+ * @return           A new queue, or NULL if it was not possible to allocate
+ *                   the memory.
  */
 
 IrmoQueue *irmo_queue_new(void);
@@ -88,60 +101,66 @@ void irmo_queue_free(IrmoQueue *queue);
  *
  * @param queue      The queue.
  * @param data       The data to add.
+ * @return           Non-zero if the value was added successfully, or zero
+ *                   if it was not possible to allocate the memory for the
+ *                   new entry. 
  */
 
-void irmo_queue_push_head(IrmoQueue *queue, void *data);
+int irmo_queue_push_head(IrmoQueue *queue, IrmoQueueValue data);
 
 /**
  * Remove data from the head of a queue.
  *
  * @param queue      The queue.
- * @return           Data at the head of the queue, or NULL if the 
+ * @return           Data at the head of the queue, or QUEUE_NULL if the 
  *                   queue is empty.
  */
 
-void *irmo_queue_pop_head(IrmoQueue *queue);
+IrmoQueueValue irmo_queue_pop_head(IrmoQueue *queue);
 
 /**
  * Read data from the head of queue, without removing it from
  * the queue.
  *
  * @param queue      The queue.
- * @return           Data at the head of the queue, or NULL if the 
+ * @return           Data at the head of the queue, or QUEUE_NULL if the 
  *                   queue is empty.
  */
 
-void *irmo_queue_peek_head(IrmoQueue *queue);
+IrmoQueueValue irmo_queue_peek_head(IrmoQueue *queue);
 
 /**
  * Add data to the tail of a queue.
  *
  * @param queue      The queue.
  * @param data       The data to add.
+ * @return           Non-zero if the value was added successfully, or zero
+ *                   if it was not possible to allocate the memory for the
+ *                   new entry. 
  */
 
-void irmo_queue_push_tail(IrmoQueue *queue, void *data);
+int irmo_queue_push_tail(IrmoQueue *queue, IrmoQueueValue data);
 
 /**
  * Remove data from the tail of a queue.
  *
  * @param queue      The queue.
- * @return           Data at the head of the queue, or NULL if the 
+ * @return           Data at the head of the queue, or QUEUE_NULL if the 
  *                   queue is empty.
  */
 
-void *irmo_queue_pop_tail(IrmoQueue *queue);
+IrmoQueueValue irmo_queue_pop_tail(IrmoQueue *queue);
 
 /**
  * Read data from the tail of queue, without removing it from
  * the queue.
  *
  * @param queue      The queue.
- * @return           Data at the tail of the queue, or NULL if the 
+ * @return           Data at the tail of the queue, or QUEUE_NULL if the 
  *                   queue is empty.
  */
 
-void *irmo_queue_peek_tail(IrmoQueue *queue);
+IrmoQueueValue irmo_queue_peek_tail(IrmoQueue *queue);
 
 /**
  * Query if any data is currently in a queue.

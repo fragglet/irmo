@@ -20,6 +20,7 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 #include "base/error.h"
+#include "base/iterator.h"
 
 #include "interface.h"
 
@@ -123,18 +124,12 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name)
 	return irmo_hash_table_lookup(klass->variable_hash, var_name);
 }
 
-void irmo_class_foreach_variable(IrmoClass *klass, 
-				 IrmoClassVarCallback func, 
-				 void *user_data)
+IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass)
 {
-	int i;
+	irmo_return_val_if_fail(klass != NULL, NULL);
 
-	irmo_return_if_fail(klass != NULL);
-	irmo_return_if_fail(func != NULL);
-
-	for (i=0; i<klass->nvariables; ++i) {
-		func(klass->variables[i], user_data);
-        }
+        return irmo_iterate_array((void **) klass->variables,
+                                  klass->nvariables);
 }
 
 IrmoClass *irmo_class_parent_class(IrmoClass *klass)

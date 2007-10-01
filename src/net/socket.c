@@ -489,7 +489,7 @@ static void socket_run_synfin(IrmoSocket *sock,
 		client->connect_time = time(NULL);
 		client->disconnect_wait = 1;
 
-		irmo_client_callback_raise(client->disconnect_callbacks,
+		irmo_client_callback_raise(&client->disconnect_callbacks,
 					   client);
 	}
 
@@ -514,7 +514,7 @@ static void socket_run_synfinack(IrmoSocket *soc,
 {
 	if (client->state == CLIENT_DISCONNECTING) {
 		client->state = CLIENT_DISCONNECTED;
-		irmo_client_callback_raise(client->disconnect_callbacks,
+		irmo_client_callback_raise(&client->disconnect_callbacks,
 					   client);
 	}
 }
@@ -588,28 +588,46 @@ static void socket_run_packet(IrmoSocket *sock,
 	irmo_proto_parse_packet(packet, client, flags);
 }
 
-static int socket_run_client(void *key, IrmoClient *client,
-				  void *user_data)
+static void socket_run_clients(IrmoSocket *sock) 
 {
-	irmo_client_run(client);
+        IrmoHashTableIterator *iter;
+        IrmoClient *client;
 
-	// dont remove clients which arent disconnected
+        // Iterate over all clients
 
-	if (client->state != CLIENT_DISCONNECTED)
-		return 0;
+        iter = irmo_hash_table_iterate(sock->server->clients);
 
-	// if this is a client remotely disconnecting,
-	// we wait a while before destroying the object
-	
-	if (client->disconnect_wait
-	    && time(NULL) - client->connect_time < 10)
-		return 0;
-	
-	irmo_client_internal_unref(client);
+        while (irmo_hash_table_iter_has_more(iter)) {
 
-	// remove from socket list: return 1
-	
-	return 1;
+                client = irmo_hash_table_iter_next(iter);
+
+                // Run the client
+
+                irmo_client_run(client);
+
+                // dont remove clients which aren't disconnected
+
+                if (client->state != CLIENT_DISCONNECTED) {
+                        continue;
+                }
+
+                // if this is a client remotely disconnecting,
+                // we wait a while before destroying the object
+                
+                if (client->disconnect_wait
+                    && time(NULL) - client->connect_time < 10) {
+                        continue;
+                }
+                
+                // remove from socket list: return 1
+                
+                irmo_hash_table_remove(sock->server->clients,
+                                       client->addr);
+
+                irmo_client_internal_unref(client);
+        }
+
+        irmo_hash_table_iter_free(iter);
 }
 
 void irmo_socket_run(IrmoSocket *sock)
@@ -655,8 +673,8 @@ void irmo_socket_run(IrmoSocket *sock)
 	free(addr);
 
 	// run each of the clients
-	irmo_hash_table_foreach_remove(sock->server->clients,
-				    (IrmoHashTableRemoveIterator) socket_run_client, NULL);
+
+        socket_run_clients(sock);
 }
 
 void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout)

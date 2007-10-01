@@ -42,7 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
 typedef struct _IrmoQueueEntry IrmoQueueEntry;
 
 struct _IrmoQueueEntry {
-	void *data;
+	IrmoQueueValue data;
 	IrmoQueueEntry *prev;
 	IrmoQueueEntry *next;
 };
@@ -57,6 +57,10 @@ IrmoQueue *irmo_queue_new(void)
 	IrmoQueue *queue;
 
 	queue = (IrmoQueue *) malloc(sizeof(IrmoQueue));
+
+	if (queue == NULL) {
+		return NULL;
+	}
 	
 	queue->head = NULL;
 	queue->tail = NULL;
@@ -77,13 +81,18 @@ void irmo_queue_free(IrmoQueue *queue)
 	free(queue);
 }
 
-void irmo_queue_push_head(IrmoQueue *queue, void *data)
+int irmo_queue_push_head(IrmoQueue *queue, IrmoQueueValue data)
 {
 	IrmoQueueEntry *new_entry;
 
 	/* Create the new entry and fill in the fields in the structure */
 
 	new_entry = malloc(sizeof(IrmoQueueEntry));
+
+	if (new_entry == NULL) {
+		return 0;
+	}
+	
 	new_entry->data = data;
 	new_entry->prev = NULL;
 	new_entry->next = queue->head;
@@ -109,17 +118,19 @@ void irmo_queue_push_head(IrmoQueue *queue, void *data)
 
 		queue->head = new_entry;
 	}
+
+	return 1;
 }
 
-void *irmo_queue_pop_head(IrmoQueue *queue)
+IrmoQueueValue irmo_queue_pop_head(IrmoQueue *queue)
 {
 	IrmoQueueEntry *entry;
-	void *result;
+	IrmoQueueValue result;
 
 	/* Check the queue is not empty */
 
 	if (irmo_queue_is_empty(queue)) {
-		return NULL;
+		return QUEUE_NULL;
 	}
 
 	/* Unlink the first entry from the head of the queue */
@@ -148,22 +159,27 @@ void *irmo_queue_pop_head(IrmoQueue *queue)
 	return result;    
 }
 
-void *irmo_queue_peek_head(IrmoQueue *queue)
+IrmoQueueValue irmo_queue_peek_head(IrmoQueue *queue)
 {
 	if (irmo_queue_is_empty(queue)) {
-		return NULL;
+		return QUEUE_NULL;
 	} else {
 		return queue->head->data;
 	}
 }
 
-void irmo_queue_push_tail(IrmoQueue *queue, void *data)
+int irmo_queue_push_tail(IrmoQueue *queue, IrmoQueueValue data)
 {
 	IrmoQueueEntry *new_entry;
 
 	/* Create the new entry and fill in the fields in the structure */
 
 	new_entry = malloc(sizeof(IrmoQueueEntry));
+
+	if (new_entry == NULL) {
+		return 0;
+	}
+	
 	new_entry->data = data;
 	new_entry->prev = queue->tail;
 	new_entry->next = NULL;
@@ -189,17 +205,19 @@ void irmo_queue_push_tail(IrmoQueue *queue, void *data)
 
 		queue->tail = new_entry;
 	}
+
+	return 1;
 }
 
-void *irmo_queue_pop_tail(IrmoQueue *queue)
+IrmoQueueValue irmo_queue_pop_tail(IrmoQueue *queue)
 {
 	IrmoQueueEntry *entry;
-	void *result;
+	IrmoQueueValue result;
 
 	/* Check the queue is not empty */
 
 	if (irmo_queue_is_empty(queue)) {
-		return NULL;
+		return QUEUE_NULL;
 	}
 
 	/* Unlink the first entry from the tail of the queue */
@@ -229,10 +247,10 @@ void *irmo_queue_pop_tail(IrmoQueue *queue)
 	return result;    
 }
 
-void *irmo_queue_peek_tail(IrmoQueue *queue)
+IrmoQueueValue irmo_queue_peek_tail(IrmoQueue *queue)
 {
 	if (irmo_queue_is_empty(queue)) {
-		return NULL;
+		return QUEUE_NULL;
 	} else {
 		return queue->tail->data;
 	}

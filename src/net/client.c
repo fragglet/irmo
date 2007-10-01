@@ -107,7 +107,7 @@ static void irmo_client_destroy(IrmoClient *client)
 
 	// destroy callbacks
 	
-	irmo_callbacklist_free(client->disconnect_callbacks);
+	irmo_callbacklist_free(&client->disconnect_callbacks);
 
 	// clear send queue
 
@@ -274,6 +274,8 @@ void irmo_client_run(IrmoClient *client)
 	case CLIENT_DISCONNECTING:
 		client_run_disconnecting(client);
 		break;
+        default:
+                irmo_bug();
 	}
 }
 

@@ -48,12 +48,27 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 				     callback, user_data);
 }
 
-static void method_invoke_foreach(IrmoCallback *data,
-				  IrmoMethodData *method_data)
-{
-	IrmoInvokeCallback func = (IrmoInvokeCallback) data->func;
+// Go through a list of IrmoInvokeCallback callback functions and invoke
+// them.
 
-	func(method_data, data->user_data);
+static void invoke_method_callbacks(IrmoSListEntry **list,
+                                    IrmoMethodData *method_data)
+{
+        IrmoSListIterator *iter;
+        IrmoCallback *callback;
+        IrmoInvokeCallback func;
+
+        iter = irmo_slist_iterate(list);
+
+        while (irmo_slist_iter_has_more(iter)) {
+
+                callback = irmo_slist_iter_next(iter);
+
+                func = (IrmoInvokeCallback) callback->func;
+                func(method_data, callback->user_data);
+        }
+
+        irmo_slist_iter_free(iter);
 }
 
 void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
@@ -92,9 +107,8 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 	
 	// invoke callback functions
 	
-	irmo_slist_foreach(world->method_callbacks[data->method->index],
-			(IrmoSListIterator) method_invoke_foreach,
-			data);
+	invoke_method_callbacks(&world->method_callbacks[data->method->index],
+                                data);
 }
 
 void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
