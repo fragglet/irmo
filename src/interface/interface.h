@@ -46,10 +46,6 @@ struct _IrmoInterface {
 	int nmethods;
 
 	IrmoHashTable *method_hash;
-
-	// unique (or should be) hash value
-
-	unsigned int hash;
 };
 
 uint32_t irmo_interface_hash(IrmoInterface *iface);

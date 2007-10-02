@@ -347,8 +347,6 @@ static void eat_interface(IrmoInterface *iface)
 			parse_assert(0, "expecting class or method definiton");
 		}
 	}
-
-	iface->hash = irmo_interface_hash(iface);
 }
 
 IrmoInterface *irmo_interface_parse(char *filename)

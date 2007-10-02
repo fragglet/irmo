@@ -336,13 +336,13 @@ static int socket_check_hashes(IrmoSocket *sock,
         // Get the expected hashes.
 
         if (server->client_interface != NULL) {
-                local_hash_expected = server->client_interface->hash;
+                local_hash_expected = irmo_interface_hash(server->client_interface);
         } else { 
                 local_hash_expected = 0;
         }
 
         if (server->world != NULL) {
-                server_hash_expected = server->world->iface->hash;
+                server_hash_expected = irmo_interface_hash(server->world->iface);
         } else {
                 server_hash_expected = 0;
         }

@@ -188,18 +188,30 @@ static void client_run_connecting(IrmoClient *client)
 			IrmoWorld *local_world
 				= client->server->world;
 			IrmoInterface *iface = client->server->client_interface;
+                        unsigned int local_hash, remote_hash;
 
 			packet = irmo_packet_new(); 
 
 			// this is the client making a connection to
 			// the server
 
+                        if (local_world != NULL) {
+                                local_hash = irmo_interface_hash(local_world->iface);
+                        } else {
+                                local_hash = 0;
+
+                        }
+                        if (iface != NULL) {
+                                remote_hash = irmo_interface_hash(iface);
+                        } else {
+                                remote_hash = 0;
+                        }
+
+
 			irmo_packet_writei16(packet, PACKET_FLAG_SYN);
 			irmo_packet_writei16(packet, IRMO_PROTOCOL_VERSION);
-			irmo_packet_writei32(packet,
-					     local_world ?
-					     local_world->iface->hash : 0);
-			irmo_packet_writei32(packet, iface ? iface->hash : 0);
+			irmo_packet_writei32(packet, local_hash);
+			irmo_packet_writei32(packet, remote_hash);
 
 			// no hostname yet, fixme
 		} else {
