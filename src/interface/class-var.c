@@ -60,6 +60,7 @@ IrmoClassVar *irmo_class_new_variable(IrmoClass *klass,
         class_var->name = strdup(var_name);
         class_var->type = var_type;
         class_var->index = klass->nvariables;
+        class_var->klass = klass;
 
         // Add to the class.
 

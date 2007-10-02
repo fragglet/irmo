@@ -31,18 +31,22 @@
 static void copy_parent_variables(IrmoClass *klass)
 {
         IrmoClass *parent;
-        IrmoClassVar *class_var;
         int i;
 
         parent = klass->parent_class;
 
         // Copy all the parent's variables into the new class.
  
-        for (i=0; i<parent->nvariables; ++i) {
-                class_var = parent->variables[i];
+        klass->variables = malloc(parent->nvariables * sizeof(IrmoClassVar *));
+        klass->nvariables = parent->nvariables;
 
-                irmo_class_new_variable(klass, class_var->name, 
-                                        class_var->type);
+        memcpy(klass->variables, parent->variables,
+               parent->nvariables * sizeof(IrmoClassVar *));
+
+        for (i=0; i<klass->nvariables; ++i) {
+                irmo_hash_table_insert(klass->variable_hash,
+                                       klass->variables[i]->name,
+                                       klass->variables[i]);
         }
 }
 
@@ -124,12 +128,33 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name)
 	return irmo_hash_table_lookup(klass->variable_hash, var_name);
 }
 
-IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass)
+// Filter the iterator to only variables specific to the class,
+// not those inherited from the parent class.
+
+static int variable_iterator_filter(void *_var, void *_klass)
 {
+        IrmoClass *klass = _klass;
+        IrmoClassVar *var = _var;
+
+        return var->klass == klass;
+}
+
+IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass, 
+                                           int include_parent)
+{
+        IrmoIterator *iter;
+
 	irmo_return_val_if_fail(klass != NULL, NULL);
 
-        return irmo_iterate_array((void **) klass->variables,
+        iter = irmo_iterate_array((void **) klass->variables,
                                   klass->nvariables);
+
+        if (!include_parent) {
+                irmo_iterator_set_filter(iter, variable_iterator_filter,
+                                         klass);
+        }
+
+        return iter;
 }
 
 IrmoClass *irmo_class_parent_class(IrmoClass *klass)
@@ -174,12 +199,21 @@ uint32_t irmo_class_hash(IrmoClass *klass)
 
 void _irmo_class_free(IrmoClass *klass)
 {
+        IrmoClassVar *var;
 	int i;
 
 	irmo_hash_table_free(klass->variable_hash);
 
-	for (i=0; i<klass->nvariables; ++i)
-		_irmo_class_var_free(klass->variables[i]);
+        // Free variables, but only ones that belong to this class 
+        // specifically (not one of the parent classes)
+
+	for (i=0; i<klass->nvariables; ++i) {
+                var = klass->variables[i];
+
+                if (var->klass == klass) {
+                        _irmo_class_var_free(var);
+                }
+        }
 
 	free(klass->variables);
 	free(klass->name);

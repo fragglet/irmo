@@ -221,12 +221,16 @@ void irmo_class_unref(IrmoClass *klass);
 /*!
  * \brief Iterate over variables in a class
  *
- * \param klass		The class object
- * \return              Pointer to an \ref IrmoIterator object to iterate
- *                      over all variables in the class.
+ * \param klass		  The class object
+ * \param include_parent  If non-zero, iterate over variables inherited
+ *                        from the parent class as well as those variables
+ *                        specific to this class.
+ * \return                Pointer to an \ref IrmoIterator object to iterate
+ *                        over all variables in the class.
  */
 
-IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass);
+IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass, 
+                                           int include_parent);
 
 /*!
  * \brief Get the name of a \ref IrmoClassVar object
