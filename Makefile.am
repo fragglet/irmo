@@ -1,4 +1,4 @@
-SUBDIRS=doc src
+SUBDIRS=doc src tests tools
 EXTRA_DIST=Doxyfile
 
 pkgconfigdir=$(libdir)/pkgconfig
