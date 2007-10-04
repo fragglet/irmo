@@ -7,5 +7,6 @@ libirmointerface_la_SOURCES=                                \
        method-arg.c           method-arg.h                  \
        class.c                class.h                       \
        class-var.c            class-var.h                   \
+       serialize.c                                          \
        interface-parser.l                                    
 

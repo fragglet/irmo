@@ -111,8 +111,8 @@ void test_counts(void)
         subclass = irmo_interface_get_class(iface, "mysubclass");
         method = irmo_interface_get_method(iface, "mymethod");
 
-//        assert(irmo_interface_num_classes(iface) == 1);
-//        assert(irmo_interface_num_methods(iface) == 1);
+        assert(irmo_interface_num_classes(iface) == 2);
+        assert(irmo_interface_num_methods(iface) == 1);
         assert(irmo_class_num_variables(klass) == 1);
         assert(irmo_class_num_variables(subclass) == 2);
         assert(irmo_method_num_arguments(method) == 1);
@@ -259,6 +259,23 @@ void test_method_arg_iterator(void)
         irmo_interface_unref(iface);
 }
 
+void test_dump_and_load(void)
+{
+        IrmoInterface *iface;
+        IrmoInterface *loaded_iface;
+        void *buf;
+        unsigned int buf_len;
+
+        iface = build_interface();
+
+        irmo_interface_dump(iface, &buf, &buf_len);
+
+        loaded_iface = irmo_interface_load(buf, buf_len);
+
+        assert(loaded_iface != NULL);
+        assert(irmo_interface_hash(iface) == irmo_interface_hash(loaded_iface));
+}
+
 int main(int argc, char *argv[])
 {
         test_build_interface();
@@ -268,6 +285,7 @@ int main(int argc, char *argv[])
         test_class_var_iterator();
         test_method_iterator();
         test_method_arg_iterator();
+        test_dump_and_load();
 
         return 0;
 }

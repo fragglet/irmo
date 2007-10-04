@@ -34,9 +34,11 @@ extern "C" {
  * The interface can then be used to create an \ref IrmoWorld
  * where the classes can be instantiated as \ref IrmoObject objects.
  *
- * The interface is defined in a seperate file. This has a C-like
- * syntax and is quite simple. The file is loaded with the 
- * \ref irmo_interface_new function.
+ * A new, empty, \ref IrmoInterface can be created through the 
+ * \ref irmo_interface_new function.  However, this requires
+ * programatically creating a complete interface.  It is usually
+ * preferable to use \ref irmo_interface_parse to parse a 
+ * description file describing the interface.
  *
  * \addtogroup iface
  * \{
@@ -121,6 +123,24 @@ IrmoMethod *irmo_interface_get_method(IrmoInterface *iface,
 					   char *method_name);
 
 /*!
+ * \brief Return the number of classes in an interface.
+ *
+ * \param iface         The interface.
+ * \return              The number of classes in the interface.
+ */
+
+int irmo_interface_num_classes(IrmoInterface *iface);
+
+/*!
+ * \brief Return the number of methods in an interface.
+ *
+ * \param iface         The interface.
+ * \return              The number of methods in the interface.
+ */
+
+int irmo_interface_num_methods(IrmoInterface *iface);
+
+/*!
  * \brief Iterate over all methods in an interface.
  * 
  * \param iface		The interface.
@@ -155,6 +175,37 @@ IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
 IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
                                     char *name,
                                     IrmoClass *parent);
+
+/*!
+ * \brief Serialize the contents of a \ref IrmoInterface into a 
+ * data buffer.
+ *
+ * \param iface         The interface.
+ * \param data          Pointer to a variable to store a pointer to the
+ *                      resulting data buffer.
+ * \param data_len      Pointer to a variable to store the length of
+ *                      the data buffer.
+ *
+ * \sa irmo_interface_load
+ */
+
+void irmo_interface_dump(IrmoInterface *iface,
+                         void **data,
+                         unsigned int *data_len);
+
+/*!
+ * \brief Create a new \ref IrmoInterface, reading the contents from
+ * a data buffer serialized using \ref irmo_interface_dump.
+ *
+ * \param data          Pointer to the data buffer containing the data
+ *                      to load.
+ * \param data_len      Length of the data buffer.
+ * \return              A new \ref IrmoInterface object, or NULL if
+ *                      an error occurred while reading the data.
+ */
+
+IrmoInterface *irmo_interface_load(void *data,
+                                   unsigned int data_len);
 
 /*! 
  * \brief Get the name of a \ref IrmoClass object

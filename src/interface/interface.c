@@ -146,3 +146,14 @@ uint32_t irmo_interface_hash(IrmoInterface *iface)
 	return hash;
 }
 
+int irmo_interface_num_classes(IrmoInterface *iface)
+{
+        return iface->nclasses;
+}
+
+int irmo_interface_num_methods(IrmoInterface *iface)
+{
+        return iface->nmethods;
+}
+
+
