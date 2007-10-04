@@ -178,7 +178,7 @@ void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value,
  * Write an \ref IrmoValue to a packet.
  *
  * \param packet     The packet to write into.
- * \param value      Pointer to an \ref Irmovalue structure containing
+ * \param value      Pointer to an \ref IrmoValue structure containing
  *                   the data to write.
  * \param type       Type of value to write.
  */

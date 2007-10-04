@@ -25,14 +25,67 @@
  * \section intro Introduction
  *
  * Irmo is an abstract library designed for Multiplayer Computer Gaming.
+ * 
+ * @section genericsec Generic Basic interfaces
+ *
+ * These interfaces are generic interfaces that are used throughout
+ * the library.
+ *
+ * @li @ref callback
+ * @li @ref iterator
+ * @li @ref error
+ *
+ * @section ifacesec Interface
+ *
+ * An interface defines a collection of classes and methods that form
+ * a game world.
+ *
+ * @li @ref iface
+ *
+ * @section worldsec World
+ * 
+ * A game world consists of a collection of objects that represent
+ * the state of the game.
+ *
+ * @li @ref world
+ * @li @ref object
+ * @li @ref method
+ * 
+ * @section netsec Networking
+ *
+ * The networking interface allows the state of game worlds to be 
+ * reproduced over a network connection.  The world is shared through
+ * a server, which is accessed by a number of clients.
+ *
+ * @li @ref server
+ * @li @ref client
+ * @li @ref connection
+ *
+ * @section netmodsec Network modules
+ *
+ * Network modules form the foundation of the networking interface,
+ * abstracting the process of sending and receiving packets.
+ * Data can be exchanged over a new type of connection by writing a 
+ * new network module.
+ *
+ * @li @ref packet
+ * @li @ref net_module
+ */
+
+/*!
+ * \defgroup iterator Generic iterator interface
+ */
+
+/*!
+ * \defgroup callback Generic callback interface
+ */
+
+/*!
+ * \defgroup error Error Reporting
  */
 
 /*!
  * \defgroup iface Irmo Interface
- */
-
-/*!
- * \defgroup callback Irmo Callback
  */
 
 /*! 
@@ -64,6 +117,10 @@
  */
 
 /*!
- * \defgroup error Error Reporting
+ * \defgroup packet Network packet
+ */
+
+/*!
+ * \defgroup net_module Network module
  */
 
