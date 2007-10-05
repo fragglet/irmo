@@ -61,6 +61,10 @@ struct _IrmoObject {
 	// was last changed
 
 	int *variable_time;
+
+        // user-specified data set using _set_data and _get_data.
+
+        void *user_data;
 };
 
 // internal function create a new object

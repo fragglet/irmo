@@ -481,3 +481,15 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 	return irmo_object_is_a2(obj, klass);
 }
 
+void irmo_object_set_data(IrmoObject *object, void *value)
+{
+        object->user_data = value;
+}
+
+void *irmo_object_get_data(IrmoObject *object)
+{
+        return object->user_data;
+}
+
+
+

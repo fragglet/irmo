@@ -233,6 +233,25 @@ IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
 					IrmoObjCallback func, 
 					void *user_data);
 
+/*!
+ * Attach a user-specified pointer to an object.
+ *
+ * \param object        The object.
+ * \param value         The value to attach.
+ */
+
+void irmo_object_set_data(IrmoObject *object, void *value);
+
+/*!
+ * Get the value of the user-specified pointer attached to an object.
+ *
+ * \param object        The object.
+ * \return              The user-specified pointer value, or NULL if none
+ *                      has been set.
+ */
+
+void *irmo_object_get_data(IrmoObject *object);
+
 //! \}
 
 #ifdef __cplusplus
