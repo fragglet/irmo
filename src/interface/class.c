@@ -31,7 +31,7 @@
 static void copy_parent_variables(IrmoClass *klass)
 {
         IrmoClass *parent;
-        int i;
+        unsigned int i;
 
         parent = klass->parent_class;
 
@@ -181,7 +181,7 @@ void irmo_class_unref(IrmoClass *klass)
 uint32_t irmo_class_hash(IrmoClass *klass)
 {
 	uint32_t hash = 0;
-	int i;
+	unsigned int i;
 	
 	for (i=0; i<klass->nvariables; ++i) {
 		hash = irmo_rotate_int(hash)
@@ -200,7 +200,7 @@ uint32_t irmo_class_hash(IrmoClass *klass)
 void _irmo_class_free(IrmoClass *klass)
 {
         IrmoClassVar *var;
-	int i;
+	unsigned int i;
 
 	irmo_hash_table_free(klass->variable_hash);
 

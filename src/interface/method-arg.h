@@ -32,7 +32,7 @@
 struct _IrmoMethodArg {
 	IrmoMethod *method;
 
-	int index;
+	unsigned int index;
 	IrmoValueType type;
 	char *name;
 };

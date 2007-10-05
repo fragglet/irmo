@@ -82,7 +82,8 @@ IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass,
 					IrmoCallbackData *parent_data);
 void irmo_callbackdata_free(IrmoCallbackData *data);
 void irmo_callbackdata_raise(IrmoCallbackData *data,
-			     IrmoObject *object, int variable_index);
+			     IrmoObject *object,
+                             unsigned int variable_index);
 void irmo_callbackdata_raise_destroy(IrmoCallbackData *data, 
 				     IrmoObject *object);
 void irmo_callbackdata_raise_new(IrmoCallbackData *data, 

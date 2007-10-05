@@ -44,7 +44,7 @@ struct _IrmoClass {
 	char *name;			// class name
 	
 	IrmoClassVar **variables;	// class member variables
-	int nvariables;
+	unsigned int nvariables;
 	
 	IrmoHashTable *variable_hash;
 };

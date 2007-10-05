@@ -145,7 +145,7 @@ void write_c_array_file(char *filename, void *buf, unsigned int buf_len)
 {
         FILE *output;
         unsigned char *data;
-        int i;
+        unsigned int i;
 
         output = fopen(filename, "w");
 

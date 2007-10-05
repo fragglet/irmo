@@ -46,7 +46,7 @@ static int irmo_change_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	IrmoClass *objclass;
 	unsigned int i;
-        int n, b;
+        unsigned int n, b;
 	int result;
 	int *changed;
 	
@@ -115,7 +115,7 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet,
 	int *changed;
 	IrmoValue *newvalues;
 	unsigned int i;
-        int b, n;
+        unsigned int b, n;
 
 	atom = irmo_new0(IrmoChangeAtom, 1);
 	atom->sendatom.klass = &irmo_change_atom;
@@ -168,8 +168,8 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet,
 static void irmo_change_atom_write(IrmoChangeAtom *atom, IrmoPacket *packet)
 {
 	IrmoObject *obj = atom->object;
-	int bitmap_size;
-	int i, j;
+	unsigned int bitmap_size;
+	unsigned int i, j;
 
 	// include the object class number
 	// this is neccesary otherwise the packet can be ambiguous to
@@ -217,7 +217,7 @@ static void irmo_change_atom_write(IrmoChangeAtom *atom, IrmoPacket *packet)
 
 static void irmo_change_atom_destroy(IrmoChangeAtom *atom)
 {
-        int i;
+        unsigned int i;
 
         if (atom->newvalues) {
                 IrmoClass *objclass = atom->objclass;
@@ -246,7 +246,7 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 	IrmoObject *obj;
 	IrmoClass *objclass;
 	IrmoValue *newvalues;
-	int i;
+	unsigned int i;
 	int seq;
 
 	if (atom->executed)
@@ -320,7 +320,7 @@ static size_t irmo_change_atom_length(IrmoChangeAtom *atom)
         IrmoObject *obj = atom->object;
         IrmoClass *klass = obj->objclass;
         size_t len;
-        int i;
+        unsigned int i;
  
         len = 0;
  

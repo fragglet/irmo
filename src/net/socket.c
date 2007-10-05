@@ -289,7 +289,6 @@ static void socket_send_refuse(IrmoSocket *sock,
 }
 
 static void socket_run_syn(IrmoSocket *sock,
-                           IrmoPacket *packet, 
                            IrmoClient *client)
 {
 	IrmoPacket *sendpacket;
@@ -397,13 +396,12 @@ static void socket_run_initial_syn(IrmoSocket *sock,
 
         // Send a response back to the new client.
  
-        socket_run_syn(sock, packet, client);
+        socket_run_syn(sock, client);
 }
 
 // handle syn-ack connection acknowledgements
 
 static void socket_run_synack(IrmoSocket *sock,
-                              IrmoPacket *packet, 
                               IrmoClient *client)
 {
 	if (client->state == CLIENT_CONNECTING) {
@@ -508,9 +506,7 @@ static void socket_run_synfin(IrmoSocket *sock,
 	}
 }
 
-static void socket_run_synfinack(IrmoSocket *soc,
-                                 IrmoPacket *packet,
-                                 IrmoClient *client)
+static void socket_run_synfinack(IrmoClient *client)
 {
 	if (client->state == CLIENT_DISCONNECTING) {
 		client->state = CLIENT_DISCONNECTED;
@@ -550,7 +546,7 @@ static void socket_run_packet(IrmoSocket *sock,
                 if (client == NULL) {
                         socket_run_initial_syn(sock, packet, src);
                 } else {
-                        socket_run_syn(sock, packet, client);
+                        socket_run_syn(sock, client);
                 }
 
 		return;
@@ -566,7 +562,7 @@ static void socket_run_packet(IrmoSocket *sock,
 	// check for syn ack connection acknowledgements
 	
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_ACK)) {
-		socket_run_synack(sock, packet, client);
+		socket_run_synack(sock, client);
 		return;
 	}
 
@@ -576,7 +572,7 @@ static void socket_run_packet(IrmoSocket *sock,
 	}
 
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_FIN|PACKET_FLAG_ACK)) {
-		socket_run_synfinack(sock, packet, client);
+		socket_run_synfinack(client);
 		return;
 	}
 

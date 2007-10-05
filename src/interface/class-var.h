@@ -32,7 +32,7 @@
 struct _IrmoClassVar {
 	IrmoClass *klass;
 
-	int index;                      // index in variable list
+	unsigned int index;                      // index in variable list
 	IrmoValueType type;
 	char *name;
 };

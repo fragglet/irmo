@@ -73,7 +73,7 @@ static void invoke_method_callbacks(IrmoSListEntry **list,
 
 void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 {
-	int i;
+	unsigned int i;
 	
 	// check all the arguments for sanity
 	
@@ -83,10 +83,10 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 
 		switch (arg->type) {
 		case IRMO_TYPE_INT8:
-			irmo_return_if_fail(value->i >= 0 && value->i <= 0xff);
+			irmo_return_if_fail(value->i <= 0xff);
 			break;
 		case IRMO_TYPE_INT16:
-			irmo_return_if_fail(value->i >= 0 && value->i <= 0xffff);
+			irmo_return_if_fail(value->i <= 0xffff);
 			break;
 		case IRMO_TYPE_INT32:
 			break;
@@ -117,7 +117,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 	IrmoMethod *method;
 	IrmoValue *args;
 	va_list arglist;
-	int i;
+	unsigned int i;
 
 	irmo_return_if_fail(world != NULL);
 	irmo_return_if_fail(method_name != NULL);

@@ -98,7 +98,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 				     IrmoObjectID id)
 {
 	IrmoObject *object;
-	int i;
+	unsigned int i;
 
 	// make object
 	
@@ -180,7 +180,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 				  int notify,
 				  int remove)
 {
-	int i;
+	unsigned int i;
 
 	if (notify) {
 		// raise destroy callbacks
@@ -322,11 +322,11 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 
 	switch (var->type) {
 	case IRMO_TYPE_INT8:
-		irmo_return_if_fail(value >= 0 && value <= 0xff);
+		irmo_return_if_fail(value <= 0xff);
 		obj_value->i = value;
 		break;
 	case IRMO_TYPE_INT16:
-		irmo_return_if_fail(value >= 0 && value <= 0xffff);
+		irmo_return_if_fail(value <= 0xffff);
 		obj_value->i = value;
 		break;
 	case IRMO_TYPE_INT32:

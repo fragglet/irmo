@@ -30,10 +30,12 @@ struct _IrmoPacket {
         // Packet data
 	uint8_t *data;
 
+        // If true, the data buffer is 'owned' by this packet and
+        // should be freed with the packet.
+        int data_owned;
+
         // Size of the buffer (malloced)
-        // If data_size < 0, the packet does not own the buffer,
-        // and should not free the buffer when freed.
-	int data_size;
+	unsigned int data_size;
 
         // Length of used data in the buffer
 	size_t len;
@@ -48,6 +50,7 @@ IrmoPacket *irmo_packet_new(void)
 
 	packet->data_size = 256;
 	packet->data = malloc(packet->data_size);
+        packet->data_owned = 1;
 	packet->len = 0;
 	packet->pos = 0;
 
@@ -61,8 +64,9 @@ IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
         packet = irmo_new0(IrmoPacket, 1);
 
         packet->data = data;
-        packet->data_size = -1;
+        packet->data_size = data_len;
         packet->len = data_len;
+        packet->data_owned = 0;
         packet->pos = 0;
 
         return packet;
@@ -70,7 +74,7 @@ IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
 
 void irmo_packet_free(IrmoPacket *packet)
 {
-        if (packet->data_size > 0) {
+        if (packet->data_owned) {
 	        free(packet->data);
         }
 	free(packet);
@@ -92,7 +96,7 @@ static void irmo_packet_update_len(IrmoPacket *packet)
 
 int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 {
-        irmo_return_val_if_fail(packet->data_size > 0, 0);
+        irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + 1 > packet->data_size)
 		irmo_packet_resize(packet);
@@ -106,7 +110,7 @@ int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 {
-        irmo_return_val_if_fail(packet->data_size > 0, 0);
+        irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + 2 > packet->data_size) {
 		irmo_packet_resize(packet);
@@ -122,7 +126,7 @@ int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 {
-        irmo_return_val_if_fail(packet->data_size > 0, 0);
+        irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + 4 > packet->data_size) {
 		irmo_packet_resize(packet);
@@ -140,7 +144,7 @@ int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writestring(IrmoPacket *packet, char *s)
 {
-        irmo_return_val_if_fail(packet->data_size > 0, 0);
+        irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + strlen(s) + 1 > packet->data_size)
 		irmo_packet_resize(packet);

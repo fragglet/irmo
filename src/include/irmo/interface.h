@@ -328,7 +328,8 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, char *arg_name);
  * by the number of the argument.
  */
 
-IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number);
+IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, 
+                                         unsigned int arg_number);
 
 /*!
  * \brief Iterate over all arguments to a method

@@ -99,7 +99,7 @@ static void irmo_method_atom_write(IrmoMethodAtom *atom, IrmoPacket *packet)
 {
 	IrmoMethod *method = atom->method_data.method;
 	IrmoValue *args = atom->method_data.args;
-	int i;
+	unsigned int i;
 	
 	// send method index
 	
@@ -124,7 +124,7 @@ static void irmo_method_atom_run(IrmoMethodAtom *atom)
 static void irmo_method_atom_destroy(IrmoMethodAtom *atom)
 {
         IrmoMethod *method = atom->method_data.method;
-        int i;
+        unsigned int i;
  
         for (i=0; i<method->narguments; ++i) {
                 if (method->arguments[i]->type == IRMO_TYPE_STRING)
@@ -137,7 +137,7 @@ static void irmo_method_atom_destroy(IrmoMethodAtom *atom)
 static size_t irmo_method_atom_length(IrmoMethodAtom *atom)
 {
 	IrmoMethod *method = atom->method_data.method;
-	int i;
+	unsigned int i;
 	size_t len;
 
         // find length of atom,

@@ -99,11 +99,11 @@ IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, char *arg_name)
 	return irmo_hash_table_lookup(method->argument_hash, arg_name);
 }
 
-IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method, int arg_number)
+IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method,
+                                         unsigned int arg_number)
 {
 	irmo_return_val_if_fail(method != NULL, NULL);
-	irmo_return_val_if_fail(arg_number >= 0 && arg_number < method->narguments,
-			     NULL);
+	irmo_return_val_if_fail(arg_number < method->narguments, NULL);
 
 	return method->arguments[arg_number];
 }
@@ -133,7 +133,7 @@ void irmo_method_unref(IrmoMethod *method)
 uint32_t irmo_method_hash(IrmoMethod *method)
 {
 	uint32_t hash = 0;
-	int i;
+	unsigned int i;
 
 	for (i=0; i<method->narguments; ++i) {
 		hash = irmo_rotate_int(hash)
@@ -147,7 +147,7 @@ uint32_t irmo_method_hash(IrmoMethod *method)
 
 void _irmo_method_free(IrmoMethod *method)
 {
-	int i;
+	unsigned int i;
 	
 	irmo_hash_table_free(method->argument_hash);
 

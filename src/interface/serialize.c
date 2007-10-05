@@ -187,7 +187,7 @@ static int read_class(IrmoPacket *packet, IrmoInterface *iface)
         unsigned int has_parent;
         char *parent_name;
         unsigned int num_vars;
-        int i;
+        unsigned int i;
 
         DEBUGMSG(("\tRead class\n"));
 
@@ -318,7 +318,7 @@ static int read_method(IrmoPacket *packet, IrmoInterface *iface)
         IrmoMethod *method;
         char *name;
         unsigned int num_args;
-        int i;
+        unsigned int i;
 
         DEBUGMSG(("\tRead method\n"));
 
@@ -411,7 +411,7 @@ static void write_classes(IrmoInterface *iface, IrmoPacket *packet)
 static int read_classes(IrmoInterface *iface, IrmoPacket *packet)
 {
         unsigned int num_classes;
-        int i;
+        unsigned int i;
 
         DEBUGMSG(("Read classes\n"));
 
@@ -451,7 +451,7 @@ static void write_methods(IrmoInterface *iface, IrmoPacket *packet)
 static int read_methods(IrmoInterface *iface, IrmoPacket *packet)
 {
         unsigned int num_methods;
-        int i;
+        unsigned int i;
 
         DEBUGMSG(("Read methods\n"));
 

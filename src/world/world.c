@@ -34,7 +34,7 @@
 IrmoWorld *irmo_world_new(IrmoInterface *iface)
 {
 	IrmoWorld *world;
-	int i;
+	unsigned int i;
 
 	irmo_return_val_if_fail(iface != NULL, NULL);
 	
@@ -99,12 +99,13 @@ static void irmo_world_destroy_all_objects(IrmoWorld *world)
 
 void irmo_world_unref(IrmoWorld *world)
 {
+        unsigned int i;
+
 	irmo_return_if_fail(world != NULL);
 	
 	--world->refcount;
 
 	if (world->refcount <= 0) {
-		int i;
 
 		// delete list of servers (must by definition be empty
 		// already)

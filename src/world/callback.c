@@ -145,7 +145,7 @@ IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass,
 
 void irmo_callbackdata_free(IrmoCallbackData *data)
 {
-	int i;
+	unsigned int i;
 	
 	// free all class callbacks
 
@@ -194,7 +194,8 @@ static void irmo_callbackdata_invoke_callbacks(IrmoSListEntry **list,
 }
 
 void irmo_callbackdata_raise(IrmoCallbackData *data,
-			     IrmoObject *object, int variable_index)
+			     IrmoObject *object, 
+                             unsigned int variable_index)
 {
         char *variable_name = 
 		object->objclass->variables[variable_index]->name;

@@ -34,11 +34,11 @@
 struct _IrmoMethod {
 	IrmoInterface *iface;
 
-	int index;
+	unsigned int index;
 	char *name;			// method name
 	
 	IrmoMethodArg **arguments;
-	int narguments;
+	unsigned int narguments;
 
 	IrmoHashTable *argument_hash;
 };

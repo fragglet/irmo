@@ -82,7 +82,7 @@ IrmoIterator *irmo_interface_iterate_methods(IrmoInterface *iface)
 
 void _irmo_interface_free(IrmoInterface *iface)
 {
-	int i;
+	unsigned int i;
 	
 	irmo_hash_table_free(iface->class_hash);
 	irmo_hash_table_free(iface->method_hash);
@@ -125,7 +125,7 @@ void irmo_interface_unref(IrmoInterface *iface)
 uint32_t irmo_interface_hash(IrmoInterface *iface)
 {
 	uint32_t hash = 0;
-	int i;
+	unsigned int i;
 
 	for (i=0; i<iface->nclasses; ++i) {
 		hash = irmo_rotate_int(hash)

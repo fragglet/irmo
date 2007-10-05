@@ -36,14 +36,14 @@ struct _IrmoInterface {
 	// classes:
 	
 	IrmoClass **classes;
-	int nclasses;
+	unsigned int nclasses;
 
 	IrmoHashTable *class_hash;
 
 	// methods:
 	
 	IrmoMethod **methods;
-	int nmethods;
+	unsigned int nmethods;
 
 	IrmoHashTable *method_hash;
 };

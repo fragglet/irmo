@@ -222,7 +222,7 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 {
 	IrmoMethod *method = data->method;
 	IrmoMethodAtom *atom;
-	int i;
+	unsigned int i;
 	
 	// create a new method atom
 	
@@ -272,7 +272,7 @@ void irmo_client_sendq_add_state(IrmoClient *client)
 {
         IrmoIterator *iter;
         IrmoObject *object;
-        int i;
+        unsigned int i;
 
 	// create all the objects first
 	// this is done all together and separately from sending the
