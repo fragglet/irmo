@@ -1,9 +1,20 @@
 libirmoincludedir = $(includedir)/irmo/2
 libirmoinclude2dir = $(libirmoincludedir)/irmo
 
-libirmoinclude2_HEADERS=                                           \
-        callback.h     connection.h  object.h  socket.h            \
-        client.h       interface.h   server.h  world.h             \
-        method.h       error.h       types.h                       \
-        net-module.h   packet.h      iterator.h
+libirmoinclude2_HEADERS=                                   \
+        callback.h                                         \
+        client.h                                           \
+        connection.h                                       \
+        error.h                                            \
+        interface.h                                        \
+        interface-parser.h                                 \
+        iterator.h                                         \
+        method.h                                           \
+        net-module.h                                       \
+        object.h                                           \
+        packet.h                                           \
+        server.h                                           \
+        socket.h                                           \
+        types.h                                            \
+        world.h
 

@@ -1,12 +1,13 @@
 
 bindir = $(prefix)/bin
-bin_PROGRAMS =                         \
+bin_PROGRAMS =                                             \
        irmo-interface-compiler
 
-irmo_interface_compiler_SOURCES=       \
+irmo_interface_compiler_SOURCES=                           \
        interface-compiler.c
-irmo_interface_compiler_CFLAGS=        \
+irmo_interface_compiler_CFLAGS=                            \
 	-I../src/include
-irmo_interface_compiler_LDADD=         \
-	$(top_builddir)/src/libirmo.la
+irmo_interface_compiler_LDADD=                             \
+	$(top_builddir)/src/libirmo.la                     \
+	$(top_builddir)/src/libirmo-interface-parser.la
 

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <irmo.h>
+#include <irmo/interface-parser.h>
 
 typedef enum {
         OUTPUT_AUTO,

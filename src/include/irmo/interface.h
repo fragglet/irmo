@@ -36,9 +36,10 @@ extern "C" {
  *
  * A new, empty, \ref IrmoInterface can be created through the 
  * \ref irmo_interface_new function.  However, this requires
- * programatically creating a complete interface.  It is usually
- * preferable to use \ref irmo_interface_parse to parse a 
- * description file describing the interface.
+ * programatically creating a complete interface.  It may be
+ * preferable to use the \ref ifaceparser, which allows
+ * IrmoInterface objects to be created by parsing an external
+ * interface description file with a C-like syntax.
  *
  * \addtogroup iface
  * \{
@@ -51,18 +52,6 @@ extern "C" {
  */
 
 IrmoInterface *irmo_interface_new(void);
-
-/*!
- * \brief Create a new IrmoInterface object, from parsing an interface file.
- *
- * A file is parsed with the interface described in a simple
- * C-style syntax.
- *
- * \param filename	The filename of the interface file
- * \return		A new IrmoInterface object or NULL for failure
- */
-
-IrmoInterface *irmo_interface_parse(char *filename);
 
 /*!
  * \brief Add a reference to an IrmoInterface object

@@ -41,6 +41,7 @@
  * a game world.
  *
  * @li @ref iface
+ * @li @ref ifaceparser
  *
  * @section worldsec World
  * 
@@ -86,6 +87,10 @@
 
 /*!
  * \defgroup iface Irmo Interface
+ */
+
+/*!
+ * \defgroup ifaceparser Interface Parser Library
  */
 
 /*! 
