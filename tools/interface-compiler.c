@@ -2,8 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <irmo.h>
 #include <irmo/interface-parser.h>
+
+#ifdef _WIN32
+#define PATH_SEPARATOR '\\'
+#else
+#define PATH_SEPARATOR '/'
+#endif
+
+// Prefix to attach to the default C array names.
+
+#define INTERFACE_PREFIX "interface_"
 
 typedef enum {
         OUTPUT_AUTO,
@@ -14,7 +25,7 @@ typedef enum {
 OutputFormat output_format = OUTPUT_AUTO;
 char *input_filename = NULL;
 char *output_filename = NULL;
-char *c_array_name = "interface";
+char *c_array_name = NULL;
 
 void set_output_format(char *str)
 {
@@ -53,6 +64,49 @@ int ends_with(char *str, char *stem)
 
         return str_length >= stem_length
             && !strcmp(str + str_length - stem_length, stem);
+}
+
+// Set a default C array name from the input filename if none is specified
+
+void set_c_array_name(void)
+{
+        char *filename;
+        char *p;
+
+        // Get the base filename
+
+        p = strrchr(input_filename, PATH_SEPARATOR);
+
+        if (p == NULL) {
+                filename = input_filename;
+        } else {
+                filename = p + 1;
+        }
+
+        // Strdup so we can modify the filename
+
+        c_array_name = malloc(strlen(filename) 
+                              + strlen(INTERFACE_PREFIX) + 1);
+
+        strcpy(c_array_name, INTERFACE_PREFIX);
+        strcat(c_array_name, filename);
+
+        // Cut off file extension
+
+        p = strchr(c_array_name, '.');
+
+        if (p != NULL) {
+                *p = '\0';
+        }
+
+        // Convert all characters that are not valid characters for an
+        // identifier into _ characters.
+
+        for (p=c_array_name; *p != '\0'; ++p) {
+                if (!isalnum(*p) && *p != '_') {
+                        *p = '_';
+                }
+        }
 }
 
 void parse_cmd_line(int argc, char *argv[])
@@ -128,6 +182,11 @@ void parse_cmd_line(int argc, char *argv[])
                         output_format = OUTPUT_BINARY;
                 }
         }
+
+        if (output_format == OUTPUT_C_ARRAY
+         && c_array_name == NULL) {
+                set_c_array_name();
+        }
 }
 
 void write_binary_file(char *filename, void *buf, unsigned int buf_len)
@@ -168,6 +227,9 @@ void write_c_array_file(char *filename, void *buf, unsigned int buf_len)
         }
 
         fprintf(output, "\n};\n\n");
+
+        fprintf(output, "unsigned int %s_length = %i;\n\n",
+                        c_array_name, buf_len);
 
         fclose(output);
 }
