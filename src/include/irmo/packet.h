@@ -198,7 +198,7 @@ unsigned char *irmo_packet_get_buffer(IrmoPacket *packet);
 /*!
  * Get the length of a packet.
  *
- * \param packet     The packet
+ * \param packet     The packet.
  * \return           The length of the packet.
  */
 

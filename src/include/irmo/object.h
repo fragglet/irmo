@@ -31,7 +31,6 @@ extern "C" {
 #endif
 
 /*!
- *
  * An \ref IrmoObject exists within a World (see \ref IrmoWorld). They 
  * have a class which defines member variables which hold data. The
  * classes are defined by the \ref IrmoInterface which the World
@@ -45,45 +44,44 @@ extern "C" {
  */
 
 /*!
- * \brief Create a new object of a particular class
+ * Create a new object of a particular class.
  *
- * \param world World to create the object within
- * \param type_name The name of the class of object to create
- * \return 	   The created object or NULL for failure
+ * \param world       \ref IrmoWorld to create the object within
+ * \param type_name   The name of the class of object to create.
+ * \return 	      The created object or NULL for failure.
  */
 
 IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name);
 
 /*!
- * \brief Destroy an object
+ * Destroy an object.
  *
- * \param object  The object to destroy
+ * \param object      The object to destroy.
  */
 
 void irmo_object_destroy(IrmoObject *object);
 
 /*!
- * \brief Get numerical object identifier
+ * Get an object's numerical identifier.
  *
- * Each object within a World has a unique number assigned to it. 
- * This function allows you to retrieve the number assigned to a particular
- * object.
+ * Each object within a \ref IrmoWorld has a unique number assigned to it. 
+ * This function returns the number assigned to a particular object.
  *
- * \param object  The object to query
- * \return 	  Object ID
+ * \param object  The object to query.
+ * \return        The object's ID.
  */
 
 IrmoObjectID irmo_object_get_id(IrmoObject *object);
 
 /*!
- * \brief Get the class of an object
+ * Get the name of the class of an object.
  *
  * All objects have a class, which is one of the classes defined in the
- * IrmoInterface for the World the object exists in. This retrieves
+ * \ref IrmoInterface for the world the object exists in. This retrieves
  * the name of the class for a particular object.
  *
- * \param object The object to query.
- * \return 	 A string with the classname
+ * \param object  The object to query.
+ * \return 	  The name of the class.
  *
  * \sa irmo_object_get_class_obj
  */
@@ -91,142 +89,140 @@ IrmoObjectID irmo_object_get_id(IrmoObject *object);
 char *irmo_object_get_class(IrmoObject *object);
 
 /*!
- * \brief Get the class object representing the class of an object
+ * Get the class an object.
  *
  * This is similar to \ref irmo_object_get_class, except that this
- * function returns the class object and not just the name of the
+ * function returns the \ref IrmoClass object and not just the name of the
  * class.
  *
- * \param object  The object to query
- * \return        The class of the object
+ * \param object  The object to query.
+ * \return        The class of the object.
  */
 
 IrmoClass *irmo_object_get_class_obj(IrmoObject *object);
 
 /*!
- * \brief Set the value of an object variable (int type)
+ * Set the value of an object's member variable (int type).
  *
- * Set the value of a member variable. This is for use on variables of
- * int type. To set string values, use \ref irmo_object_set_string
+ * This is for use on variables of int type. To set string values,
+ * use \ref irmo_object_set_string.
  *
- * \param object   The object to change
- * \param variable The name of the variable to change
- * \param value    The new value for the variable
+ * \param object     The object to change.
+ * \param variable   The name of the variable to change.
+ * \param value      The new value for the variable.
  */
 
 void irmo_object_set_int(IrmoObject *object, char *variable, 
 			 unsigned int value);
 
 /*!
- * \brief Set the value of an object variable (string type)
+ * Set the value of an object's member variable (string type).
  *
- * Set the value of a member variable. This is for use on variables of
- * string type. To set integer values, use \ref irmo_object_set_int
+ * This is for use on variables of string type. To set integer
+ * values, use \ref irmo_object_set_int.
  *
- * \param object   The object to change
- * \param variable The name of the variable to change
- * \param value    The new value for the variable
+ * \param object     The object to change.
+ * \param variable   The name of the variable to change.
+ * \param value      The new value for the variable.
  */
 
 void irmo_object_set_string(IrmoObject *object, char *variable, char *value);
 
 /*!
- * \brief Get the value of an object variable(int type)
+ * Get the value of an object's member variable(int type).
  *
- * Retrieve the value of an object's member variable. This function is
- * for variables of integer type. To get string values, use 
- * \ref irmo_object_get_string
+ * This function is for variables of integer type. To get string
+ * values, use \ref irmo_object_get_string.
  *
- * \param object   The object to query
- * \param variable The name of the member variable
- * \return         The value of the member variable
+ * \param object     The object to query.
+ * \param variable   The name of the member variable.
+ * \return           The value of the member variable.
  */
 
 unsigned int irmo_object_get_int(IrmoObject *object, char *variable);
 
 /*!
- * \brief Get the value of an object variable(string type)
+ * Get the value of an object's member variable(string type)
  *
- * Retrieve the value of an object's member variable. This function is
- * for variables of string type. To get integer values, use 
- * \ref irmo_object_get_int
+ * This function is for variables of string type. To get integer values, use 
+ * \ref irmo_object_get_int.
  *
  * The returned string should not be modified; to set the value of a 
- * member variable use \ref irmo_object_set_string
+ * member variable use \ref irmo_object_set_string.
  *
- * \param object   The object to query
- * \param variable The name of the member variable
- * \return         The value of the member variable
+ * \param object   The object to query.
+ * \param variable The name of the member variable.
+ * \return         The value of the member variable.
  */
 
 char *irmo_object_get_string(IrmoObject *object, char *variable);
 
 /*!
- * \brief Get the world an object belongs to
+ * Get the \ref IrmoWorld world that an object belongs to.
  *
- * Returns a reference to the \ref IrmoWorld world object
- * the object belongs to.
- *
- * \param object    The object to query
- * \return	    The world object the object belongs to
+ * \param object    The object to query.
+ * \return	    The \ref IrmoWorld the object belongs to.
  */
 
 IrmoWorld *irmo_object_get_world(IrmoObject *object);
 
 /*!
- * \brief Find if an object is an instance of a particular class
+ * Determine if an object is an instance of a particular class.
  *
- * Returns TRUE if the object is an instance of the class specified 
- * or any of its subclasses.
- *
- * \param object	The object
- * \param classname	The name of the class
+ * \param object	The object.
+ * \param classname	The name of the class.
+ * \return              Non-zero if the object is an instance of the
+ *                      specified class or any of its subclasses.
  */
 
 unsigned int irmo_object_is_a(IrmoObject *object, char *classname);
 
 /*!
- * \brief Find if an object is an instance of a particular class
+ * Determine if an object is an instance of a particular class.
  *
  * This is the same as \ref irmo_object_is_a, except takes a 
  * reference to an \ref IrmoClass object instead of a class name.
  *
+ * \param object        The object.
+ * \param klass         The class.
+ * \return              Non-zero if the object is an instance of the
+ *                      specified class or any of its subclasses.
  */
 
 unsigned int irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
 
 /*!
- * \brief Watch for modification of an object
+ * Watch for modification of an object.
  *
  * Whenever a particular object is modified, a function will be called.
  * The function can be set to be called only when a particular variable
  * is modified, or when any variable in the object is modified.
  *
- * \param object	The object to watch
+ * \param object	The object to watch.
  * \param variable	The name of the variable to watch. To make the 
  * 			function call whenever any variable in the object
  * 			is modified, pass NULL for this value.
  * \param func		The function to call.
  * \param user_data	Extra data to pass to the function when it is called.
  *
- * \return an \ref IrmoCallback object representing the watch
+ * \return              An \ref IrmoCallback object representing the watch.
  */
 
 IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
 				IrmoVarCallback func, void *user_data);
 
 /*!
- * \brief Watch for object destruction
+ * Watch for object destruction.
  *
  * Before a particular object is about to be destroyed, a function will 
  * be called.
  *
- * \param object	The object to watch
- * \param func		Callback function to call
+ * \param object	The object to watch.
+ * \param func		Callback function to call.
  * \param user_data	Extra data to pass to the function when called.
  * \sa irmo_object_unwatch_destroy
  *
- * \return an \ref IrmoCallback object representing the watch
+ * \return              An \ref IrmoCallback object representing the watch.
  */
 
 IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,

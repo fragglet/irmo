@@ -41,9 +41,9 @@ extern "C" {
  */
 
 /*!
- * \brief Add a reference to a socket
+ * Add a reference to a socket.
  *
- * \param sock  Socket to reference
+ * \param sock  Socket to reference.
  * \sa irmo_socket_unref
  *
  */
@@ -51,37 +51,37 @@ extern "C" {
 void irmo_socket_ref(IrmoSocket *sock);
 
 /*!
- * \brief Remove a reference to a socket
+ * Remove a reference to a socket.
  *
  * The number of references to a socket is counted. The count starts at
  * 1. When the count reaches 0, the socket is destroyed.
  *
- * \param sock  Socket to unreference
+ * \param sock  Socket to unreference.
  * \sa irmo_socket_ref
  */
 
 void irmo_socket_unref(IrmoSocket *sock);
 
 /*!
- * \brief Run socket
+ * Check for new packets received by a socket.
  *
  * This function must be called periodically to check for new packets
  * received by the socket and send new packets required by the network
  * protocol.
  *
- * \param sock   The socket to update
+ * \param sock   The socket to update.
  */
 
 void irmo_socket_run(IrmoSocket *sock);
 
 /*! 
- * \brief Block on a set of sockets
+ * Block on a set of sockets.
  *
  * This function blocks on an array of sockets, returning when data 
  * arrives at any of the sockets.
  *
- * \param 	sockets		An array of sockets to block on
- * \param	nsockets	Number of sockets in the array
+ * \param 	sockets		An array of sockets to block on.
+ * \param	nsockets	Number of sockets in the array.
  * \param 	timeout		Maximum time to block for, in milliseconds.
  * 				Specify 0 to block forever.
  */
@@ -89,12 +89,12 @@ void irmo_socket_run(IrmoSocket *sock);
 void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout);
 
 /*!
- * \brief Block on a single socket
+ * Block on a single socket.
  *
  * This is the same as \ref irmo_socket_block, except it blocks on
  * a single socket.
  *
- * \param 	sock  		The socket to block on
+ * \param 	sock  		The socket to block on.
  * \param	timeout		Maximum time to block for, in milliseconds,
  * 				Specify 0 to block forever.
  */

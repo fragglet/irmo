@@ -38,12 +38,12 @@ extern "C" {
  */
 
 /*!
- * \brief Set a callback function to be invoked when a method is called
+ * Set a callback function to be invoked when a method is called.
  *
- * \param world    The world to set the watch.
- * \param method_name The name of the method to watch
+ * \param world       The world to set the watch.
+ * \param method_name The name of the method to watch.
  * \param method      A callback function to call when the method is invoked.
- * \param user_data   User data to be passed to the callback function
+ * \param user_data   User data to be passed to the callback function.
  *
  * \return            A \ref IrmoCallback object representing the watch.
  */
@@ -54,35 +54,35 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 				      void *user_data);
 
 /*!
- * \brief Retrieve a method argument
+ * Retrieve a method argument.
  *
  * Get the value of a string argument to a method from the method callback
  * function.
  *
  * \param data    A \ref IrmoMethodData object containing information about
- *                the method call
- * \param argname The name of the method argument
- * \return        The value of the method argument (constant string)
+ *                the method call.
+ * \param argname The name of the method argument.
+ * \return        The value of the method argument (constant string).
  */
 
 char *irmo_method_arg_string(IrmoMethodData *data, char *argname);
 
 /*!
- * \brief Retrieve a method argument
+ * Retrieve a method argument.
  *
  * Get the value of an integer argument to a method from the method callback
  * function.
  *
  * \param data    A \ref IrmoMethodData object containing information about
- *                the method call
- * \param argname The name of the method argument
- * \return        The value of the method argument
+ *                the method call.
+ * \param argname The name of the method argument.
+ * \return        The value of the method argument.
  */
 
 unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname);
 
 /*!
- * \brief Find the client which invoked a method
+ * Find the client which invoked a method.
  *
  * This function returns a reference to the \ref IrmoClient object
  * of the client which invoked the method. If it was invoked by a
@@ -93,16 +93,14 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname);
 IrmoClient *irmo_method_get_source(IrmoMethodData *data);
 
 /*!
- * \brief Call a method
- *
  * Invoke a method. If the world is a local copy of a world served from
  * a remote machine the call will be forwarded to the remote machine.
  *
  * Following the function arguments are the method arguments, in the order
  * specified in the interface.
  * 
- * \param world  The world object on which to invoke the method
- * \param method    The name of the method
+ * \param world     The world object on which to invoke the method.
+ * \param method    The name of the method.
  *
  * \sa irmo_world_method_call2
  */
@@ -110,9 +108,9 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data);
 void irmo_world_method_call(IrmoWorld *world, char *method, ...);
 
 /*!
- * \brief Call a method
+ * Invoke a method.
  *
- * Invoke a method. This is the same as \ref irmo_world_method_call
+ * This is the same as \ref irmo_world_method_call
  * except it takes an array of \ref IrmoValue structures for the 
  * arguments instead of using the C varargs mechanism.
  */

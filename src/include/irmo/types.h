@@ -41,7 +41,7 @@ extern "C" {
  */
 
 /*!
- * \brief An iterator for iterating over values in a collection.
+ * An iterator for iterating over values in a collection.
  */
 
 typedef struct _IrmoIterator IrmoIterator;
@@ -60,38 +60,38 @@ typedef struct _IrmoIterator IrmoIterator;
  */
 
 /*!
- * \brief An IrmoInterface object
- * \ingroup iface
+ * An interface is a collection of classes and methods that form
+ * an \ref IrmoWorld.
  */
 
 typedef struct _IrmoInterface IrmoInterface;
 
 /*!
- * \brief An object representing a class in an interface
+ * An object representing a class in an interface.
  */
 
 typedef struct _IrmoClass IrmoClass;
 
 /*!
- * \brief An object representing a variable in a class
+ * An object representing a variable in a class.
  */
 
 typedef struct _IrmoClassVar IrmoClassVar;
 
 /*!
- * \brief An object representing a method in an interface
+ * An object representing a method in an interface.
  */
 
 typedef struct _IrmoMethod IrmoMethod;
 
 /*!
- * \brief An object representing an argument to a method
+ * An object representing an argument to a method.
  */ 
 
 typedef struct _IrmoMethodArg IrmoMethodArg;
 
 /*!
- * \brief Variable types
+ * Variable types.
  */
 
 typedef enum {
@@ -126,11 +126,11 @@ typedef void (*IrmoMethodArgCallback)(IrmoMethodArg *arg, void *user_data);
 typedef struct _IrmoWorld IrmoWorld;
 
 /*!
- * \brief A numerical object identifier
+ * A numerical object identifier.
  *
  * All objects in a \ref IrmoWorld have a unique number assigned to
- * them. This can be used to refer to objects by their number. You can
- * search for an object by number using the 
+ * them. This can be used to refer to objects by their number. An
+ * object can be obtained from its identifier through the 
  * \ref irmo_world_get_object_for_id function.
  */
 
@@ -151,7 +151,7 @@ typedef unsigned int IrmoObjectID;
  */
 
 /*!
- * \brief Method Callback Data
+ * Method callback data.
  *
  * When a callback function attached to a method is invoked, it is passed
  * an object of this type containing data relevant to the method. For
@@ -162,7 +162,7 @@ typedef unsigned int IrmoObjectID;
 typedef struct _IrmoMethodData IrmoMethodData;
 
 /*!
- * \brief Callback function for methods
+ * Callback function for methods.
  *
  * When a method invocation is received from a client, a callback function
  * of this type is invoked.
@@ -191,7 +191,7 @@ typedef void (*IrmoInvokeCallback)(IrmoMethodData *data,
  */
 
 /*!
- * \brief A union structure that can hold an integer or a string pointer
+ * A union structure that can hold an integer or a string pointer.
  */
 
 typedef union {
@@ -227,13 +227,13 @@ typedef void (*IrmoObjCallback) (IrmoObject *object, void *user_data);
  */
 
 /*!
- * \brief An IrmoSocket object.
+ * An IrmoSocket object.
  */
 
 typedef struct _IrmoSocket IrmoSocket;
 
 /*!
- * \brief Socket domain
+ * Socket domain.
  * 
  * When creating a new socket, it is neccessary to specify the type
  * of socket to be created, IPv4 or IPv6.
@@ -259,7 +259,7 @@ typedef enum {
  */
 
 /*!
- * \brief An IrmoServer object
+ * A server.
  */
 
 typedef struct _IrmoServer IrmoServer;
@@ -278,17 +278,16 @@ typedef struct _IrmoServer IrmoServer;
  */
 
 /*!
- * \brief An IrmoClient object
- *
- * This represents a client connected to a \ref IrmoServer server.
+ * A client connected to an \ref IrmoServer server.
  */
 
 typedef struct _IrmoClient IrmoClient;
 
 /*! 
- * \brief Callback function for client actions.
+ * Callback function for client actions.
  *
- * Functions of this type are used for client disconnect callbacks.
+ * Functions of this type are used for client connect and
+ * disconnect callbacks.
  */
 
 typedef void (*IrmoClientCallback) (IrmoClient *client, void *user_data);
@@ -307,9 +306,9 @@ typedef void (*IrmoClientCallback) (IrmoClient *client, void *user_data);
  */
 
 /*!
- * \brief An IrmoConnection object 
+ * A connection to a remote server.
  *
- * This represents a connection to a \ref IrmoServer server running
+ * This represents a connection to an \ref IrmoServer server running
  * on a remote machine.
  *
  * This is exactly the same as an \ref IrmoClient. Internally the remote
@@ -332,17 +331,17 @@ typedef IrmoClient IrmoConnection;
  */
 
 /*!
- * \brief Callback object
+ * Callback object.
  * 
  * When a new callback watch is created, an IrmoCallback object is
  * returned representing the watch. The watch can be unset with
- * \ref irmo_callback_unset
+ * \ref irmo_callback_unset.
  */
 
 typedef struct _IrmoCallback IrmoCallback;
 
 /*!
- * \brief Function invoked for watching callbacks.
+ * Function invoked for watching callbacks.
  *
  * See \ref irmo_callback_watch_destroy.
  */

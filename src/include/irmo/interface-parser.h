@@ -38,13 +38,13 @@ extern "C" {
  */
 
 /*!
- * \brief Create a new IrmoInterface object, from parsing an interface file.
+ * Create a new IrmoInterface object, from parsing an interface file.
  *
  * A file is parsed with the interface described in a simple
  * C-style syntax.
  *
- * \param filename	The filename of the interface file
- * \return		A new IrmoInterface object or NULL for failure
+ * \param filename	The filename of the interface file.
+ * \return		A new IrmoInterface object or NULL for failure.
  */
 
 IrmoInterface *irmo_interface_parse(char *filename);

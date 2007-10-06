@@ -42,44 +42,44 @@ extern "C" {
  */
 
 /*!
- * \brief Add a reference to a client
+ * Add a reference to a client.
  *
  * When clients are disconnected from the server their client objects
  * get automatically deleted after a while. You can add a reference
  * to a IrmoClient object to notify that you are using the object and
  * it will not be deleted.
  *
- * \param client  The client object to reference
+ * \param client  The client object to reference.
  * \sa irmo_client_unref
  */
 
 void irmo_client_ref(IrmoClient *client);
 
 /*!
- * \brief Unreference a client object 
+ * Unreference a client object.
  *
  * Specify that you are no longer referencing a client object
  *
- * \param client   The client object to unreference
+ * \param client   The client object to unreference.
  * \sa irmo_client_ref
  */
 
 void irmo_client_unref(IrmoClient *client);
 
 /*!
- * \brief Forcibly disconnect a client
+ * Forcibly disconnect a client.
  *
- * \param client      The client to disconnect
+ * \param client      The client to disconnect.
  *
  */
 
 void irmo_client_disconnect(IrmoClient *client);
 
 /*!
- * \brief Get the clients world object
+ * Get a client's world object.
  *
  * While a server can serve a \ref IrmoWorld object to connecting 
- * clients, the clients can also serve a world object back to the
+ * clients, a client can also serve a world object back to the
  * server. This function returns a reference to the local copy of 
  * that remote world object if it exists, or NULL if it does not.
  *
@@ -91,14 +91,14 @@ void irmo_client_disconnect(IrmoClient *client);
 IrmoWorld *irmo_client_get_world(IrmoClient *client);
 
 /*!
- * \brief Watch for client disconnection
+ * Watch for client disconnection.
  *
  * Set a watch on a client. When that client disconnects, a
  * \ref IrmoClientCallback callback function is invoked.
  *
- * \param client    The client to watch
- * \param func      The callback function to invoke
- * \param user_data Extra data to pass to the callback function
+ * \param client    The client to watch.
+ * \param func      The callback function to invoke.
+ * \param user_data Extra data to pass to the callback function.
  *
  * \return          A \ref IrmoCallback object representing the watch.
  */
@@ -108,21 +108,22 @@ IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
 					   void *user_data);
 
 /*!
- * \brief Get the ping time for a client
+ * Get the ping time for a client.
  *
  * Returns the round trip time (ping time) for a particular client.
  * The accuracy of this is reliant on the amount of data which has
  * been sent to the client. If no or very little data has been sent
  * recently it may be inaccurate.
  *
- * \return Round Trip Time in milliseconds
+ * \param client    The client.
+ * \return          Round trip time to the client in milliseconds.
  *
  */
 
 int irmo_client_ping_time(IrmoClient *client);
 
 /*!
- * \brief Set the maximum send window size
+ * Set the maximum send window size.
  *
  * This sets the maximum send window size for network transfer. This
  * is dependent on the bandwidth of the network connection. If the
@@ -130,14 +131,14 @@ int irmo_client_ping_time(IrmoClient *client);
  * attempt to determine an upper bound using congestion avoidance
  * algorithms, which may produce poor performance.
  *
- * \param client   The client to set the value on
- * \param max      The maximum send window size (in bytes)
+ * \param client   The client to set the value on.
+ * \param max      The maximum send window size (in bytes).
  */
 
 void irmo_client_set_max_sendwindow(IrmoClient *client, int max);
 
 /*!
- * \brief Get the address of the client.
+ * Get the address of the client.
  *
  * This returns the IP of the client in the form of a presentable 
  * text string.

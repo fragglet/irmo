@@ -34,12 +34,12 @@ extern "C" {
  */
 
 /*!
- * \brief Get an error message 
+ * Get an error message.
  *
  * Returns the string containing the last reported error message
  * by the library.
  *
- * \return A constant string containing the error
+ * \return          A constant string containing the error.
  *
  */
 

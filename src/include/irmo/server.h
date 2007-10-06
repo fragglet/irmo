@@ -42,40 +42,38 @@ extern "C" {
  */
 
 /*!
- * \brief Create a new server
- *
  * Create a new \ref IrmoServer listening for connections on a
  * particular port.
  *
  * \param domain           The type of socket to listen on 
- *                         (see \ref IrmoSocketDomain)
- * \param port             The port number to listen on
+ *                         (see \ref IrmoSocketDomain).
+ * \param port             The port number to listen on.
  * \param world            The world the server will serve.
- * \param client_interface An interface object describing the 
+ * \param client_interface An \ref IrmoInterface describing the 
  *                         client world of the connecting clients.
- * \return                 A new IrmoServer or NULL if the function fails.
+ * \return                 A new \ref IrmoServer or NULL if the
+ *                         function failed.
  */
 
 IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
 			    IrmoWorld *world, IrmoInterface *client_interface);
 
 /*!
- * \brief Watch new connections to a server
+ * Watch new connections to a server.
  *
- * Add a new watch on a server. Whenever a new client connects to
- * the server, a callback function will be invoked.
+ * Whenever a new client connects to the server, a callback function
+ * will be invoked.
  *
- * \param server     The server to watch
- * \param func       The function to call
- * \param user_data  Some extra data to pass to the callback function
+ * \param server     The server to watch.
+ * \param func       The function to call.
+ * \param user_data  Some extra data to pass to the callback function.
  *
- * \return           A \ref IrmoCallback object representing the watch
+ * \return           A \ref IrmoCallback object representing the watch.
  */
 
 IrmoCallback *irmo_server_watch_connect(IrmoServer *server, 
 					IrmoClientCallback func,
 					void *user_data);
-
 
 /*!
  * Iterate over all clients connected to a server.
@@ -88,13 +86,11 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 IrmoIterator *irmo_server_iterate_clients(IrmoServer *server);
 
 /*!
- * \brief Reference a server object
- *
  * Add a reference to a server object. When a server is created its 
  * reference count is set to 1. References can be added with 
  * irmo_server_ref and removed with \ref irmo_server_unref.
- * When the reference count reaches
- * 0 the server is automatically shut down and destroyed.
+ * When the reference count reaches 0, the server is automatically
+ * shut down and destroyed.
  *
  * \param server   The server object to reference.
  * \sa irmo_server_unref
@@ -104,9 +100,9 @@ IrmoIterator *irmo_server_iterate_clients(IrmoServer *server);
 void irmo_server_ref(IrmoServer *server);
 
 /*!
- * \brief  Unreference a server object
+ * Unreference a server object.
  * 
- * \param server   The server object to unreference
+ * \param server   The server object to unreference.
  * \sa irmo_server_ref
  *
  */
@@ -114,27 +110,25 @@ void irmo_server_ref(IrmoServer *server);
 void irmo_server_unref(IrmoServer *server);
 
 /*!
- * \brief Shutdown a server
+ * Shutdown a server, blocking until all cliens are disconnected.
  *
- * This shuts down a server, blocking until all clients are disconnected.
- *
- * \param server	The server to shutdown
+ * \param server	The server to shutdown.
  */
 
 void irmo_server_shutdown(IrmoServer *server);
 
 /*! 
- * \brief Get the socket used by a server
+ * Get the socket used by a server.
  *
- * Returns a reference to the \ref IrmoSocket socket object being
- * used by a server.
+ * \param server        The server.
+ * \return              A pointer to the \ref IrmoSocket used by the server.
  *
  */
 
 IrmoSocket *irmo_server_get_socket(IrmoServer *server);
 
 /*!
- * \brief Check for new packets received at the server.
+ * Check for new packets received by a server.
  *
  * This function must be called periodically to check for new packets
  * received and send new packets required by the network

@@ -47,7 +47,7 @@ extern "C" {
  */
 
 /*!
- * \brief Establish a new connection to a server
+ * Establish a new connection to a server.
  *
  * This establishes a new connection to a server on a remote machine.
  * If successful, an IrmoConnection object is returned representing
@@ -68,7 +68,7 @@ extern "C" {
  *                       a world.
  * \param local_world    A local world to serve back to the server, or
  *                       NULL not to serve any world back.
- * \return               A IrmoConnection object representing the
+ * \return               An \ref IrmoConnection object representing the
  *                       connection, or NULL if a connection could not be
  *                       established.
  */
@@ -78,7 +78,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, char *location, int port,
 			     IrmoWorld *local_world);
 
 /*!
- * \brief Close a connection to a remote server
+ * Close a connection to a remote server.
  *
  * This closes a connection to a remote server. It blocks until the
  * server acknowledges the disconnect request or the connection
@@ -88,14 +88,14 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, char *location, int port,
  * closes the connection. To destroy the object, use the 
  * \ref irmo_connection_unref function.
  *
- * \param conn     The connection to close
+ * \param conn     The connection to close.
  *
  */
 
 void irmo_disconnect(IrmoConnection *conn);
 
 /*!
- * \brief Get the socket used by a IrmoConnection
+ * Get the socket used by a \ref IrmoConnection.
  * 
  * Returns the socket object being used by a connection for network
  * communications.
@@ -105,7 +105,7 @@ void irmo_disconnect(IrmoConnection *conn);
 IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn);
 
 /*!
- * \brief Check for new packets received from the server.
+ * Check for new packets received from a server.
  *
  * This function must be called periodically to check for new packets
  * received socket and send new packets required by the network
@@ -120,7 +120,7 @@ IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn);
 void irmo_connection_run(IrmoConnection *conn);
 
 /*!
- * \brief Get the world object for the remote server
+ * Get the world object for a remote server.
  *
  * Servers can serve a \ref IrmoWorld object to their connecting
  * clients. This function returns a reference to the local copy of 
@@ -134,13 +134,13 @@ void irmo_connection_run(IrmoConnection *conn);
 IrmoWorld *irmo_connection_get_world(IrmoConnection *conn);
 
 /*!
- * \brief Add a reference to an \ref IrmoConnection object
+ * Add a reference to an \ref IrmoConnection object.
  */
 
 void irmo_connection_ref(IrmoConnection *conn);
 
 /*!
- * \brief Remove a reference to an \ref IrmoConnection object
+ * Remove a reference to an \ref IrmoConnection object.
  */
 
 void irmo_connection_unref(IrmoConnection *conn);
