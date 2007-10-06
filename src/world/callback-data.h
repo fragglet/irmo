@@ -21,24 +21,16 @@
 // Callbacks
 //
 
-#ifndef IRMO_INTERNAL_CALLBACK_H
-#define IRMO_INTERNAL_CALLBACK_H
+#ifndef IRMO_WORLD_CALLBACK_DATA_H
+#define IRMO_WORLD_CALLBACK_DATA_H
 
 typedef struct _IrmoCallbackData IrmoCallbackData;
 
-#include <irmo/callback.h>
-
+#include "base/callback.h"
 #include "interface/interface.h"
 #include "net/client.h"
 
 #include "object.h"
-
-struct _IrmoCallback {
-	IrmoSListEntry **list;                 // callback list this belongs to
-	void *func;
-        void *user_data;
-	IrmoSListEntry *destroy_callbacks;
-};
 
 struct _IrmoCallbackData {
 
@@ -56,38 +48,32 @@ struct _IrmoCallbackData {
 	// this is only for the class callbackdata - redundant
 	// in object callbacks
 
-	IrmoSListEntry *new_callbacks;
+	IrmoCallbackList new_callbacks;
 	
 	// callbacks for if any variable is changed
 
-	IrmoSListEntry *class_callbacks;
+	IrmoCallbackList class_callbacks;
 
 	// callbacks for if a particular variable is changed
 	// this is redundant if objclass == NULL
 	
-	IrmoSListEntry **variable_callbacks;
+	IrmoCallbackList *variable_callbacks;
 
 	// callbacks called when object is destroyed
 	
-	IrmoSListEntry *destroy_callbacks;
+	IrmoCallbackList destroy_callbacks;
 };
 
-// generalised callback list functions
+IrmoCallbackData *irmo_callback_data_new(IrmoClass *objclass, 
+                                         IrmoCallbackData *parent_data);
+void irmo_callback_data_free(IrmoCallbackData *data);
+void irmo_callback_data_raise(IrmoCallbackData *data,
+                              IrmoObject *object,
+                              unsigned int variable_index);
+void irmo_callback_data_raise_destroy(IrmoCallbackData *data, 
+                                      IrmoObject *object);
+void irmo_callback_data_raise_new(IrmoCallbackData *data, 
+                                  IrmoObject *object);
 
-IrmoCallback *irmo_callbacklist_add(IrmoSListEntry **list, void *func, 
-				    void *user_data);
-void irmo_callbacklist_free(IrmoSListEntry **list);
-
-IrmoCallbackData *irmo_callbackdata_new(IrmoClass *objclass, 
-					IrmoCallbackData *parent_data);
-void irmo_callbackdata_free(IrmoCallbackData *data);
-void irmo_callbackdata_raise(IrmoCallbackData *data,
-			     IrmoObject *object,
-                             unsigned int variable_index);
-void irmo_callbackdata_raise_destroy(IrmoCallbackData *data, 
-				     IrmoObject *object);
-void irmo_callbackdata_raise_new(IrmoCallbackData *data, 
-				 IrmoObject *object);
-
-#endif /* #ifndef IRMO_INTERNAL_CALLBACK_H */
+#endif /* #ifndef IRMO_WORLD_CALLBACK_DATA_H */
 

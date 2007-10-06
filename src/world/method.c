@@ -21,7 +21,7 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "callback.h"
+#include "callback-data.h"
 #include "method.h"
 #include "world.h"
 
@@ -44,8 +44,8 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 		return NULL;
 	}
 
-	return irmo_callbacklist_add(&world->method_callbacks[method->index],
-				     callback, user_data);
+	return irmo_callback_list_add(&world->method_callbacks[method->index],
+                                      callback, user_data);
 }
 
 // Go through a list of IrmoInvokeCallback callback functions and invoke

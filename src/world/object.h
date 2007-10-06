@@ -28,7 +28,7 @@
 
 #include "interface/interface.h"
 
-#include "callback.h"
+#include "callback-data.h"
 
 // internal stuff:
 

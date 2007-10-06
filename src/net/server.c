@@ -158,7 +158,7 @@ void irmo_server_unref(IrmoServer *server)
 
 		// destroy callbacks
 
-		irmo_callbacklist_free(&server->connect_callbacks);
+		irmo_callback_list_free(&server->connect_callbacks);
 
 		irmo_socket_unref(server->socket);
 		
@@ -179,8 +179,8 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 	irmo_return_val_if_fail(server != NULL, NULL);
 	irmo_return_val_if_fail(func != NULL, NULL);
 	
-	return irmo_callbacklist_add(&server->connect_callbacks, 
-				     func, user_data);
+	return irmo_callback_list_add(&server->connect_callbacks, 
+				      func, user_data);
 }
 
 void irmo_client_callback_raise(IrmoSListEntry **list, IrmoClient *client)

@@ -28,7 +28,7 @@
 
 #include "interface/interface.h"
 
-#include "callback.h"
+#include "callback-data.h"
 #include "world.h"
 
 IrmoWorld *irmo_world_new(IrmoInterface *iface)
@@ -61,11 +61,11 @@ IrmoWorld *irmo_world_new(IrmoInterface *iface)
 		else
 			parent_data = NULL;
 		
-		world->callbacks[i] = irmo_callbackdata_new(iface->classes[i],
-							    parent_data);
+		world->callbacks[i] = irmo_callback_data_new(iface->classes[i],
+                                                             parent_data);
 	}
 
-	world->callbacks_all = irmo_callbackdata_new(NULL, NULL);
+	world->callbacks_all = irmo_callback_data_new(NULL, NULL);
 
 	// method callbacks
 	
@@ -120,16 +120,16 @@ void irmo_world_unref(IrmoWorld *world)
 		// delete callbacks
 		
 		for (i=0; i<world->iface->nclasses; ++i)
-			irmo_callbackdata_free(world->callbacks[i]);
+			irmo_callback_data_free(world->callbacks[i]);
 
-		irmo_callbackdata_free(world->callbacks_all);
+		irmo_callback_data_free(world->callbacks_all);
 		
 		free(world->callbacks);
 
 		// method callbacks
 		
 		for (i=0; i<world->iface->nmethods; ++i)
-			irmo_callbacklist_free(&world->method_callbacks[i]);
+			irmo_callback_list_free(&world->method_callbacks[i]);
 
 		free(world->method_callbacks);
 

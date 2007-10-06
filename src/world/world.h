@@ -29,7 +29,7 @@
 #include "net/client.h"
 #include "interface/interface.h"
 
-#include "callback.h"
+#include "callback-data.h"
 #include "object.h"
 
 // internals:

@@ -28,7 +28,7 @@
 #include "net/client.h"
 #include "net/sendatom.h"
 
-#include "callback.h"
+#include "callback-data.h"
 #include "object.h"
 #include "world.h"
 
@@ -107,7 +107,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	object->id = id;
 	object->objclass = objclass;
 	object->world = world;
-	object->callbacks = irmo_callbackdata_new(objclass, NULL);
+	object->callbacks = irmo_callback_data_new(objclass, NULL);
 	
 	// member variables:
 
@@ -127,9 +127,9 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 	// raise callback functions for new object creation
 
-	irmo_callbackdata_raise_new(world->callbacks[objclass->index],
-				    object);
-	irmo_callbackdata_raise_new(world->callbacks_all, object);
+	irmo_callback_data_raise_new(world->callbacks[objclass->index],
+                                     object);
+	irmo_callback_data_raise_new(world->callbacks_all, object);
 
 	// notify attached clients
 
@@ -185,12 +185,12 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	if (notify) {
 		// raise destroy callbacks
 		
-		irmo_callbackdata_raise_destroy(object->callbacks, object);
-		irmo_callbackdata_raise_destroy(object->world->callbacks
+		irmo_callback_data_raise_destroy(object->callbacks, object);
+		irmo_callback_data_raise_destroy(object->world->callbacks
 						   [object->objclass->index],
-						object);
-		irmo_callbackdata_raise_destroy(object->world->callbacks_all,
-						object);
+                                                 object);
+		irmo_callback_data_raise_destroy(object->world->callbacks_all,
+                                                 object);
 		
 		// notify connected clients
 		
@@ -215,7 +215,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	}
 
 	free(object->variables);
-	irmo_callbackdata_free(object->callbacks);
+	irmo_callback_data_free(object->callbacks);
 
 	// free variable time array
 
@@ -285,11 +285,11 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 
 	// call callback functions for change
 
-	irmo_callbackdata_raise(object->callbacks, object, var->index);
-	irmo_callbackdata_raise(object->world->callbacks[objclass->index],
-				object, variable);
-	irmo_callbackdata_raise(object->world->callbacks_all,
-				object, variable);
+	irmo_callback_data_raise(object->callbacks, object, var->index);
+	irmo_callback_data_raise(object->world->callbacks[objclass->index],
+                                 object, variable);
+	irmo_callback_data_raise(object->world->callbacks_all,
+                                 object, variable);
 	
 	// notify clients
 

@@ -107,7 +107,7 @@ static void irmo_client_destroy(IrmoClient *client)
 
 	// destroy callbacks
 	
-	irmo_callbacklist_free(&client->disconnect_callbacks);
+	irmo_callback_list_free(&client->disconnect_callbacks);
 
 	// clear send queue
 
@@ -318,8 +318,8 @@ IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
 	irmo_return_val_if_fail(client != NULL, NULL);
 	irmo_return_val_if_fail(func != NULL, NULL);
 	
-	return irmo_callbacklist_add(&client->disconnect_callbacks,
-				     func, user_data);
+	return irmo_callback_list_add(&client->disconnect_callbacks,
+                                      func, user_data);
 }
 
 int irmo_client_timeout_time(IrmoClient *client)
