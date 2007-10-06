@@ -51,7 +51,7 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 // Go through a list of IrmoInvokeCallback callback functions and invoke
 // them.
 
-static void invoke_method_callbacks(IrmoSListEntry **list,
+static void invoke_method_callbacks(IrmoCallbackList *list,
                                     IrmoMethodData *method_data)
 {
         IrmoSListIterator *iter;

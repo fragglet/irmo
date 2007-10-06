@@ -110,7 +110,7 @@ struct _IrmoClient {
 
 	// disconnect callbacks
 
-	IrmoSListEntry *disconnect_callbacks;
+	IrmoCallbackList disconnect_callbacks;
 
 	// estimations of round trip time mean and standard deviation
 	// (in milliseconds)

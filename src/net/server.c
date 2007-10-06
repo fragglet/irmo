@@ -183,7 +183,7 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 				      func, user_data);
 }
 
-void irmo_client_callback_raise(IrmoSListEntry **list, IrmoClient *client)
+void irmo_client_callback_raise(IrmoCallbackList *list, IrmoClient *client)
 {
         IrmoSListIterator *iter;
         IrmoClientCallback func;

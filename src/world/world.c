@@ -69,7 +69,7 @@ IrmoWorld *irmo_world_new(IrmoInterface *iface)
 
 	// method callbacks
 	
-	world->method_callbacks = irmo_new0(IrmoSListEntry *, iface->nmethods);
+	world->method_callbacks = irmo_new0(IrmoCallbackList, iface->nmethods);
 
 	return world;
 }

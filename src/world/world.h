@@ -85,7 +85,7 @@ struct _IrmoWorld {
 
 	// method callbacks
 
-	IrmoSListEntry **method_callbacks;
+	IrmoCallbackList *method_callbacks;
 };
 
 #endif /* #ifndef IRMO_WORLD_WORLD_H */
