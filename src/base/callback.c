@@ -77,11 +77,9 @@ static void irmo_callback_destroy(IrmoCallback *callback)
 
 void irmo_callback_unset(IrmoCallback *callback)
 {
-        IrmoCallbackList *list = callback->list;
-
 	irmo_return_if_fail(callback != NULL);
 
-	irmo_slist_remove_data(list, irmo_pointer_equal, callback);
+	irmo_slist_remove_data(callback->list, irmo_pointer_equal, callback);
 
 	irmo_callback_destroy(callback);
 }
