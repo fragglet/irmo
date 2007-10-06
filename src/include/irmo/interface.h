@@ -28,27 +28,27 @@ extern "C" {
 
 /*!
  *
- * An \ref IrmoInterface object defines an interface specifying
+ * An @ref IrmoInterface object defines an interface specifying
  * object classes and methods.
  *
- * The interface can then be used to create an \ref IrmoWorld
- * where the classes can be instantiated as \ref IrmoObject objects.
+ * The interface can then be used to create an @ref IrmoWorld
+ * where the classes can be instantiated as @ref IrmoObject objects.
  *
- * A new, empty, \ref IrmoInterface can be created through the 
- * \ref irmo_interface_new function.  However, this requires
+ * A new, empty, @ref IrmoInterface can be created through the 
+ * @ref irmo_interface_new function.  However, this requires
  * programatically creating a complete interface.  It may be
- * preferable to use the \ref ifaceparser, which allows
+ * preferable to use the @ref ifaceparser, which allows
  * IrmoInterface objects to be created by parsing an external
  * interface description file with a C-like syntax.
  *
- * \addtogroup iface
+ * @addtogroup iface
  * \{
  */
 
 /*!
  * Create a new, empty IrmoInterface object.
  *
- * \return              A new IrmoInterface object.
+ * @return              A new IrmoInterface object.
  */
 
 IrmoInterface *irmo_interface_new(void);
@@ -58,11 +58,11 @@ IrmoInterface *irmo_interface_new(void);
  *
  * Reference counting is implemented for IrmoInterface objects. Every time 
  * a new reference is kept, call this to increment the reference count.
- * When a reference is removed, call \ref irmo_interface_unref. The 
+ * When a reference is removed, call @ref irmo_interface_unref. The 
  * reference count starts at 1. When the reference count reaches 0, the
  * object is destroyed.
  *
- * \param iface		The object to reference.
+ * @param iface		The object to reference.
  */
 
 void irmo_interface_ref(IrmoInterface *iface);
@@ -70,20 +70,20 @@ void irmo_interface_ref(IrmoInterface *iface);
 /*!
  * Remove a reference to an IrmoInterface object.
  *
- * See \ref irmo_interface_ref
+ * See @ref irmo_interface_ref
  *
- * \param iface		The object to unreference.
+ * @param iface		The object to unreference.
  */
 
 void irmo_interface_unref(IrmoInterface *iface);
 
 /*!
- * Get the \ref IrmoClass object representing a particular class.
+ * Get the @ref IrmoClass object representing a particular class.
  *
- * \param iface		The interface.
- * \param class_name 	The name of the class.
+ * @param iface		The interface.
+ * @param class_name 	The name of the class.
  *
- * \return 		A pointer to the object or NULL if it does
+ * @return 		A pointer to the object or NULL if it does
  *                      not exist.
  */
 
@@ -91,22 +91,22 @@ IrmoClass *irmo_interface_get_class(IrmoInterface *iface,
 					 char *class_name);
 
 /*!
- * Iterate over all classes in an \ref IrmoInterface.
+ * Iterate over all classes in an @ref IrmoInterface.
  * 
- * \param iface		The interface.
- * \return              Pointer to an \ref IrmoIterator to iterate over
+ * @param iface		The interface.
+ * @return              Pointer to an @ref IrmoIterator to iterate over
  *                      all classes in the interface.
  */
 
 IrmoIterator *irmo_interface_iterate_classes(IrmoInterface *iface);
 
 /*!
- * Get the \ref IrmoMethod object representing a particular method.
+ * Get the @ref IrmoMethod object representing a particular method.
  *
- * \param iface		The interface.
- * \param method_name 	The name of the method.
+ * @param iface		The interface.
+ * @param method_name 	The name of the method.
  *
- * \return 		A pointer to the object or NULL if it does
+ * @return 		A pointer to the object or NULL if it does
  *                      not exist.
  */
 
@@ -116,8 +116,8 @@ IrmoMethod *irmo_interface_get_method(IrmoInterface *iface,
 /*!
  * Return the number of classes in an interface.
  *
- * \param iface         The interface.
- * \return              The number of classes in the interface.
+ * @param iface         The interface.
+ * @return              The number of classes in the interface.
  */
 
 int irmo_interface_num_classes(IrmoInterface *iface);
@@ -125,8 +125,8 @@ int irmo_interface_num_classes(IrmoInterface *iface);
 /*!
  * Return the number of methods in an interface.
  *
- * \param iface         The interface.
- * \return              The number of methods in the interface.
+ * @param iface         The interface.
+ * @return              The number of methods in the interface.
  */
 
 int irmo_interface_num_methods(IrmoInterface *iface);
@@ -134,33 +134,33 @@ int irmo_interface_num_methods(IrmoInterface *iface);
 /*!
  * Iterate over all methods in an interface.
  * 
- * \param iface		The interface.
- * \return              Pointer to an \ref IrmoIterator object to iterate 
+ * @param iface		The interface.
+ * @return              Pointer to an @ref IrmoIterator object to iterate 
  *                      over all methods in the interface.
  */
 
 IrmoIterator *irmo_interface_iterate_methods(IrmoInterface *iface);
 
 /*!
- * Create a new method in an \ref IrmoInterface.
+ * Create a new method in an @ref IrmoInterface.
  *
- * \param iface         The interface.
- * \param name          The name of the new method.
+ * @param iface         The interface.
+ * @param name          The name of the new method.
  *
- * \return              A pointer to the new method.
+ * @return              A pointer to the new method.
  */
 
 IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
                                       char *name);
 
 /*!
- * Create a new class in an \ref IrmoInterface.
+ * Create a new class in an @ref IrmoInterface.
  *
- * \param iface         The interface.
- * \param name          The name of the new class.
- * \param parent        Parent class, or NULL for no parent.
+ * @param iface         The interface.
+ * @param name          The name of the new class.
+ * @param parent        Parent class, or NULL for no parent.
  *
- * \return              A pointer to the new class.
+ * @return              A pointer to the new class.
  */
 
 IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
@@ -168,16 +168,16 @@ IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
                                     IrmoClass *parent);
 
 /*!
- * Serialize the contents of a \ref IrmoInterface into a 
+ * Serialize the contents of a @ref IrmoInterface into a 
  * data buffer.
  *
- * \param iface         The interface.
- * \param data          Pointer to a variable to store a pointer to the
+ * @param iface         The interface.
+ * @param data          Pointer to a variable to store a pointer to the
  *                      resulting data buffer.
- * \param data_len      Pointer to a variable to store the length of
+ * @param data_len      Pointer to a variable to store the length of
  *                      the data buffer.
  *
- * \sa irmo_interface_load
+ * @sa irmo_interface_load
  */
 
 void irmo_interface_dump(IrmoInterface *iface,
@@ -185,13 +185,13 @@ void irmo_interface_dump(IrmoInterface *iface,
                          unsigned int *data_len);
 
 /*!
- * Create a new \ref IrmoInterface, reading the contents from
- * a data buffer serialized using \ref irmo_interface_dump.
+ * Create a new @ref IrmoInterface, reading the contents from
+ * a data buffer serialized using @ref irmo_interface_dump.
  *
- * \param data          Pointer to the data buffer containing the data
+ * @param data          Pointer to the data buffer containing the data
  *                      to load.
- * \param data_len      Length of the data buffer.
- * \return              A new \ref IrmoInterface object, or NULL if
+ * @param data_len      Length of the data buffer.
+ * @return              A new @ref IrmoInterface object, or NULL if
  *                      an error occurred while reading the data.
  */
 
@@ -199,13 +199,13 @@ IrmoInterface *irmo_interface_load(void *data,
                                    unsigned int data_len);
 
 /*! 
- * Get the name of a \ref IrmoClass object.
+ * Get the name of a @ref IrmoClass object.
  */
 
 char *irmo_class_get_name(IrmoClass *klass);
 
 /*!
- * Get the number of member variables in an \ref IrmoClass.
+ * Get the number of member variables in an @ref IrmoClass.
  *
  * This returns only the number of unique variables. Variables 
  * inherited from parent classes are not included.
@@ -216,20 +216,20 @@ int irmo_class_num_variables(IrmoClass *klass);
 /*!
  * Get the parent class of a class.
  *
- * \return              The parent class, or NULL if the class is
+ * @return              The parent class, or NULL if the class is
  *                      does not have a parent class.
  */
 
 IrmoClass *irmo_class_parent_class(IrmoClass *klass);
 
 /*!
- * Get the \ref IrmoClassVar object representing a particular class
+ * Get the @ref IrmoClassVar object representing a particular class
  * variable.
  *
- * \param klass		The \ref IrmoClass object representing the class.
- * \param var_name	The variable name.
+ * @param klass		The @ref IrmoClass object representing the class.
+ * @param var_name	The variable name.
  *
- * \return 		A pointer to the object or NULL if it does not exist.
+ * @return 		A pointer to the object or NULL if it does not exist.
  */
 
 IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name);
@@ -237,11 +237,11 @@ IrmoClassVar *irmo_class_get_variable(IrmoClass *klass, char *var_name);
 /*!
  * Create a new class variable in the given class.
  *
- * \param klass         The \ref IrmoClass object representing the class.
- * \param var_name      The name of the new variable.
- * \param var_type      The type of the new variable.
+ * @param klass         The @ref IrmoClass object representing the class.
+ * @param var_name      The name of the new variable.
+ * @param var_type      The type of the new variable.
  *
- * \return              A pointer to the new IrmoClassVar object.
+ * @return              A pointer to the new IrmoClassVar object.
  */
 
 IrmoClassVar *irmo_class_new_variable(IrmoClass *klass,
@@ -249,13 +249,13 @@ IrmoClassVar *irmo_class_new_variable(IrmoClass *klass,
                                       IrmoValueType var_type);
 
 /*!
- * Add a reference to a \ref IrmoClass object.
+ * Add a reference to a @ref IrmoClass object.
  */
 
 void irmo_class_ref(IrmoClass *klass);
 
 /*!
- * Remove a reference to a \ref IrmoClass object.
+ * Remove a reference to a @ref IrmoClass object.
  */
 
 void irmo_class_unref(IrmoClass *klass);
@@ -263,11 +263,11 @@ void irmo_class_unref(IrmoClass *klass);
 /*!
  * Iterate over variables in a class.
  *
- * \param klass		  The class object.
- * \param include_parent  If non-zero, iterate over variables inherited
+ * @param klass		  The class object.
+ * @param include_parent  If non-zero, iterate over variables inherited
  *                        from the parent class as well as those variables
  *                        specific to this class.
- * \return                Pointer to an \ref IrmoIterator object to iterate
+ * @return                Pointer to an @ref IrmoIterator object to iterate
  *                        over all variables in the class.
  */
 
@@ -275,31 +275,31 @@ IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass,
                                            int include_parent);
 
 /*!
- * Get the name of a \ref IrmoClassVar object.
+ * Get the name of a @ref IrmoClassVar object.
  */
 
 char *irmo_class_var_get_name(IrmoClassVar *var);
 
 /*!
- * Get the type of a \ref IrmoClassVar object.
+ * Get the type of a @ref IrmoClassVar object.
  */
 
 IrmoValueType irmo_class_var_get_type(IrmoClassVar *var);
 
 /*!
- * Add a reference to an \ref IrmoClassVar object.
+ * Add a reference to an @ref IrmoClassVar object.
  */
 
 void irmo_class_var_ref(IrmoClassVar *var);
 
 /*!
- * Remove a reference to an \ref IrmoClassVar object.
+ * Remove a reference to an @ref IrmoClassVar object.
  */
 
 void irmo_class_var_unref(IrmoClassVar *var);
 
 /*!
- * Get the name of a \ref IrmoMethod.
+ * Get the name of a @ref IrmoMethod.
  */
 
 char *irmo_method_get_name(IrmoMethod *method);
@@ -311,22 +311,22 @@ char *irmo_method_get_name(IrmoMethod *method);
 int irmo_method_num_arguments(IrmoMethod *method);
 
 /*!
- * Get the \ref IrmoMethodArg object representing a particular 
+ * Get the @ref IrmoMethodArg object representing a particular 
  * method argument.
  *
- * \param method	The \ref IrmoMethod object representing the method.
- * \param arg_name	The argument name.
+ * @param method	The @ref IrmoMethod object representing the method.
+ * @param arg_name	The argument name.
  *
- * \return 		A pointer to the object or NULL if it does not exist.
+ * @return 		A pointer to the object or NULL if it does not exist.
  */
 
 IrmoMethodArg *irmo_method_get_argument(IrmoMethod *method, char *arg_name);
 
 /*!
- * Get the \ref IrmoMethodArg object representing a particular 
+ * Get the @ref IrmoMethodArg object representing a particular 
  * method argument by number.
  *
- * This is the same as \ref irmo_method_get_argument, but finds the argument
+ * This is the same as @ref irmo_method_get_argument, but finds the argument
  * by the number of the argument.
  */
 
@@ -336,8 +336,8 @@ IrmoMethodArg *irmo_method_get_argument2(IrmoMethod *method,
 /*!
  * Iterate over all arguments to a method.
  * 
- * \param method	The class object.
- * \return              Pointer to an \ref IrmoIterator object to iterate over
+ * @param method	The class object.
+ * @return              Pointer to an @ref IrmoIterator object to iterate over
  *                      all arguments in the method.
  */
 
@@ -346,11 +346,11 @@ IrmoIterator *irmo_method_iterate_arguments(IrmoMethod *method);
 /*!
  * Add a new argument to a method.
  *
- * \param method        The method.
- * \param arg_name      The name of the new argument.
- * \param arg_type      The type of the new argument.
+ * @param method        The method.
+ * @param arg_name      The name of the new argument.
+ * @param arg_type      The type of the new argument.
  *
- * \return              A new \ref IrmoMethodArg object.
+ * @return              A new @ref IrmoMethodArg object.
  */
 
 IrmoMethodArg *irmo_method_new_argument(IrmoMethod *method,
@@ -358,13 +358,13 @@ IrmoMethodArg *irmo_method_new_argument(IrmoMethod *method,
                                         IrmoValueType arg_type);
 
 /*!
- * Add a reference to an \ref IrmoMethod object.
+ * Add a reference to an @ref IrmoMethod object.
  */
 
 void irmo_method_ref(IrmoMethod *method);
 
 /*!
- * Remove a reference to an \ref IrmoMethod object.
+ * Remove a reference to an @ref IrmoMethod object.
  */
 
 void irmo_method_unref(IrmoMethod *method);
@@ -382,13 +382,13 @@ char *irmo_method_arg_get_name(IrmoMethodArg *arg);
 IrmoValueType irmo_method_arg_get_type(IrmoMethodArg *arg);
 
 /*!
- * Add a reference to an \ref IrmoMethodArg object.
+ * Add a reference to an @ref IrmoMethodArg object.
  */
 
 void irmo_method_arg_ref(IrmoMethodArg *arg);
 
 /*!
- * Remove a reference to an \ref IrmoMethodArg object.
+ * Remove a reference to an @ref IrmoMethodArg object.
  */
 
 void irmo_method_arg_unref(IrmoMethodArg *arg);

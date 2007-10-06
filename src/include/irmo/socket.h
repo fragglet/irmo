@@ -29,22 +29,22 @@ extern "C" {
 /*!
  *
  * Socket objects listen on a particular UDP port. Servers (see
- * \ref IrmoServer) can then be attached to the socket to allow
+ * @ref IrmoServer) can then be attached to the socket to allow
  * connections. Multiple servers can listen on the same socket.
  * Connecting clients will be connected to a different server
  * depending on the hostname they specify. It is therefore 
  * possible to set up a "virtual host" system through this
  * mechanism.
  *
- * \addtogroup socket
+ * @addtogroup socket
  * \{
  */
 
 /*!
  * Add a reference to a socket.
  *
- * \param sock  Socket to reference.
- * \sa irmo_socket_unref
+ * @param sock  Socket to reference.
+ * @sa irmo_socket_unref
  *
  */
 
@@ -56,8 +56,8 @@ void irmo_socket_ref(IrmoSocket *sock);
  * The number of references to a socket is counted. The count starts at
  * 1. When the count reaches 0, the socket is destroyed.
  *
- * \param sock  Socket to unreference.
- * \sa irmo_socket_ref
+ * @param sock  Socket to unreference.
+ * @sa irmo_socket_ref
  */
 
 void irmo_socket_unref(IrmoSocket *sock);
@@ -69,7 +69,7 @@ void irmo_socket_unref(IrmoSocket *sock);
  * received by the socket and send new packets required by the network
  * protocol.
  *
- * \param sock   The socket to update.
+ * @param sock   The socket to update.
  */
 
 void irmo_socket_run(IrmoSocket *sock);
@@ -80,9 +80,9 @@ void irmo_socket_run(IrmoSocket *sock);
  * This function blocks on an array of sockets, returning when data 
  * arrives at any of the sockets.
  *
- * \param 	sockets		An array of sockets to block on.
- * \param	nsockets	Number of sockets in the array.
- * \param 	timeout		Maximum time to block for, in milliseconds.
+ * @param 	sockets		An array of sockets to block on.
+ * @param	nsockets	Number of sockets in the array.
+ * @param 	timeout		Maximum time to block for, in milliseconds.
  * 				Specify 0 to block forever.
  */
 
@@ -91,11 +91,11 @@ void irmo_socket_block_set(IrmoSocket **sockets, int nsockets, int timeout);
 /*!
  * Block on a single socket.
  *
- * This is the same as \ref irmo_socket_block, except it blocks on
+ * This is the same as @ref irmo_socket_block, except it blocks on
  * a single socket.
  *
- * \param 	sock  		The socket to block on.
- * \param	timeout		Maximum time to block for, in milliseconds,
+ * @param 	sock  		The socket to block on.
+ * @param	timeout		Maximum time to block for, in milliseconds,
  * 				Specify 0 to block forever.
  */
 

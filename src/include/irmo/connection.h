@@ -27,9 +27,9 @@ extern "C" {
 #endif
 
 /*!
- * This is the client side interface. \ref IrmoConnection objects
- * represent an open connection to a remote \ref IrmoServer.
- * The key function is \ref irmo_connect which establishes a new
+ * This is the client side interface. @ref IrmoConnection objects
+ * represent an open connection to a remote @ref IrmoServer.
+ * The key function is @ref irmo_connect which establishes a new
  * connection.
  * 
  * In using irmo_connect, the 'iface' object is used to specify the
@@ -42,7 +42,7 @@ extern "C" {
  * valid IrmoWorld object. The type here must also be identical to
  * that expected by the server.
  *
- * \addtogroup connection
+ * @addtogroup connection
  * \{
  */
 
@@ -55,20 +55,20 @@ extern "C" {
  *
  * Care must be taken with the interface and the local 
  * world: their types must match those expected by the server.
- * (see \ref irmo_server_new)
+ * (see @ref irmo_server_new)
  *
- * \param domain         Domain of the socket to use (see \ref IrmoSocketDomain).
+ * @param domain         Domain of the socket to use (see @ref IrmoSocketDomain).
  *			 Use IRMO_SOCKET_AUTO to try to connect on both
  *                       IPv4 and IPv6.
- * \param location       The hostname of the remote machine to connect to.
- * \param port           The port on the remote machine on which the server
+ * @param location       The hostname of the remote machine to connect to.
+ * @param port           The port on the remote machine on which the server
  *                       is running.
- * \param iface          An interface describing the remote world served by
+ * @param iface          An interface describing the remote world served by
  *                       the server, or NULL if the server is not serving
  *                       a world.
- * \param local_world    A local world to serve back to the server, or
+ * @param local_world    A local world to serve back to the server, or
  *                       NULL not to serve any world back.
- * \return               An \ref IrmoConnection object representing the
+ * @return               An @ref IrmoConnection object representing the
  *                       connection, or NULL if a connection could not be
  *                       established.
  */
@@ -84,18 +84,18 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, char *location, int port,
  * server acknowledges the disconnect request or the connection
  * times out.
  *
- * Note that this does not destroy the \ref IrmoConnection object, only
+ * Note that this does not destroy the @ref IrmoConnection object, only
  * closes the connection. To destroy the object, use the 
- * \ref irmo_connection_unref function.
+ * @ref irmo_connection_unref function.
  *
- * \param conn     The connection to close.
+ * @param conn     The connection to close.
  *
  */
 
 void irmo_disconnect(IrmoConnection *conn);
 
 /*!
- * Get the socket used by a \ref IrmoConnection.
+ * Get the socket used by a @ref IrmoConnection.
  * 
  * Returns the socket object being used by a connection for network
  * communications.
@@ -114,7 +114,7 @@ IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn);
  * This is identical to:
  *   irmo_socket_run(irmo_connection_get_socket(conn));
  *
- * \sa irmo_socket_run
+ * @sa irmo_socket_run
  */
 
 void irmo_connection_run(IrmoConnection *conn);
@@ -122,25 +122,25 @@ void irmo_connection_run(IrmoConnection *conn);
 /*!
  * Get the world object for a remote server.
  *
- * Servers can serve a \ref IrmoWorld object to their connecting
+ * Servers can serve a @ref IrmoWorld object to their connecting
  * clients. This function returns a reference to the local copy of 
  * the remote world (or NULL if the server is not serving a
  * world)
  *
- * \sa irmo_server_new
- * \sa irmo_client_get_world
+ * @sa irmo_server_new
+ * @sa irmo_client_get_world
  */
 
 IrmoWorld *irmo_connection_get_world(IrmoConnection *conn);
 
 /*!
- * Add a reference to an \ref IrmoConnection object.
+ * Add a reference to an @ref IrmoConnection object.
  */
 
 void irmo_connection_ref(IrmoConnection *conn);
 
 /*!
- * Remove a reference to an \ref IrmoConnection object.
+ * Remove a reference to an @ref IrmoConnection object.
  */
 
 void irmo_connection_unref(IrmoConnection *conn);

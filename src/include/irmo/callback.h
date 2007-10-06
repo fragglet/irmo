@@ -34,23 +34,23 @@ extern "C" {
  * Various parts of the library allow callback watches to be placed 
  * on particular events. When the event occurs, the callback function
  * will be invoked. These watches are represented by a 
- * \ref IrmoCallback object.
+ * @ref IrmoCallback object.
  *
- * \addtogroup callback
+ * @addtogroup callback
  * \{
  */
 
 /*!
  * Unset a callback watch. This cancels a watch which has been set.
  *
- * \param callback   The callback to destroy.
+ * @param callback   The callback to destroy.
  *
  */
 
 void irmo_callback_unset(IrmoCallback *callback);
 
 /*!
- * Set a callback for when a \ref IrmoCallback is destroyed.
+ * Set a callback for when a @ref IrmoCallback is destroyed.
  *
  * This sets a watch which invokes a callback when a callback object 
  * is destroyed, either from being explicitely unset or if the object 
@@ -59,10 +59,10 @@ void irmo_callback_unset(IrmoCallback *callback);
  * This is mostly useful when writing language bindings so that the
  * language can know when to free a callback context.
  *
- * \param callback   The callback to watch.
- * \param func       Function to invoke.
- * \param user_data  Extra data to pass to the function.
- * \return           A new callback object representing the watch.
+ * @param callback   The callback to watch.
+ * @param func       Function to invoke.
+ * @param user_data  Extra data to pass to the function.
+ * @return           A new callback object representing the watch.
  *
  */
 

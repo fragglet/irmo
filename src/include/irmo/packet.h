@@ -25,7 +25,7 @@ extern "C" {
  * Safe packet handling code.  Packet buffers are read/written to
  * entirely through these safe routines that prevent buffer overflow.
  *
- * \addtogroup packet
+ * @addtogroup packet
  * \{
  */
 
@@ -44,7 +44,7 @@ typedef struct _IrmoPacket IrmoPacket;
 /*!
  * Allocate a new empty packet.
  *
- * \return                 Pointer to a new packet structure.
+ * @return                 Pointer to a new packet structure.
  */
 
 IrmoPacket *irmo_packet_new(void);
@@ -54,9 +54,9 @@ IrmoPacket *irmo_packet_new(void);
  * be used to parse the data in the array provided.  No copy is 
  * made of the array.
  *
- * \param data       Pointer to the data buffer to parse.
- * \param data_len   Length of the data buffer.
- * \return           Pointer to a new IrmoPacket structure.
+ * @param data       Pointer to the data buffer to parse.
+ * @param data_len   Length of the data buffer.
+ * @return           Pointer to a new IrmoPacket structure.
  */
 
 IrmoPacket *irmo_packet_new_from(unsigned char *data, int data_len);
@@ -64,7 +64,7 @@ IrmoPacket *irmo_packet_new_from(unsigned char *data, int data_len);
 /*!
  * Free a packet.
  *
- * \param packet     The packet to free.
+ * @param packet     The packet to free.
  */
 
 void irmo_packet_free(IrmoPacket *packet);
@@ -72,9 +72,9 @@ void irmo_packet_free(IrmoPacket *packet);
 /*!
  * Write a single byte (8-bit integer) to the packet.
  *
- * \param packet     The packet to write to.
- * \param i          Value to write.
- * \return           Non-zero if successful.
+ * @param packet     The packet to write to.
+ * @param i          Value to write.
+ * @return           Non-zero if successful.
  */
 
 int irmo_packet_writei8(IrmoPacket *packet, unsigned int i);
@@ -82,9 +82,9 @@ int irmo_packet_writei8(IrmoPacket *packet, unsigned int i);
 /*!
  * Write a 16-bit integer to the packet.
  *
- * \param packet     The packet to write to.
- * \param i          Value to write.
- * \return           Non-zero if successful.
+ * @param packet     The packet to write to.
+ * @param i          Value to write.
+ * @return           Non-zero if successful.
  */
 
 int irmo_packet_writei16(IrmoPacket *packet, unsigned int i);
@@ -92,9 +92,9 @@ int irmo_packet_writei16(IrmoPacket *packet, unsigned int i);
 /*!
  * Write a 32-bit integer to the packet.
  *
- * \param packet     The packet to write to.
- * \param i          Value to write.
- * \return           Non-zero if successful.
+ * @param packet     The packet to write to.
+ * @param i          Value to write.
+ * @return           Non-zero if successful.
  */
 
 int irmo_packet_writei32(IrmoPacket *packet, unsigned int i);
@@ -102,9 +102,9 @@ int irmo_packet_writei32(IrmoPacket *packet, unsigned int i);
 /*!
  * Write a NUL-terminated string to the packet.
  *
- * \param packet     The packet to write to.
- * \param s          Value to write.
- * \return           Non-zero if successful.
+ * @param packet     The packet to write to.
+ * @param s          Value to write.
+ * @return           Non-zero if successful.
  */
 
 int irmo_packet_writestring(IrmoPacket *packet, char *s);
@@ -112,9 +112,9 @@ int irmo_packet_writestring(IrmoPacket *packet, char *s);
 /*!
  * Read a single byte (8-bit integer) from the packet.
  *
- * \param packet     The packet to read from.
- * \param i          Pointer to a variable to store the value read.
- * \return           Non-zero if successful.
+ * @param packet     The packet to read from.
+ * @param i          Pointer to a variable to store the value read.
+ * @return           Non-zero if successful.
  */
 
 int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i);
@@ -122,9 +122,9 @@ int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i);
 /*!
  * Read a 16-bit integer from the packet.
  *
- * \param packet     The packet to read from.
- * \param i          Pointer to a variable to store the value read.
- * \return           Non-zero if successful.
+ * @param packet     The packet to read from.
+ * @param i          Pointer to a variable to store the value read.
+ * @return           Non-zero if successful.
  */
 
 int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i);
@@ -132,9 +132,9 @@ int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i);
 /*!
  * Read a 32-bit integer from the packet.
  *
- * \param packet     The packet to read from.
- * \param i          Pointer to a variable to store the value read.
- * \return           Non-zero if successful.
+ * @param packet     The packet to read from.
+ * @param i          Pointer to a variable to store the value read.
+ * @return           Non-zero if successful.
  */
 
 int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i);
@@ -144,43 +144,43 @@ int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i);
  * The pointer returned points within the packet buffer; it is therefore
  * valid until the packet is freed.
  *
- * \param packet     The packet to read from.
- * \return           A pointer to the string read, or NULL if unsuccessful.
+ * @param packet     The packet to read from.
+ * @return           A pointer to the string read, or NULL if unsuccessful.
  */
 
 char *irmo_packet_readstring(IrmoPacket *packet);
 
 /*!
- * Identical to \ref irmo_packet_read_value except that no value is stored
+ * Identical to @ref irmo_packet_read_value except that no value is stored
  * or returned; this function simply returns whether a valid value was read
  * successfully.
  *
- * \param packet     The packet to read from.
- * \param type       Type of value to read.
- * \return           Non-zero for success, or zero for failure.
+ * @param packet     The packet to read from.
+ * @param type       Type of value to read.
+ * @return           Non-zero for success, or zero for failure.
  */
 
 int irmo_packet_verify_value(IrmoPacket *packet, IrmoValueType type);
 
 /*!
- * Read an \ref IrmoValue from a packet.
+ * Read an @ref IrmoValue from a packet.
  *
- * \param packet     The packet to read from.
- * \param value      Pointer to an \ref IrmoValue structure to read the
+ * @param packet     The packet to read from.
+ * @param value      Pointer to an @ref IrmoValue structure to read the
  *                   result into.
- * \param type       Type of value to read.
+ * @param type       Type of value to read.
  */
 
 void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
 			    IrmoValueType type);
 
 /*! 
- * Write an \ref IrmoValue to a packet.
+ * Write an @ref IrmoValue to a packet.
  *
- * \param packet     The packet to write into.
- * \param value      Pointer to an \ref IrmoValue structure containing
+ * @param packet     The packet to write into.
+ * @param value      Pointer to an @ref IrmoValue structure containing
  *                   the data to write.
- * \param type       Type of value to write.
+ * @param type       Type of value to write.
  */
 
 void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value, 
@@ -189,8 +189,8 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 /*!
  * Get the packet buffer used by a packet.
  *
- * \param packet     The packet.
- * \return           A pointer to the packet buffer.
+ * @param packet     The packet.
+ * @return           A pointer to the packet buffer.
  */
 
 unsigned char *irmo_packet_get_buffer(IrmoPacket *packet);
@@ -198,8 +198,8 @@ unsigned char *irmo_packet_get_buffer(IrmoPacket *packet);
 /*!
  * Get the length of a packet.
  *
- * \param packet     The packet.
- * \return           The length of the packet.
+ * @param packet     The packet.
+ * @return           The length of the packet.
  */
 
 unsigned int irmo_packet_get_length(IrmoPacket *packet);
@@ -207,8 +207,8 @@ unsigned int irmo_packet_get_length(IrmoPacket *packet);
 /*!
  * Get the current read/write position in a packet.
  *
- * \param packet     The packet.
- * \return           The current offset (in bytes) from the start of the
+ * @param packet     The packet.
+ * @return           The current offset (in bytes) from the start of the
  *                   packet where we are reading/writing data.
  */
 
@@ -219,9 +219,9 @@ unsigned int irmo_packet_get_position(IrmoPacket *packet);
  * The position must be within the range of the length of the packet
  * (pos < irmo_packet_get_length(packet))
  *
- * \param packet     The packet.
- * \param pos        The position to set within the packet.
- * \return           Non-zero if successful, zero if unsuccessful.
+ * @param packet     The packet.
+ * @param pos        The position to set within the packet.
+ * @return           Non-zero if successful, zero if unsuccessful.
  */
 
 int irmo_packet_set_position(IrmoPacket *packet, unsigned int pos);

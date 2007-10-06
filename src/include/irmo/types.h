@@ -36,7 +36,7 @@ extern "C" {
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup iterator
+ * @addtogroup iterator
  * \{
  */
 
@@ -55,13 +55,13 @@ typedef struct _IrmoIterator IrmoIterator;
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup iface
+ * @addtogroup iface
  * \{
  */
 
 /*!
  * An interface is a collection of classes and methods that form
- * an \ref IrmoWorld.
+ * an @ref IrmoWorld.
  */
 
 typedef struct _IrmoInterface IrmoInterface;
@@ -117,7 +117,7 @@ typedef void (*IrmoMethodArgCallback)(IrmoMethodArg *arg, void *user_data);
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup world
+ * @addtogroup world
  * \{
  */
 
@@ -128,10 +128,10 @@ typedef struct _IrmoWorld IrmoWorld;
 /*!
  * A numerical object identifier.
  *
- * All objects in a \ref IrmoWorld have a unique number assigned to
+ * All objects in a @ref IrmoWorld have a unique number assigned to
  * them. This can be used to refer to objects by their number. An
  * object can be obtained from its identifier through the 
- * \ref irmo_world_get_object_for_id function.
+ * @ref irmo_world_get_object_for_id function.
  */
 
 typedef unsigned int IrmoObjectID;
@@ -146,7 +146,7 @@ typedef unsigned int IrmoObjectID;
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup method
+ * @addtogroup method
  * \{
  */
 
@@ -167,10 +167,10 @@ typedef struct _IrmoMethodData IrmoMethodData;
  * When a method invocation is received from a client, a callback function
  * of this type is invoked.
  *
- * \param data      A \ref IrmoMethodData object holding data about the
+ * @param data      A @ref IrmoMethodData object holding data about the
  *                  invoked method.
- * \param user_data A pointer to user defined piece of memory specified in
- *                  the \ref irmo_world_method_watch call used to set
+ * @param user_data A pointer to user defined piece of memory specified in
+ *                  the @ref irmo_world_method_watch call used to set
  *                  the callback.
  */
 
@@ -186,7 +186,7 @@ typedef void (*IrmoInvokeCallback)(IrmoMethodData *data,
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup object
+ * @addtogroup object
  * \{
  */
 
@@ -222,7 +222,7 @@ typedef void (*IrmoObjCallback) (IrmoObject *object, void *user_data);
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup socket
+ * @addtogroup socket
  * \{
  */
 
@@ -254,7 +254,7 @@ typedef enum {
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup server
+ * @addtogroup server
  * \{
  */
 
@@ -273,12 +273,12 @@ typedef struct _IrmoServer IrmoServer;
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup client
+ * @addtogroup client
  * \{
  */
 
 /*!
- * A client connected to an \ref IrmoServer server.
+ * A client connected to an @ref IrmoServer server.
  */
 
 typedef struct _IrmoClient IrmoClient;
@@ -301,17 +301,17 @@ typedef void (*IrmoClientCallback) (IrmoClient *client, void *user_data);
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup connection
+ * @addtogroup connection
  * \{
  */
 
 /*!
  * A connection to a remote server.
  *
- * This represents a connection to an \ref IrmoServer server running
+ * This represents a connection to an @ref IrmoServer server running
  * on a remote machine.
  *
- * This is exactly the same as an \ref IrmoClient. Internally the remote
+ * This is exactly the same as an @ref IrmoClient. Internally the remote
  * server is seen as a client connected back to the local machine.
  */
 
@@ -326,7 +326,7 @@ typedef IrmoClient IrmoConnection;
 //---------------------------------------------------------------------
 
 /*!
- * \addtogroup callback
+ * @addtogroup callback
  * \{
  */
 
@@ -335,7 +335,7 @@ typedef IrmoClient IrmoConnection;
  * 
  * When a new callback watch is created, an IrmoCallback object is
  * returned representing the watch. The watch can be unset with
- * \ref irmo_callback_unset.
+ * @ref irmo_callback_unset.
  */
 
 typedef struct _IrmoCallback IrmoCallback;
@@ -343,7 +343,7 @@ typedef struct _IrmoCallback IrmoCallback;
 /*!
  * Function invoked for watching callbacks.
  *
- * See \ref irmo_callback_watch_destroy.
+ * See @ref irmo_callback_watch_destroy.
  */
 
 typedef void (*IrmoCallbackCallback)(IrmoCallback *callback,

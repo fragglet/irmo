@@ -29,22 +29,22 @@ extern "C" {
 /*!
  * The external irmo-interface-parser library allows interfaces to be
  * parsed from external text interface description files, with
- * a syntax similar to C syntax.  The \ref irmo_interface_parse
+ * a syntax similar to C syntax.  The @ref irmo_interface_parse
  * function parses an interface description file, creating a new
- * \ref IrmoInterface object.
+ * @ref IrmoInterface object.
  *
- * \addtogroup ifaceparser
+ * @addtogroup ifaceparser
  * \{
  */
 
 /*!
- * Create a new IrmoInterface object, from parsing an interface file.
+ * Create a new @ref IrmoInterface object, from parsing an interface file.
  *
  * A file is parsed with the interface described in a simple
  * C-style syntax.
  *
- * \param filename	The filename of the interface file.
- * \return		A new IrmoInterface object or NULL for failure.
+ * @param filename	The filename of the interface file.
+ * @return		A new IrmoInterface object or NULL for failure.
  */
 
 IrmoInterface *irmo_interface_parse(char *filename);

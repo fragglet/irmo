@@ -21,8 +21,8 @@
 // Documentation for sections
 
 /*!
- * \mainpage Irmo
- * \section intro Introduction
+ * @mainpage Irmo
+ * @section intro Introduction
  *
  * Irmo is an abstract library designed for Multiplayer Computer Gaming.
  * 
@@ -74,58 +74,58 @@
  */
 
 /*!
- * \defgroup iterator Generic iterator interface
+ * @defgroup iterator Generic iterator interface
  */
 
 /*!
- * \defgroup callback Generic callback interface
+ * @defgroup callback Generic callback interface
  */
 
 /*!
- * \defgroup error Error Reporting
+ * @defgroup error Error Reporting
  */
 
 /*!
- * \defgroup iface Irmo Interface
+ * @defgroup iface Irmo Interface
  */
 
 /*!
- * \defgroup ifaceparser Interface Parser Library
+ * @defgroup ifaceparser Interface Parser Library
  */
 
 /*! 
- * \defgroup world Irmo World
+ * @defgroup world Irmo World
  */
 
 /*! 
- * \defgroup object Irmo Objects
+ * @defgroup object Irmo Objects
  */
 
 /*! 
- * \defgroup method Irmo Method Call Interface
+ * @defgroup method Irmo Method Call Interface
  */
 
 /*! 
- * \defgroup socket Irmo Socket
+ * @defgroup socket Irmo Socket
  */
 
 /*! 
- * \defgroup server Irmo Server
+ * @defgroup server Irmo Server
  */
 
 /*! 
- * \defgroup client Irmo Client
+ * @defgroup client Irmo Client
  */
 
 /*! 
- * \defgroup connection Irmo Client Interface
+ * @defgroup connection Irmo Client Interface
  */
 
 /*!
- * \defgroup packet Network packet
+ * @defgroup packet Network packet
  */
 
 /*!
- * \defgroup net_module Network module
+ * @defgroup net_module Network module
  */
 

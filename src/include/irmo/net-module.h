@@ -33,7 +33,7 @@ extern "C" {
  * below this interface.  By writing new modules, new transport mediums
  * can be supported.
  *
- * \addtogroup net_module
+ * @addtogroup net_module
  * \{
  */
 
@@ -48,9 +48,9 @@ struct _IrmoNetModule {
         /*! 
          * Initialise a new client socket for use.
          *
-         * \param module   Pointer to this module.
+         * @param module   Pointer to this module.
          *
-         * \return         Handle to use for accessing the module in the 
+         * @return         Handle to use for accessing the module in the 
          *                 future, or NULL if unable to open a socket.
          */
 
@@ -59,10 +59,10 @@ struct _IrmoNetModule {
         /*!
          * Initialise a new server socket, bound to a port.
          *
-         * \param module   Pointer to this module.
-         * \param port     Numerical port to bind to.  Depending on the 
+         * @param module   Pointer to this module.
+         * @param port     Numerical port to bind to.  Depending on the 
          *                 protocol, this may be ignored.
-         * \return         Handle to use for accessing the module in the 
+         * @return         Handle to use for accessing the module in the 
          *                 future, or NULL if unable to open a socket.
          */
 
@@ -71,7 +71,7 @@ struct _IrmoNetModule {
         /*!
          * Close a socket.
          *
-         * \param handle   Handle to the socket to close.
+         * @param handle   Handle to the socket to close.
          */
 
         void (*close_sock)(void *handle);
@@ -79,14 +79,14 @@ struct _IrmoNetModule {
         /*!
          * Resolve a string description of an address.
          * The returned address should be freed back using 
-         * \ref free_address (below).
+         * @ref free_address (below).
          *
-         * \param module   Pointer to this module.
-         * \param address  Address to resolve.
-         * \param port     Port at the remote address.  Depending on the
+         * @param module   Pointer to this module.
+         * @param address  Address to resolve.
+         * @param port     Port at the remote address.  Depending on the
          *                 protocol, this may be ignored.
          *
-         * \return         Handle to the address, or NULL if unable to
+         * @return         Handle to the address, or NULL if unable to
          *                 resolve the address. 
          */
 
@@ -97,7 +97,7 @@ struct _IrmoNetModule {
         /*!
          * Free an address.
          *
-         * \param address  Handle to the address to free.
+         * @param address  Handle to the address to free.
          */
 
         void (*free_address)(void *address);
@@ -105,11 +105,11 @@ struct _IrmoNetModule {
         /*!
          * Transmit a packet to the specified address and port.
          *
-         * \param handle   Handle to the socket to transmit on.
-         * \param address  Address to transmit to.
-         * \param packet   Packet to transmit.
+         * @param handle   Handle to the socket to transmit on.
+         * @param address  Address to transmit to.
+         * @param packet   Packet to transmit.
          *
-         * \return         Non-zero for success, zero for failure.
+         * @return         Non-zero for success, zero for failure.
          */
 
         int (*send_packet)(void *handle, void *address,
@@ -118,10 +118,10 @@ struct _IrmoNetModule {
         /*!
          * Receive a packet.
          *
-         * \param handle   Socket to receive on.
-         * \param address  Pointer to a variable to save the source address.
+         * @param handle   Socket to receive on.
+         * @param address  Pointer to a variable to save the source address.
          *
-         * \return         A new IrmoPacket, or NULL if no packet was 
+         * @return         A new IrmoPacket, or NULL if no packet was 
          *                 received.
          */
 

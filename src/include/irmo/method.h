@@ -28,24 +28,24 @@ extern "C" {
 
 /*!
  *
- * Method calls can be defined and invoked on \ref IrmoWorld objects.
+ * Method calls can be defined and invoked on @ref IrmoWorld objects.
  * Callback functions can be set to be called when methods are invoked.
  * The methods and their arguments are declared in the Interface 
  * for the World.
  *
- * \addtogroup method
+ * @addtogroup method
  * \{
  */
 
 /*!
  * Set a callback function to be invoked when a method is called.
  *
- * \param world       The world to set the watch.
- * \param method_name The name of the method to watch.
- * \param method      A callback function to call when the method is invoked.
- * \param user_data   User data to be passed to the callback function.
+ * @param world       The world to set the watch.
+ * @param method_name The name of the method to watch.
+ * @param method      A callback function to call when the method is invoked.
+ * @param user_data   User data to be passed to the callback function.
  *
- * \return            A \ref IrmoCallback object representing the watch.
+ * @return            A @ref IrmoCallback object representing the watch.
  */
 
 IrmoCallback *irmo_world_method_watch(IrmoWorld *world, 
@@ -59,10 +59,10 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
  * Get the value of a string argument to a method from the method callback
  * function.
  *
- * \param data    A \ref IrmoMethodData object containing information about
+ * @param data    A @ref IrmoMethodData object containing information about
  *                the method call.
- * \param argname The name of the method argument.
- * \return        The value of the method argument (constant string).
+ * @param argname The name of the method argument.
+ * @return        The value of the method argument (constant string).
  */
 
 char *irmo_method_arg_string(IrmoMethodData *data, char *argname);
@@ -73,10 +73,10 @@ char *irmo_method_arg_string(IrmoMethodData *data, char *argname);
  * Get the value of an integer argument to a method from the method callback
  * function.
  *
- * \param data    A \ref IrmoMethodData object containing information about
+ * @param data    A @ref IrmoMethodData object containing information about
  *                the method call.
- * \param argname The name of the method argument.
- * \return        The value of the method argument.
+ * @param argname The name of the method argument.
+ * @return        The value of the method argument.
  */
 
 unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname);
@@ -84,7 +84,7 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname);
 /*!
  * Find the client which invoked a method.
  *
- * This function returns a reference to the \ref IrmoClient object
+ * This function returns a reference to the @ref IrmoClient object
  * of the client which invoked the method. If it was invoked by a
  * function in the local program, it returns NULL.
  *
@@ -99,10 +99,10 @@ IrmoClient *irmo_method_get_source(IrmoMethodData *data);
  * Following the function arguments are the method arguments, in the order
  * specified in the interface.
  * 
- * \param world     The world object on which to invoke the method.
- * \param method    The name of the method.
+ * @param world     The world object on which to invoke the method.
+ * @param method    The name of the method.
  *
- * \sa irmo_world_method_call2
+ * @sa irmo_world_method_call2
  */
 
 void irmo_world_method_call(IrmoWorld *world, char *method, ...);
@@ -110,8 +110,8 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...);
 /*!
  * Invoke a method.
  *
- * This is the same as \ref irmo_world_method_call
- * except it takes an array of \ref IrmoValue structures for the 
+ * This is the same as @ref irmo_world_method_call
+ * except it takes an array of @ref IrmoValue structures for the 
  * arguments instead of using the C varargs mechanism.
  */
 

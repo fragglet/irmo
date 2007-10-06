@@ -27,17 +27,17 @@ extern "C" {
 #endif
 
 /*!
- * The \ref IrmoClient object represents clients currently 
+ * The @ref IrmoClient object represents clients currently 
  * connected to a server. For each client currently connected
  * there is an associated IrmoClient object.
  *
  * Once clients are disconnected from the server, they are
  * automatically 'garbage collected' and destroyed. However, 
- * the \ref irmo_client_ref and \ref irmo_client_unref functions can be
+ * the @ref irmo_client_ref and @ref irmo_client_unref functions can be
  * used to hold a reference to an IrmoClient object and prevent
  * it from being destroyed.
  *
- * \addtogroup client
+ * @addtogroup client
  * \{
  */
 
@@ -49,8 +49,8 @@ extern "C" {
  * to a IrmoClient object to notify that you are using the object and
  * it will not be deleted.
  *
- * \param client  The client object to reference.
- * \sa irmo_client_unref
+ * @param client  The client object to reference.
+ * @sa irmo_client_unref
  */
 
 void irmo_client_ref(IrmoClient *client);
@@ -60,8 +60,8 @@ void irmo_client_ref(IrmoClient *client);
  *
  * Specify that you are no longer referencing a client object
  *
- * \param client   The client object to unreference.
- * \sa irmo_client_ref
+ * @param client   The client object to unreference.
+ * @sa irmo_client_ref
  */
 
 void irmo_client_unref(IrmoClient *client);
@@ -69,7 +69,7 @@ void irmo_client_unref(IrmoClient *client);
 /*!
  * Forcibly disconnect a client.
  *
- * \param client      The client to disconnect.
+ * @param client      The client to disconnect.
  *
  */
 
@@ -78,13 +78,13 @@ void irmo_client_disconnect(IrmoClient *client);
 /*!
  * Get a client's world object.
  *
- * While a server can serve a \ref IrmoWorld object to connecting 
+ * While a server can serve a @ref IrmoWorld object to connecting 
  * clients, a client can also serve a world object back to the
  * server. This function returns a reference to the local copy of 
  * that remote world object if it exists, or NULL if it does not.
  *
- * \sa irmo_connect
- * \sa irmo_connection_get_world
+ * @sa irmo_connect
+ * @sa irmo_connection_get_world
  *
  */
 
@@ -94,13 +94,13 @@ IrmoWorld *irmo_client_get_world(IrmoClient *client);
  * Watch for client disconnection.
  *
  * Set a watch on a client. When that client disconnects, a
- * \ref IrmoClientCallback callback function is invoked.
+ * @ref IrmoClientCallback callback function is invoked.
  *
- * \param client    The client to watch.
- * \param func      The callback function to invoke.
- * \param user_data Extra data to pass to the callback function.
+ * @param client    The client to watch.
+ * @param func      The callback function to invoke.
+ * @param user_data Extra data to pass to the callback function.
  *
- * \return          A \ref IrmoCallback object representing the watch.
+ * @return          A @ref IrmoCallback object representing the watch.
  */
 
 IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
@@ -115,8 +115,8 @@ IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
  * been sent to the client. If no or very little data has been sent
  * recently it may be inaccurate.
  *
- * \param client    The client.
- * \return          Round trip time to the client in milliseconds.
+ * @param client    The client.
+ * @return          Round trip time to the client in milliseconds.
  *
  */
 
@@ -131,8 +131,8 @@ int irmo_client_ping_time(IrmoClient *client);
  * attempt to determine an upper bound using congestion avoidance
  * algorithms, which may produce poor performance.
  *
- * \param client   The client to set the value on.
- * \param max      The maximum send window size (in bytes).
+ * @param client   The client to set the value on.
+ * @param max      The maximum send window size (in bytes).
  */
 
 void irmo_client_set_max_sendwindow(IrmoClient *client, int max);
@@ -143,7 +143,7 @@ void irmo_client_set_max_sendwindow(IrmoClient *client, int max);
  * This returns the IP of the client in the form of a presentable 
  * text string.
  * 
- * \param client  The client to query.
+ * @param client  The client to query.
  *
  */
 

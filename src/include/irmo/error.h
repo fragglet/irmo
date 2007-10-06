@@ -27,9 +27,9 @@ extern "C" {
 /*!
  * Some functions report errors. All error messages are echoed to the 
  * standard error output (stderr) and the error message can be retrieved
- * by the program with \ref irmo_error_get.
+ * by the program with @ref irmo_error_get.
  *
- * \addtogroup error
+ * @addtogroup error
  * \{
  */
 
@@ -39,7 +39,7 @@ extern "C" {
  * Returns the string containing the last reported error message
  * by the library.
  *
- * \return          A constant string containing the error.
+ * @return          A constant string containing the error.
  *
  */
 
