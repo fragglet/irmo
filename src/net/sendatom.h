@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_SENDATOM_H
-#define IRMO_SENDATOM_H
+#ifndef IRMO_NET_SENDATOM_H
+#define IRMO_NET_SENDATOM_H
 
 #define IRMO_SENDATOM(x) ((IrmoSendAtom *) (x))
 
@@ -198,5 +198,5 @@ extern IrmoSendAtomClass irmo_sendwindow_atom;
 
 extern IrmoSendAtomClass *irmo_sendatom_types[];
 
-#endif /* #ifndef IRMO_SENDATOM_H */
+#endif /* #ifndef IRMO_NET_SENDATOM_H */
 

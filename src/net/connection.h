@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERNAL_CONNECTION_H
-#define IRMO_INTERNAL_CONNECTION_H
+#ifndef IRMO_NET_CONNECTION_H
+#define IRMO_NET_CONNECTION_H
 
 #include <irmo/connection.h>
 
@@ -29,5 +29,5 @@
 
 void irmo_connection_error(IrmoConnection *conn, char *s, ...);
 
-#endif /* #ifndef IRMO_INTERNAL_CONNECTION_H */
+#endif /* #ifndef IRMO_NET_CONNECTION_H */
 

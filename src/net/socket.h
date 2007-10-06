@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERNAL_SOCKET_H
-#define IRMO_INTERNAL_SOCKET_H
+#ifndef IRMO_NET_SOCKET_H
+#define IRMO_NET_SOCKET_H
 
 #include <irmo/socket.h>
 
@@ -63,5 +63,5 @@ void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 			    IrmoPacket *packet);
 void irmo_socket_shutdown(IrmoSocket *sock);
 
-#endif /* #ifndef IRMO_INTERNAL_SOCKET_H */
+#endif /* #ifndef IRMO_NET_SOCKET_H */
 

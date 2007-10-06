@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERNAL_SERVER_H
-#define IRMO_INTERNAL_SERVER_H
+#ifndef IRMO_NET_SERVER_H
+#define IRMO_NET_SERVER_H
 
 #include <irmo/server.h>
 
@@ -72,5 +72,5 @@ void irmo_client_callback_raise(IrmoSListEntry **list, IrmoClient *client);
 
 void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 
-#endif /* #ifndef IRMO_INTERNAL_SERVER_H */
+#endif /* #ifndef IRMO_NET_SERVER_H */
 

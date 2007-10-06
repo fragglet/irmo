@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_NETLIB_H
-#define IRMO_NETLIB_H
+#ifndef IRMO_NETBASE_NETLIB_H
+#define IRMO_NETBASE_NETLIB_H
 
 #include "net/socket.h"
 
@@ -34,5 +34,5 @@ struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr);
 struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain, 
 					char *name, int port);
 
-#endif /* #ifndef IRMO_NETLIB_H */
+#endif /* #ifndef IRMO_NETBASE_NETLIB_H */
 

@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERNAL_CLIENT_H
-#define IRMO_INTERNAL_CLIENT_H
+#ifndef IRMO_NET_CLIENT_H
+#define IRMO_NET_CLIENT_H
 
 #include <irmo/client.h>
 
@@ -167,5 +167,5 @@ int irmo_client_timeout_time(IrmoClient *client);
 
 void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 
-#endif /* #ifndef IRMO_INTERNAL_CLIENT_H */
+#endif /* #ifndef IRMO_NET_CLIENT_H */
 

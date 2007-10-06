@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_IF_SPEC_H
-#define IRMO_IF_SPEC_H
+#ifndef IRMO_INTERFACE_H
+#define IRMO_INTERFACE_H
 
 #include "types.h"
 
@@ -399,5 +399,5 @@ void irmo_method_arg_unref(IrmoMethodArg *arg);
 }
 #endif
 
-#endif /* #ifndef IFSPEC_H */
+#endif /* #ifndef IRMO_INTERFACE_H */
 

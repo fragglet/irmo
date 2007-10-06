@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_SYSHEADERS_H
-#define IRMO_SYSHEADERS_H
+#ifndef IRMO_ARCH_SYSHEADERS_H
+#define IRMO_ARCH_SYSHEADERS_H
 
 #include "config.h"
 
@@ -73,5 +73,5 @@ typedef signed long int32_t;
 
 #endif
 
-#endif /* #ifndef IRMO_SYSHEADERS_H */
+#endif /* #ifndef IRMO_ARCH_SYSHEADERS_H */
 

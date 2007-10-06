@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERNAL_METHOD_H
-#define IRMO_INTERNAL_METHOD_H
+#ifndef IRMO_WORLD_METHOD_H
+#define IRMO_WORLD_METHOD_H
 
 #include <irmo/method.h>
 
@@ -37,5 +37,5 @@ struct _IrmoMethodData {
 
 void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data);
 
-#endif /* #ifndef IRMO_INTERNAL_METHOD_H */
+#endif /* #ifndef IRMO_WORLD_METHOD_H */
 

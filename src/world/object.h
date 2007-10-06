@@ -21,8 +21,8 @@
 // Irmo Objects
 //
 
-#ifndef IRMO_INTERNAL_OBJECT_H
-#define IRMO_INTERNAL_OBJECT_H
+#ifndef IRMO_WORLD_OBJECT_H
+#define IRMO_WORLD_OBJECT_H
 
 #include <irmo/object.h>
 
@@ -88,6 +88,5 @@ void irmo_object_internal_destroy(IrmoObject *object, int notify,
 
 void irmo_object_set_raise(IrmoObject *object, int variable);
 
-
-#endif /* #ifndef IRMO_OBJECT_H */
+#endif /* #ifndef IRMO_WORLD_OBJECT_H */
 

@@ -21,8 +21,8 @@
 // Irmo World 
 //
 
-#ifndef IRMO_INTERNAL_WORLD_H
-#define IRMO_INTERNAL_WORLD_H
+#ifndef IRMO_WORLD_WORLD_H
+#define IRMO_WORLD_WORLD_H
 
 #include <irmo/world.h>
 
@@ -88,5 +88,5 @@ struct _IrmoWorld {
 	IrmoSListEntry **method_callbacks;
 };
 
-#endif /* #ifndef IRMO_INTERNAL_WORLD_H */
+#endif /* #ifndef IRMO_WORLD_WORLD_H */
 

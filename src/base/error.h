@@ -17,12 +17,12 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_INTERNAL_ERROR_H
-#define IRMO_INTERNAL_ERROR_H
+#ifndef IRMO_BASE_ERROR_H
+#define IRMO_BASE_ERROR_H
 
 #include <irmo/error.h>
 
 void irmo_error_report(char *function_name, char *format, ...);
 
-#endif /* #ifndef IRMO_INTERNAL_ERROR_H */
+#endif /* #ifndef IRMO_BASE_ERROR_H */
 

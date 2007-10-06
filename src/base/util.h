@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_COMMON_UTIL_H
-#define IRMO_COMMON_UTIL_H
+#ifndef IRMO_BASE_UTIL_H
+#define IRMO_BASE_UTIL_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -73,5 +73,5 @@ void irmo_assert_fail_message(const char *function_name, char *assertation);
 void irmo_bug_abort(char *file, int line);
 uint32_t irmo_rotate_int(uint32_t i);
 
-#endif /* #ifndef IRMO_COMMON_UTIL_H */
+#endif /* #ifndef IRMO_BASE_UTIL_H */
 
