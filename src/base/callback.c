@@ -18,7 +18,6 @@
 //
 
 #include "arch/sysheaders.h"
-#include "algo/slist.h"
 #include "base/util.h"
 #include "base/error.h"
 

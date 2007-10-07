@@ -26,6 +26,8 @@
 
 #include <irmo/callback.h>
 
+#include "algo/slist.h"
+
 typedef IrmoSListEntry *IrmoCallbackList;
 
 struct _IrmoCallback {
