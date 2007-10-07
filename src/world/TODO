@@ -1,3 +1,4 @@
 Bind to structure.
 Remove all net/ related stuff and make this agnostic.
+Split CallbackData into ObjectCallbackData and ClassCallbackData.
 
