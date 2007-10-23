@@ -36,13 +36,32 @@
 //
 
 typedef struct {
+        IrmoNetAddress irmo_address;
+        struct sockaddr_in sockaddr;
+} IPv4Address;
+
+typedef struct {
         int sock;
         uint8_t *recvbuf;
 } IPv4Socket;
 
-// All addresses map to the same struct sockaddr_in pointer.
+// Addresses hashed from struct sockaddr_in to the IPv4Address.
 
 static IrmoHashTable *address_hash_table = NULL;
+
+// Free a IPv4Address.
+
+static void ipv4_address_free(IrmoNetAddress *addr)
+{
+        irmo_hash_table_remove(address_hash_table, addr);
+        free(addr);
+}
+
+// Address class.
+
+static IrmoNetAddressClass ipv4_address_class = {
+        ipv4_address_free,
+};
 
 static unsigned long sockaddr_in_hash(void *data)
 {
@@ -53,19 +72,19 @@ static unsigned long sockaddr_in_hash(void *data)
 
 static int sockaddr_in_equal(void *a, void *b)
 {
-        struct sockaddr_in *addr1 = a;
-        struct sockaddr_in *addr2 = b;
+        struct sockaddr_in *sockaddr1 = a;
+        struct sockaddr_in *sockaddr2 = b;
 
-        return addr1->sin_addr.s_addr == addr2->sin_addr.s_addr
-            && addr1->sin_port == addr2->sin_port;
+        return sockaddr1->sin_addr.s_addr == sockaddr2->sin_addr.s_addr
+            && sockaddr1->sin_port == sockaddr2->sin_port;
 }
 
 // Look up an address in the hash table, or return a new one if
 // not found.
 
-static struct sockaddr_in *ipv4_get_address(struct sockaddr_in *addr)
+static IPv4Address *ipv4_get_address(struct sockaddr_in *addr)
 {
-        struct sockaddr_in *result;
+        IPv4Address *result;
 
         if (address_hash_table == NULL) {
                 // First time, need to create the hash table
@@ -84,12 +103,15 @@ static struct sockaddr_in *ipv4_get_address(struct sockaddr_in *addr)
 
         // Not found in the hash table, so we need to add a new one.
 
-        result = irmo_new0(struct sockaddr_in, 1);
-        result->sin_family = AF_INET;
-        result->sin_addr.s_addr = addr->sin_addr.s_addr;
-        result->sin_port = addr->sin_port;
+        result = irmo_new0(IPv4Address, 1);
+        result->irmo_address.address_class = &ipv4_address_class;
+        result->sockaddr.sin_family = AF_INET;
+        result->sockaddr.sin_addr.s_addr = addr->sin_addr.s_addr;
+        result->sockaddr.sin_port = addr->sin_port;
 
-        irmo_hash_table_insert(address_hash_table, result, result);
+        irmo_hash_table_insert(address_hash_table,
+                               &result->sockaddr,
+                               result);
 
         return result;
 }
@@ -201,11 +223,12 @@ static void ipv4_close_sock(void *handle)
         free(sock);
 }
 
-static void *ipv4_resolve_address(IrmoNetModule *module, char *address,
-                                  int port)
+static IrmoNetAddress *ipv4_resolve_address(IrmoNetModule *module, char *address,
+                                            int port)
 {
 	struct hostent *hp;
-	struct sockaddr_in addr;
+        struct sockaddr_in addr;
+        IPv4Address *result;
 	
 	hp = gethostbyname(address);
 
@@ -217,41 +240,38 @@ static void *ipv4_resolve_address(IrmoNetModule *module, char *address,
         memcpy(&addr.sin_addr.s_addr, &hp->h_addr, sizeof(struct in_addr));
         addr.sin_port = port;
 
-        return ipv4_get_address(&addr);
-}
+        result = ipv4_get_address(&addr);
 
-static void ipv4_free_address(void *address)
-{
-        irmo_hash_table_remove(address_hash_table, address);
-        free(address);
+        return &result->irmo_address;
 }
 
 static int ipv4_send_packet(void *handle,
-                            void *_address,
+                            IrmoNetAddress *_addr,
                             IrmoPacket *packet)
 {
         IPv4Socket *sock;
-        struct sockaddr_in *address;
+        IPv4Address *addr;
         int status;
        
         sock = (IPv4Socket *) handle;
-        address = (struct sockaddr_in *) _address;
+        addr = (IPv4Address *) _addr;
 
         status = sendto(sock->sock,
                         irmo_packet_get_buffer(packet),
                         irmo_packet_get_length(packet),
                         0,
-                        (struct sockaddr *) address,
+                        (struct sockaddr *) &addr->sockaddr,
                         sizeof(struct sockaddr_in));
 
         return status >= 0;
 }
 
 static IrmoPacket *ipv4_recv_packet(void *handle, 
-                                    void **address)
+                                    IrmoNetAddress **address)
 {
         IPv4Socket *sock;
         struct sockaddr_in source;
+        IPv4Address *result_address;
         socklen_t source_len;
         int status;
 
@@ -271,9 +291,57 @@ static IrmoPacket *ipv4_recv_packet(void *handle,
                 return NULL;
         }
 
-        *address = ipv4_get_address(&source);
+        result_address = ipv4_get_address(&source);
+
+        *address = &result_address->irmo_address;
 
         return irmo_packet_new_from(sock->recvbuf, status);
+}
+
+static int ipv4_block_set(void **handles, int num_handles, int timeout)
+{
+        fd_set socket_set;
+        IPv4Socket *sock;
+        struct timeval timeout_tv;
+        struct timeval *timeout_param;
+        int i;
+        int max_sock;
+        int result;
+
+        // Build socket set and calculate the maximum socket value
+ 
+        FD_ZERO(&socket_set);
+
+        max_sock = 0;
+
+        for (i=0; i<num_handles; ++i) {
+                sock = handles[i];
+
+                FD_SET(sock->sock, &socket_set);
+
+                if (sock->sock > max_sock) {
+                        max_sock = sock->sock;
+                }
+        }
+
+        // Calculate timeout_param
+
+        if (timeout == 0) {
+                timeout_param = NULL;
+        } else {
+                timeout_param = &timeout_tv;
+                timeout_tv.tv_sec = timeout / 1000;
+                timeout_tv.tv_usec = timeout % 1000;
+        }
+
+        result = select(max_sock + 1, &socket_set, NULL, NULL, timeout_param);
+
+        if (result < 0) {
+                perror("ipv4_block_set");
+                return 0;
+        } else {
+                return 1;
+        }
 }
 
 IrmoNetModule irmo_module_ipv4 = {
@@ -281,8 +349,8 @@ IrmoNetModule irmo_module_ipv4 = {
         ipv4_open_server_sock,
         ipv4_close_sock,
         ipv4_resolve_address,
-        ipv4_free_address,
         ipv4_send_packet,
         ipv4_recv_packet,
+        ipv4_block_set,
 };
 
