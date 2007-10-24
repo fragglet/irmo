@@ -100,7 +100,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 	// the server responded with a SYN FIN and something went wrong
 
 	while (client->state == CLIENT_CONNECTING) {
-		irmo_socket_run(sock);
+		irmo_server_run(server);
 	}
 
 	if (client->state == CLIENT_DISCONNECTED) {
@@ -135,7 +135,7 @@ void irmo_disconnect(IrmoConnection *conn)
 	// getting a positive disconnect reply or from timeout)
 
 	while (conn->state != CLIENT_DISCONNECTED) {
-		irmo_socket_run(conn->server->socket);
+		irmo_server_run(conn->server);
 		irmo_socket_block(conn->server->socket, 100);
 	}
 
@@ -153,7 +153,7 @@ void irmo_connection_run(IrmoConnection *conn)
 {
 	irmo_return_if_fail(conn != NULL);
 	
-	irmo_socket_run(conn->server->socket);
+	irmo_server_run(conn->server);
 }
 
 IrmoWorld *irmo_connection_get_world(IrmoConnection *conn)

@@ -134,12 +134,10 @@ IrmoSocket *irmo_server_get_socket(IrmoServer *server);
  * received and send new packets required by the network
  * protocol.
  * 
- * This is identical to:
- *   irmo_socket_run(irmo_server_get_socket(conn));
+ * @param server        The server.
  *
  * @sa irmo_socket_run
  */
-
 void irmo_server_run(IrmoServer *server);
 
 //! \}

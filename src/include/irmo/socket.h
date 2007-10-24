@@ -62,18 +62,6 @@ void irmo_socket_ref(IrmoSocket *sock);
 
 void irmo_socket_unref(IrmoSocket *sock);
 
-/*!
- * Check for new packets received by a socket.
- *
- * This function must be called periodically to check for new packets
- * received by the socket and send new packets required by the network
- * protocol.
- *
- * @param sock   The socket to update.
- */
-
-void irmo_socket_run(IrmoSocket *sock);
-
 /*! 
  * Block on a set of sockets.
  *

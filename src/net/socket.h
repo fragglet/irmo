@@ -51,10 +51,6 @@ struct _IrmoSocket {
 	IrmoSocketDomain domain;
 	int port;
 	int sock;
-
-	// server using this socket
-	
-	IrmoServer *server;
 };
 
 IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port);
@@ -62,6 +58,7 @@ IrmoSocket *irmo_socket_new_unbound(IrmoSocketDomain domain);
 void irmo_socket_sendpacket(IrmoSocket *sock, struct sockaddr *dest,
 			    IrmoPacket *packet);
 void irmo_socket_shutdown(IrmoSocket *sock);
+int irmo_socket_type_to_domain(IrmoSocketDomain type);
 
 #endif /* #ifndef IRMO_NET_SOCKET_H */
 

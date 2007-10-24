@@ -58,10 +58,6 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 		irmo_arraylist_append(world->servers, server);
 	}
 	
-	// attach ourselves to the server
-
-	sock->server = server;
-
 	server->clients = irmo_hash_table_new((IrmoHashTableHashFunc) irmo_sockaddr_hash,
 					      (IrmoHashTableEqualFunc) irmo_sockaddr_cmp);
 
@@ -243,7 +239,7 @@ void irmo_server_shutdown(IrmoServer *server)
 	// run the socket until all clients are disconnected
 	
 	while (irmo_hash_table_num_entries(server->clients)) {
-		irmo_socket_run(server->socket);
+		irmo_server_run(server);
 		irmo_socket_block(server->socket, 100);
 	}
 	
@@ -255,12 +251,5 @@ IrmoSocket *irmo_server_get_socket(IrmoServer *server)
 	irmo_return_val_if_fail(server != NULL, NULL);
 
 	return server->socket;
-}
-
-void irmo_server_run(IrmoServer *server)
-{
-	irmo_return_if_fail(server != NULL);
-
-	irmo_socket_run(server->socket);
 }
 
