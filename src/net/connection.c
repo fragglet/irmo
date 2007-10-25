@@ -76,6 +76,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 	// to our own local server (symmetrical)
 	
 	server = irmo_server_new_from(sock, local_world, iface);
+        server->internal_server = 1;
 
 	// only the server is using this socket 
 	
