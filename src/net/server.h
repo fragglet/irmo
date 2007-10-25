@@ -37,6 +37,11 @@ struct _IrmoServer {
 	// server running?
 	
 	int running;
+
+        // Internal servers used as part of an IrmoConnection have this
+        // set to true.
+
+        int internal_server;
 	
 	// socket this server is using
 

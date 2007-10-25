@@ -214,7 +214,7 @@ static void server_run_synack(IrmoServer *server,
 	// we need to send a syn ack back so it can complete
 	// its connection.
 
-	if (server->socket->type == SOCKET_CLIENT) {
+	if (server->internal_server) {
 		IrmoPacket *sendpacket = irmo_packet_new();
 
 		irmo_packet_writei16(sendpacket, 
@@ -311,8 +311,11 @@ static void server_run_packet(IrmoServer *server,
 	}
 
 	// Check for SYN
+	//
+	// Internal servers used as part of an IrmoConnection do not accept
+	// SYN packets.
 
-	if (server->socket->type == SOCKET_SERVER && flags == PACKET_FLAG_SYN) {
+	if (!server->internal_server && flags == PACKET_FLAG_SYN) {
 
                 // Run a different function based on whether this is the
                 // initial SYN, or we already have a client.

@@ -29,22 +29,15 @@
 
 #include <irmo/packet.h>
 
-typedef enum {
-	SOCKET_SERVER,
-	SOCKET_CLIENT,
-} IrmoSocketType;
-
 struct _IrmoSocket {
 
-	IrmoSocketType type;
-
-	// if true, this has been shutdown
-	
-	int shutdown;
-	
 	// reference count
 	
 	int refcount;
+	
+	// if true, this has been shutdown
+	
+	int shutdown;
 	
 	// domain/port and socket
 

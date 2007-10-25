@@ -197,7 +197,6 @@ IrmoSocket *irmo_socket_new_unbound(IrmoSocketDomain type)
 	if (!sock)
 		return NULL;
 
-	sock->type = SOCKET_CLIENT;
 	sock->port = -1;
 	
 	return sock;
@@ -254,7 +253,6 @@ IrmoSocket *irmo_socket_new_bound(IrmoSocketDomain domain, int port)
 
 	// bound successfully
 
-	sock->type = SOCKET_SERVER;
 	sock->port = port;
 	
 	return sock;

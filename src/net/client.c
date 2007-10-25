@@ -184,7 +184,7 @@ static void client_run_connecting(IrmoClient *client)
 		
 		// build and send a new packet
 
-		if (client->server->socket->type == SOCKET_CLIENT) {
+		if (client->server->internal_server) {
 			IrmoWorld *local_world
 				= client->server->world;
 			IrmoInterface *iface = client->server->client_interface;
