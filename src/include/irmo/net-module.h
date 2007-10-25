@@ -38,6 +38,8 @@ extern "C" {
  */
 
 typedef struct _IrmoNetAddressClass IrmoNetAddressClass;
+typedef struct _IrmoNetSocketClass IrmoNetSocketClass;
+typedef struct _IrmoNetSocket IrmoNetSocket;
 
 /*!
  * A class of network address.  Every network address has a class
@@ -66,6 +68,71 @@ struct _IrmoNetAddress {
 };
 
 /*!
+ * A class of network socket.  Every network socket has a class 
+ * associated with it.
+ */
+
+struct _IrmoNetSocketClass {
+
+        /*!
+         * Close the socket.
+         *
+         * @param sock     The socket to close.
+         */
+
+        void (*close)(IrmoNetSocket *sock);
+
+        /*!
+         * Transmit a packet to the specified address and port.
+         *
+         * @param sock     The socket to transmit on.
+         * @param address  Address to transmit to.
+         * @param packet   Packet to transmit.
+         *
+         * @return         Non-zero for success, zero for failure.
+         */
+
+        int (*send_packet)(IrmoNetSocket *sock,
+                           IrmoNetAddress *address,
+                           IrmoPacket *packet);
+
+        /*!
+         * Receive a packet.
+         *
+         * @param sock     Socket to receive on.
+         * @param address  Pointer to a variable to save the source address.
+         *
+         * @return         A new IrmoPacket, or NULL if no packet was 
+         *                 received.
+         */
+
+        IrmoPacket *(*recv_packet)(IrmoNetSocket *sock,
+                                   IrmoNetAddress **address);
+
+        /*!
+         * Block on a list of sockets until a packet is received,
+         * or the given timeout expires.
+         *
+         * @param sockets      Array of sockets to block on.
+         * @param num_handles  Number of handles in the array.
+         * @param timeout      Time to block for in ms, or 0 for infinite
+         *                     timeout.
+         */
+
+        int (*block_set)(IrmoNetSocket **sockets,
+                         int num_handles,
+                         int timeout);
+};
+
+/*!
+ * An open network socket, used for sending and receiving packets.
+ */
+
+struct _IrmoNetSocket {
+        IrmoNetSocketClass *socket_class;
+};
+
+/*!
  * A network module.
  */
 
@@ -82,7 +149,7 @@ struct _IrmoNetModule {
          *                 future, or NULL if unable to open a socket.
          */
 
-        void *(*open_client_sock)(IrmoNetModule *module);
+        IrmoNetSocket *(*open_client_sock)(IrmoNetModule *module);
 
         /*!
          * Initialise a new server socket, bound to a port.
@@ -94,15 +161,7 @@ struct _IrmoNetModule {
          *                 future, or NULL if unable to open a socket.
          */
 
-        void *(*open_server_sock)(IrmoNetModule *module, int port);
-
-        /*!
-         * Close a socket.
-         *
-         * @param handle   Handle to the socket to close.
-         */
-
-        void (*close_sock)(void *handle);
+        IrmoNetSocket *(*open_server_sock)(IrmoNetModule *module, int port);
 
         /*!
          * Resolve a string description of an address.
@@ -121,43 +180,6 @@ struct _IrmoNetModule {
         IrmoNetAddress *(*resolve_address)(IrmoNetModule *module,
                                            char *address,
                                            int port);
-
-        /*!
-         * Transmit a packet to the specified address and port.
-         *
-         * @param handle   Handle to the socket to transmit on.
-         * @param address  Address to transmit to.
-         * @param packet   Packet to transmit.
-         *
-         * @return         Non-zero for success, zero for failure.
-         */
-
-        int (*send_packet)(void *handle, IrmoNetAddress *address,
-                           IrmoPacket *packet);
-
-        /*!
-         * Receive a packet.
-         *
-         * @param handle   Socket to receive on.
-         * @param address  Pointer to a variable to save the source address.
-         *
-         * @return         A new IrmoPacket, or NULL if no packet was 
-         *                 received.
-         */
-
-        IrmoPacket *(*recv_packet)(void *handle, IrmoNetAddress **address);
-
-        /*!
-         * Block on a list of sockets until a packet is received,
-         * or the given timeout expires.
-         *
-         * @param handles      Array of socket handles to block on.
-         * @param num_handles  Number of handles in the array.
-         * @param timeout      Time to block for in ms, or 0 for infinite
-         *                     timeout.
-         */
-
-        int (*block_set)(void **handles, int num_handles, int timeout);
 };
 
 //! \}
