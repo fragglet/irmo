@@ -31,11 +31,9 @@ IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
 
         result = module->resolve_address(module, address, port);
 
-        // First time this has been resolved?  Start with a refcount of 1.
+        // Add a reference for this address.
 
-        if (result->_refcount == 0) {
-                result->_refcount = 1;
-        }
+        irmo_net_address_ref(result);
 
         return result;
 }
