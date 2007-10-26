@@ -38,6 +38,11 @@ IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
         return result;
 }
 
+char *irmo_net_address_to_string(IrmoNetAddress *address)
+{
+        return address->address_class->to_string(address);
+}
+
 void irmo_net_address_ref(IrmoNetAddress *address)
 {
         ++address->_refcount;

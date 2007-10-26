@@ -58,9 +58,23 @@ static void ipv4_address_free(IrmoNetAddress *addr)
         free(addr);
 }
 
+// Convert an address to a string.
+
+static char *ipv4_address_to_string(IrmoNetAddress *_addr)
+{
+        IPv4Address *addr = (IPv4Address *) _addr;
+        static char buf[128];
+
+        sprintf(buf, "%s:%i", inet_ntoa(addr->sockaddr.sin_addr),
+                              addr->sockaddr.sin_port);
+
+        return buf;
+}
+
 // Address class.
 
 static IrmoNetAddressClass ipv4_address_class = {
+        ipv4_address_to_string,
         ipv4_address_free,
 };
 
@@ -189,8 +203,6 @@ static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
         result_address = ipv4_get_address(&source);
 
         *address = &result_address->irmo_address;
-
-        irmo_net_address_ref(*address);
 
         return irmo_packet_new_from(sock->recvbuf, status);
 }

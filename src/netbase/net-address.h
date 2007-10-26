@@ -47,6 +47,16 @@ IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
                                          int port);
 
 /*!
+ * Format an address in a user-presentable format.
+ *
+ * @param address  The address.
+ * @return         Pointer to a static buffer containing a text
+ *                 description of the address.
+ */
+
+char *irmo_net_address_to_string(IrmoNetAddress *address);
+
+/*!
  * Add a reference to an address.
  *
  * @param address          Address to reference.

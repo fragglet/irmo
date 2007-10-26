@@ -21,6 +21,10 @@
 // Network socket abstraction layer.
 //
 
+#include <stdlib.h>
+
+#include "arch/sysheaders.h"
+#include "net-address.h"
 #include "net-socket.h"
 
 IrmoNetSocket *irmo_net_socket_open_unbound(IrmoNetModule *module)
@@ -48,7 +52,16 @@ int irmo_net_socket_send_packet(IrmoNetSocket *sock,
 IrmoPacket *irmo_net_socket_recv_packet(IrmoNetSocket *sock,
                                         IrmoNetAddress **address)
 {
-        return sock->socket_class->recv_packet(sock, address);
+        IrmoPacket *packet;
+
+        *address = NULL;
+        packet = sock->socket_class->recv_packet(sock, address);
+
+        if (*address != NULL) {
+                irmo_net_address_ref(*address);
+        }
+
+        return packet;
 }
 
 int irmo_net_socket_block_set(IrmoNetSocket **sockets,

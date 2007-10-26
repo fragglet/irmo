@@ -48,12 +48,20 @@ typedef struct _IrmoNetSocket IrmoNetSocket;
 
 struct _IrmoNetAddressClass {
 
-        // TODO: Convert address to string representation
+        /*!
+         * Format the address as a presentable text string.
+         *
+         * @param address       The address.
+         * @return              Pointer to a static buffer containing
+         *                      a text description of the address.
+         */
+
+        char *(*to_string)(IrmoNetAddress *address);
 
         /*!
          * Free an address.
          *
-         * @param address  Pointer to the address to free.
+         * @param address       The address to free.
          */
 
         void (*free_address)(IrmoNetAddress *address);
