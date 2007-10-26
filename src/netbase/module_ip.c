@@ -190,6 +190,8 @@ static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
 
         *address = &result_address->irmo_address;
 
+        irmo_net_address_ref(*address);
+
         return irmo_packet_new_from(sock->recvbuf, status);
 }
 
