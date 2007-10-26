@@ -53,7 +53,7 @@ struct _IrmoNetAddressClass {
         /*!
          * Free an address.
          *
-         * @param address  Handle to the address to free.
+         * @param address  Pointer to the address to free.
          */
 
         void (*free_address)(IrmoNetAddress *address);
@@ -65,6 +65,7 @@ struct _IrmoNetAddressClass {
 
 struct _IrmoNetAddress {
         IrmoNetAddressClass *address_class;
+        int _refcount;
 };
 
 /*!
@@ -114,13 +115,13 @@ struct _IrmoNetSocketClass {
          * or the given timeout expires.
          *
          * @param sockets      Array of sockets to block on.
-         * @param num_handles  Number of handles in the array.
+         * @param num_sockets  Number of sockets in the array.
          * @param timeout      Time to block for in ms, or 0 for infinite
          *                     timeout.
          */
 
         int (*block_set)(IrmoNetSocket **sockets,
-                         int num_handles,
+                         int num_sockets,
                          int timeout);
 };
 
@@ -145,8 +146,8 @@ struct _IrmoNetModule {
          *
          * @param module   Pointer to this module.
          *
-         * @return         Handle to use for accessing the module in the 
-         *                 future, or NULL if unable to open a socket.
+         * @return         A new @ref IrmoNetSocket, or NULL if it was 
+         *                 not possible to open the socket.
          */
 
         IrmoNetSocket *(*open_client_sock)(IrmoNetModule *module);
@@ -157,8 +158,8 @@ struct _IrmoNetModule {
          * @param module   Pointer to this module.
          * @param port     Numerical port to bind to.  Depending on the 
          *                 protocol, this may be ignored.
-         * @return         Handle to use for accessing the module in the 
-         *                 future, or NULL if unable to open a socket.
+         * @return         A new @ref IrmoNetSocket, or NULL if it was 
+         *                 not possible to open the socket.
          */
 
         IrmoNetSocket *(*open_server_sock)(IrmoNetModule *module, int port);
