@@ -25,8 +25,9 @@
 #include "interface/interface.h"
 #include "world/world.h"
 
+#include "netbase/net-socket.h"
+
 #include "client.h"
-#include "socket.h"
 
 struct _IrmoServer {
 
@@ -45,7 +46,7 @@ struct _IrmoServer {
 	
 	// socket this server is using
 
-	IrmoSocket *socket;
+	IrmoNetSocket *socket;
 	
 	// world being served by this server
 	
@@ -66,7 +67,7 @@ struct _IrmoServer {
 
 // make a new server using an existing socket object
 
-IrmoServer *irmo_server_new_from(IrmoSocket *sock, IrmoWorld *world,
+IrmoServer *irmo_server_new_from(IrmoNetSocket *sock, IrmoWorld *world,
 				 IrmoInterface *client_interface);
 
 // invoke IrmoClientCallback callback functions in a list

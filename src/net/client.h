@@ -22,12 +22,11 @@
 
 #include <irmo/client.h>
 
-#include "netbase/netlib.h"
+#include "netbase/net-address.h"
 #include "world/world.h"
 
 #include "sendatom.h"
 #include "server.h"
-#include "socket.h"
 
 // maximum sendwindow size
 
@@ -63,7 +62,7 @@ struct _IrmoClient {
 
 	// address:
 
-	struct sockaddr *addr;
+        IrmoNetAddress *address;
 
 	// protocol stuff (internal)
 
@@ -145,7 +144,7 @@ struct _IrmoClient {
 
 // create a new client, attached to a particular server
 
-IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr);
+IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *address);
 
 // 'run' a client, called by irmo_socket_run
 

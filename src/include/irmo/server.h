@@ -29,7 +29,7 @@ extern "C" {
 /*!
  *
  * Server objects are used to serve a particular @ref IrmoWorld
- * world object on an @ref IrmoSocket socket. Clients can then
+ * world object over a network connection. Clients can then
  * connect to the server using the @ref irmo_connect function
  * and receive information about the world being served.
  * 
@@ -45,8 +45,8 @@ extern "C" {
  * Create a new @ref IrmoServer listening for connections on a
  * particular port.
  *
- * @param domain           The type of socket to listen on 
- *                         (see @ref IrmoSocketDomain).
+ * @param net_module       Network module to use for communications.
+ *                         For IPv4, use @ref IRMO_NET_IPV4.
  * @param port             The port number to listen on.
  * @param world            The world the server will serve.
  * @param client_interface An @ref IrmoInterface describing the 
@@ -55,8 +55,10 @@ extern "C" {
  *                         function failed.
  */
 
-IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
-			    IrmoWorld *world, IrmoInterface *client_interface);
+IrmoServer *irmo_server_new(IrmoNetModule *net_module,
+                            int port,
+			    IrmoWorld *world,
+                            IrmoInterface *client_interface);
 
 /*!
  * Watch new connections to a server.
@@ -117,16 +119,6 @@ void irmo_server_unref(IrmoServer *server);
 
 void irmo_server_shutdown(IrmoServer *server);
 
-/*! 
- * Get the socket used by a server.
- *
- * @param server        The server.
- * @return              A pointer to the @ref IrmoSocket used by the server.
- *
- */
-
-IrmoSocket *irmo_server_get_socket(IrmoServer *server);
-
 /*!
  * Check for new packets received by a server.
  *
@@ -135,10 +127,21 @@ IrmoSocket *irmo_server_get_socket(IrmoServer *server);
  * protocol.
  * 
  * @param server        The server.
- *
- * @sa irmo_socket_run
  */
+
 void irmo_server_run(IrmoServer *server);
+
+/*!
+ * Block until new packets are received by a server.
+ *
+ * This function sleeps until @ref irmo_server_run can be run again.
+ *
+ * @param server        The server.
+ * @param timeout       Maximum time to sleep for, in ms.
+ */
+
+void irmo_server_block(IrmoServer *server, int timeout);
+
 
 //! \}
 

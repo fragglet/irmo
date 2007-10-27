@@ -17,23 +17,40 @@
 // 02111-1307, USA.
 //
 
+// 
+// UDP/IP IrmoNetModule implementation.
+//
+
 #include "arch/sysheaders.h"
 #include "base/error.h"
 #include "base/util.h"
 
 #include "algo/algo.h"
 
+#include <irmo/module_ip.h>
 #include <irmo/net-module.h>
+#include "net-address.h"
 
-#ifndef _WIN32
+// Sockets API headers:
+
+#ifdef _WIN32
+
+#include <WinSock.h>
+
+#else
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <fcntl.h>
+
 #define closesocket close
+
 #endif
 
 #define RECV_BUFFER_SIZE 2048
-
-// 
-// UDP/IP IrmoNetModule implementation.
-//
 
 //---------------------------------------------------------------------------
 //
@@ -196,15 +213,23 @@ static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
                           &source_len);
 
         if (status < 0) {
-                perror("ipv4_recv_packet");
+                if (errno != EAGAIN) {
+                        perror("ipv4_recv_packet");
+                }
+
+                // No packet received
+
                 return NULL;
+        } else {
+                // Look up the address and save it
+     
+                result_address = ipv4_get_address(&source);
+                *address = &result_address->irmo_address;
+
+                // Create a packet from the received data.
+
+                return irmo_packet_new_from(sock->recvbuf, status);
         }
-
-        result_address = ipv4_get_address(&source);
-
-        *address = &result_address->irmo_address;
-
-        return irmo_packet_new_from(sock->recvbuf, status);
 }
 
 static int ipv4_block_set(IrmoNetSocket **handles,
@@ -298,7 +323,7 @@ static IPv4Socket *ipv4_open_sock_base(void)
         opts = fcntl(sock, F_GETFL);
 
         if (opts < 0) {
-                irmo_error_report("irmo_socket_new"
+                irmo_error_report("ipv4_open_sock"
                                   "cannot make socket nonblocking (%s)",
                                   strerror(errno));
                 closesocket(sock);
@@ -308,7 +333,7 @@ static IPv4Socket *ipv4_open_sock_base(void)
         opts |= O_NONBLOCK;
 
         if (fcntl(sock, F_SETFL, opts) < 0) {
-                irmo_error_report("irmo_socket_new"
+                irmo_error_report("ipv4_open_sock"
                                   "cannot make socket nonblocking (%s)",
                                   strerror(errno));
                 closesocket(sock);
@@ -332,6 +357,10 @@ static IrmoNetSocket *ipv4_open_client_sock(IrmoNetModule *module)
 
         result = ipv4_open_sock_base();
 
+        if (result == NULL) {
+                return NULL;
+        }
+
         return &result->irmo_socket;
 }
 
@@ -343,6 +372,10 @@ static IrmoNetSocket *ipv4_open_server_sock(IrmoNetModule *module, int port)
         int status;
 
         result = ipv4_open_sock_base();
+
+        if (result == NULL) {
+                return NULL;
+        }
         
         // Bind to the port
 
@@ -380,8 +413,8 @@ static IrmoNetAddress *ipv4_resolve_address(IrmoNetModule *module,
         }
 
         addr.sin_family = AF_INET;
-        memcpy(&addr.sin_addr.s_addr, &hp->h_addr, sizeof(struct in_addr));
-        addr.sin_port = port;
+        memcpy(&addr.sin_addr, hp->h_addr, sizeof(struct in_addr));
+        addr.sin_port = htons(port);
 
         result = ipv4_get_address(&addr);
 

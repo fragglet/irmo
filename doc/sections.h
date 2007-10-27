@@ -106,10 +106,6 @@
  */
 
 /*! 
- * @defgroup socket Irmo Socket
- */
-
-/*! 
  * @defgroup server Irmo Server
  */
 

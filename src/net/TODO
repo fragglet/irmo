@@ -1,5 +1,3 @@
-Remove all code that uses BSD sockets directly, and replace with net modules.
-Remove IrmoSocket from the "standard" public interface.
 Change to use priority queue.
 Investigate using TCP Vegas-style congestion avoidance.
 Send ACKs even if we missed a previous packet.

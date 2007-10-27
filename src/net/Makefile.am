@@ -4,7 +4,6 @@ libirmonet_la_CFLAGS=-I.. -I../include
 libirmonet_la_SOURCES=                                      \
        sendatom_method.c                                    \
        sendatom_change.c                                    \
-       socket.c               socket.h                      \
        connection.c           connection.h                  \
        sendatom_destroy.c                                   \
                               protocol.h                    \

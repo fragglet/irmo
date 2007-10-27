@@ -142,10 +142,9 @@ struct _IrmoNetSocket {
 };
 
 /*!
- * A network module.
+ * A network module, defining callback functions to use for network
+ * communications.
  */
-
-typedef struct _IrmoNetModule IrmoNetModule;
 
 struct _IrmoNetModule {
 

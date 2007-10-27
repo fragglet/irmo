@@ -21,7 +21,6 @@
 #include "base/util.h"
 
 #include "interface/interface.h"
-#include "netbase/netlib.h"
 #include "world/object.h"
 
 #include <irmo/iterator.h>

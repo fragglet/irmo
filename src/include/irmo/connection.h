@@ -57,9 +57,8 @@ extern "C" {
  * world: their types must match those expected by the server.
  * (see @ref irmo_server_new)
  *
- * @param domain         Domain of the socket to use (see @ref IrmoSocketDomain).
- *			 Use IRMO_SOCKET_AUTO to try to connect on both
- *                       IPv4 and IPv6.
+ * @param net_module     Network module to use for communications.  For
+ *                       IPv4, use @ref IRMO_NET_IPV4.
  * @param location       The hostname of the remote machine to connect to.
  * @param port           The port on the remote machine on which the server
  *                       is running.
@@ -73,7 +72,8 @@ extern "C" {
  *                       established.
  */
 
-IrmoConnection *irmo_connect(IrmoSocketDomain domain, char *location, int port,
+IrmoConnection *irmo_connect(IrmoNetModule *net_module,
+                             char *location, int port,
                              IrmoInterface *iface,
 			     IrmoWorld *local_world);
 
@@ -95,29 +95,25 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain, char *location, int port,
 void irmo_disconnect(IrmoConnection *conn);
 
 /*!
- * Get the socket used by a @ref IrmoConnection.
- * 
- * Returns the socket object being used by a connection for network
- * communications.
- *
- */
-
-IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn);
-
-/*!
  * Check for new packets received from a server.
  *
  * This function must be called periodically to check for new packets
- * received socket and send new packets required by the network
- * protocol.
+ * received from the server and to send new packets required by the
+ * network protocol.
  * 
- * This is identical to:
- *   irmo_socket_run(irmo_connection_get_socket(conn));
- *
- * @sa irmo_socket_run
+ * @param conn      The connection.
  */
 
 void irmo_connection_run(IrmoConnection *conn);
+
+/*!
+ * Block on a connection until a new packet is received.
+ *
+ * @param conn      The connection.
+ * @param timeout   Maximum time to wait (in MS) before returning.
+ */
+
+void irmo_connection_block(IrmoConnection *conn, int timeout);
 
 /*!
  * Get the world object for a remote server.

@@ -21,7 +21,6 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "netbase/netlib.h"
 #include <irmo/packet.h>
 
 #include "world/object.h"

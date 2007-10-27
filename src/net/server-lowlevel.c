@@ -25,12 +25,10 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "netbase/netlib.h"
 #include <irmo/packet.h>
 
 #include "connection.h"
 #include "protocol.h"
-#include "socket.h"
 
 // size of packet buffer (maximum packet size
 // 64KiB default
@@ -40,7 +38,7 @@
 // send a connection refused SYN-FIN packet
 
 static void server_send_refuse(IrmoServer *server,
-			       struct sockaddr *addr,
+			       IrmoNetAddress *address,
 			       char *s, ...)
 {
 	IrmoPacket *packet;
@@ -58,7 +56,7 @@ static void server_send_refuse(IrmoServer *server,
 	irmo_packet_writei16(packet, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 	irmo_packet_writestring(packet, message);
 
-	irmo_socket_sendpacket(server->socket, addr, packet);
+	irmo_net_socket_send_packet(server->socket, address, packet);
 		
 	irmo_packet_free(packet);
 
@@ -81,7 +79,7 @@ static void server_run_syn(IrmoServer *server,
 		// remove from hash tables
 
 		irmo_hash_table_remove(client->server->clients,
-                                       client->addr);
+                                       client->address);
 
 		irmo_client_internal_unref(client);
 
@@ -94,7 +92,9 @@ static void server_run_syn(IrmoServer *server,
                 irmo_packet_writei16(sendpacket, 
                                      PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-                irmo_socket_sendpacket(server->socket, client->addr, sendpacket);
+                irmo_net_socket_send_packet(server->socket,
+                                            client->address,
+                                            sendpacket);
                         
                 irmo_packet_free(sendpacket);
         }
@@ -128,7 +128,7 @@ static int server_check_hashes(IrmoServer *server,
 
 static void server_run_initial_syn(IrmoServer *server, 
                                    IrmoPacket *packet,
-                                   struct sockaddr *src)
+                                   IrmoNetAddress *addr)
 {
 	unsigned int local_hash, server_hash;
 	unsigned int protocol_version;
@@ -141,7 +141,7 @@ static void server_run_initial_syn(IrmoServer *server,
         }
 
 	if (protocol_version != IRMO_PROTOCOL_VERSION) {
-		server_send_refuse(server, src,
+		server_send_refuse(server, addr,
 				   "client and server side protocol versions "
 				   "do not match");
 		return;
@@ -155,7 +155,7 @@ static void server_run_initial_syn(IrmoServer *server,
 	}
 
         if (!server_check_hashes(server, local_hash, server_hash)) {
-		server_send_refuse(server, src,
+		server_send_refuse(server, addr,
 				   "client side and server side client "
 				   "interfaces do not match");
 		return;
@@ -166,7 +166,7 @@ static void server_run_initial_syn(IrmoServer *server,
         // This is the first SYN that we have received. 
 	// Create a new client object.
 
-        client = irmo_client_new(server, src);
+        client = irmo_client_new(server, addr);
 
         // Send a response back to the new client.
  
@@ -220,7 +220,9 @@ static void server_run_synack(IrmoServer *server,
 		irmo_packet_writei16(sendpacket, 
 				     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 
-		irmo_socket_sendpacket(server->socket, client->addr, sendpacket);
+		irmo_net_socket_send_packet(server->socket,
+                                            client->address,
+                                            sendpacket);
 
 		irmo_packet_free(sendpacket);
 	}
@@ -274,8 +276,9 @@ static void server_run_synfin(IrmoServer *server,
 				     PACKET_FLAG_SYN | PACKET_FLAG_FIN
 						     | PACKET_FLAG_ACK);
 
-		irmo_socket_sendpacket(server->socket, client->addr,
-                                       sendpacket);
+		irmo_net_socket_send_packet(server->socket,
+                                            client->address,
+                                            sendpacket);
 
 		irmo_packet_free(sendpacket);
 	}
@@ -292,14 +295,14 @@ static void server_run_synfinack(IrmoClient *client)
 
 static void server_run_packet(IrmoServer *server, 
                               IrmoPacket *packet, 
-                              struct sockaddr *src)
+                              IrmoNetAddress *addr)
 {
 	unsigned int flags;
 	IrmoClient *client;
 
 	// find a client from the socket hashtable
 
-	client = irmo_hash_table_lookup(server->clients, src);
+	client = irmo_hash_table_lookup(server->clients, addr);
 
 	// read packet header
 	
@@ -321,7 +324,7 @@ static void server_run_packet(IrmoServer *server,
                 // initial SYN, or we already have a client.
 
                 if (client == NULL) {
-                        server_run_initial_syn(server, packet, src);
+                        server_run_initial_syn(server, packet, addr);
                 } else {
                         server_run_syn(server, client);
                 }
@@ -395,7 +398,7 @@ static void server_run_clients(IrmoServer *server)
                 // remove from socket list: return 1
                 
                 irmo_hash_table_remove(server->clients,
-                                       client->addr);
+                                       client->address);
 
                 irmo_client_internal_unref(client);
         }
@@ -405,48 +408,28 @@ static void server_run_clients(IrmoServer *server)
 
 void irmo_server_run(IrmoServer *server)
 {
-        IrmoSocket *sock;
-	uint8_t buf[PACKET_BUFFER_LEN];
-	struct sockaddr *addr;
-	int addr_len;
+        IrmoNetAddress *src_addr;
+        IrmoPacket *packet;
 
 	irmo_return_if_fail(server != NULL);
 
-        sock = server->socket;
-	
-	addr_len = irmo_sockaddr_len(irmo_socket_type_to_domain(sock->domain));
-	addr = malloc(addr_len);
-	
-	while (1) {
-		IrmoPacket *packet;
-		int result;
-		unsigned int tmp_addr_len = addr_len;
-		
-		result = recvfrom(sock->sock,
-				  buf,
-				  PACKET_BUFFER_LEN,
-				  0,
-				  addr,
-				  &tmp_addr_len);
+        for (;;) {
+                packet = irmo_net_socket_recv_packet(server->socket,
+                                                     &src_addr);
 
-		if (result < 0) {
-			if (errno != EAGAIN)
-				irmo_error_report("irmo_socket_run",
-						  "error on receive (%s)",
-						  strerror(errno));
-			break;
-		}
+                if (packet == NULL) {
+                        break;
+                }
 
-		// stick it in a packet
+                // Successfully received a packet!  Parse the contents.
 
-                packet = irmo_packet_new_from(buf, result);
-
-		server_run_packet(server, packet, addr);
-
+                server_run_packet(server, packet, src_addr);
+                
+                // Finished now; free the packet and possibly the address.
+      
                 irmo_packet_free(packet);
-      	}
-
-	free(addr);
+                irmo_net_address_unref(src_addr);
+        }
 
 	// run each of the clients
 

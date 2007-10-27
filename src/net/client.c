@@ -20,7 +20,6 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 
-#include "netbase/netlib.h"
 #include <irmo/packet.h>
 
 #include "client.h"
@@ -36,7 +35,7 @@
 
 // create a new client (used internally)
 
-IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
+IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
 {
 	IrmoClient *client;
 
@@ -44,9 +43,13 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 
 	client->state = CLIENT_CONNECTING;
 	client->server = server;
-	client->addr = irmo_sockaddr_copy(addr);
 	client->connect_time = 0;
 	client->connect_attempts = CLIENT_CONNECT_ATTEMPTS;
+
+        // Set address and add reference
+
+	client->address = addr;
+        irmo_net_address_ref(addr);
 
 	// send queue
 
@@ -80,11 +83,11 @@ IrmoClient *irmo_client_new(IrmoServer *server, struct sockaddr *addr)
 	client->cwnd = PACKET_THRESHOLD;
 	client->ssthresh = 65535;
 
-	// insert into server hashtable and socket hashtable
+	// insert into server hashtable
 	
 	irmo_hash_table_insert(server->clients,
-			    client->addr,
-			    client);
+                               client->address,
+                               client);
 	
 	return client;
 }
@@ -144,7 +147,7 @@ static void irmo_client_destroy(IrmoClient *client)
 	if (client->connection_error)
 		free(client->connection_error);
 	
-	free(client->addr);
+        irmo_net_address_unref(client->address);
 	free(client);
 }
 
@@ -224,9 +227,9 @@ static void client_run_connecting(IrmoClient *client)
 					     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
 		}
 		
-		irmo_socket_sendpacket(client->server->socket,
-				       client->addr,
-				       packet);
+		irmo_net_socket_send_packet(client->server->socket,
+				            client->address,
+				            packet);
 
 		irmo_packet_free(packet);		
 		
@@ -257,9 +260,9 @@ static void client_run_disconnecting(IrmoClient *client)
 
 		irmo_packet_writei16(packet, PACKET_FLAG_SYN|PACKET_FLAG_FIN);
 
-		irmo_socket_sendpacket(client->server->socket,
-				       client->addr,
-				       packet);
+		irmo_net_socket_send_packet(client->server->socket,
+				            client->address,
+				            packet);
 
 		irmo_packet_free(packet);
 
@@ -347,22 +350,6 @@ void irmo_client_set_max_sendwindow(IrmoClient *client, int max)
 
 const char *irmo_client_get_addr(IrmoClient *client)
 {
-	static char buf[128];
-
-	irmo_return_val_if_fail(client != NULL, NULL);
-
-	switch (client->addr->sa_family) {
-	case AF_INET: {
-		struct sockaddr_in *addr = (struct sockaddr_in *) client->addr;
-		return inet_ntoa(addr->sin_addr);
-	}
-#ifdef USE_IPV6
-	case AF_INET6: {
-		return inet_ntop(AF_INET6, client->addr, buf, sizeof(buf)-1);
-	}
-#endif
-	}
-
-	return NULL;
+        return irmo_net_address_to_string(client->address);
 }
 

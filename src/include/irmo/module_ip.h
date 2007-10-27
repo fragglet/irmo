@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002-3 Simon Howard
+// Copyright (C) 2007 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,22 +17,31 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_NETBASE_NETLIB_H
-#define IRMO_NETBASE_NETLIB_H
+#ifndef IRMO_MODULE_IP_H
+#define IRMO_MODULE_IP_H
 
-#include "net/socket.h"
+#include "types.h"
 
-// various network util functions
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int irmo_sockaddr_len(int domain);
+/**
+ * Convenience #define for @ref irmo_module_ipv4.
+ */
 
-unsigned int irmo_sockaddr_hash(struct sockaddr *addr);
-int irmo_sockaddr_cmp(struct sockaddr *a, struct sockaddr *b);
+#define IRMO_NET_IPV4 (&irmo_module_ipv4)
 
-struct sockaddr *irmo_sockaddr_copy(struct sockaddr *addr);
+/**
+ * Network module for communication using UDP over IPv4.
+ */
 
-struct sockaddr *irmo_sockaddr_for_name(IrmoSocketDomain domain, 
-					char *name, int port);
+extern IrmoNetModule irmo_module_ipv4;
 
-#endif /* #ifndef IRMO_NETBASE_NETLIB_H */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* #ifndef IRMO_MODULE_IP_H */
+
 

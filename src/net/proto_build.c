@@ -20,7 +20,6 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 
-#include "netbase/netlib.h"
 #include <irmo/packet.h>
 
 #include "protocol.h"
@@ -330,9 +329,9 @@ void irmo_proto_run_client(IrmoClient *client)
 		
                 // Transmit the packet.
 
-		irmo_socket_sendpacket(client->server->socket,
-				       client->addr,
-				       packet);
+		irmo_net_socket_send_packet(client->server->socket,
+				            client->address,
+				            packet);
 
 		//printf("free packet\n");
 		
@@ -362,9 +361,9 @@ void irmo_proto_run_client(IrmoClient *client)
 
 		// send packet
 
-		irmo_socket_sendpacket(client->server->socket,
-				       client->addr,
-				       packet);
+		irmo_net_socket_send_packet(client->server->socket,
+                                            client->address,
+                                            packet);
 
 		irmo_packet_free(packet);
 	}

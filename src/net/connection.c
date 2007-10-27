@@ -21,55 +21,37 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "netbase/netlib.h"
+#include "netbase/net-socket.h"
 
 #include "connection.h"
-#include "socket.h"
 
-IrmoConnection *irmo_connect(IrmoSocketDomain domain, 
+IrmoConnection *irmo_connect(IrmoNetModule *net_module,
 			     char *location, int port,
 			     IrmoInterface *iface, 
 			     IrmoWorld *local_world)
 {
-	IrmoSocket *sock;
-	struct sockaddr *addr;
+	IrmoNetSocket *sock;
+        IrmoNetAddress *addr;
 	IrmoServer *server;
 	IrmoClient *client;
 
 	irmo_return_val_if_fail(location != NULL, NULL);
 
-	if (domain == IRMO_SOCKET_AUTO) {
-
-		IrmoConnection *conn;
-
-#ifdef USE_IPV6
-		// try IPv6
-		
-		conn = irmo_connect(IRMO_SOCKET_IPV6, location, port, iface,
-				    local_world);
-
-		if (conn)
-			return conn;
-#endif
-		// fall back to v4
-
-		return irmo_connect(IRMO_SOCKET_IPV4, location, port, iface,
-				    local_world);
-	}
-	
 	// try to resolve the name
 
-	addr = irmo_sockaddr_for_name(domain, location, port);
+	addr = irmo_net_address_resolve(net_module, location, port);
 
-	if (!addr)
+	if (addr == NULL) {
 		return NULL;
+        }
 	
 	// create a socket
 	
-	sock = irmo_socket_new_unbound(domain);
+	sock = irmo_net_socket_open_unbound(net_module);
 	
-	if (!sock)
+	if (sock == NULL) {
 		return NULL;
+        }
 
 	// create a server for our local world. for accessing the
 	// local world the server is seen as a client connecting
@@ -78,14 +60,11 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 	server = irmo_server_new_from(sock, local_world, iface);
         server->internal_server = 1;
 
-	// only the server is using this socket 
-	
-	irmo_socket_unref(sock);
-	
-	// create a client object, also representing the servers
+	// create a client object, also representing the server's
 	// connection to us
 
 	client = irmo_client_new(server, addr);
+        irmo_net_address_unref(addr);
 
 	// reference is on the client, which implies the server
 	
@@ -110,7 +89,7 @@ IrmoConnection *irmo_connect(IrmoSocketDomain domain,
 				  client->connection_error);
 		
 		// connection failed
-		// delete client object
+		// delete client object, shutdown socket, etc.
 		
 		irmo_client_unref(client);
 
@@ -137,17 +116,10 @@ void irmo_disconnect(IrmoConnection *conn)
 
 	while (conn->state != CLIENT_DISCONNECTED) {
 		irmo_server_run(conn->server);
-		irmo_socket_block(conn->server->socket, 100);
+		irmo_net_socket_block(conn->server->socket, 100);
 	}
 
 	irmo_client_unref(conn);
-}
-
-IrmoSocket *irmo_connection_get_socket(IrmoConnection *conn)
-{
-	irmo_return_val_if_fail(conn != NULL, NULL);
-	
-	return conn->server->socket;
 }
 
 void irmo_connection_run(IrmoConnection *conn)
@@ -190,5 +162,10 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 	conn->connection_error = irmo_vasprintf(s, args);
 
 	va_end(args);
+}
+
+void irmo_connection_block(IrmoConnection *conn, int ms)
+{
+        irmo_server_block(conn->server, ms);
 }
 

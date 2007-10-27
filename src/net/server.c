@@ -22,14 +22,12 @@
 #include "base/error.h"
 #include "base/iterator.h"
 
-#include "netbase/netlib.h"
-
 #include "server.h"
 
-// create a new server using an existing IrmoSocket object
-// used when making client connections
+// Create a new server using an existing IrmoNetSocket.
+// Used when making client connections.
 
-IrmoServer *irmo_server_new_from(IrmoSocket *sock,
+IrmoServer *irmo_server_new_from(IrmoNetSocket *sock,
 				 IrmoWorld *world, 
 				 IrmoInterface *client_interface)
 {
@@ -44,8 +42,6 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 	server->client_interface = client_interface;
 	server->running = 1;
 
-	irmo_socket_ref(sock);
-
 	if (client_interface)
 		irmo_interface_ref(client_interface);
 	
@@ -58,28 +54,27 @@ IrmoServer *irmo_server_new_from(IrmoSocket *sock,
 		irmo_arraylist_append(world->servers, server);
 	}
 	
-	server->clients = irmo_hash_table_new((IrmoHashTableHashFunc) irmo_sockaddr_hash,
-					      (IrmoHashTableEqualFunc) irmo_sockaddr_cmp);
+	server->clients = irmo_hash_table_new(irmo_pointer_hash,
+                                              irmo_pointer_equal);
 
 	return server;
 }
 
-IrmoServer *irmo_server_new(IrmoSocketDomain domain, int port,
+IrmoServer *irmo_server_new(IrmoNetModule *net_module, int port,
                             IrmoWorld *world, 
 			    IrmoInterface *client_interface)
 {
-	IrmoSocket *sock;
+	IrmoNetSocket *sock;
 	IrmoServer *server;
 
-	sock = irmo_socket_new_bound(domain, port);
+	sock = irmo_net_socket_open_bound(net_module, port);
 
-	if (sock == NULL) 
+	if (sock == NULL) {
 		return NULL;
+        }
 	
 	server = irmo_server_new_from(sock, world, client_interface);
 
-	irmo_socket_unref(sock);
-	
 	return server;
 }
 
@@ -102,7 +97,7 @@ static void irmo_server_remove_all_clients(IrmoServer *server)
 
                 // Remove this client from the hash table and destroy it.
 
-                irmo_hash_table_remove(server->clients, client->addr);
+                irmo_hash_table_remove(server->clients, client->address);
 
                 irmo_client_internal_unref(client);
         }
@@ -110,15 +105,14 @@ static void irmo_server_remove_all_clients(IrmoServer *server)
         irmo_hash_table_iter_free(iter);
 }
 
-// remove ourselves from the socket
-
 static void irmo_server_internal_shutdown(IrmoServer *server)
 {
         int i;
 
 	//printf("shutdown server\n");
-	if (!server->running)
+	if (!server->running) {
 		return;
+        }
 
 	// remove clients
 
@@ -126,7 +120,7 @@ static void irmo_server_internal_shutdown(IrmoServer *server)
 
 	// shutdown the socket we're using
 
-	irmo_socket_shutdown(server->socket);
+	irmo_net_socket_close(server->socket);
 
 	// remove from list of attached servers
 			
@@ -156,8 +150,6 @@ void irmo_server_unref(IrmoServer *server)
 
 		irmo_callback_list_free(&server->connect_callbacks);
 
-		irmo_socket_unref(server->socket);
-		
 		if (server->client_interface)
 			irmo_interface_unref(server->client_interface);
 
@@ -240,16 +232,14 @@ void irmo_server_shutdown(IrmoServer *server)
 	
 	while (irmo_hash_table_num_entries(server->clients)) {
 		irmo_server_run(server);
-		irmo_socket_block(server->socket, 100);
+		irmo_net_socket_block(server->socket, 100);
 	}
 	
 	irmo_server_internal_shutdown(server);
 }
 
-IrmoSocket *irmo_server_get_socket(IrmoServer *server)
+void irmo_server_block(IrmoServer *server, int ms)
 {
-	irmo_return_val_if_fail(server != NULL, NULL);
-
-	return server->socket;
+        irmo_net_socket_block(server->socket, ms);
 }
 

@@ -10,11 +10,11 @@ libirmoinclude2_HEADERS=                                   \
         interface-parser.h                                 \
         iterator.h                                         \
         method.h                                           \
+        module_ip.h                                        \
         net-module.h                                       \
         object.h                                           \
         packet.h                                           \
         server.h                                           \
-        socket.h                                           \
         types.h                                            \
         world.h
 

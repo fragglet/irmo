@@ -28,9 +28,9 @@
 #include <irmo/interface.h>
 #include <irmo/iterator.h>
 #include <irmo/method.h>
+#include <irmo/module_ip.h>
 #include <irmo/object.h>
 #include <irmo/server.h>
-#include <irmo/socket.h>
 #include <irmo/world.h>
 
 #endif /* #ifndef IRMO_H */

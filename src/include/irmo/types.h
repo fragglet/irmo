@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 // 02111-1307, USA.
 //
+
 //
 // Type definitions
 //
@@ -118,6 +119,26 @@ typedef void (*IrmoMethodArgCallback)(IrmoMethodArg *arg, void *user_data);
 
 //---------------------------------------------------------------------
 //
+// IrmoNetModule
+//
+//---------------------------------------------------------------------
+
+/*!
+ * @addtogroup net_module
+ * \{
+ */
+
+/*!
+ * A network module, defining callback functions to use for network
+ * communications.
+ */
+
+typedef struct _IrmoNetModule IrmoNetModule;
+
+//! \}
+
+//---------------------------------------------------------------------
+//
 // IrmoWorld
 //
 //---------------------------------------------------------------------
@@ -143,7 +164,6 @@ typedef struct _IrmoWorld IrmoWorld;
 typedef unsigned int IrmoObjectID;
 
 //! \}
-
 
 //---------------------------------------------------------------------
 //
@@ -217,39 +237,6 @@ typedef void (*IrmoVarCallback) (IrmoObject *object, char *variable,
 //! Callback functions for operations on objects
 
 typedef void (*IrmoObjCallback) (IrmoObject *object, void *user_data);
-
-//! \}
-
-
-//---------------------------------------------------------------------
-//
-// IrmoSocket
-//
-//---------------------------------------------------------------------
-
-/*!
- * @addtogroup socket
- * \{
- */
-
-/*!
- * An IrmoSocket object.
- */
-
-typedef struct _IrmoSocket IrmoSocket;
-
-/*!
- * Socket domain.
- * 
- * When creating a new socket, it is neccessary to specify the type
- * of socket to be created, IPv4 or IPv6.
- */
-
-typedef enum {
-	IRMO_SOCKET_AUTO,
-	IRMO_SOCKET_IPV4,
-	IRMO_SOCKET_IPV6,
-} IrmoSocketDomain;
 
 //! \}
 

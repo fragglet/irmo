@@ -54,24 +54,5 @@ typedef signed long int32_t;
 
 #endif
 
-// sockets api
-
-#ifdef _WIN32
-
-#include <WinSock.h>
-
-#else
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <fcntl.h>
-
-#define closesocket close
-
-#endif
-
 #endif /* #ifndef IRMO_ARCH_SYSHEADERS_H */
 

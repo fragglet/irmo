@@ -1,5 +1,4 @@
 Split out all berkeley sockets code into a distinct module.
 net/ API needs to be changed to use module references.
-Remove netlib.c.
 Example modules for other types of communication?
 

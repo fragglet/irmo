@@ -20,7 +20,6 @@
 #include "arch/sysheaders.h"
 #include "base/util.h"
 
-#include "netbase/netlib.h"
 #include <irmo/packet.h>
 #include "world/object.h"
 
