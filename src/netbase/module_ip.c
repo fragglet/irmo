@@ -69,9 +69,11 @@ static IrmoHashTable *address_hash_table = NULL;
 
 // Free a IPv4Address.
 
-static void ipv4_address_free(IrmoNetAddress *addr)
+static void ipv4_address_free(IrmoNetAddress *_addr)
 {
-        irmo_hash_table_remove(address_hash_table, addr);
+        IPv4Address *addr = (IPv4Address *) _addr;
+
+        irmo_hash_table_remove(address_hash_table, &addr->sockaddr);
         free(addr);
 }
 
