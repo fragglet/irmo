@@ -101,8 +101,12 @@ void irmo_object_callback_free(ObjectCallbackData *data,
 
         irmo_callback_list_free(&data->destroy_callbacks);
 
-        for (i=0; i<klass->nvariables; ++i) {
-                irmo_callback_list_free(&data->variable_callbacks[i]);
+        if (data->variable_callbacks != NULL) {
+                for (i=0; i<klass->nvariables; ++i) {
+                        irmo_callback_list_free(&data->variable_callbacks[i]);
+                }
+
+                free(data->variable_callbacks);
         }
 }
 
