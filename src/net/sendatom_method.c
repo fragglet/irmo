@@ -23,6 +23,8 @@
 #include <irmo/packet.h>
 #include "world/object.h"
 
+#include "sendatom.h"
+
 //
 // IrmoMethodAtom
 //
@@ -38,9 +40,12 @@
 static int irmo_method_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	IrmoMethod *method;
+        IrmoServer *server;
 	unsigned int i;
 
-	if (!client->server->world)
+        server = client->server;
+
+	if (!server->world)
 		return 0;
 
 	// read method index

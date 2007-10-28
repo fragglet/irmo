@@ -28,7 +28,6 @@
 #include "net/client.h"
 #include "net/sendatom.h"
 
-#include "callback-data.h"
 #include "object.h"
 #include "world.h"
 
@@ -107,7 +106,8 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	object->id = id;
 	object->objclass = objclass;
 	object->world = world;
-	object->callbacks = irmo_callback_data_new(objclass, NULL);
+
+        irmo_object_callback_init(&object->callbacks, objclass);
 	
 	// member variables:
 
@@ -116,10 +116,11 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	// int variables will be initialised to 0 by irmo_new0
 	// string values must be initialised to the empty string ("")
 	
-	for (i=0; i<objclass->nvariables; ++i)
-		if (objclass->variables[i]->type == IRMO_TYPE_STRING)
+	for (i=0; i<objclass->nvariables; ++i) {
+		if (objclass->variables[i]->type == IRMO_TYPE_STRING) {
 			object->variables[i].s = strdup("");
-
+                }
+        }
 	
 	// add to world
 
@@ -127,9 +128,8 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 	// raise callback functions for new object creation
 
-	irmo_callback_data_raise_new(world->callbacks[objclass->index],
-                                     object);
-	irmo_callback_data_raise_new(world->callbacks_all, object);
+	irmo_class_callback_raise_new(&world->callbacks[objclass->index],
+                                      object);
 
 	// notify attached clients
 
@@ -180,17 +180,16 @@ void irmo_object_internal_destroy(IrmoObject *object,
 				  int notify,
 				  int remove)
 {
+        ClassCallbackData *class_data;
 	unsigned int i;
 
 	if (notify) {
 		// raise destroy callbacks
 		
-		irmo_callback_data_raise_destroy(object->callbacks, object);
-		irmo_callback_data_raise_destroy(object->world->callbacks
-						   [object->objclass->index],
-                                                 object);
-		irmo_callback_data_raise_destroy(object->world->callbacks_all,
-                                                 object);
+                irmo_object_callback_raise_destroy(&object->callbacks, object);
+
+                class_data = &object->world->callbacks[object->objclass->index];
+                irmo_class_callback_raise_destroy(class_data, object);
 		
 		// notify connected clients
 		
@@ -215,7 +214,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	}
 
 	free(object->variables);
-	irmo_callback_data_free(object->callbacks);
+	irmo_object_callback_free(&object->callbacks, object->objclass);
 
 	// free variable time array
 
@@ -278,6 +277,7 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 {
 	IrmoClass *objclass = object->objclass;
 	IrmoClassVar *var = objclass->variables[variable];
+        ClassCallbackData *class_data;
 	struct set_notify_data data = {
 		object,
 		variable,
@@ -285,12 +285,11 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 
 	// call callback functions for change
 
-	irmo_callback_data_raise(object->callbacks, object, var->index);
-	irmo_callback_data_raise(object->world->callbacks[objclass->index],
-                                 object, variable);
-	irmo_callback_data_raise(object->world->callbacks_all,
-                                 object, variable);
-	
+        irmo_object_callback_raise(&object->callbacks, object, var->index);
+
+        class_data = &object->world->callbacks[objclass->index];
+        irmo_class_callback_raise(class_data, object, var->index);
+
 	// notify clients
 
 	foreach_client(object->world,
@@ -491,5 +490,38 @@ void *irmo_object_get_data(IrmoObject *object)
         return object->user_data;
 }
 
+IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
+				IrmoVarCallback func, void *user_data)
+{
+        IrmoCallback *callback;
 
+	irmo_return_val_if_fail(object != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
+
+        callback = irmo_object_callback_watch(&object->callbacks,
+                                              object->objclass,
+                                              variable,
+                                              func,
+                                              user_data);
+
+	if (callback == NULL) {
+		irmo_error_report("irmo_object_watch",
+				  "unknown variable '%s' in class '%s'",
+				  variable, object->objclass->name);
+	}
+
+	return callback;
+}
+
+IrmoCallback *irmo_object_watch_destroy(IrmoObject *object,
+					IrmoObjCallback func, 
+					void *user_data)
+{
+	irmo_return_val_if_fail(object != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
+	
+	return irmo_object_callback_watch_destroy(&object->callbacks,
+                                                  func,
+                                                  user_data);
+}
 

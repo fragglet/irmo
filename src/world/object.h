@@ -28,7 +28,7 @@
 
 #include "interface/interface.h"
 
-#include "callback-data.h"
+#include "object-callback-data.h"
 
 // internal stuff:
 
@@ -40,7 +40,7 @@ struct _IrmoObject {
 
 	// callback data for this object
 	
-	IrmoCallbackData *callbacks;
+	ObjectCallbackData callbacks;
 
 	// the class of this object, one of the classes specified
 	// in the interface for the world this object exists

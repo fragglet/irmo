@@ -25,6 +25,8 @@
 
 #include "world/object.h"
 
+#include "sendatom.h"
+
 
 //
 // IrmoDestroyAtom

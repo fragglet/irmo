@@ -24,6 +24,8 @@
 
 #include "world/object.h"
 
+#include "sendatom.h"
+
 //
 // Null atom.
 //

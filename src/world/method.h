@@ -23,7 +23,6 @@
 #include <irmo/method.h>
 
 #include "interface/interface.h"
-#include "net/client.h"
 
 #include "object.h"
 

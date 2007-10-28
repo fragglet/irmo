@@ -28,7 +28,7 @@
 
 #include "interface/interface.h"
 
-#include "callback-data.h"
+#include "class-callback-data.h"
 #include "world.h"
 
 IrmoWorld *irmo_world_new(IrmoInterface *iface)
@@ -49,23 +49,30 @@ IrmoWorld *irmo_world_new(IrmoInterface *iface)
 	
 	irmo_interface_ref(iface);
 
-	// create a callback for each class
+        // Top-level class callbacks.
+
+	irmo_class_callback_init(&world->callbacks_all, NULL, NULL);
+
+	// Create a callback for each class
 	
-	world->callbacks = irmo_new0(IrmoCallbackData *, iface->nclasses);
+	world->callbacks = irmo_new0(ClassCallbackData, iface->nclasses);
 
 	for (i=0; i<iface->nclasses; ++i) {
-		IrmoCallbackData *parent_data;
+		ClassCallbackData *parent_data;
+                IrmoClass *parent_class;
 
-		if (iface->classes[i]->parent_class)
-			parent_data = world->callbacks[iface->classes[i]->parent_class->index];
-		else
-			parent_data = NULL;
-		
-		world->callbacks[i] = irmo_callback_data_new(iface->classes[i],
-                                                             parent_data);
+                parent_class = iface->classes[i]->parent_class;
+
+		if (parent_class != NULL) {
+			parent_data = &world->callbacks[parent_class->index];
+		} else {
+			parent_data = &world->callbacks_all;
+		}
+
+                irmo_class_callback_init(&world->callbacks[i],
+                                         parent_data, 
+                                         iface->classes[i]);
 	}
-
-	world->callbacks_all = irmo_callback_data_new(NULL, NULL);
 
 	// method callbacks
 	
@@ -119,13 +126,15 @@ void irmo_world_unref(IrmoWorld *world)
 
 		// delete callbacks
 		
-		for (i=0; i<world->iface->nclasses; ++i)
-			irmo_callback_data_free(world->callbacks[i]);
+		for (i=0; i<world->iface->nclasses; ++i) {
+			irmo_class_callback_free(&world->callbacks[i],
+                                                 world->iface->classes[i]);
+                }
 
-		irmo_callback_data_free(world->callbacks_all);
-		
 		free(world->callbacks);
 
+		irmo_class_callback_free(&world->callbacks_all, NULL);
+		
 		// method callbacks
 		
 		for (i=0; i<world->iface->nmethods; ++i)
@@ -199,5 +208,119 @@ IrmoInterface *irmo_world_get_interface(IrmoWorld *world)
 	irmo_return_val_if_fail(world != NULL, NULL);
 
 	return world->iface;
+}
+
+static ClassCallbackData *find_callback_class(IrmoWorld *world,
+                                             char *classname,
+                                             IrmoClass **save_class)
+{
+        IrmoClass *klass;
+
+	if (classname == NULL) {
+		return &world->callbacks_all;
+        }
+
+	klass = irmo_interface_get_class(world->iface, classname);
+
+	if (klass == NULL) {
+		return NULL;
+        }
+
+        if (save_class != NULL) {
+                *save_class = klass;
+        }
+
+	return &world->callbacks[klass->index];
+}
+
+
+// Watch creation of new objects of a particular class
+
+IrmoCallback *irmo_world_watch_new(IrmoWorld *world, char *classname,
+                                   IrmoObjCallback func, void *user_data)
+{
+	ClassCallbackData *data;
+
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
+	
+	// find the class
+
+	data = find_callback_class(world, classname, NULL);
+
+	if (data == NULL) {
+		irmo_error_report("irmo_world_watch_new",
+                                  "unknown class '%s'", classname);
+		return NULL;
+	} else {
+                return irmo_class_callback_watch_new(data, func, user_data);
+	}
+}
+
+// Watch for changes to objects/variables
+
+IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
+				     char *classname, char *variable,
+				     IrmoVarCallback func, 
+				     void *user_data)
+{
+	ClassCallbackData *data;
+	IrmoCallback *callback = NULL;
+        IrmoClass *klass;
+	
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
+	irmo_return_val_if_fail(!(classname == NULL && variable != NULL), NULL);
+	
+	// Find the class
+	
+	data = find_callback_class(world, classname, &klass);
+
+	if (data == NULL) {
+		irmo_error_report("irmo_world_watch_class",
+				  "unknown class '%s'", classname);
+                return NULL;
+	}
+
+        // Set the callback.
+
+        callback = irmo_class_callback_watch(data, klass, variable,
+                                             func, user_data);
+
+        // If setting the callback failed, it was because the variable
+        // specified was not found.
+
+        if (callback == NULL) {
+                irmo_error_report("irmo_world_watch_class",
+                                  "unknown variable '%s' in class '%s'",
+                                  variable, classname);
+	}
+
+	return callback;
+}
+
+// Watch for object destruction.
+
+IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world, 
+				       char *classname,
+				       IrmoObjCallback func, 
+				       void *user_data)
+{
+	ClassCallbackData *data;
+
+	irmo_return_val_if_fail(world != NULL, NULL);
+	irmo_return_val_if_fail(func != NULL, NULL);
+	
+	data = find_callback_class(world, classname, NULL);
+
+	if (data == NULL) {
+		irmo_error_report("irmo_world_watch_destroy",
+                                  "unknown class '%s'", classname);
+                return NULL;
+	} else {
+		return irmo_class_callback_watch_destroy(data,
+                                                         func,
+                                                         user_data);
+	}
 }
 

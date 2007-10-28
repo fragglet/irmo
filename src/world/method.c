@@ -21,7 +21,6 @@
 #include "base/util.h"
 #include "base/error.h"
 
-#include "callback-data.h"
 #include "method.h"
 #include "world.h"
 

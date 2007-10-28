@@ -29,7 +29,7 @@
 #include "net/client.h"
 #include "interface/interface.h"
 
-#include "callback-data.h"
+#include "class-callback-data.h"
 #include "object.h"
 
 // internals:
@@ -44,17 +44,17 @@ struct _IrmoWorld {
 	
 	IrmoInterface *iface;
 
-	// world-global callback objects, 1 per class
+	// World-global callback objects, 1 per class
 	// used for eg. "watch creation of objects of class my_class"
 	// 		"watch for when my_class::my_string is changed"
 	
-	IrmoCallbackData **callbacks;
+	ClassCallbackData *callbacks;
 
 	// global callbacks for all objects 
 	// eg. "watch destruction of all objects"
 	//     "watch for when any object is changed"
 
-	IrmoCallbackData *callbacks_all;
+	ClassCallbackData callbacks_all;
 
 	// objects in the world, hashed by their object id
 	
