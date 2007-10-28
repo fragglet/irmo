@@ -26,9 +26,14 @@
 
 typedef struct _ClassCallbackData ClassCallbackData;
 
+#include "interface/class.h"
 #include "object-callback-data.h"
 
 struct _ClassCallbackData {
+
+        // Class that this applies to.
+
+        IrmoClass *klass;
 
 	// Callback data object for the parent class
 	
@@ -46,8 +51,7 @@ struct _ClassCallbackData {
 void irmo_class_callback_init(ClassCallbackData *data,
                               ClassCallbackData *parent_data,
                               IrmoClass *klass);
-void irmo_class_callback_free(ClassCallbackData *data,
-                              IrmoClass *klass);
+void irmo_class_callback_free(ClassCallbackData *data);
 
 void irmo_class_callback_raise(ClassCallbackData *data,
                                IrmoObject *object,

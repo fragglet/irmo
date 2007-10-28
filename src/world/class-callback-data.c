@@ -33,16 +33,16 @@ void irmo_class_callback_init(ClassCallbackData *data,
 {
         data->new_callbacks = NULL;
         data->parent_data = parent_data;
+        data->klass = klass;
 
         irmo_object_callback_init(&data->object_callbacks, klass);
 }
 
-void irmo_class_callback_free(ClassCallbackData *data,
-                              IrmoClass *klass)
+void irmo_class_callback_free(ClassCallbackData *data)
 {
         irmo_callback_list_free(&data->new_callbacks);
 
-        irmo_object_callback_free(&data->object_callbacks, klass);
+        irmo_object_callback_free(&data->object_callbacks, data->klass);
 }
 
 void irmo_class_callback_raise_new(ClassCallbackData *data, 
@@ -69,6 +69,14 @@ void irmo_class_callback_raise(ClassCallbackData *data,
         data_iter = data;
 
         while (data_iter != NULL) {
+
+                // If this is outside the range of variables for this 
+                // class, it is a change to a variable from a subclass. 
+                // Stop.
+
+                if (variable_index >= data->klass->nvariables) {
+                        break;
+                }
 
                 irmo_object_callback_raise(&data_iter->object_callbacks,
                                            object,

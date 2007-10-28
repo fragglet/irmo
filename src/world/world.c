@@ -127,13 +127,12 @@ void irmo_world_unref(IrmoWorld *world)
 		// delete callbacks
 		
 		for (i=0; i<world->iface->nclasses; ++i) {
-			irmo_class_callback_free(&world->callbacks[i],
-                                                 world->iface->classes[i]);
+			irmo_class_callback_free(&world->callbacks[i]);
                 }
 
 		free(world->callbacks);
 
-		irmo_class_callback_free(&world->callbacks_all, NULL);
+		irmo_class_callback_free(&world->callbacks_all);
 		
 		// method callbacks
 		
