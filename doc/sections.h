@@ -61,6 +61,7 @@
  * @li @ref server
  * @li @ref client
  * @li @ref connection
+ * @li @ref module_ipv4
  *
  * @section netmodsec Network modules
  *
@@ -115,6 +116,10 @@
 
 /*! 
  * @defgroup connection Irmo Client Interface
+ */
+
+/*!
+ * @defgroup module_ipv4 IPv4 networking module
  */
 
 /*!

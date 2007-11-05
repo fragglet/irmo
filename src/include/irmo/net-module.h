@@ -37,13 +37,34 @@ extern "C" {
  * \{
  */
 
+/*!
+ * A class of network address.  Every @ref IrmoNetAddress has a class
+ * associated with it.
+ */
+
 typedef struct _IrmoNetAddressClass IrmoNetAddressClass;
+
+/*!
+ * A class of network socket.  Every @ref IrmoNetSocket has a class 
+ * associated with it.
+ */
+
 typedef struct _IrmoNetSocketClass IrmoNetSocketClass;
+
+/*!
+ * An open network socket, used for sending and receiving packets.
+ */
+
 typedef struct _IrmoNetSocket IrmoNetSocket;
 
 /*!
- * A class of network address.  Every network address has a class
- * associated with it.
+ * Network address of a remote machine.
+ */
+
+typedef struct _IrmoNetAddress IrmoNetAddress;
+
+/*!
+ * Format of an @ref IrmoNetAddressClass.
  */
 
 struct _IrmoNetAddressClass {
@@ -68,17 +89,27 @@ struct _IrmoNetAddressClass {
 };
 
 /*!
- * A remote network address.
+ * Format of an @ref IrmoNetAddress.
  */
 
 struct _IrmoNetAddress {
+
+        /*!
+         * Class of this address.
+         */
+
         IrmoNetAddressClass *address_class;
+
+        /*!
+         * Number of references to this address.  When allocated, this
+         * should be initialised to zero.
+         */
+
         int _refcount;
 };
 
 /*!
- * A class of network socket.  Every network socket has a class 
- * associated with it.
+ * Format of an @ref IrmoNetSocketClass.
  */
 
 struct _IrmoNetSocketClass {
@@ -134,10 +165,15 @@ struct _IrmoNetSocketClass {
 };
 
 /*!
- * An open network socket, used for sending and receiving packets.
+ * Format of an @ref IrmoNetSocket.
  */
 
 struct _IrmoNetSocket {
+
+        /*!
+         * Class of this socket.
+         */
+
         IrmoNetSocketClass *socket_class;
 };
 
@@ -174,7 +210,7 @@ struct _IrmoNetModule {
         /*!
          * Resolve a string description of an address.
          * The returned address should be freed back using 
-         * @ref free_address (below).
+         * @ref IrmoNetAddressClass::free_address.
          *
          * @param module   Pointer to this module.
          * @param address  Address to resolve.

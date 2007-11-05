@@ -26,17 +26,26 @@
 extern "C" {
 #endif
 
-/**
- * Convenience #define for @ref irmo_module_ipv4.
+/*!
+ * @ref IrmoNetModule implementation that communicates using UDP on IPv4.
+ *
+ * @addtogroup module_ipv4
+ * \{
+ */
+
+/*!
+ * Convenience constant for @ref irmo_module_ipv4.
  */
 
 #define IRMO_NET_IPV4 (&irmo_module_ipv4)
 
-/**
+/*!
  * Network module for communication using UDP over IPv4.
  */
 
 extern IrmoNetModule irmo_module_ipv4;
+
+//! \}
 
 #ifdef __cplusplus
 }

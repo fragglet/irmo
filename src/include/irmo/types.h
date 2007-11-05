@@ -92,12 +92,6 @@ typedef struct _IrmoMethod IrmoMethod;
 typedef struct _IrmoMethodArg IrmoMethodArg;
 
 /*!
- * Network address of a remote machine.
- */
-
-typedef struct _IrmoNetAddress IrmoNetAddress;
-
-/*!
  * Variable types.
  */
 
