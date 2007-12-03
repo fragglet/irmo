@@ -2,7 +2,8 @@
 TESTS =                       \
        test-interface         \
        test-iterator          \
-       test-world
+       test-world             \
+       test-packet
 
 noinst_PROGRAMS = $(TESTS)
 
@@ -12,4 +13,5 @@ LDADD = $(top_builddir)/src/libirmo.la
 test_interface_SOURCES=test-interface.c
 test_iterator_SOURCES=test-iterator.c
 test_world_SOURCES=test-world.c
+test_packet_SOURCES=test-packet.c
 

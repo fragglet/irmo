@@ -245,25 +245,31 @@ int irmo_packet_verify_value(IrmoPacket *packet,
 	}
 }
 
-void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
-			    IrmoValueType type)
+int irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
+                           IrmoValueType type)
 {
+        char *strvalue;
+
 	switch (type) {
 	case IRMO_TYPE_INT8:
-		irmo_packet_readi8(packet, &value->i);
-		break;
+		return irmo_packet_readi8(packet, &value->i);
 	case IRMO_TYPE_INT16:
-		irmo_packet_readi16(packet, &value->i);
-		break;
+		return irmo_packet_readi16(packet, &value->i);
 	case IRMO_TYPE_INT32:
-		irmo_packet_readi32(packet, &value->i);
-		break;
+		return irmo_packet_readi32(packet, &value->i);
 	case IRMO_TYPE_STRING:
-		value->s = strdup(irmo_packet_readstring(packet));
-		break;
+                strvalue = irmo_packet_readstring(packet);
+                if (strvalue == NULL) {
+                        return 0;
+                } else {
+                        value->s = strdup(strvalue);
+                        return 1;
+                }
         default:
                 irmo_bug();
 	}
+
+        return 0;
 }
 
 void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
@@ -304,7 +310,7 @@ unsigned int irmo_packet_get_position(IrmoPacket *packet)
 
 int irmo_packet_set_position(IrmoPacket *packet, unsigned int pos)
 {
-        irmo_return_val_if_fail(pos < packet->len, 0);
+        irmo_return_val_if_fail(pos <= packet->len, 0);
 
         packet->pos = pos;
 

@@ -169,10 +169,13 @@ int irmo_packet_verify_value(IrmoPacket *packet, IrmoValueType type);
  * @param value      Pointer to an @ref IrmoValue structure to read the
  *                   result into.
  * @param type       Type of value to read.
+ *
+ * @return           Non-zero if a value was successfully read, or 
+ *                   zero for failure.
  */
 
-void irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
-			    IrmoValueType type);
+int irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value, 
+                           IrmoValueType type);
 
 /*! 
  * Write an @ref IrmoValue to a packet.
@@ -217,7 +220,7 @@ unsigned int irmo_packet_get_position(IrmoPacket *packet);
 /*!
  * Set the current read/write position in a packet.
  * The position must be within the range of the length of the packet
- * (pos < irmo_packet_get_length(packet))
+ * (pos <= irmo_packet_get_length(packet))
  *
  * @param packet     The packet.
  * @param pos        The position to set within the packet.
