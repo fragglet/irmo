@@ -113,9 +113,14 @@ void irmo_world_method_call(IrmoWorld *world, char *method, ...);
  * This is the same as @ref irmo_world_method_call
  * except it takes an array of @ref IrmoValue structures for the 
  * arguments instead of using the C varargs mechanism.
+ *
+ * @param world      The world object on which to invoke the method.
+ * @param method     The method to invoke.
+ * @param arguments  Array of arguments to pass to the method.
  */
 
-void irmo_world_method_call2(IrmoWorld *world, char *method,
+void irmo_world_method_call2(IrmoWorld *world, 
+                             IrmoMethod *method,
 			     IrmoValue *arguments);
 
 //! \}

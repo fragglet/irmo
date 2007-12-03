@@ -163,23 +163,16 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 }
 
 
-void irmo_world_method_call2(IrmoWorld *world, char *method_name,
+void irmo_world_method_call2(IrmoWorld *world, 
+                             IrmoMethod *method,
 			     IrmoValue *arguments)
 {
 	IrmoMethodData method_data;
-	IrmoMethod *method;
 
 	irmo_return_if_fail(world != NULL);
-	irmo_return_if_fail(method_name != NULL);
+        irmo_return_if_fail(method != NULL);
+        irmo_return_if_fail(method->iface == world->iface);
 	
-	method = irmo_interface_get_method(world->iface, method_name);
-
-	if (!method) {
-		irmo_error_report("irmo_world_method_call2",
-				  "unknown method '%s'", method_name);
-		return;
-	}
-
 	method_data.method = method;
 	method_data.args = arguments;
 	method_data.src = NULL;
