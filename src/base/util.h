@@ -43,8 +43,18 @@ void *irmo_malloc0(int bytes);
         ((typename *) realloc((oldmem), sizeof(typename) * (count)))
 
 //
-// Debugging macros
+// Debugging macros.  
 //
+// Define IRMO_NO_DEBUG_CHECK to not check the parameters passed to API 
+// functions for extra speed.
+//
+
+#ifdef IRMO_NO_DEBUG_CHECK
+
+#define irmo_return_if_fail(test)
+#define irmo_return_val_if_fail(test, val)
+
+#else
 
 // return if a test fails
 
@@ -65,6 +75,8 @@ void *irmo_malloc0(int bytes);
                         return (val);                                  \
                 }                                                      \
         } while(0)
+
+#endif
 
 #define irmo_bug()                                                     \
         irmo_bug_abort(__FILE__, __LINE__)
