@@ -242,7 +242,7 @@ void do_compile(void)
 
         // Parse the input file
 
-        iface = irmo_interface_parse(input_filename);
+        iface = irmo_interface_parse_from_file(input_filename);
 
         if (iface == NULL) {
                 fprintf(stderr, "%s:%s\n", input_filename, irmo_error_get());

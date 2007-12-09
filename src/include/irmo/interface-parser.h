@@ -38,6 +38,32 @@ extern "C" {
  */
 
 /*!
+ * Function type used by the interface parser to read input data.
+ *
+ * @param buf           Pointer to buffer to read into.
+ * @param buf_len       Length of the buffer, in bytes.
+ * @param               Handle passed to @ref irmo_interface_parse.
+ * @return              Number of bytes read into the buffer,
+ *                      zero for end of file, or negative value
+ *                      for error.
+ */
+
+typedef int (*IrmoInterfaceReadFunc)(void *buf, unsigned int buf_len,
+                                     void *handle);
+
+/*!
+ * Create a new @ref IrmoInterface object, from parsing an interface
+ * file.
+ *
+ * @param read_func     Function used to read input data to the parser.
+ * @param handle        Handle to pass to the read function.
+ * @return              A new IrmoInterface object or NULL for failure.
+ */
+
+IrmoInterface *irmo_interface_parse(IrmoInterfaceReadFunc read_func,
+                                    void *handle);
+
+/*!
  * Create a new @ref IrmoInterface object, from parsing an interface file.
  *
  * A file is parsed with the interface described in a simple
@@ -47,7 +73,7 @@ extern "C" {
  * @return		A new IrmoInterface object or NULL for failure.
  */
 
-IrmoInterface *irmo_interface_parse(char *filename);
+IrmoInterface *irmo_interface_parse_from_file(char *filename);
 
 //! \}
 

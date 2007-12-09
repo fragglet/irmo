@@ -1,10 +1,5 @@
 noinst_LTLIBRARIES=                                        \
-       libirmointerface.la                                 \
-       libirmointerfaceparser.la
-
-libirmointerfaceparser_la_CFLAGS=-I.. -I../include
-libirmointerfaceparser_la_SOURCES=                         \
-       interface-parser.l                                    
+       libirmointerface.la
 
 libirmointerface_la_CFLAGS=-I.. -I../include
 libirmointerface_la_SOURCES=                               \

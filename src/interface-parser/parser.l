@@ -40,11 +40,13 @@
 #include <stdarg.h>
 #include <setjmp.h>
 
+#include <irmo/types.h>
+#include <irmo/interface.h>
+#include <irmo/interface-parser.h>
+
 #include "arch/sysheaders.h"
 #include "base/util.h"
 #include "base/error.h"
-
-#include "interface.h"
 
 typedef enum {
 	TOKEN_NONE,
@@ -69,24 +71,28 @@ typedef enum {
  
 // redefine YY_INPUT to count line numbers
 
-#define YY_INPUT(buf,result,max_size) 					\
+#define YY_INPUT(buf, result, max_size)            \
+        read_data(buf, &(result), max_size) 
+
+/*
 	{ 								\
 		int c = fgetc(yyin); 					\
 		if (c == '\n') ++line_num;				\
 		result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); 	\
 	}
- 
+ */
+
+static void read_data(char *buf, int *result, int max_size);
 static void parse_assert(int expr, char *msg, ...);
 static jmp_buf parse_error_env;
-
-typedef void (*cleanup_func)(void *data);
 
 static char *yyin_filename;
 static int line_num;
 
+static IrmoInterfaceReadFunc input_callback;
+static void *input_callback_handle;
+
 %}
-
-
 
 ID [[:alpha:]_][[:alnum:]_]*
 COMMENT1 "//".*\n
@@ -141,6 +147,36 @@ static void parse_assert(int expr, char *msg, ...)
 		va_end(l);
 
 		longjmp(parse_error_env, 1);
+	}
+}
+
+// Read data from the input file.
+
+static void read_data(char *buf, int *result, int max_size)
+{
+	int i;
+	int status;
+
+	status = input_callback(buf, max_size, input_callback_handle);
+
+	parse_assert(status >= 0, "error while reading from input");
+
+	if (status == 0) {
+		// End of file
+
+		*result = YY_NULL;
+	} else {
+		// Check for newlines
+		// TODO: stop at the first newline, so we don't 
+		// lose track of the line we're on
+
+		for (i=0; i<status; ++i) {
+			if (buf[i] == '\n') {
+				++line_num;
+			}
+		}
+	
+		*result = status;
 	}
 }
 
@@ -349,21 +385,15 @@ static void eat_interface(IrmoInterface *iface)
 	}
 }
 
-IrmoInterface *irmo_interface_parse(char *filename)
+IrmoInterface *irmo_interface_parse(IrmoInterfaceReadFunc read_func,
+                                    void *handle)
 {
 	IrmoInterface *iface;
 
-	irmo_return_val_if_fail(filename != NULL, NULL);
+	irmo_return_val_if_fail(read_func != NULL, NULL);
 
-	yyin = fopen(filename, "r");
-
-	if (!yyin) {
-		irmo_error_report("irmo_interface_new",
-				  "cannot open '%s'", filename);
-		return NULL;
-	}
-
-	yyin_filename = filename;
+	input_callback = read_func;
+	input_callback_handle = handle;
 	line_num = 1;
 
         iface = irmo_interface_new();
@@ -377,8 +407,6 @@ IrmoInterface *irmo_interface_parse(char *filename)
 	} else {
 		eat_interface(iface);
         }
-
-	fclose(yyin);
 
 	return iface;
 }

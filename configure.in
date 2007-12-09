@@ -54,6 +54,7 @@ AC_OUTPUT([
         src/include/Makefile
         src/include/irmo/Makefile
         src/interface/Makefile
+        src/interface-parser/Makefile
         src/net/Makefile
         src/netbase/Makefile
         src/world/Makefile

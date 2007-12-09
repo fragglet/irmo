@@ -8,6 +8,7 @@ SUBDIRS=                                                   \
         base                                               \
         include                                            \
         interface                                          \
+        interface-parser                                   \
         net                                                \
         netbase                                            \
         world
@@ -24,7 +25,7 @@ libirmo_la_LIBADD=                                         \
 
 libirmo_interface_parser_la_SOURCES=
 libirmo_interface_parser_la_LIBADD=                        \
-        interface/libirmointerfaceparser.la                \
+        interface-parser/libirmointerfaceparser.la         \
         libirmo.la                                         \
         @LEXLIB@
 
