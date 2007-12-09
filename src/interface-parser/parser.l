@@ -74,14 +74,6 @@ typedef enum {
 #define YY_INPUT(buf, result, max_size)            \
         read_data(buf, &(result), max_size) 
 
-/*
-	{ 								\
-		int c = fgetc(yyin); 					\
-		if (c == '\n') ++line_num;				\
-		result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); 	\
-	}
- */
-
 static void read_data(char *buf, int *result, int max_size);
 static void parse_assert(int expr, char *msg, ...);
 static jmp_buf parse_error_env;
@@ -156,6 +148,13 @@ static void read_data(char *buf, int *result, int max_size)
 {
 	int i;
 	int status;
+
+	// Temporary hack; read one character at a time so that
+	// we don't lose track of which line we're reading.
+
+	max_size = 1;
+
+	// Invoke the read callback
 
 	status = input_callback(buf, max_size, input_callback_handle);
 
