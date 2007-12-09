@@ -60,5 +60,6 @@ AC_OUTPUT([
         tests/Makefile
         tools/Makefile
 	irmo.pc
+	irmo-interface-parser.pc
 ])
 
