@@ -53,7 +53,7 @@ IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 		IrmoChangeAtom *catom = (IrmoChangeAtom *) atom;
 
 		irmo_hash_table_remove(client->sendq_hashtable,
-				    (void *) catom->object->id);
+				       IRMO_POINTER_KEY(catom->object->id));
 	}
 
 	return atom;
@@ -65,8 +65,8 @@ void irmo_client_sendq_push(IrmoClient *client, IrmoSendAtom *atom)
 		IrmoChangeAtom *catom = (IrmoChangeAtom *) atom;
 
 		irmo_hash_table_insert(client->sendq_hashtable,
-				    (void *) catom->object->id,
-				    atom);
+				       IRMO_POINTER_KEY(catom->object->id),
+				       atom);
 	}
 	
 	atom->client = client;
@@ -148,7 +148,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 	// the send queue
 	
 	atom = irmo_hash_table_lookup(client->sendq_hashtable,
-				   (void *) object->id);
+				      IRMO_POINTER_KEY(object->id));
 
 	if (!atom) {
 		atom = irmo_new0(IrmoChangeAtom, 1);
@@ -182,14 +182,14 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	// check for any changeatoms referring to this object
 
 	atom = irmo_hash_table_lookup(client->sendq_hashtable,
-				   (void *) object->id);
+				      IRMO_POINTER_KEY(object->id));
 
 	// convert to a ATOM_NULL atom
 	
 	if (atom) {
 		irmo_sendatom_nullify(IRMO_SENDATOM(atom));
 		irmo_hash_table_remove(client->sendq_hashtable,
-				    (void *) object->id);
+				       IRMO_POINTER_KEY(object->id));
 	}
 
 	// nullify atoms in send window too

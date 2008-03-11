@@ -87,7 +87,7 @@ static int get_free_id(IrmoWorld *world)
 		if (world->lastid == start)
 			return -1;
 	} while (irmo_hash_table_lookup(world->objects,
-				     (void *) world->lastid));
+				        IRMO_POINTER_KEY(world->lastid)));
 
 	return world->lastid;
 }
@@ -124,7 +124,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	
 	// add to world
 
-	irmo_hash_table_insert(world->objects, (void *) id, object);
+	irmo_hash_table_insert(world->objects, IRMO_POINTER_KEY(id), object);
 
 	// raise callback functions for new object creation
 
@@ -202,7 +202,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 
 	if (remove) {
 		irmo_hash_table_remove(object->world->objects,
-				    (void *) object->id);
+				       IRMO_POINTER_KEY(object->id));
 	}
 	
 	// destroy member variables

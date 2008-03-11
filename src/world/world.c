@@ -156,7 +156,7 @@ IrmoObject *irmo_world_get_object_for_id(IrmoWorld *world,
 
 	irmo_return_val_if_fail(world != NULL, NULL);
 	
-	object = irmo_hash_table_lookup(world->objects, (void *) id);
+	object = irmo_hash_table_lookup(world->objects, IRMO_POINTER_KEY(id));
 
 	return object;
 }

@@ -56,6 +56,10 @@ extern "C" {
 
 unsigned long irmo_pointer_hash(void *location);
 
+/** Macro to cast integer values for use as pointers. */
+
+#define IRMO_POINTER_KEY(val) ((void *) ((long) (val)))
+
 #ifdef __cplusplus
 }
 #endif
