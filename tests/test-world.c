@@ -226,6 +226,64 @@ void test_object_get_set(void)
         irmo_world_unref(world);
 }
 
+// Test object get/set (generic versions)
+
+void test_object_get_set_generic(void)
+{
+        IrmoClass *myclass;
+        IrmoClassVar *myint8, *myint16, *myint32, *mystring;
+        IrmoInterface *iface;
+        IrmoWorld *world;
+        IrmoObject *obj;
+        IrmoValue value, value2;
+        int i;
+
+        world = gen_world(NULL);
+
+        iface = irmo_world_get_interface(world);
+        myclass = irmo_interface_get_class(iface, "myclass");
+        myint8 = irmo_class_get_variable(myclass, "myint8");
+        myint16 = irmo_class_get_variable(myclass, "myint16");
+        myint32 = irmo_class_get_variable(myclass, "myint32");
+        mystring = irmo_class_get_variable(myclass, "mystring");
+
+        obj = irmo_object_new(world, "myclass");
+
+        // Test setting int values
+
+        for (i=0; i<22; ++i) {
+                value.i = test_numbers_8[i];
+                irmo_object_set(obj, myint8, &value);
+                value.i = test_numbers_16[i];
+                irmo_object_set(obj, myint16, &value);
+                value.i = test_numbers_32[i];
+                irmo_object_set(obj, myint32, &value);
+
+                // Read back
+    
+                irmo_object_get(obj, myint8, &value2);
+                assert(value2.i == test_numbers_8[i]);
+                irmo_object_get(obj, myint16, &value2);
+                assert(value2.i == test_numbers_16[i]);
+                irmo_object_get(obj, myint32, &value2);
+                assert(value2.i == test_numbers_32[i]);
+        }
+
+        // Test setting string values
+
+        value.s = "hello, world";
+        irmo_object_set(obj, mystring, &value);
+        irmo_object_get(obj, mystring, &value2);
+        assert(!strcmp(value.s, "hello, world"));
+
+        value.s = "";
+        irmo_object_set(obj, mystring, &value);
+        irmo_object_get(obj, mystring, &value2);
+        assert(!strcmp(value.s, ""));
+
+        irmo_world_unref(world);
+}
+
 void test_world_callbacks(void)
 {
         // ... todo
@@ -243,6 +301,7 @@ int main(int argc, char *argv[])
         test_object_destroy();
         test_object_data();
         test_object_get_set();
+        test_object_get_set_generic();
         test_world_callbacks();
         test_object_callbacks();
 

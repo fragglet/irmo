@@ -297,15 +297,58 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 		       &data);
 }
 
+void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
+                     IrmoValue *value)
+{
+        IrmoValue *obj_value;
+
+	irmo_return_if_fail(object != NULL);
+	irmo_return_if_fail(variable != NULL);
+	irmo_return_if_fail(value != NULL);
+	irmo_return_if_fail(!object->world->remote);
+
+        // Object must be of the right class
+
+        irmo_return_if_fail(irmo_object_is_a2(object, variable->klass));
+
+	obj_value = &object->variables[variable->index];
+
+        // Set the variable
+
+	switch (variable->type) {
+	case IRMO_TYPE_INT8:
+		irmo_return_if_fail(value->i <= 0xff);
+		obj_value->i = value->i;
+		break;
+	case IRMO_TYPE_INT16:
+		irmo_return_if_fail(value->i <= 0xffff);
+		obj_value->i = value->i;
+		break;
+	case IRMO_TYPE_INT32:
+		obj_value->i = value->i;
+		break;
+        case IRMO_TYPE_STRING:
+                free(obj_value->s);
+                obj_value->s = strdup(value->s);
+                break;
+        default:
+		irmo_error_report("irmo_object_set",
+				  "variable has unknown type");
+                return;
+        }
+
+	irmo_object_set_raise(object, variable->index);
+}
+
+
 void irmo_object_set_int(IrmoObject *object, char *variable, 
 			 unsigned int value)
 {
 	IrmoClassVar *var;
-	IrmoValue *obj_value;
+	IrmoValue irmo_value;
 
 	irmo_return_if_fail(object != NULL);
 	irmo_return_if_fail(variable != NULL);
-	irmo_return_if_fail(object->world->remote == 0);
 	
 	var = irmo_class_get_variable(object->objclass, variable);
 
@@ -317,38 +360,30 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 		return;
 	}
 
-	obj_value = &object->variables[var->index];
+        // Check it is an integer type
 
-	switch (var->type) {
-	case IRMO_TYPE_INT8:
-		irmo_return_if_fail(value <= 0xff);
-		obj_value->i = value;
-		break;
-	case IRMO_TYPE_INT16:
-		irmo_return_if_fail(value <= 0xffff);
-		obj_value->i = value;
-		break;
-	case IRMO_TYPE_INT32:
-		obj_value->i = value;
-		break;
-	default:
+        if (var->type != IRMO_TYPE_INT8 && var->type != IRMO_TYPE_INT16
+         && var->type != IRMO_TYPE_INT32) {
 		irmo_error_report("irmo_object_set_int",
 				  "variable '%s' in class '%s' is not an int type",
 				  variable, object->objclass->name);
 		return;
 	}
 
-	irmo_object_set_raise(object, var->index);
+        // Set the value
+
+	irmo_value.i = value;
+        irmo_object_set(object, var, &irmo_value);
 }
 
 void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 {
 	IrmoClassVar *var;
+        IrmoValue irmo_value;
 
 	irmo_return_if_fail(object != NULL);
 	irmo_return_if_fail(variable != NULL);
 	irmo_return_if_fail(value != NULL);
-	irmo_return_if_fail(object->world->remote == 0);
 	
 	var = irmo_class_get_variable(object->objclass, variable);
 
@@ -368,11 +403,26 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 		return;
 	}
 
-	free(object->variables[var->index].s);
+        // Set the new value
 
-	object->variables[var->index].s = strdup(value);
+        irmo_value.s = value;
+        irmo_object_set(object, var, &irmo_value);
+}
 
-	irmo_object_set_raise(object, var->index);
+void irmo_object_get(IrmoObject *object, IrmoClassVar *variable, 
+                     IrmoValue *value)
+{
+	irmo_return_if_fail(object != NULL);
+	irmo_return_if_fail(variable != NULL);
+	irmo_return_if_fail(value != NULL);
+	
+        // Check this variable is in the class of this object
+
+        irmo_return_if_fail(irmo_object_is_a2(object, variable->klass));
+
+        // Return the value
+
+        *value = object->variables[variable->index];
 }
 
 // get int value

@@ -102,6 +102,23 @@ char *irmo_object_get_class(IrmoObject *object);
 IrmoClass *irmo_object_get_class_obj(IrmoObject *object);
 
 /*!
+ * Set the value of an object's member variable (generic)
+ *
+ * This is a generic function for setting the value of a variable.
+ * In general, @ref irmo_object_set_int and @ref irmo_object_set_string
+ * are more pleasant to use.  However, this function is faster as no
+ * string lookup is needed to find the variable to change.
+ *
+ * @param object     The object to change.
+ * @param variable   The variable to change.
+ * @param value      @ref IrmoValue structure containing the new value to
+ *                   set.
+ */
+
+void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
+                     IrmoValue *value);
+
+/*!
  * Set the value of an object's member variable (int type).
  *
  * This is for use on variables of int type. To set string values,
@@ -129,7 +146,24 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 void irmo_object_set_string(IrmoObject *object, char *variable, char *value);
 
 /*!
- * Get the value of an object's member variable(int type).
+ * Get the value of an object's member variable (generic).
+ *
+ * This is a generic function for getting the value of a variable.
+ * In general, @ref irmo_object_get_int and @ref irmo_object_get_string
+ * are more pleasant to use.  However, this function is faster as no
+ * string lookup is needed to find the variable to change.
+ *
+ * @param object     The object to query.
+ * @param variable   The variable.
+ * @param value      Pointer to an @ref IrmoValue structure in which to store
+ *                   the result.
+ */
+
+void irmo_object_get(IrmoObject *object, IrmoClassVar *variable, 
+                     IrmoValue *value);
+
+/*!
+ * Get the value of an object's member variable (int type).
  *
  * This function is for variables of integer type. To get string
  * values, use @ref irmo_object_get_string.
