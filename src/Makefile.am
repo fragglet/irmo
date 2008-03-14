@@ -6,6 +6,7 @@ SUBDIRS=                                                   \
         algo                                               \
         arch                                               \
         base                                               \
+	binding                                            \
         include                                            \
         interface                                          \
         interface-parser                                   \
@@ -18,6 +19,7 @@ libirmo_la_LIBADD=                                         \
         arch/libirmoarch.la                                \
         algo/libirmoalgo.la                                \
         base/libirmobase.la                                \
+	binding/libirmobinding.la                          \
         interface/libirmointerface.la                      \
         net/libirmonet.la                                  \
         netbase/libirmonetbase.la                          \

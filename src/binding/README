@@ -1,0 +1,7 @@
+
+Structure binding.
+
+This is a sort of C introspection library.  You can map out structures
+using the macros in binding.h and set the values of structure fields
+automatically.
+

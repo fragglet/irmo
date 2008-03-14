@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002-3 Simon Howard
+// Copyright (C) 2008 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,22 +17,21 @@
 // 02111-1307, USA.
 //
 
+#include "arch/sysheaders.h"
+#include "base/util.h"
 
-#ifndef IRMO_H
-#define IRMO_H
+#include "struct-member.h"
 
-#include <irmo/binding.h>
-#include <irmo/callback.h>
-#include <irmo/client.h>
-#include <irmo/connection.h>
-#include <irmo/error.h>
-#include <irmo/interface.h>
-#include <irmo/iterator.h>
-#include <irmo/method.h>
-#include <irmo/module_ip.h>
-#include <irmo/object.h>
-#include <irmo/server.h>
-#include <irmo/world.h>
+IrmoStructMember *irmo_struct_member_new(char *name, unsigned long offset,
+                                         unsigned long size)
+{
+        IrmoStructMember *member;
 
-#endif /* #ifndef IRMO_H */
+        member = irmo_new0(IrmoStructMember, 1);
+        member->name = name;
+        member->offset = offset;
+        member->size = size;
+
+        return member;
+}
 

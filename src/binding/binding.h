@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002-3 Simon Howard
+// Copyright (C) 2008 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,22 +17,26 @@
 // 02111-1307, USA.
 //
 
+//
+// Irmo structure binding, internal header
+//
 
-#ifndef IRMO_H
-#define IRMO_H
+#ifndef IRMO_BINDING_BINDING_H
+#define IRMO_BINDING_BINDING_H
 
-#include <irmo/binding.h>
-#include <irmo/callback.h>
-#include <irmo/client.h>
-#include <irmo/connection.h>
-#include <irmo/error.h>
-#include <irmo/interface.h>
-#include <irmo/iterator.h>
-#include <irmo/method.h>
-#include <irmo/module_ip.h>
-#include <irmo/object.h>
-#include <irmo/server.h>
-#include <irmo/world.h>
+#include "struct.h"
+#include "struct-member.h"
 
-#endif /* #ifndef IRMO_H */
+/*!
+ * Get the structure with the specified name.
+ *
+ * @param name         Name of the structure.
+ * @return             Pointer to the @ref IrmoStruct object representing
+ *                     the structure, or NULL if it has not been mapped
+ *                     out.
+ */
+
+IrmoStruct *irmo_binding_get_struct(char *name);
+
+#endif /* #ifndef IRMO_BINDING_BINDING_H */
 

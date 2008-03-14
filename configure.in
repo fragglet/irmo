@@ -51,6 +51,7 @@ AC_OUTPUT([
         src/arch/Makefile
         src/algo/Makefile
         src/base/Makefile
+        src/binding/Makefile
         src/include/Makefile
         src/include/irmo/Makefile
         src/interface/Makefile
