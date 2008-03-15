@@ -34,10 +34,24 @@ void *irmo_malloc0(int bytes)
         return p;
 }
 
+void irmo_warning_message(const char *function_name, char *message, ...)
+{
+        va_list args;
+
+        va_start(args, message);
+
+        fprintf(stderr, "%s: ", function_name);
+        vfprintf(stderr, message, args);
+        fprintf(stderr, "\n");
+
+        va_end(args);
+}
+
 void irmo_assert_fail_message(const char *function_name, char *assertation)
 {
-        fprintf(stderr, "%s: Warning: assertation '%s' failed.\n", 
-                        function_name, assertation);
+        irmo_warning_message(function_name, 
+                             "Warning: assertation '%s' failed.\n",
+                             assertation);
 }
 
 void irmo_bug_abort(char *file, int line)

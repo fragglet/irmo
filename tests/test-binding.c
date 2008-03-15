@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <inttypes.h>
 
 #include <irmo/binding.h>
 #include "binding/binding.h"
@@ -103,12 +104,75 @@ static void test_struct_member(void)
         assert(mystring->offset == (unsigned long) &nothing->mystring);
 }
 
+static void test_struct_member_get_set_int(void)
+{
+        struct mystruct s;
+        IrmoStruct *structure;
+        IrmoStructMember *myint8, *myint16, *myint32;
+
+        structure = irmo_binding_get_struct("struct mystruct");
+
+        // Test myint8
+
+        myint8 = irmo_struct_get_member(structure, "myint8");
+
+        s.myint8 = 0x53;
+        assert(irmo_struct_member_get_int(myint8, &s) == 0x53);
+        irmo_struct_member_set_int(myint8, &s, 0x26);
+        assert(s.myint8 == 0x26);
+        
+        // Test myint16
+
+        myint16 = irmo_struct_get_member(structure, "myint16");
+
+        s.myint16 = 0x9a8f;
+        assert(irmo_struct_member_get_int(myint16, &s) == 0x9a8f);
+        irmo_struct_member_set_int(myint16, &s, 0x42ce);
+        assert(s.myint16 == 0x42ce);
+        
+        // Test myint32
+
+        myint32 = irmo_struct_get_member(structure, "myint32");
+
+        s.myint32 = 0x32c2e293;
+        assert(irmo_struct_member_get_int(myint32, &s) == 0x32c2e293);
+        irmo_struct_member_set_int(myint32, &s, 0x12ca3b38);
+        assert(s.myint32 == 0x12ca3b38);
+}
+
+static void test_struct_member_get_set_string(void)
+{
+        struct mystruct s;
+        IrmoStruct *structure;
+        IrmoStructMember *mystring;
+        char *value1, *value2;
+
+        structure = irmo_binding_get_struct("struct mystruct");
+
+        value1 = "test value 1";
+        value2 = "test value 2";
+
+        mystring = irmo_struct_get_member(structure, "mystring");
+
+        s.mystring = value1;
+        assert(irmo_struct_member_get_string(mystring, &s) == value1);
+        s.mystring = NULL;
+        assert(irmo_struct_member_get_string(mystring, &s) == NULL);
+
+        irmo_struct_member_set_string(mystring, &s, value2);
+        assert(s.mystring == value2);
+        irmo_struct_member_set_string(mystring, &s, NULL);
+        assert(s.mystring == NULL);
+}
+
 int main(int argc, char *argv[])
 {
         test_member_macros();
         test_map_bindings();
         test_struct();
         test_struct_member();
+        test_struct_member_get_set_int();
+        test_struct_member_get_set_string();
 
         return 0;
 }

@@ -57,5 +57,48 @@ struct _IrmoStructMember {
 IrmoStructMember *irmo_struct_member_new(char *name, unsigned long offset,
                                          unsigned long size);
 
+/*!
+ * Get the value of a structure member (string type).
+ *
+ * @param member         The structure member.
+ * @param structure      Pointer to the structure.
+ * @return               The value.
+ */
+
+char *irmo_struct_member_get_string(IrmoStructMember *member, void *structure);
+
+/*!
+ * Set the value of a structure member (string type).
+ *
+ * @param member         The structure member.
+ * @param structure      Pointer to the structure.
+ * @param value          The value value to set.
+ */
+
+void irmo_struct_member_set_string(IrmoStructMember *member, void *structure,
+                                   char *value);
+
+/*!
+ * Get the value of a structure member (integer type).
+ *
+ * @param member         The structure member.
+ * @param structure      Pointer to the structure.
+ * @return               The value.
+ */
+
+unsigned int irmo_struct_member_get_int(IrmoStructMember *member,
+                                        void *structure);
+
+/*!
+ * Set the value of a structure member (integer type).
+ *
+ * @param member         The structure member.
+ * @param structure      Pointer to the structure.
+ * @param value          The value to set.
+ */
+
+void irmo_struct_member_set_int(IrmoStructMember *member, void *structure,
+                                unsigned int value);
+
 #endif /* #ifndef IRMO_BINDING_STRUCT_MEMBER_H */
 
