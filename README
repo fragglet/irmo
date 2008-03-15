@@ -7,7 +7,7 @@ easily.
 
 Irmo requires flex: you can get it here:
 
-  http://www.gnu.org/software/flex/
+  http://flex.sourceforge.net/
 
 It may work with other lexers, but has not been tested.
 
