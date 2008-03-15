@@ -34,8 +34,8 @@ void irmo_binding_add_member(char *struct_name, char *member_name,
         IrmoStruct *mapped_struct;
 
         irmo_return_if_fail(struct_name != NULL);
-        irmo_return_if_fail(member_size != NULL);
-        irmo_return_if_fail(member_size == 0);
+        irmo_return_if_fail(member_name != NULL);
+        irmo_return_if_fail(member_size != 0);
 
         // First member mapped?
 
