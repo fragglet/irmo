@@ -22,6 +22,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/util.h"
 
 #include "binding.h"
 
