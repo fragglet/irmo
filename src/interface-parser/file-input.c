@@ -51,7 +51,7 @@ IrmoInterface *irmo_interface_parse_from_file(char *filename)
 	instream = fopen(filename, "r");
 
         if (instream == NULL) {
-                irmo_error_report("irmo_interface_new",
+                irmo_error_report("irmo_interface_parse_from_file",
                                   "cannot open '%s'", filename);
                 return NULL;
         }
