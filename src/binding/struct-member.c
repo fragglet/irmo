@@ -17,6 +17,10 @@
 // 02111-1307, USA.
 //
 
+//
+// Introspection structure member class.
+//
+
 #include "arch/sysheaders.h"
 #include "base/util.h"
 

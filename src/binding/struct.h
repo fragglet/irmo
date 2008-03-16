@@ -18,7 +18,7 @@
 //
 
 //
-// Irmo structure binding, internal header
+// Introspection structure class, internal header.
 //
 
 #ifndef IRMO_BINDING_STRUCT_H

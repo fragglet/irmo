@@ -18,7 +18,7 @@
 //
 
 //
-// Irmo structure binding (introspection).
+// Introspection structure class.
 //
 
 #include "arch/sysheaders.h"
