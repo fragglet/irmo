@@ -31,19 +31,26 @@
 
 struct _IrmoInterface {
 
+        // Number of references to this interface.  When this reaches 
+        // zero, the interface will be destroyed.
+
 	int refcount;
 	
-	// classes:
+	// List of classes that are part of this interface.
 	
 	IrmoClass **classes;
 	unsigned int nclasses;
 
+        // Hash table to look up classes by name.
+
 	IrmoHashTable *class_hash;
 
-	// methods:
+	// List of methods that are part of this interface.
 	
 	IrmoMethod **methods;
 	unsigned int nmethods;
+
+        // Hash table to look up methods by name.
 
 	IrmoHashTable *method_hash;
 };

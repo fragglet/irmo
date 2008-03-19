@@ -138,9 +138,10 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 	// if a remote world, create variable_time array
 
-	if (world->remote)
+	if (world->remote) {
 		object->variable_time = irmo_new0(int, objclass->nvariables);
-	
+	}
+
 	return object;
 }
 				
@@ -156,7 +157,7 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 	
 	klass = irmo_interface_get_class(world->iface, type_name);
 
-	if (!klass) {
+	if (klass == NULL) {
 		irmo_error_report("irmo_object_new", 
 				  "unknown type '%s'", type_name);
 		return NULL;
@@ -209,8 +210,9 @@ void irmo_object_internal_destroy(IrmoObject *object,
 
 	for (i=0; i<object->objclass->nvariables; ++i) {
 		if (object->objclass->variables[i]->type == IRMO_TYPE_STRING
-		    && object->variables[i].s)
+		 && object->variables[i].s) {
 			free(object->variables[i].s);
+                }
 	}
 
 	free(object->variables);
@@ -218,9 +220,10 @@ void irmo_object_internal_destroy(IrmoObject *object,
 
 	// free variable time array
 
-	if (object->variable_time)
+	if (object->variable_time != NULL) {
 		free(object->variable_time);
-	
+	}
+
 	// done
 	
 	free(object);
@@ -352,7 +355,7 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 	
 	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!var) {
+	if (var == NULL) {
 		irmo_error_report("irmo_object_set_int",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -387,7 +390,7 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 	
 	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!var) {
+	if (var == NULL) {
 		irmo_error_report("irmo_object_set_string",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -436,7 +439,7 @@ unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 	
 	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!var) {
+	if (var == NULL) {
 		irmo_error_report("irmo_object_get_int",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -469,7 +472,7 @@ char *irmo_object_get_string(IrmoObject *object, char *variable)
 
 	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (!var) {
+	if (var == NULL) {
 		irmo_error_report("irmo_object_get_string",
 				  "unknown variable '%s' in class '%s'",
 				  variable,
@@ -505,8 +508,9 @@ unsigned int irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
 	// search through all parent classes
 
 	for (c=obj->objclass; c; c=c->parent_class) {
-		if (c == klass)
+		if (c == klass) {
 			return 1;
+                }
 	}
 
 	return 0;
@@ -521,7 +525,7 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 
 	klass = irmo_interface_get_class(obj->world->iface, classname);
 
-	if (!klass) {
+	if (klass == NULL) {
 		irmo_error_report("irmo_object_is_a",
 				  "unknown class name '%s'", classname);
 		return 0;

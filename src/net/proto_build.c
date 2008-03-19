@@ -88,11 +88,13 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 	// as NULL atoms compress very well and take up very little room,
 	// include these as it may reduce the need for retransmissions.
 	
-	for (backstart=start; 
-	     backstart > 0 
-		&& client->sendwindow[backstart-1]
-		&& client->sendwindow[backstart-1]->klass==&irmo_null_atom;
-	     --backstart);
+	backstart = start; 
+
+        while (backstart > 0 
+            && client->sendwindow[backstart-1] != NULL
+            && client->sendwindow[backstart-1]->klass == &irmo_null_atom) {
+                --backstart;
+        }
 	
 	// start position in stream
 	
@@ -112,9 +114,11 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 		// the starting one: the first one is implied. after that
 		// we can specify up to 31 of the same type that follow
 		
-		for (n=1; i+n<=end && n<32; ++n)
-			if (klass != client->sendwindow[i+n]->klass)
+		for (n=1; i+n<=end && n<32; ++n) {
+			if (klass != client->sendwindow[i+n]->klass) {
 				break;
+                        }
+                }
 
 		//printf("-- build_packet: group length %i, type %i\n",
 		//n, client->sendwindow[i]->type);
@@ -133,8 +137,9 @@ static IrmoPacket *proto_build_packet(IrmoClient *client, int start, int end)
 			// resend code. we are resending deliberately
 
 			if (client->sendwindow[i]->sendtime != IRMO_ATOM_UNSENT
-			 && i >= start)
+			 && i >= start) {
 				proto_atom_resent(client, i);
+                        }
 			
 			// store send time in atoms
 
@@ -161,11 +166,13 @@ static void proto_pump_client(IrmoClient *client)
 	
 	// if queue is already empty, this is a nonissue
 	
-	if (irmo_queue_is_empty(client->sendq))
+	if (irmo_queue_is_empty(client->sendq)) {
 		return;
+        }
 
-	for (i=0; i<client->sendwindow_size; ++i)
+	for (i=0; i<client->sendwindow_size; ++i) {
 		current_size += client->sendwindow[i]->len;
+        }
 
 	// determine the maximum send window size
 	// if no maximum size has been provided, try to determine
@@ -176,15 +183,17 @@ static void proto_pump_client(IrmoClient *client)
 	if (client->local_sendwindow_max) {
 		if (client->remote_sendwindow_max
 		 && client->remote_sendwindow_max
-		         < client->local_sendwindow_max)
+		         < client->local_sendwindow_max) {
 			sendwindow_max = client->remote_sendwindow_max;
-		else
+		} else {
 			sendwindow_max = client->local_sendwindow_max;
+                }
 	} else {
-		if (client->remote_sendwindow_max)
+		if (client->remote_sendwindow_max) {
 			sendwindow_max = client->remote_sendwindow_max;
-		else
+		} else {
 			sendwindow_max = client->cwnd;
+                }
 	}
 
 	// adding things in until we run out of space or atoms to add
@@ -282,8 +291,9 @@ void irmo_proto_run_client(IrmoClient *client)
 
                 // Reached the end of the send window size?
 
-		if (i >= client->sendwindow_size)
+		if (i >= client->sendwindow_size) {
 			break;
+                }
 
                 // Find the end point of a packet.  Keep searching forward
                 // in the send window until an atom is found which does

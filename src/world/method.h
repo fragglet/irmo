@@ -27,8 +27,18 @@
 #include "object.h"
 
 struct _IrmoMethodData {
+
+        // Pointer to the method to invoke.
+
 	IrmoMethod *method;
+
+        // Client that invoked the method, or NULL if it was invoked
+        // locally.
+
 	IrmoClient *src;
+
+        // Array of method arguments.
+
 	IrmoValue *args;
 };
 

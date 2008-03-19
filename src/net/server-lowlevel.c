@@ -185,7 +185,7 @@ static void server_run_synack(IrmoServer *server,
 
 		// create the remote world object
 
-		if (client->server->client_interface) {
+		if (client->server->client_interface != NULL) {
 			client->world
 			  = irmo_world_new(client->server->client_interface);
 
@@ -199,8 +199,9 @@ static void server_run_synack(IrmoServer *server,
 		// if we are serving a world to the client,
 		// send the entire current world state
 
-		if (client->server->world)
+		if (client->server->world != NULL) {
 			irmo_client_sendq_add_state(client);
+                }
 
 		// raise callback functions for new client
 		// do this after sending the state: it may create
@@ -248,10 +249,11 @@ static void server_run_synfin(IrmoServer *server,
 
 		message = irmo_packet_readstring(packet);
 
-		if (message)
+		if (message) {
 			irmo_connection_error(client, "connection refused (%s)", message);
-		else
+		} else {
 			irmo_connection_error(client, "connection refused");
+                }
 
 		client->state = CLIENT_DISCONNECTED;
 	}
@@ -332,7 +334,7 @@ static void server_run_packet(IrmoServer *server,
 		return;
 	}
 
-	if (!client) {
+	if (client == NULL) {
 		// no client for this yet: havent received a syn yet
 		// so drop packet
 
@@ -356,8 +358,9 @@ static void server_run_packet(IrmoServer *server,
 		return;
 	}
 
-	if (client->state != CLIENT_CONNECTED)
+	if (client->state != CLIENT_CONNECTED) {
 		return;
+        }
 	
 	// pass it to the protocol parsing code
 	

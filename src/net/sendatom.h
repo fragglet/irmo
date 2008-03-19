@@ -62,6 +62,11 @@ typedef void (*IrmoSendAtomRunFunc)(IrmoSendAtom *atom);
 typedef size_t (*IrmoSendAtomLengthFunc)(IrmoSendAtom *atom);
 typedef void (*IrmoSendAtomDestroyFunc)(IrmoSendAtom *atom);
 
+//
+// All send atoms have a class, which defines the type of the atom and
+// has function pointers for various operations.
+//
+
 struct _IrmoSendAtomClass {
 	IrmoSendAtomType type;
 
@@ -90,9 +95,16 @@ struct _IrmoSendAtomClass {
 	IrmoSendAtomDestroyFunc destructor;
 };
 
-// queue object
+// 
+// A send atom is an item to be transmitted over the network.  There 
+// are several different types (see below).  These are the common
+// properties for all types.
+//
 
 struct _IrmoSendAtom {
+
+        // Type of send atom.
+
 	IrmoSendAtomClass *klass;
 
 	// client this atom belongs to
@@ -118,60 +130,125 @@ struct _IrmoSendAtom {
 	int seqnum;
 };
 
+//
+// A "new object" atom is sent when a new object is created in the world
+// being served.
+//
+
 struct _IrmoNewObjectAtom {
+
+        // Common properties for all atoms.
+
 	IrmoSendAtom sendatom;
 
+        // Object Id for the new object being created.
+
 	IrmoObjectID id;
+
+        // Class of the new object.
+
 	unsigned int classnum;
 };
 
+//
+// A "change" atom is sent when a change is made to one or more variables
+// in an object in the world being served  Changes to multiple variables in
+// the same object are grouped together into a single change.
+//
+
 struct _IrmoChangeAtom {
+
+        // Common properties for all atoms.
+
 	IrmoSendAtom sendatom;
 
-	int executed;           // atom has been executed
+        // If non-zero, this atom has already been executed.
+
+	int executed;
+
+        // Id of the object that this applies to.
+
 	IrmoObjectID id;
+
+        // Pointer to the object to apply to.
+
 	IrmoObject *object;
 
-	// count of number of changed variables in this atom
-			
+	// Number of changed variables in this atom.  If this reaches
+        // zero, there are no changes, and the atom can be replaced
+        // with a null atom.
+
 	int nchanged;
 			
-	// array saying which have changed
+	// Array of flags indicating which variables have changed.
 	
 	int *changed;
 
-	// class of the object being changed. this is only
+	// Class of the object being changed. this is only
 	// used for the receive window.
 
 	IrmoClass *objclass;
 
-	// array of the new values. this is only used for the
-	// receive window. for the send window this is NULL
+	// Array of the new values. this is only used for the
+	// receive window. For the send window this is NULL.
 			
 	IrmoValue *newvalues;
 };
 
+// 
+// A "destroy" atom is sent when an object is destroyed in the world
+// being served.
+//
+
 struct _IrmoDestroyAtom {
+
+        // Common properties for all atoms.
+
 	IrmoSendAtom sendatom;
+
+        // Id of the object to destroy.
 
 	IrmoObjectID id;
 };
 
+//
+// A send window atom is sent to set a limit on the size of the send
+// window, to limit the bandwidth used.
+//
+
 struct _IrmoSendWindowAtom {
+
+        // Common properties for all atoms.
+
 	IrmoSendAtom sendatom;
+
+        // New send window maximum size.
 
 	unsigned int max;
 };
 
+//
+// A method atom is sent to invoke a method on the world being served.
+// This is "backwards" compared to the other atoms: most atoms come
+// "from server to client" describing a change, while this goes 
+// "from client to server" to invoke a method.
+//
+
 struct _IrmoMethodAtom {
+        // Common properties for all atoms.
+
 	IrmoSendAtom sendatom;
+
+        // Method data for invoking the method.
 
 	IrmoMethodData method_data;
 };
 
+// Free a sendatom.
+
 void irmo_sendatom_free(IrmoSendAtom *atom);
 
-// create a new sendatom and add to a clients sendqueue
+// Create a new sendatom and add to a client's sendqueue
 
 void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object);
 void irmo_client_sendq_add_change(IrmoClient *client,

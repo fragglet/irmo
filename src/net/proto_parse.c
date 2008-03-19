@@ -52,10 +52,11 @@ static int get_stream_position(int current, int low)
 	// current position, we have probably wrapped around
 	// similarly wrap around the other way
 	
-	if (current - newpos > 0x8000)
+	if (current - newpos > 0x8000) {
 		newpos += 0x10000;
-	else if (newpos - current > 0x8000)
+	} else if (newpos - current > 0x8000) {
 		newpos -= 0x10000;
+        }
 
 	return newpos;
 }
@@ -73,13 +74,13 @@ static void proto_parse_insert_atom(IrmoClient *client,
 	if (index >= client->recvwindow_size) {
 		int newsize = index+1;
 
-		client->recvwindow
-			= irmo_renew(IrmoSendAtom *,
-				     client->recvwindow,
-				     newsize);
+		client->recvwindow = irmo_renew(IrmoSendAtom *,
+                                                client->recvwindow,
+                                                newsize);
 
-		for (i=client->recvwindow_size; i<newsize; ++i)
+		for (i=client->recvwindow_size; i<newsize; ++i) {
 			client->recvwindow[i] = NULL;
+                }
 
 		client->recvwindow_size = newsize;
 	}
@@ -87,8 +88,9 @@ static void proto_parse_insert_atom(IrmoClient *client,
 	// delete old sendatoms in the same position (assume
 	// new retransmitted atoms are more up to date)
 	
-	if (client->recvwindow[index])
+	if (client->recvwindow[index] != NULL) {
 		irmo_sendatom_free(client->recvwindow[index]);
+        }
 
 	client->recvwindow[index] = atom;
 }
@@ -116,8 +118,9 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 		// read type/count byte
 		// if none, end of packet
 		
-		if (!irmo_packet_readi8(packet, &byte))
+		if (!irmo_packet_readi8(packet, &byte)) {
 			break;
+                }
 
 		atomtype = (byte >> 5) & 0x07;
 		natoms = (byte & 0x1f) + 1;
@@ -141,8 +144,9 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 			// or if it is too old (as this could be resend
 			// because our previous ack was lost
 
-			if (seq <= client->recvwindow_start)
+			if (seq <= client->recvwindow_start) {
 				client->need_ack = 1;
+                        }
 			
 			// too old?
 			
@@ -159,10 +163,11 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 
 	// try to preexec the new data
 
-	if (irmo_proto_use_preexec)
+	if (irmo_proto_use_preexec) {
 		irmo_client_run_preexec(client,
 					start - client->recvwindow_start,
 					seq - client->recvwindow_start);
+        }
 }
 
 static void proto_parse_ack(IrmoClient *client, int ack)
@@ -202,11 +207,12 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	// if we are above the slow start congestion threshold, open
 	// slowly
 	
-	if (client->cwnd < client->ssthresh)
+	if (client->cwnd < client->ssthresh) {
 		client->cwnd += PACKET_THRESHOLD;
-	else
+	} else {
 		client->cwnd +=
 			(PACKET_THRESHOLD * PACKET_THRESHOLD) / client->cwnd;
+        }
 	
 	// We are acking something valid and advancing the window
 	// Assume this is because the first atom in the window has
@@ -239,8 +245,9 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 	// need to move the sendwindow along
 	// destroy the atoms in the area acked
 	
-	for (i=0; i<relative; ++i)
+	for (i=0; i<relative; ++i) {
 		irmo_sendatom_free(client->sendwindow[i]);
+        }
 
 	memcpy(client->sendwindow,
 	       client->sendwindow + relative,
@@ -265,7 +272,7 @@ void irmo_proto_parse_packet(IrmoPacket *packet,
 
 	// read ack field if there is one
 
-	if (flags & PACKET_FLAG_ACK) {
+	if ((flags & PACKET_FLAG_ACK) != 0) {
 		unsigned int i;
 
 		irmo_packet_readi16(packet, &i);
@@ -273,7 +280,7 @@ void irmo_proto_parse_packet(IrmoPacket *packet,
 		proto_parse_ack(client, i);
 	}
 
-	if (flags & PACKET_FLAG_DTA) {
+	if ((flags & PACKET_FLAG_DTA) != 0) {
 		proto_parse_packet_cluster(client, packet);
 
 		irmo_client_run_recvwindow(client);

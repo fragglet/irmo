@@ -37,8 +37,9 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end)
 {
 	int i;
 
-	if (start < 0)
+	if (start < 0) {
 		start = 0;
+        }
 	
 	//printf("preexec %i->%i\n", start, end);
 	
@@ -47,8 +48,9 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end)
 
 		// only run change atoms
 		
-		if (atom && atom->klass == &irmo_change_atom)
+		if (atom != NULL && atom->klass == &irmo_change_atom) {
 			irmo_change_atom.run(atom);
+                }
 	}
 }
 
@@ -60,13 +62,14 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 
 	// nothing to run?
 	
-	if (!client->recvwindow[0])
+	if (client->recvwindow[0] == NULL) {
 		return;
+        }
 	
 	// run as many from the start as possible
 	
 	for (i=0;
-	     i<client->recvwindow_size && client->recvwindow[i];
+	     i<client->recvwindow_size && client->recvwindow[i] != NULL;
 	     ++i) {
 		IrmoSendAtom *atom = client->recvwindow[i];
 
@@ -85,7 +88,8 @@ void irmo_client_run_recvwindow(IrmoClient *client)
 
 	// clear the end
 	
-	for (n=client->recvwindow_size-i; n<client->recvwindow_size; ++n)
+	for (n=client->recvwindow_size-i; n<client->recvwindow_size; ++n) {
 		client->recvwindow[n] = NULL;
+        }
 }
 

@@ -35,11 +35,11 @@ typedef struct _IrmoStruct IrmoStruct;
 
 struct _IrmoStruct {
 
-        /*! Name of this structure. */
+        // Name of this structure.
 
         char *name;
 
-        /*! Hash table of structure members, indexed by name. */
+        // Hash table of structure members, indexed by name.
 
         IrmoHashTable *members;
 };

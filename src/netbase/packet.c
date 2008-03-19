@@ -162,7 +162,7 @@ int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i)
 	if (packet->pos + 1 > packet->len)
 		return 0;
 
-	if (i) {
+	if (i != NULL) {
 		*i = packet->data[packet->pos];
 	}
 
@@ -180,7 +180,7 @@ int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 
 	data = packet->data + packet->pos;
 	
-	if (i) {
+	if (i != NULL) {
 		*i = (data[0] << 8) + data[1];
 	}
 
@@ -198,7 +198,7 @@ int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i)
 		
 	data = packet->data + packet->pos;
 
-	if (i) {
+	if (i != NULL) {
 		*i = (data[0] << 24) + (data[1] << 16) 
 		   + (data[2] << 8) + data[3];
 	}
@@ -213,7 +213,7 @@ char *irmo_packet_readstring(IrmoPacket *packet)
 	uint8_t *start = packet->data + packet->pos;
 
 	for (; packet->pos < packet->len; ++packet->pos) {
-		if (!packet->data[packet->pos]) {
+		if (packet->data[packet->pos] == '\0') {
 			// skip past the terminating 0
 			
 			++packet->pos;

@@ -51,23 +51,27 @@ static int irmo_change_atom_verify(IrmoPacket *packet, IrmoClient *client)
 	int result;
 	int *changed;
 	
-	if (!client->world)
+	if (client->world == NULL) {
 		return 0;
+        }
 
 	// class
 
-	if (!irmo_packet_readi8(packet, &i))
+	if (!irmo_packet_readi8(packet, &i)) {
 		return 0;
+        }
 
-	if (i >= client->world->iface->nclasses)
+	if (i >= client->world->iface->nclasses) {
 		return 0;
+        }
 
 	objclass = client->world->iface->classes[i];
 	
 	// object id
 
-	if (!irmo_packet_readi16(packet, &i))
+	if (!irmo_packet_readi16(packet, &i)) {
 		return 0;
+        }
 
 	// read object changed bitmap
 	
@@ -83,17 +87,20 @@ static int irmo_change_atom_verify(IrmoPacket *packet, IrmoClient *client)
 			break;
 		}
 
-		for (b=0; b<8 && n<objclass->nvariables; ++b, ++n)
-			if (byte & (1 << b))
-				changed[n] = 1;			
+		for (b=0; b<8 && n<objclass->nvariables; ++b, ++n) {
+			if (byte & (1 << b)) {
+				changed[n] = 1;
+                        }
+                }
 	}
 
 	// check new variable values
 
 	if (result) {
 		for (i=0; i<objclass->nvariables; ++i) {
-			if (!changed[i])
+			if (!changed[i]) {
 				continue;
+                        }
 			
 			if (!irmo_packet_verify_value
 				(packet, objclass->variables[i]->type)) {
@@ -145,9 +152,11 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet,
 		
 		irmo_packet_readi8(packet, &byte);
 
-		for (b=0; b<8 && n<objclass->nvariables; ++b,++n)
-			if (byte & (1 << b))
+		for (b=0; b<8 && n<objclass->nvariables; ++b,++n) {
+			if (byte & (1 << b)) {
 				changed[n] = 1;
+                        }
+                }
 	}
 
 	// read the new values
@@ -156,8 +165,9 @@ static IrmoSendAtom *irmo_change_atom_read(IrmoPacket *packet,
 	atom->newvalues = newvalues;
 
 	for (i=0; i<objclass->nvariables; ++i) {
-		if (!changed[i])
+		if (!changed[i]) {
 			continue;
+                }
 
 		irmo_packet_read_value(packet, &newvalues[i],
 				       objclass->variables[i]->type);
@@ -226,13 +236,15 @@ static void irmo_change_atom_destroy(IrmoChangeAtom *atom)
                 for (i=0; i<objclass->nvariables; ++i) {
                         // only changed values are stored
 
-                        if (!atom->changed[i])
+                        if (!atom->changed[i]) {
                                 continue;
+                        }
 
                         // free strings
 
-                        if (objclass->variables[i]->type == IRMO_TYPE_STRING)
+                        if (objclass->variables[i]->type == IRMO_TYPE_STRING) {
                                 free(atom->newvalues[i].s);
+                        }
                 }
 
                 free(atom->newvalues);
@@ -250,8 +262,9 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 	unsigned int i;
 	int seq;
 
-	if (atom->executed)
+	if (atom->executed) {
 		return;
+        }
 	
 	// sanity checks
 
@@ -261,10 +274,13 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 	// if these fail, it is possibly because of dependencies on
 	// previous atoms in the stream
 	
-	if (!obj)
+	if (obj == NULL) {
 		return;
-	if (obj->objclass != atom->objclass)
-		return;	       
+        }
+
+	if (obj->objclass != atom->objclass) {
+		return;
+        }
 
 	objclass = obj->objclass;
 	newvalues = atom->newvalues;
@@ -279,16 +295,18 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 
 		// not changed?
 		
-		if (!atom->changed[i])
+		if (!atom->changed[i]) {
 			continue;
+                }
 
 		// check if a newer change to this atom has been run
 		// do not apply older changes
 		// dont run the same atom twice (could conceivably
 		// happen with resends)
 		
-		if (seq <= obj->variable_time[i])
+		if (seq <= obj->variable_time[i]) {
 			continue;
+                }
 		
 		// apply change
 
@@ -343,8 +361,9 @@ static size_t irmo_change_atom_length(IrmoChangeAtom *atom)
 
                 // only variables which have changed
                  
-                if (!atom->changed[i])
+                if (!atom->changed[i]) {
                         continue;
+                }
                  
                 switch (klass->variables[i]->type) {
                 case IRMO_TYPE_INT8:

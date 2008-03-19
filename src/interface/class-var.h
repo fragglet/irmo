@@ -30,11 +30,22 @@
 // class member variable
 
 struct _IrmoClassVar {
+
+        // Parent class
+
 	IrmoClass *klass;
 
-	unsigned int index;                      // index in variable list
-	IrmoValueType type;
+        // Name of this variable.
+
 	char *name;
+
+        // Index in parent class's list of variables
+
+	unsigned int index;
+
+        // Type of value that this variable stores.
+
+	IrmoValueType type;
 };
 
 uint32_t irmo_class_var_hash(IrmoClassVar *class_var);

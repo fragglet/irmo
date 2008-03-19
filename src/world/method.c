@@ -37,7 +37,7 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 	
 	method = irmo_interface_get_method(world->iface, method_name);
 
-	if (!method) {
+	if (method == NULL) {
 		irmo_error_report("irmo_world_method_watch",
 				  "unknown method '%s'", method_name);
 		return NULL;
@@ -123,7 +123,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 	
 	method = irmo_interface_get_method(world->iface, method_name);
 
-	if (!method) {
+	if (method == NULL) {
 		irmo_error_report("irmo_world_method_call",
 				  "unknown method '%s'", method_name);
 		return;
@@ -197,7 +197,7 @@ char *irmo_method_arg_string(IrmoMethodData *data, char *argname)
 	
 	arg = irmo_method_get_argument(data->method, argname);
 
-	if (!arg) {
+	if (arg == NULL) {
 		irmo_error_report("irmo_method_arg_string",
 				  "unknown method argument '%s' for '%s' method",
 				  data->method->name, argname);
@@ -223,7 +223,7 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 	
 	arg = irmo_method_get_argument(data->method, argname);
 
-	if (!arg) {
+	if (arg == NULL) {
 		irmo_error_report("irmo_method_arg_int",
 				  "unknown method argument '%s' for '%s' method",
 				  data->method->name, argname);

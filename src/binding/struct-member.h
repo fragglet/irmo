@@ -32,15 +32,15 @@ typedef struct _IrmoStructMember IrmoStructMember;
 
 struct _IrmoStructMember {
 
-        /*! String containing the name of this member. */
+        // String containing the name of this member.
 
         char *name;
 
-        /*! Offset of this member from the start of the struct, in bytes. */
+        // Offset of this member from the start of the struct, in bytes. 
 
         unsigned long offset;
 
-        /*! Size of this member, in bytes. */
+        // Size of this member, in bytes. 
 
         unsigned long size;
 };

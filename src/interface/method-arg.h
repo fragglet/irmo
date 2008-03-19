@@ -30,11 +30,22 @@
 // an argument to a method
 
 struct _IrmoMethodArg {
+
+        // Parent method that this argument belongs to.
+
 	IrmoMethod *method;
 
-	unsigned int index;
-	IrmoValueType type;
+        // Name of this method argument.
+
 	char *name;
+
+        // Index of this argument in the parent method's list of arguments.
+
+	unsigned int index;
+
+        // Type of value that this argument passes.
+
+	IrmoValueType type;
 };
 
 uint32_t irmo_method_arg_hash(IrmoMethodArg *method_arg);

@@ -72,7 +72,7 @@ int irmo_net_socket_block_set(IrmoNetSocket **sockets,
         int same_block_handler;
         int i;
        
-        /* Check if all sockets have the same block_set handler. */
+        // Check if all sockets have the same block_set handler.
 
         block_set = sockets[0]->socket_class->block_set;
         same_block_handler = 1;
@@ -84,9 +84,9 @@ int irmo_net_socket_block_set(IrmoNetSocket **sockets,
                 }
         }
 
-        /* If they all have the same handler, call it.  Otherwise, just
-           block on the first socket.  Use a short timeout, as we will
-           have to poll all the sockets. */
+        // If they all have the same handler, call it.  Otherwise, just
+        // block on the first socket.  Use a short timeout, as we will
+        // have to poll all the sockets. 
 
         if (same_block_handler) {
                 return block_set(sockets, num_sockets, timeout);

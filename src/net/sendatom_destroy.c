@@ -42,13 +42,15 @@ static int irmo_destroy_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	unsigned int i;
 
-	if (!client->world)
+	if (client->world == NULL) {
 		return 0;
+        }
 
 	// object id
 
-	if (!irmo_packet_readi16(packet, &i))
+	if (!irmo_packet_readi16(packet, &i)) {
 		return 0;
+        }
 		
 	return 1;
 }
@@ -82,7 +84,7 @@ static void irmo_destroy_atom_run(IrmoDestroyAtom *atom)
 
 	obj = irmo_world_get_object_for_id(client->world, atom->id);
 
-	if (!obj) {
+	if (obj == NULL) {
 		irmo_error_report("client_run_destroy",
 				  "destroy object %i, but object does not exist",
 				  atom->id);

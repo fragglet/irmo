@@ -32,8 +32,9 @@ static int proto_verify_packet_cluster(IrmoPacket *packet, IrmoClient *client)
 
 	// start position
 	
-	if (!irmo_packet_readi16(packet, &i))
+	if (!irmo_packet_readi16(packet, &i)) {
 		return 0;
+        }
 
 	// read atoms
 	
@@ -42,8 +43,9 @@ static int proto_verify_packet_cluster(IrmoPacket *packet, IrmoClient *client)
 		int atomtype;
 		unsigned int natoms;
 		
-		if (!irmo_packet_readi8(packet, &i))
+		if (!irmo_packet_readi8(packet, &i)) {
 			break;
+                }
 
 		atomtype = (i >> 5) & 0x07;
 		natoms = (i & 0x1f) + 1;

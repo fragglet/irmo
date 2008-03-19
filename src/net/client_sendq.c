@@ -35,14 +35,16 @@ IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client)
 	
 		atom = (IrmoSendAtom *) irmo_queue_pop_head(client->sendq);
 		
-		if (!atom)
+		if (atom == NULL) {
 			return NULL;
+                }
 
 		// automatically ignore and delete NULL atoms that
 		// are in the sendq
 		
-		if (atom->klass != &irmo_null_atom)
+		if (atom->klass != &irmo_null_atom) {
 			break;
+                }
 		
 		irmo_sendatom_free(atom);
 	} 
@@ -77,16 +79,18 @@ void irmo_client_sendq_push(IrmoClient *client, IrmoSendAtom *atom)
 
 void irmo_sendatom_free(IrmoSendAtom *atom)
 {
-	if (atom->klass->destructor)
+	if (atom->klass->destructor != NULL) {
 		atom->klass->destructor(atom);
+        }
 
 	free(atom);
 }
 
 static void irmo_sendatom_nullify(IrmoSendAtom *atom)
 {
-	if (atom->klass->destructor)
+	if (atom->klass->destructor != NULL) {
 		atom->klass->destructor(atom);
+        }
 
 	atom->klass = &irmo_null_atom;
 }
@@ -117,8 +121,9 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 		// check this is a change atom for this variable in
 		// this object
 		
-		if (client->sendwindow[i]->klass != &irmo_change_atom)
+		if (client->sendwindow[i]->klass != &irmo_change_atom) {
 			continue;
+                }
 
 		atom = (IrmoChangeAtom *) client->sendwindow[i];
 
@@ -150,7 +155,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 	atom = irmo_hash_table_lookup(client->sendq_hashtable,
 				      IRMO_POINTER_KEY(object->id));
 
-	if (!atom) {
+	if (atom == NULL) {
 		atom = irmo_new0(IrmoChangeAtom, 1);
 		IRMO_SENDATOM(atom)->klass = &irmo_change_atom;
 
@@ -186,7 +191,7 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 
 	// convert to a ATOM_NULL atom
 	
-	if (atom) {
+	if (atom != NULL) {
 		irmo_sendatom_nullify(IRMO_SENDATOM(atom));
 		irmo_hash_table_remove(client->sendq_hashtable,
 				       IRMO_POINTER_KEY(object->id));
@@ -239,9 +244,10 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 	// duplicate all the strings
 	
 	for (i=0; i<method->narguments; ++i) {
-		if (method->arguments[i]->type == IRMO_TYPE_STRING)
+		if (method->arguments[i]->type == IRMO_TYPE_STRING) {
 			atom->method_data.args[i].s
 				= strdup(atom->method_data.args[i].s);
+                }
 	}
 
 	// add to queue

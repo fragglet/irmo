@@ -128,24 +128,29 @@ static void irmo_client_destroy(IrmoClient *client)
 
 	// destroy sendwindow and all data in it
 	
-	for (i=0; i<client->sendwindow_size; ++i)
+	for (i=0; i<client->sendwindow_size; ++i) {
 		irmo_sendatom_free(client->sendwindow[i]);
+        }
 
 	//free(client->sendwindow);
 
 	// destroy receive window and all data in it
 	
-	for (i=0; i<client->recvwindow_size; ++i)
-		if (client->recvwindow[i])
+	for (i=0; i<client->recvwindow_size; ++i) {
+		if (client->recvwindow[i] != NULL) {
 			irmo_sendatom_free(client->recvwindow[i]);
+                }
+        }
 
 	free(client->recvwindow);
 
-	if (client->world)
+	if (client->world != NULL) {
 		irmo_world_unref(client->world);
+        }
 
-	if (client->connection_error)
+	if (client->connection_error != NULL) {
 		free(client->connection_error);
+        }
 	
         irmo_net_address_unref(client->address);
 	free(client);
@@ -155,8 +160,9 @@ void irmo_client_internal_unref(IrmoClient *client)
 {
 	--client->refcount;
 
-	if (client->refcount <= 0)
+	if (client->refcount <= 0) {
 		irmo_client_destroy(client);
+        }
 }
 
 void irmo_client_unref(IrmoClient *client)

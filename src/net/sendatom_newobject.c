@@ -42,23 +42,27 @@ static int irmo_newobject_atom_verify(IrmoPacket *packet, IrmoClient *client)
 {
 	unsigned int i;
 
-	if (!client->world)
+	if (client->world == NULL) {
 		return 0;
+        }
 
 	// object id
 
-	if (!irmo_packet_readi16(packet, &i))
+	if (!irmo_packet_readi16(packet, &i)) {
 		return 0;
+        }
 
 	// class of new object
 
-	if (!irmo_packet_readi8(packet, &i))
+	if (!irmo_packet_readi8(packet, &i)) {
 		return 0;
+        }
 
 	// check valid class
 	
-	if (i >= client->world->iface->nclasses)
+	if (i >= client->world->iface->nclasses) {
 		return 0;
+        }
 
 	return 1;
 }
@@ -76,7 +80,7 @@ static IrmoSendAtom *irmo_newobject_atom_read(IrmoPacket *packet,
 	irmo_packet_readi16(packet, &atom->id);
 
 	// class of new object
-		
+
 	irmo_packet_readi8(packet, &atom->classnum);
 
 	return IRMO_SENDATOM(atom);
@@ -97,8 +101,7 @@ static void irmo_newobject_atom_run(IrmoNewObjectAtom *atom)
 	
 	// sanity check
 
-	if (irmo_world_get_object_for_id(client->world,
-					 atom->id)) {
+	if (irmo_world_get_object_for_id(client->world, atom->id) != NULL) {
 		irmo_error_report("client_run_new",
 				  "new object id of %i but an object with "
 				  "that id already exists!",

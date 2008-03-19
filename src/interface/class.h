@@ -31,21 +31,30 @@
 
 struct _IrmoClass {
 
-	// parent interface
+	// Interface that this class belongs to.
 
 	IrmoInterface *iface;
 
-	// parent class or NULL for base class
+	// Parent class or NULL if this is a base class and has no
+        // parent.
 	
 	IrmoClass *parent_class;
 
-	int index;                      // index in class list
+        // Name of this class.
 
-	char *name;			// class name
+	char *name;
+
+        // Index in the parent interface's list of classes.
+
+	int index;
 	
-	IrmoClassVar **variables;	// class member variables
+        // Array of member variables stored by each instance of this class.
+
+	IrmoClassVar **variables;
 	unsigned int nvariables;
 	
+        // Hash table to look up variables by name.
+
 	IrmoHashTable *variable_hash;
 };
 

@@ -45,18 +45,21 @@ static int irmo_method_atom_verify(IrmoPacket *packet, IrmoClient *client)
 
         server = client->server;
 
-	if (!server->world)
+	if (server->world == NULL) {
 		return 0;
+        }
 
 	// read method index
 
-	if (!irmo_packet_readi8(packet, &i))
+	if (!irmo_packet_readi8(packet, &i)) {
 		return 0;
+        }
 
 	// sanity check method index
 
-	if (i >= client->server->world->iface->nmethods)
+	if (i >= client->server->world->iface->nmethods) {
 		return 0;
+        }
 
 	method = client->server->world->iface->methods[i];
 
@@ -64,8 +67,9 @@ static int irmo_method_atom_verify(IrmoPacket *packet, IrmoClient *client)
 
 	for (i=0; i<method->narguments; ++i) {
 		if (!irmo_packet_verify_value
-			(packet, method->arguments[i]->type))
+			(packet, method->arguments[i]->type)) {
 			return 0;
+                }
 	}
 
 	return 1;
@@ -111,9 +115,10 @@ static void irmo_method_atom_write(IrmoMethodAtom *atom, IrmoPacket *packet)
 
 	// send arguments
 
-	for (i=0; i<method->narguments; ++i)
+	for (i=0; i<method->narguments; ++i) {
 		irmo_packet_write_value(packet, &args[i],
 					method->arguments[i]->type);
+        }
 }
 
 static void irmo_method_atom_run(IrmoMethodAtom *atom)
@@ -131,8 +136,9 @@ static void irmo_method_atom_destroy(IrmoMethodAtom *atom)
         unsigned int i;
  
         for (i=0; i<method->narguments; ++i) {
-                if (method->arguments[i]->type == IRMO_TYPE_STRING)
+                if (method->arguments[i]->type == IRMO_TYPE_STRING) {
                         free(atom->method_data.args[i].s);
+                }
         }
  
         free(atom->method_data.args);

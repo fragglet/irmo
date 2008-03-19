@@ -42,14 +42,15 @@ IrmoServer *irmo_server_new_from(IrmoNetSocket *sock,
 	server->client_interface = client_interface;
 	server->running = 1;
 
-	if (client_interface)
+	if (client_interface != NULL) {
 		irmo_interface_ref(client_interface);
+        }
 	
 	// we can have a server which does not serve a world
 	// store this server in the list of servers attached to this
 	// world
 	
-	if (world) {
+	if (world != NULL) {
 		irmo_world_ref(world);
 		irmo_arraylist_append(world->servers, server);
 	}
@@ -124,7 +125,7 @@ static void irmo_server_internal_shutdown(IrmoServer *server)
 
 	// remove from list of attached servers
 			
-	if (server->world) {
+	if (server->world != NULL) {
                 for (i=0; i<server->world->servers->length; ++i) {
                         if (server->world->servers->data[i] == server) {
                                 irmo_arraylist_remove(server->world->servers, i);

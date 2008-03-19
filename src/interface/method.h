@@ -32,13 +32,25 @@
 // method declaration
 
 struct _IrmoMethod {
+
+        // Parent interface that this method belongs to.
+
 	IrmoInterface *iface;
 
+        // Name of this method.
+
+	char *name;
+
+        // Index of this method in the parent interface's list of methods.
+
 	unsigned int index;
-	char *name;			// method name
 	
+        // List of arguments to this method.
+
 	IrmoMethodArg **arguments;
 	unsigned int narguments;
+
+        // Hash table for looking up method arguments by name.
 
 	IrmoHashTable *argument_hash;
 };
