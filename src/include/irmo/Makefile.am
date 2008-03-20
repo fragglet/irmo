@@ -2,6 +2,7 @@ libirmoincludedir = $(includedir)/irmo/2
 libirmoinclude2dir = $(libirmoincludedir)/irmo
 
 libirmoinclude2_HEADERS=                                   \
+        binding.h                                          \
         callback.h                                         \
         client.h                                           \
         connection.h                                       \
