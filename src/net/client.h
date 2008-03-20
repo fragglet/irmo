@@ -88,19 +88,19 @@ struct _IrmoClient {
 
 	// position of start of send window in stream
 
-	int sendwindow_start;
+	unsigned int sendwindow_start;
 	
 	// send window
 
 	IrmoSendAtom *sendwindow[MAX_SENDWINDOW];
-	int sendwindow_size;
+	unsigned int sendwindow_size;
 
 	// receive window
 
-	int recvwindow_start;
+	unsigned int recvwindow_start;
 
 	IrmoSendAtom **recvwindow;
-	int recvwindow_size;
+	unsigned int recvwindow_size;
 
 	// if true, we need to send an ack to the client to acknowledge
 	// something it has sent us

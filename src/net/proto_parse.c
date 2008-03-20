@@ -17,13 +17,11 @@
 // 02111-1307, USA.
 //
 
-// parsing of received packets
-// this code runs on the assumption that the packets being given to
+// Parsing of received packets.
+// This code runs on the assumption that the packets being given to
 // it are well formed and valid; it does not do any checking on the data
 // received.
 //
-// TODO: proto_verify.c for verifification of packets before they are
-// parsed.
 
 #include "arch/sysheaders.h"
 #include "base/util.h"
@@ -44,35 +42,34 @@ int irmo_proto_use_preexec = 1;
 // therefore we must expand positions we get based on the
 // current position
 
-static int get_stream_position(int current, int low)
+static unsigned int get_stream_position(unsigned int current, unsigned int low)
 {
-	int newpos = (current & ~0xffff) | low;
+	unsigned int newpos = (current & ~0xffff) | low;
 
 	// if new position is greater than 32768 behind the
 	// current position, we have probably wrapped around
 	// similarly wrap around the other way
 	
-	if (current - newpos > 0x8000) {
+	if (current > newpos && current - newpos > 0x8000) {
 		newpos += 0x10000;
-	} else if (newpos - current > 0x8000) {
+	} else if (newpos > current && newpos - current > 0x8000) {
 		newpos -= 0x10000;
         }
 
 	return newpos;
 }
 
-
 static void proto_parse_insert_atom(IrmoClient *client,
 				    IrmoSendAtom *atom,
-				    int seq)
+				    unsigned int seq)
 {
-	int index = seq - client->recvwindow_start;
-	int i;
+	unsigned int index = seq - client->recvwindow_start;
+	unsigned int i;
 
 	// increase the receive window size if neccesary
 	
 	if (index >= client->recvwindow_size) {
-		int newsize = index+1;
+		unsigned int newsize = index + 1;
 
 		client->recvwindow = irmo_renew(IrmoSendAtom *,
                                                 client->recvwindow,
@@ -95,11 +92,11 @@ static void proto_parse_insert_atom(IrmoClient *client,
 	client->recvwindow[index] = atom;
 }
 
-static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
+static void proto_parse_packet_data(IrmoClient *client, IrmoPacket *packet)
 {
 	unsigned int i;
-	int seq;
-	int start;
+	unsigned int seq;
+	unsigned int start;
 	
 	// get the start position
 	
@@ -109,7 +106,9 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
 
 	//printf("stream position: %i->%i\n", i, start);
 	
-	for (seq=start;;) {
+        seq = start;
+
+	for (;;) {
 		IrmoSendAtomClass *klass;
 		IrmoSendAtomType atomtype;
 		unsigned int natoms;
@@ -170,6 +169,56 @@ static void proto_parse_packet_cluster(IrmoClient *client, IrmoPacket *packet)
         }
 }
 
+// Update the congestion control values for the given client, after 
+// receiving a successful acknowledgement.
+
+static void proto_update_cc_values(IrmoClient *client)
+{
+        unsigned int nowtime, rtt;
+        int deviation;
+		
+	// We got a valid ack. open up the send window a bit more.
+	// If we are above the slow start congestion threshold, open
+	// slower.
+	
+	if (client->cwnd < client->ssthresh) {
+		client->cwnd += PACKET_THRESHOLD;
+	} else {
+		client->cwnd +=
+			(PACKET_THRESHOLD * PACKET_THRESHOLD) / client->cwnd;
+        }
+	
+        //
+	// We are acking something valid and advancing the window
+	// Assume this is because the first atom in the window has
+	// been cleared. Therefore we can estimate the round-trip time
+	// by subtracting the current time from the send time of the
+	// first atom in the send window.
+        //
+	// If the atom was resent, this cannot be used.
+        //
+
+	if (!client->sendwindow[0]->resent) {
+                nowtime = irmo_get_time();
+
+                // Round-trip time
+
+                rtt = nowtime - client->sendwindow[0]->sendtime;
+
+		deviation = abs(rtt - client->rtt);
+		
+		client->rtt = RTT_ALPHA * client->rtt
+			+ (1-RTT_ALPHA) * rtt;
+
+		client->rtt_deviation = RTT_ALPHA * client->rtt_deviation
+			+ (1-RTT_ALPHA) * deviation;
+
+		// Reset exponential backoff now that we have a valid packet
+
+		client->backoff = 1;
+	}	
+}
+
 static void proto_parse_ack(IrmoClient *client, int ack)
 {
 	int seq;
@@ -192,9 +241,10 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 		return;
 	}
 
-	if (relative > client->sendwindow_size) {
-		// bogus ack
-		// we havent even sent this far in the stream yet
+        // Check that the acknowledgement is within the range of the 
+        // send window.
+
+	if ((unsigned) relative > client->sendwindow_size) {
 
 		irmo_error_report("proto_parse_ack",
 				  "bogus ack (%i < %i < %i)",
@@ -203,47 +253,11 @@ static void proto_parse_ack(IrmoClient *client, int ack)
 		return;
 	}
 
-	// we got a valid ack. open up the send window a bit more
-	// if we are above the slow start congestion threshold, open
-	// slowly
-	
-	if (client->cwnd < client->ssthresh) {
-		client->cwnd += PACKET_THRESHOLD;
-	} else {
-		client->cwnd +=
-			(PACKET_THRESHOLD * PACKET_THRESHOLD) / client->cwnd;
-        }
-	
-	// We are acking something valid and advancing the window
-	// Assume this is because the first atom in the window has
-	// been cleared. Therefore we can estimate the round-trip time
-	// by subtracting the current time from the send time of the
-	// first atom in the send window.
-	// If the atom was resent, this cannot be used.
+        // Update congestion control values
 
-	if (!client->sendwindow[0]->resent) {
-		unsigned int nowtime, rtt;
-		int deviation;
-		
-                nowtime = irmo_get_time();
+        proto_update_cc_values(client);
 
-                rtt = nowtime - client->sendwindow[0]->sendtime;
-
-		deviation = abs(rtt - client->rtt);
-		
-		client->rtt = RTT_ALPHA * client->rtt
-			+ (1-RTT_ALPHA) * rtt;
-
-		client->rtt_deviation = RTT_ALPHA * client->rtt_deviation
-			+ (1-RTT_ALPHA) * deviation;
-
-		// reset backoff back to 1 now we have a valid packet
-
-		client->backoff = 1;
-	}	
-	
-	// need to move the sendwindow along
-	// destroy the atoms in the area acked
+	// Advance the send window and destroy atoms in the area acked
 	
 	for (i=0; i<relative; ++i) {
 		irmo_sendatom_free(client->sendwindow[i]);
@@ -281,7 +295,7 @@ void irmo_proto_parse_packet(IrmoPacket *packet,
 	}
 
 	if ((flags & PACKET_FLAG_DTA) != 0) {
-		proto_parse_packet_cluster(client, packet);
+		proto_parse_packet_data(client, packet);
 
 		irmo_client_run_recvwindow(client);
 	}
