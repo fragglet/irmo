@@ -219,10 +219,11 @@ static void irmo_change_atom_write(IrmoChangeAtom *atom, IrmoPacket *packet)
 
 		// check we are sending this variable
 
-		if (atom->changed[i])
+		if (atom->changed[i]) {
 			irmo_packet_write_value
 				(packet, &obj->variables[i], 
 				 obj->objclass->variables[i]->type);
+                }
 	}
 }
 

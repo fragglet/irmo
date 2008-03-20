@@ -84,8 +84,10 @@ static int get_free_id(IrmoWorld *world)
 
 		// no free spaces
 		
-		if (world->lastid == start)
+		if (world->lastid == start) {
 			return -1;
+                }
+
 	} while (irmo_hash_table_lookup(world->objects,
 				        IRMO_POINTER_KEY(world->lastid)));
 

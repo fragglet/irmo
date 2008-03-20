@@ -112,7 +112,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 				  IrmoObject *object, int variable)
 {
 	IrmoChangeAtom *atom;
-	int i;
+	unsigned int i;
 	
 	// search the send window and nullify this variable if there
 	// is an existing change for it waiting to be acked
@@ -182,7 +182,7 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 {
 	IrmoDestroyAtom *atom;
-	int i;
+	unsigned int i;
 	
 	// check for any changeatoms referring to this object
 
@@ -202,8 +202,9 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	for (i=0; i<client->sendwindow_size; ++i) {
 		IrmoChangeAtom *catom;
 
-		if (client->sendwindow[i]->klass != &irmo_change_atom)
+		if (client->sendwindow[i]->klass != &irmo_change_atom) {
 			continue;
+                }
 		
 		catom = (IrmoChangeAtom *) client->sendwindow[i];
 

@@ -118,8 +118,9 @@ void irmo_interface_unref(IrmoInterface *iface)
 
 	--iface->refcount;
 
-	if (iface->refcount <= 0)
+	if (iface->refcount <= 0) {
 		_irmo_interface_free(iface);
+        }
 }
 
 uint32_t irmo_interface_hash(IrmoInterface *iface)
@@ -140,8 +141,9 @@ uint32_t irmo_interface_hash(IrmoInterface *iface)
         // Hash must always be non-zero, as zero has a special meaning
         // as NULL interface.
 
-	if (hash == 0)
+	if (hash == 0) {
 		hash = 1;
+        }
 
 	return hash;
 }

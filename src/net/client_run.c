@@ -58,7 +58,7 @@ void irmo_client_run_preexec(IrmoClient *client, int start, int end)
 
 void irmo_client_run_recvwindow(IrmoClient *client)
 {
-	int i, n;
+	unsigned int i, n;
 
 	// nothing to run?
 	

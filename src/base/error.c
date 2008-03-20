@@ -29,9 +29,7 @@ void irmo_error_report(char *function_name, char *format, ...)
 
 	va_start(args, format);
 
-	if (last_error)
-		free(last_error);
-
+        free(last_error);
 	last_error = irmo_vasprintf(format, args);
 
 	va_end(args);

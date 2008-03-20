@@ -61,7 +61,6 @@ static int proto_verify_packet_cluster(IrmoPacket *packet, IrmoClient *client)
 
 		for (i=0; i<natoms; ++i) {
 			if (!klass->verify(packet, client)) {
-				//printf("\t\tfailed\n");
 				return 0;
 			}
 		}
@@ -79,20 +78,20 @@ int irmo_proto_verify_packet(IrmoPacket *packet, IrmoClient *client,
 
         origpos = irmo_packet_get_position(packet);
 	
-	//printf("verify packet\n");
-	
 	// read ack
 	
 	if (flags & PACKET_FLAG_ACK) {
 		unsigned int ack;
 
-		if (!irmo_packet_readi16(packet, &ack))
+		if (!irmo_packet_readi16(packet, &ack)) {
 			result = 0;
+                }
 	}
 
 	if (result && (flags & PACKET_FLAG_DTA) != 0) {
-		if (!proto_verify_packet_cluster(packet, client))
+		if (!proto_verify_packet_cluster(packet, client)) {
 			result = 0;
+                }
 	}
 
 	// restore start position

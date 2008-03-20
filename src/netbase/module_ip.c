@@ -410,7 +410,7 @@ static IrmoNetAddress *ipv4_resolve_address(IrmoNetModule *module,
 	
 	hp = gethostbyname(address);
 
-	if (!hp) {
+	if (hp == NULL) {
 		return NULL;
         }
 

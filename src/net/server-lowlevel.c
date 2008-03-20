@@ -249,7 +249,7 @@ static void server_run_synfin(IrmoServer *server,
 
 		message = irmo_packet_readstring(packet);
 
-		if (message) {
+		if (message != NULL) {
 			irmo_connection_error(client, "connection refused (%s)", message);
 		} else {
 			irmo_connection_error(client, "connection refused");

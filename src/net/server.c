@@ -151,12 +151,14 @@ void irmo_server_unref(IrmoServer *server)
 
 		irmo_callback_list_free(&server->connect_callbacks);
 
-		if (server->client_interface)
+		if (server->client_interface != NULL) {
 			irmo_interface_unref(server->client_interface);
+                }
 
-		if (server->world)
+		if (server->world != NULL) {
 			irmo_world_unref(server->world);
-		
+		}
+
 		free(server);
 	}
 }

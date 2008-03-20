@@ -179,10 +179,10 @@ IrmoIterator *irmo_world_iterate_objects(IrmoWorld *world, char *classname)
 
 	irmo_return_val_if_fail(world != NULL, NULL);
 	
-	if (classname) {
+	if (classname != NULL) {
 		klass = irmo_interface_get_class(world->iface, classname);
 
-		if (!klass) {
+		if (klass == NULL) {
 			irmo_error_report("irmo_world_iterate_objects",
 					  "unknown class '%s'", classname);
 			return NULL;

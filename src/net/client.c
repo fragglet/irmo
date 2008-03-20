@@ -106,7 +106,7 @@ void irmo_client_ref(IrmoClient *client)
 
 static void irmo_client_destroy(IrmoClient *client)
 {
-	int i;
+	unsigned int i;
 
 	// destroy callbacks
 	

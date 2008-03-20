@@ -146,8 +146,9 @@ int irmo_packet_writestring(IrmoPacket *packet, char *s)
 {
         irmo_return_val_if_fail(packet->data_owned, 0);
 
-	if (packet->pos + strlen(s) + 1 > packet->data_size)
+	if (packet->pos + strlen(s) + 1 > packet->data_size) {
 		irmo_packet_resize(packet);
+        }
 
 	strcpy((char *) packet->data + packet->pos, s); 
 	packet->pos += strlen(s) + 1;
@@ -159,8 +160,9 @@ int irmo_packet_writestring(IrmoPacket *packet, char *s)
 
 int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i)
 {
-	if (packet->pos + 1 > packet->len)
+	if (packet->pos + 1 > packet->len) {
 		return 0;
+        }
 
 	if (i != NULL) {
 		*i = packet->data[packet->pos];
@@ -175,8 +177,9 @@ int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 {
 	uint8_t *data;
 	
-	if (packet->pos + 2 > packet->len)
+	if (packet->pos + 2 > packet->len) {
 		return 0;
+        }
 
 	data = packet->data + packet->pos;
 	
@@ -193,9 +196,10 @@ int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i)
 {
 	uint8_t *data;
 
-	if (packet->pos + 4 > packet->len)
+	if (packet->pos + 4 > packet->len) {
 		return 0;
-		
+        }
+	
 	data = packet->data + packet->pos;
 
 	if (i != NULL) {
