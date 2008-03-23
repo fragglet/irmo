@@ -18,7 +18,7 @@
 //
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
+#include "base/alloc.h"
 
 #include "interface/interface.h"
 #include "world/object.h"

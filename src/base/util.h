@@ -20,8 +20,14 @@
 #ifndef IRMO_BASE_UTIL_H
 #define IRMO_BASE_UTIL_H
 
-#include "alloc.h"
-#include "assert.h"
+/*!
+ * "Rotate" a 32-bit integer value: the resulting value is bitshifted to 
+ * the left by one bit, with the top bit moved to the bottom bit.
+ * This is useful when writing hash functions.
+ *
+ * @param i             Value to rotate.
+ * @return              Rotated value.
+ */
 
 uint32_t irmo_rotate_int(uint32_t i);
 

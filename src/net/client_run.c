@@ -22,7 +22,6 @@
 //
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
 
 #include "world/object.h"
 #include "world/world.h"

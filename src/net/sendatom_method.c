@@ -18,7 +18,8 @@
 //
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
+#include "base/alloc.h"
+#include "base/assert.h"
 
 #include <irmo/packet.h>
 #include "world/object.h"

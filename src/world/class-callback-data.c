@@ -18,7 +18,6 @@
 //
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
 #include "base/error.h"
 
 #include "interface/interface.h"

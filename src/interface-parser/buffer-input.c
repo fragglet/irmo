@@ -18,7 +18,7 @@
 //
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
+#include "base/assert.h"
 #include "base/iterator.h"
 #include "base/error.h"
 

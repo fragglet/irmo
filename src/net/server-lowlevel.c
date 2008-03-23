@@ -22,7 +22,7 @@
 //
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
+#include "base/assert.h"
 #include "base/error.h"
 
 #include <irmo/packet.h>

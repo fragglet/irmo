@@ -45,7 +45,7 @@
 #include <irmo/interface-parser.h>
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
+#include "base/assert.h"
 #include "base/error.h"
 
 typedef enum {

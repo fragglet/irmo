@@ -23,7 +23,7 @@
 
 #include "arch/sysheaders.h"
 #include "base/error.h"
-#include "base/util.h"
+#include "base/alloc.h"
 
 #include "algo/algo.h"
 

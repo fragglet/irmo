@@ -24,7 +24,7 @@
 //
 
 #include "arch/sysheaders.h"
-#include "base/util.h"
+#include "base/alloc.h"
 #include "base/error.h"
 
 #include <irmo/packet.h>

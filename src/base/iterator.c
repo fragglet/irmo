@@ -19,7 +19,7 @@
 
 #include "arch/sysheaders.h"
 
-#include "base/util.h"
+#include "base/alloc.h"
 
 #include "iterator.h"
 
