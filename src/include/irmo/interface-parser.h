@@ -75,6 +75,20 @@ IrmoInterface *irmo_interface_parse(IrmoInterfaceReadFunc read_func,
 
 IrmoInterface *irmo_interface_parse_from_file(char *filename);
 
+/*!
+ * Create a new @ref IrmoInterface object, parsing from a buffer.
+ *
+ * A buffer is parsed with the interface described in a simple
+ * C-style syntax.
+ *
+ * @param data          Pointer to the data buffer.
+ * @param data_len      Length of the data buffer.
+ * @return		A new IrmoInterface object or NULL for failure.
+ */
+
+IrmoInterface *irmo_interface_parse_from_buffer(void *data, 
+                                                size_t data_len);
+
 //! \}
 
 #ifdef __cplusplus
