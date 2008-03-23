@@ -17,12 +17,29 @@
 // 02111-1307, USA.
 //
 
-#include "arch/sysheaders.h"
+#ifndef IRMO_BASE_ALLOC_H
+#define IRMO_BASE_ALLOC_H
 
-#include "util.h"
+#include <stdlib.h>
 
-uint32_t irmo_rotate_int(uint32_t i)
-{
-	return (i << 1) | (i >> 31);
-}
+//
+// Memory allocation macros
+//
+
+// allocate memory, zeroing out the contents first
+
+void *irmo_malloc0(int bytes);
+
+// allocate enough memory for an array of structures, giving the structure
+// name and array size, and zeroing the contents of the array
+
+#define irmo_new0(typename, count)                             \
+        ((typename *) irmo_malloc0(sizeof(typename) * count))
+
+// resize an array of structures
+
+#define irmo_renew(typename, oldmem, count)                  \
+        ((typename *) realloc((oldmem), sizeof(typename) * (count)))
+
+#endif /* #ifndef IRMO_BASE_ALLOC_H */
 

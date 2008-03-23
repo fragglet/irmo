@@ -2,6 +2,8 @@
 This directory contains base code on which other modules are based.  This
 includes:
 
+    alloc.[ch]            - Memory allocation functions/macros.
+    assert.[ch]           - Assertation checking.
     callback.[ch]         - Common callback function data structure, for
                             handling lists of callback functions to invoke.
                             This is exposed publicly as IrmoCallback.
@@ -9,6 +11,5 @@ includes:
     iterator.[ch]         - Common iterator data structure, for iterating
                             over collections of objects.  This is exposed
                             publicly as IrmoIterator.
-    util.[ch]             - Miscellaneous common utility functions:
-                            allocating memory, assertation checking, etc.
+    util.[ch]             - Miscellaneous common utility functions.
 

@@ -17,12 +17,18 @@
 // 02111-1307, USA.
 //
 
-#include "arch/sysheaders.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "util.h"
+#include "alloc.h"
 
-uint32_t irmo_rotate_int(uint32_t i)
+void *irmo_malloc0(int bytes)
 {
-	return (i << 1) | (i >> 31);
+        void *p;
+
+        p = malloc(bytes);
+        memset(p, 0, bytes);
+
+        return p;
 }
 

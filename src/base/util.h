@@ -20,70 +20,9 @@
 #ifndef IRMO_BASE_UTIL_H
 #define IRMO_BASE_UTIL_H
 
-#include <stdlib.h>
-#include <string.h>
+#include "alloc.h"
+#include "assert.h"
 
-//
-// Memory allocation macros
-//
-
-// allocate memory, zeroing out the contents first
-
-void *irmo_malloc0(int bytes);
-
-// allocate enough memory for an array of structures, giving the structure
-// name and array size, and zeroing the contents of the array
-
-#define irmo_new0(typename, count)                             \
-        ((typename *) irmo_malloc0(sizeof(typename) * count))
-
-// resize an array of structures
-
-#define irmo_renew(typename, oldmem, count)                  \
-        ((typename *) realloc((oldmem), sizeof(typename) * (count)))
-
-//
-// Debugging macros.  
-//
-// Define IRMO_NO_DEBUG_CHECK to not check the parameters passed to API 
-// functions for extra speed.
-//
-
-#ifdef IRMO_NO_DEBUG_CHECK
-
-#define irmo_return_if_fail(test)
-#define irmo_return_val_if_fail(test, val)
-
-#else
-
-// return if a test fails
-
-#define irmo_return_if_fail(test)                                      \
-        do {                                                           \
-                if (!(test)) {                                         \
-                        irmo_assert_fail_message(__FUNCTION__, #test); \
-                        return;                                        \
-                }                                                      \
-        } while(0)
-
-// return a value if a test fails
-
-#define irmo_return_val_if_fail(test, val)                             \
-        do {                                                           \
-                if (!(test)) {                                         \
-                        irmo_assert_fail_message(__FUNCTION__, #test); \
-                        return (val);                                  \
-                }                                                      \
-        } while(0)
-
-#endif
-
-#define irmo_bug()                                                     \
-        irmo_bug_abort(__FILE__, __LINE__)
-
-void irmo_warning_message(const char *function_name, char *message, ...);
-void irmo_assert_fail_message(const char *function_name, char *assertation);
-void irmo_bug_abort(char *file, int line);
 uint32_t irmo_rotate_int(uint32_t i);
 
 #endif /* #ifndef IRMO_BASE_UTIL_H */

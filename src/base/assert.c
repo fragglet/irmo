@@ -19,10 +19,34 @@
 
 #include "arch/sysheaders.h"
 
-#include "util.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-uint32_t irmo_rotate_int(uint32_t i)
+#include "assert.h"
+
+void irmo_warning_message(const char *function_name, char *message, ...)
 {
-	return (i << 1) | (i >> 31);
+        va_list args;
+
+        va_start(args, message);
+
+        fprintf(stderr, "%s: ", function_name);
+        vfprintf(stderr, message, args);
+        fprintf(stderr, "\n");
+
+        va_end(args);
+}
+
+void irmo_assert_fail_message(const char *function_name, char *assertation)
+{
+        irmo_warning_message(function_name, 
+                             "Warning: assertation '%s' failed.\n",
+                             assertation);
+}
+
+void irmo_bug_abort(char *file, int line)
+{
+        fprintf(stderr, "Irmo BUG at %s:%i!\n", file, line);
+        abort();
 }
 
