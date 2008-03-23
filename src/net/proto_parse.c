@@ -245,11 +245,12 @@ static void proto_parse_ack(IrmoClient *client, int ack)
         // send window.
 
 	if ((unsigned) relative > client->sendwindow_size) {
-
-		irmo_error_report("proto_parse_ack",
-				  "bogus ack (%i < %i < %i)",
-				  client->sendwindow_start, seq,
-				  client->sendwindow_start + client->sendwindow_size);
+/*
+                irmo_warning_message("proto_parse_ack",
+                        "bogus ack (%i < %i < %i)",
+                        client->sendwindow_start, seq,
+                        client->sendwindow_start + client->sendwindow_size);
+*/
 		return;
 	}
 
@@ -279,8 +280,10 @@ void irmo_proto_parse_packet(IrmoPacket *packet,
 	// verify packet before parsing for security
 	
 	if (!irmo_proto_verify_packet(packet, client, flags)) {
-		irmo_error_report("proto_parse_packet",
-				  "dropped packet (failed security verification)");
+/*
+		irmo_warning_message("irmo_proto_parse_packet",
+                      "dropped packet (failed security verification)");
+*/
 		return;
 	}
 

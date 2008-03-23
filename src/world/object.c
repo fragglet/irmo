@@ -161,8 +161,8 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 	klass = irmo_interface_get_class(world->iface, type_name);
 
 	if (klass == NULL) {
-		irmo_error_report("irmo_object_new", 
-				  "unknown type '%s'", type_name);
+                irmo_warning_message("irmo_object_new",
+				     "unknown type '%s'", type_name);
 		return NULL;
 	}
 
@@ -170,8 +170,9 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 
 	if (id < 0) {
 		irmo_error_report("irmo_object_new",
-				  "maximum of %i objects per world (no more objects!)",
-				  MAX_OBJECTS);
+                        "maximum of %i objects per world (no more objects!)",
+                        MAX_OBJECTS);
+
 		return NULL;
 	}
 
@@ -329,9 +330,7 @@ void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *variable,
                 obj_value->s = strdup(value->s);
                 break;
         default:
-		irmo_error_report("irmo_object_set",
-				  "variable has unknown type");
-                return;
+                irmo_bug();
         }
 
 	irmo_object_set_raise(object, variable->index);
@@ -366,23 +365,23 @@ void irmo_object_set_int(IrmoObject *object, char *variable,
 	
 	var = irmo_class_get_variable(object->objclass, variable);
 
-	if (var == NULL) {
-		irmo_error_report("irmo_object_set_int",
-				  "unknown variable '%s' in class '%s'",
-				  variable,
-				  object->objclass->name);
-		return;
-	}
+        if (var == NULL) {
+                irmo_warning_message("irmo_object_set_int",
+                                     "unknown variable '%s' in class '%s'",
+                                     variable,
+                                     object->objclass->name);
+                return;
+        }
 
         // Check it is an integer type
 
         if (var->type != IRMO_TYPE_INT8 && var->type != IRMO_TYPE_INT16
          && var->type != IRMO_TYPE_INT32) {
-		irmo_error_report("irmo_object_set_int",
-				  "variable '%s' in class '%s' is not an int type",
-				  variable, object->objclass->name);
-		return;
-	}
+                irmo_warning_message("irmo_object_set_int",
+                        "variable '%s' in class '%s' is not an integer type",
+                        variable, object->objclass->name);
+                return;
+        }
 
         // Set the value
 
@@ -402,19 +401,19 @@ void irmo_object_set_string(IrmoObject *object, char *variable, char *value)
 	var = irmo_class_get_variable(object->objclass, variable);
 
 	if (var == NULL) {
-		irmo_error_report("irmo_object_set_string",
-				  "unknown variable '%s' in class '%s'",
-				  variable,
-				  object->objclass->name);
+                irmo_warning_message("irmo_object_set_string",
+                                     "unknown variable '%s' in class '%s'",
+                                     variable,
+                                     object->objclass->name);
 		
-		return;
+                return;
 	}
 
 	if (var->type != IRMO_TYPE_STRING) {
-		irmo_error_report("irmo_object_set_string",
-				  "variable '%s' in class '%s' is not string type",
-				  variable, object->objclass->name);
-		return;
+                irmo_warning_message("irmo_object_set_string",
+                        "variable '%s' in class '%s' is not string type",
+                        variable, object->objclass->name);
+                return;
 	}
 
         // Set the new value
@@ -451,12 +450,12 @@ unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 	var = irmo_class_get_variable(object->objclass, variable);
 
 	if (var == NULL) {
-		irmo_error_report("irmo_object_get_int",
-				  "unknown variable '%s' in class '%s'",
-				  variable,
-				  object->objclass->name);
+                irmo_warning_message("irmo_object_get_int",
+                                     "unknown variable '%s' in class '%s'",
+                                     variable,
+                                     object->objclass->name);
 		
-		return -1;
+                return 0;
 	}
 
 	switch (var->type) {
@@ -465,10 +464,11 @@ unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 	case IRMO_TYPE_INT32:
 		return object->variables[var->index].i;
 	default:
-		irmo_error_report("irmo_object_get_int",
-				  "variable '%s' in class '%s' is not an int type",
-				  variable, object->objclass->name);
-		return -1;
+		irmo_warning_message("irmo_object_get_int",
+                        "variable '%s' in class '%s' is not an integer type",
+                        variable, object->objclass->name);
+
+		return 0;
 	}
 }
 
@@ -484,19 +484,19 @@ char *irmo_object_get_string(IrmoObject *object, char *variable)
 	var = irmo_class_get_variable(object->objclass, variable);
 
 	if (var == NULL) {
-		irmo_error_report("irmo_object_get_string",
-				  "unknown variable '%s' in class '%s'",
-				  variable,
-				  object->objclass->name);
+                irmo_warning_message("irmo_object_get_string",
+                                     "unknown variable '%s' in class '%s'",
+                                     variable,
+                                     object->objclass->name);
 		
-		return NULL;
+                return NULL;
 	}
 
 	if (var->type != IRMO_TYPE_STRING) {
-		irmo_error_report("irmo_object_get_string",
-				  "variable '%s' in class '%s' is not a string type",
-				  variable, object->objclass->name);
-		return NULL;
+                irmo_warning_message("irmo_object_get_string",
+                        "variable '%s' in class '%s' is not a string type",
+                        variable, object->objclass->name);
+                return NULL;
 	}
 
 	return object->variables[var->index].s;
@@ -537,9 +537,9 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 	klass = irmo_interface_get_class(obj->world->iface, classname);
 
 	if (klass == NULL) {
-		irmo_error_report("irmo_object_is_a",
-				  "unknown class name '%s'", classname);
-		return 0;
+                irmo_warning_message("irmo_object_is_a",
+                                     "unknown class name '%s'", classname);
+                return 0;
 	}
 
 	return irmo_object_is_a2(obj, klass);
@@ -570,9 +570,9 @@ IrmoCallback *irmo_object_watch(IrmoObject *object, char *variable,
                                               user_data);
 
 	if (callback == NULL) {
-		irmo_error_report("irmo_object_watch",
-				  "unknown variable '%s' in class '%s'",
-				  variable, object->objclass->name);
+                irmo_warning_message("irmo_object_watch",
+                        "unknown variable '%s' in class '%s'",
+                        variable, object->objclass->name);
 	}
 
 	return callback;

@@ -20,7 +20,6 @@
 #include "arch/sysheaders.h"
 #include "base/alloc.h"
 #include "base/assert.h"
-#include "base/error.h"
 
 #include "method.h"
 #include "world.h"
@@ -39,9 +38,9 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 	method = irmo_interface_get_method(world->iface, method_name);
 
 	if (method == NULL) {
-		irmo_error_report("irmo_world_method_watch",
-				  "unknown method '%s'", method_name);
-		return NULL;
+                irmo_warning_message("irmo_world_method_watch",
+                                     "unknown method '%s'", method_name);
+                return NULL;
 	}
 
 	return irmo_callback_list_add(&world->method_callbacks[method->index],
@@ -134,9 +133,9 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 	method = irmo_interface_get_method(world->iface, method_name);
 
 	if (method == NULL) {
-		irmo_error_report("irmo_world_method_call",
-				  "unknown method '%s'", method_name);
-		return;
+                irmo_warning_message("irmo_world_method_call",
+                                     "unknown method '%s'", method_name);
+                return;
 	}
 
 	args = irmo_new0(IrmoValue, method->narguments);
@@ -212,17 +211,18 @@ char *irmo_method_arg_string(IrmoMethodData *data, char *argname)
 	arg = irmo_method_get_argument(data->method, argname);
 
 	if (arg == NULL) {
-		irmo_error_report("irmo_method_arg_string",
-				  "unknown method argument '%s' for '%s' method",
-				  data->method->name, argname);
+		irmo_warning_message("irmo_method_arg_string",
+                        "unknown method argument '%s' for '%s' method",
+                        data->method->name, argname);
+
 		return NULL;
 	}
 
 	if (arg->type != IRMO_TYPE_STRING) {
-		irmo_error_report("irmo_method_arg_string",
-				  "'%s' argument for '%s' method is not a string type",
-				  argname, data->method->name);
-		return NULL;
+                irmo_warning_message("irmo_method_arg_string",
+                        "'%s' argument for '%s' method is not a string type",
+                        argname, data->method->name);
+                return NULL;
 	}
 
 	return data->args[arg->index].s;		
@@ -238,10 +238,11 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 	arg = irmo_method_get_argument(data->method, argname);
 
 	if (arg == NULL) {
-		irmo_error_report("irmo_method_arg_int",
-				  "unknown method argument '%s' for '%s' method",
-				  data->method->name, argname);
-		return 0;
+                irmo_warning_message("irmo_method_arg_int",
+                        "unknown method argument '%s' for '%s' method",
+                        data->method->name, argname);
+
+                return 0;
 	}
 
 	switch (arg->type) {
@@ -250,9 +251,10 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 	case IRMO_TYPE_INT32:
 		return data->args[arg->index].i;
 	default:
-		irmo_error_report("irmo_method_arg_int",
-				  "'%s' argument for '%s' method is not an integer type",
-				  argname, data->method->name);
+		irmo_warning_message("irmo_method_arg_int",
+                        "'%s' argument for '%s' method is not an integer type",
+                        argname, data->method->name);
+
 		return 0;
 	}
 }

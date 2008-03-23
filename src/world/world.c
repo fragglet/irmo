@@ -24,7 +24,6 @@
 #include "arch/sysheaders.h"
 #include "base/alloc.h"
 #include "base/assert.h"
-#include "base/error.h"
 #include "base/iterator.h"
 
 #include "interface/interface.h"
@@ -184,9 +183,9 @@ IrmoIterator *irmo_world_iterate_objects(IrmoWorld *world, char *classname)
 		klass = irmo_interface_get_class(world->iface, classname);
 
 		if (klass == NULL) {
-			irmo_error_report("irmo_world_iterate_objects",
-					  "unknown class '%s'", classname);
-			return NULL;
+                        irmo_warning_message("irmo_world_iterate_objects",
+                                             "unknown class '%s'", classname);
+                        return NULL;
 		}
 	} else {
 		klass = NULL;
@@ -249,9 +248,9 @@ IrmoCallback *irmo_world_watch_new(IrmoWorld *world, char *classname,
 	data = find_callback_class(world, classname, NULL);
 
 	if (data == NULL) {
-		irmo_error_report("irmo_world_watch_new",
-                                  "unknown class '%s'", classname);
-		return NULL;
+                irmo_warning_message("irmo_world_watch_new",
+                                     "unknown class '%s'", classname);
+                return NULL;
 	} else {
                 return irmo_class_callback_watch_new(data, func, user_data);
 	}
@@ -277,8 +276,8 @@ IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
 	data = find_callback_class(world, classname, &klass);
 
 	if (data == NULL) {
-		irmo_error_report("irmo_world_watch_class",
-				  "unknown class '%s'", classname);
+                irmo_warning_message("irmo_world_watch_class",
+                                     "unknown class '%s'", classname);
                 return NULL;
 	}
 
@@ -291,9 +290,9 @@ IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
         // specified was not found.
 
         if (callback == NULL) {
-                irmo_error_report("irmo_world_watch_class",
-                                  "unknown variable '%s' in class '%s'",
-                                  variable, classname);
+                irmo_warning_message("irmo_world_watch_class",
+                                     "unknown variable '%s' in class '%s'",
+                                     variable, classname);
 	}
 
 	return callback;
@@ -314,8 +313,8 @@ IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world,
 	data = find_callback_class(world, classname, NULL);
 
 	if (data == NULL) {
-		irmo_error_report("irmo_world_watch_destroy",
-                                  "unknown class '%s'", classname);
+                irmo_warning_message("irmo_world_watch_destroy",
+                                     "unknown class '%s'", classname);
                 return NULL;
 	} else {
 		return irmo_class_callback_watch_destroy(data,

@@ -85,9 +85,11 @@ static void irmo_destroy_atom_run(IrmoDestroyAtom *atom)
 	obj = irmo_world_get_object_for_id(client->world, atom->id);
 
 	if (obj == NULL) {
-		irmo_error_report("client_run_destroy",
-				  "destroy object %i, but object does not exist",
-				  atom->id);
+/*
+		irmo_warning_message("irmo_destroy_atom_run",
+                      "destroy object %i, but object does not exist",
+                      atom->id);
+*/
 		return;
 	}
 

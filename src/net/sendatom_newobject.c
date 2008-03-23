@@ -102,10 +102,12 @@ static void irmo_newobject_atom_run(IrmoNewObjectAtom *atom)
 	// sanity check
 
 	if (irmo_world_get_object_for_id(client->world, atom->id) != NULL) {
-		irmo_error_report("client_run_new",
+/*
+		irmo_warning_message("irmo_newobject_atom_run",
 				  "new object id of %i but an object with "
 				  "that id already exists!",
 				  atom->id);
+*/
 		return;
 	}
 
