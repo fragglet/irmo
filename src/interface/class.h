@@ -21,6 +21,7 @@
 #define IRMO_INTERFACE_CLASS_H
 
 #include <irmo/interface.h>
+#include "binding/binding.h"
 
 // Maximum classes per interface.
 // Limit imposed by the network protocol.
@@ -56,10 +57,26 @@ struct _IrmoClass {
         // Hash table to look up variables by name.
 
 	IrmoHashTable *variable_hash;
+
+        // Type of C structure that objects of this structure are bound to.
+
+        IrmoStruct *structure;
 };
 
 uint32_t irmo_class_hash(IrmoClass *klass);
 void _irmo_class_free(IrmoClass *klass);
+
+/*!
+ * Set default bindings for the specified class (bind to a structure
+ * with the same name as the class, if one exists)
+ *
+ * @param klass           The class.
+ * @return                Non-zero if the class was successfully 
+ *                        bound to a structure, or zero if none
+ *                        exists.
+ */
+
+int irmo_class_get_default_binding(IrmoClass *klass);
 
 #endif /* #ifndef IRMO_INTERFACE_CLASS_H */
 

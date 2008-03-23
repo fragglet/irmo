@@ -46,6 +46,11 @@ struct _IrmoClassVar {
         // Type of value that this variable stores.
 
 	IrmoValueType type;
+
+        // Structure member that this variable is bound to, or 
+        // NULL if it is not bound to any structure member.
+
+        IrmoStructMember *member;
 };
 
 uint32_t irmo_class_var_hash(IrmoClassVar *class_var);

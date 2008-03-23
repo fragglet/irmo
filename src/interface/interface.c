@@ -150,12 +150,60 @@ uint32_t irmo_interface_hash(IrmoInterface *iface)
 
 int irmo_interface_num_classes(IrmoInterface *iface)
 {
+        irmo_return_val_if_fail(iface != NULL, -1);
+
         return iface->nclasses;
 }
 
 int irmo_interface_num_methods(IrmoInterface *iface)
 {
+        irmo_return_val_if_fail(iface != NULL, -1);
+
         return iface->nmethods;
 }
 
+void irmo_interface_bind_class(IrmoInterface *iface, char *class_name,
+                               char *struct_name)
+{
+        IrmoClass *klass;
+
+        irmo_return_if_fail(iface != NULL);
+        irmo_return_if_fail(class_name != NULL);
+        irmo_return_if_fail(struct_name != NULL);
+
+        // Get the class
+
+        klass = irmo_interface_get_class(iface, class_name);
+        irmo_return_if_fail(klass != NULL);
+
+        // Bind
+
+        irmo_class_bind(klass, struct_name);
+}
+
+void irmo_interface_bind_var(IrmoInterface *iface, char *class_name,
+                             char *var_name, char *member_name)
+{
+        IrmoClass *klass;
+        IrmoClassVar *var;
+
+        irmo_return_if_fail(iface != NULL);
+        irmo_return_if_fail(class_name != NULL);
+        irmo_return_if_fail(var_name != NULL);
+        irmo_return_if_fail(member_name != NULL);
+
+        // Get the class
+
+        klass = irmo_interface_get_class(iface, class_name);
+        irmo_return_if_fail(klass != NULL);
+
+        // Get the variable
+
+        var = irmo_class_get_variable(klass, var_name);
+        irmo_return_if_fail(var != NULL);
+
+        // Bind
+
+        irmo_class_var_bind(var, member_name);
+}
 

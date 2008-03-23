@@ -220,3 +220,69 @@ void _irmo_class_free(IrmoClass *klass)
 	free(klass);
 }
 
+// Internal bind-to-struct function.
+
+static void class_bind_struct(IrmoClass *klass, IrmoStruct *structure)
+{
+        IrmoClassVar *var;
+        IrmoStructMember *member;
+        unsigned int i;
+
+        klass->structure = structure;
+
+        // Set variables to defaults (bind classvars to structure
+        // members with the same name)
+
+        for (i=0; i<klass->nvariables; ++i) {
+                var = klass->variables[i];
+                member = irmo_struct_get_member(structure, var->name);
+
+                if (member != NULL) {
+                        irmo_class_var_bind(var, member->name);
+                }
+        }
+}
+
+void irmo_class_bind(IrmoClass *klass, char *struct_name)
+{
+        IrmoStruct *structure;
+
+        irmo_return_if_fail(klass != NULL);
+        irmo_return_if_fail(struct_name != NULL);
+
+        // Get the IrmoStruct with the given name.
+
+        structure = irmo_binding_get_struct(struct_name);
+
+        irmo_return_if_fail(structure != NULL);
+
+        // Bind the class to the structure.
+
+        class_bind_struct(klass, structure);
+}
+
+// Find the default structure to bind to (if there is a C structure that
+// has the same name as the class)
+
+int irmo_class_get_default_binding(IrmoClass *klass)
+{
+        IrmoStruct *structure;
+
+        // Already bound?
+
+        if (klass->structure != NULL) {
+                return 1;
+        }
+
+        // Find a structure with the same name
+
+        structure = irmo_binding_get_struct(klass->name);
+
+        if (structure != NULL) {
+                class_bind_struct(klass, structure);
+                return 1;
+        } else {
+                return 0;
+        }
+}
+

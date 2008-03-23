@@ -88,7 +88,7 @@ void irmo_interface_unref(IrmoInterface *iface);
  */
 
 IrmoClass *irmo_interface_get_class(IrmoInterface *iface, 
-					 char *class_name);
+                                    char *class_name);
 
 /*!
  * Iterate over all classes in an @ref IrmoInterface.
@@ -111,7 +111,7 @@ IrmoIterator *irmo_interface_iterate_classes(IrmoInterface *iface);
  */
 
 IrmoMethod *irmo_interface_get_method(IrmoInterface *iface, 
-					   char *method_name);
+                                      char *method_name);
 
 /*!
  * Return the number of classes in an interface.
@@ -198,6 +198,32 @@ void irmo_interface_dump(IrmoInterface *iface,
 IrmoInterface *irmo_interface_load(void *data,
                                    unsigned int data_len);
 
+/*!
+ * Use the specified type of C structure for binding to objects of
+ * the specified class.
+ *
+ * @param interface     The interface containing the class.
+ * @param class_name    Name of the class.
+ * @param struct_name   Name of the C structure to bind to.  This
+ *                      must have already been mapped out using
+ *                      @ref irmo_map_struct.
+ */
+
+void irmo_interface_bind_class(IrmoInterface *iface, char *class_name,
+                               char *struct_name);
+
+/*!
+ * Bind the specified C structure member to the specified class variable.
+ *
+ * @param interface     The interface containing the class.
+ * @param class_name    Name of the class.
+ * @param var_name      Name of the class variable to bind to.
+ * @param member_name   Name of the C structure member to bind to.
+ */
+
+void irmo_interface_bind_var(IrmoInterface *iface, char *class_name,
+                             char *var_name, char *member_name);
+
 /*! 
  * Get the name of a @ref IrmoClass object.
  */
@@ -275,6 +301,18 @@ IrmoIterator *irmo_class_iterate_variables(IrmoClass *klass,
                                            int include_parent);
 
 /*!
+ * Use the specified type of C structure for binding to objects of
+ * the specified class.
+ *
+ * @param klass         The class.
+ * @param struct_name   Name of the C structure to bind to.  This
+ *                      must have already been mapped out using
+ *                      @ref irmo_map_struct.
+ */
+
+void irmo_class_bind(IrmoClass *klass, char *struct_name);
+
+/*!
  * Get the name of a @ref IrmoClassVar object.
  */
 
@@ -297,6 +335,15 @@ void irmo_class_var_ref(IrmoClassVar *var);
  */
 
 void irmo_class_var_unref(IrmoClassVar *var);
+
+/*!
+ * Bind this class variable to the specified C structure member.
+ *
+ * @param var           The class variable.
+ * @param struct_name   Name of the structure member to bind to.
+ */
+
+void irmo_class_var_bind(IrmoClassVar *var, char *member_name);
 
 /*!
  * Get the name of a @ref IrmoMethod.

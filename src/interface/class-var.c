@@ -89,6 +89,23 @@ IrmoValueType irmo_class_var_get_type(IrmoClassVar *var)
 	return var->type;
 }
 
+void irmo_class_var_bind(IrmoClassVar *var, char *member_name)
+{
+        IrmoStructMember *member;
+
+        irmo_return_if_fail(var != NULL);
+        irmo_return_if_fail(member_name != NULL);
+        irmo_return_if_fail(var->klass->structure != NULL);
+
+        // Find the member with the given name
+
+        member = irmo_struct_get_member(var->klass->structure, member_name);
+
+        irmo_return_if_fail(member != NULL);
+
+        var->member = member;
+}
+
 void irmo_class_var_ref(IrmoClassVar *var)
 {
 	irmo_return_if_fail(var != NULL);
