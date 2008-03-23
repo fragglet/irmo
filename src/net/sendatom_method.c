@@ -127,7 +127,7 @@ static void irmo_method_atom_run(IrmoMethodAtom *atom)
 
 	atom->method_data.src = client;
 	
-	irmo_method_invoke(client->server->world, &atom->method_data);
+	irmo_method_internal_call(client->server->world, &atom->method_data);
 }
 
 static void irmo_method_atom_destroy(IrmoMethodAtom *atom)

@@ -67,26 +67,44 @@ struct _IrmoObject {
         void *user_data;
 };
 
-// internal function create a new object
+/*!
+ * Internal function to create a new object.
+ *
+ * @param world           The world to create the object in.
+ * @param objclass        Class of the new object.
+ * @param id              Object ID to use for the new object.
+ * @return                Pointer to the new object.
+ */
 
 IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 				     IrmoClass *objclass,
 				     IrmoObjectID id);
 
-// internal function to destroy an object. control over whether to
-// call notify routines (call callbacks, forward info to clients)
-// and whether to remove from the world.
+/*!
+ * Internal function to destroy an object.
+ *
+ * @param object          The object to destroy.
+ * @param notify          If non-zero, notify routines are invoked for the
+ *                        destruction of the object (notify connected clients,
+ *                        invoke callbacks, etc).
+ * @param remove          If non-zero, remove the object from the world's list
+ *                        of objects.
+ */
 
 void irmo_object_internal_destroy(IrmoObject *object, int notify,
 				  int remove);
 
 
-// internal function to raise notify functions for when an object
-// is modified. callback functions are called and the change forwarded
-// to connected clients. needs object and index of variable number
-// modified.
+/*!
+ * Internal function to set the value of the specified variable.
+ *
+ * @param object          The object to set.
+ * @param var             The variable to set.
+ * @param value           The new value for the variable.
+ */
 
-void irmo_object_set_raise(IrmoObject *object, int variable);
+void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *var,
+                              IrmoValue *value);
 
 #endif /* #ifndef IRMO_WORLD_OBJECT_H */
 

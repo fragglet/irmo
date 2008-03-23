@@ -70,7 +70,9 @@ static void invoke_method_callbacks(IrmoCallbackList *list,
         irmo_slist_iter_free(iter);
 }
 
-void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
+// Sanity check a collection of method data.
+
+static int irmo_method_data_check(IrmoMethodData *data)
 {
 	unsigned int i;
 	
@@ -82,21 +84,28 @@ void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data)
 
 		switch (arg->type) {
 		case IRMO_TYPE_INT8:
-			irmo_return_if_fail(value->i <= 0xff);
+			irmo_return_val_if_fail(value->i <= 0xff, 0);
 			break;
 		case IRMO_TYPE_INT16:
-			irmo_return_if_fail(value->i <= 0xffff);
+			irmo_return_val_if_fail(value->i <= 0xffff, 0);
 			break;
 		case IRMO_TYPE_INT32:
 			break;
 		case IRMO_TYPE_STRING:
-			irmo_return_if_fail(value->s != NULL);
+			irmo_return_val_if_fail(value->s != NULL, 0);
 			break;
                 default:
-                        irmo_return_if_fail(0);
+                        irmo_return_val_if_fail(0, 0);
 		}
 	}
 	
+        // Success!
+
+        return 1;
+}
+
+void irmo_method_internal_call(IrmoWorld *world, IrmoMethodData *data)
+{
 	// send to source
 
 	if (world->remote) {
@@ -157,7 +166,9 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 	method_data.args = args;
 	method_data.src = NULL;
 
-	irmo_method_invoke(world, &method_data);
+        if (irmo_method_data_check(&method_data)) {
+                irmo_method_internal_call(world, &method_data);
+        }
 
 	free(args);
 }
@@ -177,7 +188,9 @@ void irmo_world_method_call2(IrmoWorld *world,
 	method_data.args = arguments;
 	method_data.src = NULL;
 
-	irmo_method_invoke(world, &method_data);
+        if (irmo_method_data_check(&method_data)) {
+                irmo_method_internal_call(world, &method_data);
+        }
 }
 
 

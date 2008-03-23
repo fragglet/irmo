@@ -234,7 +234,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 void irmo_object_destroy(IrmoObject *object)
 {
 	irmo_return_if_fail(object != NULL);
-	irmo_return_if_fail(object->world->remote == 0);
+	irmo_return_if_fail(!object->world->remote);
 	
 	// destroy object
 	// notify callbacks and remove from world
@@ -278,7 +278,7 @@ static void object_set_notify_foreach(IrmoClient *client,
 
 // call callback functions and notify clients when a variable is changed
 
-void irmo_object_set_raise(IrmoObject *object, int variable)
+static void irmo_object_set_raise(IrmoObject *object, int variable)
 {
 	IrmoClass *objclass = object->objclass;
 	IrmoClassVar *var = objclass->variables[variable];
@@ -302,19 +302,10 @@ void irmo_object_set_raise(IrmoObject *object, int variable)
 		       &data);
 }
 
-void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
-                     IrmoValue *value)
+void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *variable,
+                              IrmoValue *value)
 {
         IrmoValue *obj_value;
-
-	irmo_return_if_fail(object != NULL);
-	irmo_return_if_fail(variable != NULL);
-	irmo_return_if_fail(value != NULL);
-	irmo_return_if_fail(!object->world->remote);
-
-        // Object must be of the right class
-
-        irmo_return_if_fail(irmo_object_is_a2(object, variable->klass));
 
 	obj_value = &object->variables[variable->index];
 
@@ -343,6 +334,23 @@ void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
         }
 
 	irmo_object_set_raise(object, variable->index);
+}
+
+void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
+                     IrmoValue *value)
+{
+	irmo_return_if_fail(object != NULL);
+	irmo_return_if_fail(variable != NULL);
+	irmo_return_if_fail(value != NULL);
+	irmo_return_if_fail(!object->world->remote);
+
+        // Object must be of the right class
+
+        irmo_return_if_fail(irmo_object_is_a2(object, variable->klass));
+
+        // Set the value
+
+        irmo_object_internal_set(object, variable, value);
 }
 
 

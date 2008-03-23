@@ -42,9 +42,14 @@ struct _IrmoMethodData {
 	IrmoValue *args;
 };
 
-// internal method invocation
+/*!
+ * Internal function to invoke a method.
+ *
+ * @param world               The world on which to invoke the method.
+ * @param data                Method data (method arguments).
+ */
 
-void irmo_method_invoke(IrmoWorld *world, IrmoMethodData *data);
+void irmo_method_internal_call(IrmoWorld *world, IrmoMethodData *data);
 
 #endif /* #ifndef IRMO_WORLD_METHOD_H */
 

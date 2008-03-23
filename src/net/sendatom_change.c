@@ -294,13 +294,13 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 	
 	for (i=0; i<obj->objclass->nvariables; ++i) {
 
-		// not changed?
+		// Not changed?
 		
 		if (!atom->changed[i]) {
 			continue;
                 }
 
-		// check if a newer change to this atom has been run
+		// Check if a newer change to this atom has been run
 		// do not apply older changes
 		// dont run the same atom twice (could conceivably
 		// happen with resends)
@@ -309,23 +309,10 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 			continue;
                 }
 		
-		// apply change
+                // Set the new value
 
-		switch (objclass->variables[i]->type) {
-		case IRMO_TYPE_INT8:
-		case IRMO_TYPE_INT16:
-		case IRMO_TYPE_INT32:
-			obj->variables[i].i = newvalues[i].i;
-			break;
-		case IRMO_TYPE_STRING:
-			free(obj->variables[i].s);
-			obj->variables[i].s = strdup(newvalues[i].s);
-			break;
-                default:
-                        irmo_bug();
-		}
-
-		irmo_object_set_raise(obj, i);
+                irmo_object_internal_set(obj, objclass->variables[i],
+                                         &newvalues[i]);
 
 		obj->variable_time[i] = seq;
 	}
