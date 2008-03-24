@@ -37,10 +37,24 @@ struct _IrmoCallback {
 	IrmoCallbackList destroy_callbacks;
 };
 
-// generalised callback list functions
+/*!
+ * Add a callback function to a list of callback functions.
+ *
+ * @param list          Pointer to the list of callback functions.
+ * @param func          Pointer to the callback function to invoke.
+ * @param user_data     Extra data to pass to the callback function when
+ *                      it is invoked.
+ */
 
 IrmoCallback *irmo_callback_list_add(IrmoCallbackList *list,
                                      void *func, void *user_data);
+
+/*!
+ * Free a list of callback functions.
+ *
+ * @param list          Pointer to the list of callback functions.
+ */
+
 void irmo_callback_list_free(IrmoCallbackList *list);
 
 #endif /* #ifndef IRMO_BASE_CALLBACK_H */

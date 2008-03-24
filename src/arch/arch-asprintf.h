@@ -22,19 +22,28 @@
 
 #include <stdarg.h>
 
-// 
-// Printf to string, allocating the string automatically to the size 
-// needed.
-//
+/*!
+ * Printf to string, allocating the string automatically to the size 
+ * needed.
+ *
+ * @param format            Format string (normal printf-style).
+ * @return                  Pointer to a newly-allocated string containing
+ *                          the expanded format string.
+ */
 
 char *irmo_asprintf(char *format, ...);
 
-//
-// Printf to string, as irmo_asprintf, taking a varargs list.
-//
+/*!
+ * Printf to a string, allocating the string automatically to the size
+ * needed, using a varargs list.
+ *
+ * @param format            Format string (normal printf-style).
+ * @param args              List of arguments.
+ * @return                  Pointer to a newly-allocated string containing
+ *                          the expanded format string.
+ */
 
 char *irmo_vasprintf(char *format, va_list args);
-
 
 #endif /* #ifndef IRMO_ARCH_ASPRINTF_H */
 

@@ -20,8 +20,14 @@
 #ifndef IRMO_ARCH_TIME_H
 #define IRMO_ARCH_TIME_H
 
-// retrieve the current time (in ms)
-// time starts from the first time this function is called
+/*!
+ * Retrieve the current time, in milliseconds.
+ *
+ * Time is measured from the first time this function is called.
+ *
+ * @return             Number of milliseconds since the function was first
+ *                     called.
+ */
 
 unsigned int irmo_get_time(void);
 
