@@ -192,8 +192,7 @@ static void server_run_synack(IrmoServer *server,
 			// mark this as a remote world
 			
 			client->world->remote = 1;
-
-			client->world->remote_client = client;
+			client->world->source_connection = client;
 		}
 
 		// if we are serving a world to the client,

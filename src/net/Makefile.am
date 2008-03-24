@@ -15,6 +15,7 @@ libirmonet_la_SOURCES=                                      \
        proto_build.c                                        \
        proto_verify.c                                       \
        server.c               server.h                      \
+       server-world.c         server-world.h                \
        server-lowlevel.c                                    \
        sendatom.c             sendatom.h                    \
        sendatom_sendwindow.c                                \

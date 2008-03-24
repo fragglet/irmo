@@ -21,6 +21,8 @@
 #include "base/alloc.h"
 #include "base/assert.h"
 
+#include "net/server-world.h"
+
 #include "method.h"
 #include "world.h"
 
@@ -109,8 +111,7 @@ void irmo_method_internal_call(IrmoWorld *world, IrmoMethodData *data)
 	// send to source
 
 	if (world->remote) {
-		irmo_client_sendq_add_method(world->remote_client,
-					     data);
+                irmo_connection_method_call(world->source_connection, data);
 	}
 	
 	// invoke callback functions

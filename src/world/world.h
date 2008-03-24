@@ -26,7 +26,6 @@
 
 #include <irmo/world.h>
 
-#include "net/client.h"
 #include "interface/interface.h"
 
 #include "class-callback-data.h"
@@ -78,10 +77,10 @@ struct _IrmoWorld {
 	
 	int remote;
 
-	// if this is remote, this is the client from which we are
-	// getting the world state
+        // If this world is being served from a remote server, this
+        // is the connection serving the world.
 
-	IrmoClient *remote_client;
+        IrmoConnection *source_connection;
 
 	// method callbacks
 

@@ -26,51 +26,12 @@
 #include "base/assert.h"
 #include "base/error.h"
 
-#include "net/client.h"
-#include "net/sendatom.h"
+#include "net/server-world.h"
 
 #include "object.h"
 #include "world.h"
 
-// do something for all connected clients
-
-typedef void (*ClientCallback) (IrmoClient *client, void *user_data);
-
-static void server_foreach_client(IrmoServer *server,
-                                  ClientCallback func,
-                                  void *user_data)
-{
-        IrmoHashTableIterator *iter;
-        IrmoClient *client;
-
-        iter = irmo_hash_table_iterate(server->clients);
-
-        while (irmo_hash_table_iter_has_more(iter)) {
-                client = irmo_hash_table_iter_next(iter);
-
-                // Ignore clients that are not fully connected
-
-                if (client->state == CLIENT_CONNECTED) {
-                        func(client, user_data);
-                }
-        }
-
-        irmo_hash_table_iter_free(iter);
-}
-
-static void foreach_client(IrmoWorld *world,
-			   ClientCallback func,
-                           void *user_data)
-{
-	int i;
-
-	for (i=0; i<world->servers->length; ++i) {
-		IrmoServer *server
-			= (IrmoServer *) world->servers->data[i];
-
-                server_foreach_client(server, func, user_data);
-	}
-}		   
+// Get the next free object ID for the specified world.
 
 static int get_free_id(IrmoWorld *world)
 {
@@ -100,7 +61,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 				     IrmoObjectID id)
 {
 	IrmoObject *object;
-	unsigned int i;
+        unsigned int i;
 
 	// make object
 	
@@ -134,10 +95,11 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	irmo_class_callback_raise_new(&world->callbacks[objclass->index],
                                       object);
 
-	// notify attached clients
+	// Notify servers attached to this world of the new object.
 
-	foreach_client(world,
-		       (ClientCallback) irmo_client_sendq_add_new, object);
+        for (i=0; i<(unsigned)world->servers->length; ++i) {
+                irmo_server_object_new(world->servers->data[i], object);
+        }
 
 	// if a remote world, create variable_time array
 
@@ -185,6 +147,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 				  int notify,
 				  int remove)
 {
+        IrmoWorld *world;
         ClassCallbackData *class_data;
 	unsigned int i;
 
@@ -198,9 +161,12 @@ void irmo_object_internal_destroy(IrmoObject *object,
 		
 		// notify connected clients
 		
-		foreach_client(object->world,
-			       (ClientCallback) irmo_client_sendq_add_destroy,
-			       object);
+                world = object->world;
+
+                for (i=0; i<(unsigned)world->servers->length; ++i) {
+                        irmo_server_object_destroyed(world->servers->data[i],
+                                                     object);
+                }
 	}	
 
 	// remove from world
@@ -213,8 +179,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 	// destroy member variables
 
 	for (i=0; i<object->objclass->nvariables; ++i) {
-		if (object->objclass->variables[i]->type == IRMO_TYPE_STRING
-		 && object->variables[i].s) {
+		if (object->objclass->variables[i]->type == IRMO_TYPE_STRING) {
 			free(object->variables[i].s);
                 }
 	}
@@ -224,9 +189,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 
 	// free variable time array
 
-	if (object->variable_time != NULL) {
-		free(object->variable_time);
-	}
+        free(object->variable_time);
 
 	// done
 	
@@ -265,30 +228,14 @@ IrmoClass *irmo_object_get_class_obj(IrmoObject *object)
 	return object->objclass;
 }
 
-// notify connected clients of changes
-
-struct set_notify_data {
-	IrmoObject *object;
-	int variable;
-};
-
-static void object_set_notify_foreach(IrmoClient *client,
-				      struct set_notify_data *data)
-{
-	irmo_client_sendq_add_change(client, data->object, data->variable);
-}
-
 // call callback functions and notify clients when a variable is changed
 
-static void irmo_object_set_raise(IrmoObject *object, int variable)
+static void irmo_object_set_raise(IrmoObject *object, IrmoClassVar *var)
 {
 	IrmoClass *objclass = object->objclass;
-	IrmoClassVar *var = objclass->variables[variable];
+        IrmoWorld *world;
         ClassCallbackData *class_data;
-	struct set_notify_data data = {
-		object,
-		variable,
-	};
+        unsigned int i;
 
 	// call callback functions for change
 
@@ -299,9 +246,12 @@ static void irmo_object_set_raise(IrmoObject *object, int variable)
 
 	// notify clients
 
-	foreach_client(object->world,
-		       (ClientCallback) object_set_notify_foreach,
-		       &data);
+        world = object->world;
+
+        for (i=0; i<(unsigned)world->servers->length; ++i) {
+                irmo_server_object_changed(world->servers->data[i],
+                                           object, var);
+        }
 }
 
 void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *variable,
@@ -333,7 +283,7 @@ void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *variable,
                 irmo_bug();
         }
 
-	irmo_object_set_raise(object, variable->index);
+	irmo_object_set_raise(object, variable);
 }
 
 void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,

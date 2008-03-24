@@ -109,10 +109,14 @@ void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 }
 
 void irmo_client_sendq_add_change(IrmoClient *client,
-				  IrmoObject *object, int variable)
+				  IrmoObject *object,
+                                  IrmoClassVar *var)
 {
 	IrmoChangeAtom *atom;
+        unsigned int var_index;
 	unsigned int i;
+
+        var_index = var->index;
 	
 	// search the send window and nullify this variable if there
 	// is an existing change for it waiting to be acked
@@ -127,12 +131,12 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 
 		atom = (IrmoChangeAtom *) client->sendwindow[i];
 
-		if (atom->object == object && atom->changed[variable]) {
+		if (atom->object == object && atom->changed[var_index]) {
 
 			// unset the change in the atom. update
 			// change count
 			
-			atom->changed[variable] = 0;
+			atom->changed[var_index] = 0;
 			--atom->nchanged;
 
 			// if there are no more changes, replace the atom
@@ -169,8 +173,8 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 
 	// set the change in the atom and update the change count
 
-	if (!atom->changed[variable]) {
-		atom->changed[variable] = 1;
+	if (!atom->changed[var_index]) {
+		atom->changed[var_index] = 1;
 		++atom->nchanged;
 	}
 	
@@ -277,6 +281,7 @@ void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max)
 void irmo_client_sendq_add_state(IrmoClient *client)
 {
         IrmoIterator *iter;
+        IrmoClassVar *var;
         IrmoObject *object;
         unsigned int i;
 
@@ -305,7 +310,8 @@ void irmo_client_sendq_add_state(IrmoClient *client)
                 // Add change for all variables in this object.
 
                 for (i=0; i<object->objclass->nvariables; ++i) {
-                        irmo_client_sendq_add_change(client, object, i);
+                        var = object->objclass->variables[i];
+                        irmo_client_sendq_add_change(client, object, var);
                 }
         }
 
