@@ -21,6 +21,8 @@
 
 #include <irmo/packet.h>
 
+#include "client.h"
+#include "client_sendq.h"
 #include "protocol.h"
 #include "sendatom.h"
 

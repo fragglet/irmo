@@ -260,21 +260,6 @@ void irmo_sendatom_free(IrmoSendAtom *atom);
 
 void irmo_sendatom_nullify(IrmoSendAtom *atom);
 
-// Create a new sendatom and add to a client's sendqueue
-
-void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object);
-void irmo_client_sendq_add_change(IrmoClient *client, IrmoObject *object, 
-                                  IrmoClassVar *var);
-void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object);
-void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data);
-void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max);
-
-IrmoSendAtom *irmo_client_sendq_pop(IrmoClient *client);
-
-// send entire world state
-
-void irmo_client_sendq_add_state(IrmoClient *client);
-
 // atom classes
 
 extern IrmoSendAtomClass irmo_null_atom;

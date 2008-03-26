@@ -27,6 +27,8 @@
 
 #include <irmo/packet.h>
 
+#include "client.h"
+#include "client_sendq.h"
 #include "connection.h"
 #include "protocol.h"
 

@@ -18,7 +18,9 @@
 //
 
 #include "arch/sysheaders.h"
+
 #include "sendatom.h"
+#include "client_sendq.h"
 #include "server-world.h"
 
 // Called when the world being served creates a new object.
