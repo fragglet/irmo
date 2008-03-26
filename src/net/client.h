@@ -67,7 +67,7 @@ struct _IrmoClient {
 	// protocol stuff (internal)
 
 	// time last syn/synack was sent
-	time_t connect_time;
+	unsigned int connect_time;
 	int connect_attempts;
 
 	// when a client remotely disconnects, keep the client object

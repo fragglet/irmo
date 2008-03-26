@@ -261,7 +261,7 @@ static void server_run_synfin(IrmoServer *server,
 
 	if (client->state == CLIENT_CONNECTED) {
 		client->state = CLIENT_DISCONNECTED;
-		client->connect_time = time(NULL);
+		client->connect_time = irmo_get_time();
 		client->disconnect_wait = 1;
 
 		irmo_client_callback_raise(&client->disconnect_callbacks,
@@ -393,7 +393,7 @@ static void server_run_clients(IrmoServer *server)
                 // we wait a while before destroying the object
                 
                 if (client->disconnect_wait
-                    && time(NULL) - client->connect_time < 10) {
+                    && irmo_get_time() - client->connect_time < 10 * 1000) {
                         continue;
                 }
                 

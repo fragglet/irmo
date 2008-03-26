@@ -32,7 +32,7 @@
 // on connect
 
 #define CLIENT_CONNECT_ATTEMPTS 6
-#define CLIENT_SYN_INTERVAL 1
+#define CLIENT_SYN_INTERVAL 1000
 
 // create a new client (used internally)
 
@@ -180,7 +180,9 @@ void irmo_client_unref(IrmoClient *client)
 static void client_run_connecting(IrmoClient *client)
 {
 	IrmoPacket *packet;
-	time_t nowtime = time(NULL);
+	unsigned int nowtime;
+
+        nowtime = irmo_get_time();
 
 	if (nowtime >= client->connect_time + CLIENT_SYN_INTERVAL) {
 
@@ -249,7 +251,9 @@ static void client_run_connecting(IrmoClient *client)
 static void client_run_disconnecting(IrmoClient *client)
 {
 	IrmoPacket *packet;
-	time_t nowtime = time(NULL);
+	unsigned int nowtime;
+
+        nowtime = irmo_get_time();
 
 	if (nowtime >= client->connect_time + CLIENT_SYN_INTERVAL) {
 
