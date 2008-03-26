@@ -244,9 +244,21 @@ struct _IrmoMethodAtom {
 	IrmoMethodData method_data;
 };
 
-// Free a sendatom.
+/*!
+ * Free a send atom.
+ *
+ * @param atom          The atom to free.
+ */
 
 void irmo_sendatom_free(IrmoSendAtom *atom);
+
+/*!
+ * Nullify a send atom (replace it with a null atom).
+ *
+ * @param atom          The atom to nullify.
+ */
+
+void irmo_sendatom_nullify(IrmoSendAtom *atom);
 
 // Create a new sendatom and add to a client's sendqueue
 

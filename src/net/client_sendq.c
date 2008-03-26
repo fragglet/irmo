@@ -77,24 +77,6 @@ void irmo_client_sendq_push(IrmoClient *client, IrmoSendAtom *atom)
 	irmo_queue_push_tail(client->sendq, atom);
 }
 
-void irmo_sendatom_free(IrmoSendAtom *atom)
-{
-	if (atom->klass->destructor != NULL) {
-		atom->klass->destructor(atom);
-        }
-
-	free(atom);
-}
-
-static void irmo_sendatom_nullify(IrmoSendAtom *atom)
-{
-	if (atom->klass->destructor != NULL) {
-		atom->klass->destructor(atom);
-        }
-
-	atom->klass = &irmo_null_atom;
-}
-
 void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 {
 	IrmoNewObjectAtom *atom;

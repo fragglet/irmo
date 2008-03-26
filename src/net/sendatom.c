@@ -30,3 +30,21 @@ IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
 	&irmo_sendwindow_atom,
 };
 
+void irmo_sendatom_free(IrmoSendAtom *atom)
+{
+	if (atom->klass->destructor != NULL) {
+		atom->klass->destructor(atom);
+        }
+
+	free(atom);
+}
+
+void irmo_sendatom_nullify(IrmoSendAtom *atom)
+{
+	if (atom->klass->destructor != NULL) {
+		atom->klass->destructor(atom);
+        }
+
+	atom->klass = &irmo_null_atom;
+}
+
