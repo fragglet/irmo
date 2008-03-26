@@ -301,7 +301,7 @@ int irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value,
 void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 			     IrmoValueType type)
 {
-        irmo_return_val_if_fail(packet != NULL, 0);
+        irmo_return_if_fail(packet != NULL);
 
 	switch (type) {
 	case IRMO_TYPE_INT8:
