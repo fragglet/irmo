@@ -130,6 +130,8 @@ uint32_t irmo_interface_hash(IrmoInterface *iface)
 	uint32_t hash = 0;
 	unsigned int i;
 
+        irmo_return_val_if_fail(iface != NULL, 0);
+
 	for (i=0; i<iface->nclasses; ++i) {
 		hash = irmo_rotate_int(hash)
                      ^ irmo_class_hash(iface->classes[i]);

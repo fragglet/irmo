@@ -497,11 +497,15 @@ unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
 
 void irmo_object_set_data(IrmoObject *object, void *value)
 {
+        irmo_return_if_fail(object != NULL);
+
         object->user_data = value;
 }
 
 void *irmo_object_get_data(IrmoObject *object)
 {
+        irmo_return_val_if_fail(object != NULL, NULL);
+
         return object->user_data;
 }
 

@@ -48,6 +48,8 @@ IrmoInterface *irmo_interface_parse_from_file(char *filename)
 	FILE *instream;
 	IrmoInterface *result;
 
+        irmo_return_val_if_fail(filename != NULL, NULL);
+
 	instream = fopen(filename, "r");
 
         if (instream == NULL) {

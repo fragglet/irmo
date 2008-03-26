@@ -475,6 +475,10 @@ void irmo_interface_dump(IrmoInterface *iface,
 {
         IrmoPacket *packet;
 
+        irmo_return_if_fail(iface != NULL);
+        irmo_return_if_fail(data != NULL);
+        irmo_return_if_fail(data_len != NULL);
+
         packet = irmo_packet_new();
         write_header(packet);
         write_classes(iface, packet);
@@ -494,6 +498,9 @@ IrmoInterface *irmo_interface_load(void *data,
         IrmoPacket *packet;
         IrmoInterface *iface;
         int success;
+
+        irmo_return_val_if_fail(data != NULL, NULL);
+        irmo_return_val_if_fail(data_len > 0, NULL);
 
         // Create a new interface, and a packet to read the blob with.
 

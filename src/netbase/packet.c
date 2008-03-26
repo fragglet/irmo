@@ -62,6 +62,8 @@ IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
 {
         IrmoPacket *packet;
 
+        irmo_return_val_if_fail(data != NULL, NULL);
+
         packet = irmo_new0(IrmoPacket, 1);
 
         packet->data = data;
@@ -75,9 +77,12 @@ IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
 
 void irmo_packet_free(IrmoPacket *packet)
 {
+        irmo_return_if_fail(packet != NULL);
+
         if (packet->data_owned) {
 	        free(packet->data);
         }
+
 	free(packet);
 }
 
@@ -97,6 +102,7 @@ static void irmo_packet_update_len(IrmoPacket *packet)
 
 int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
         irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + 1 > packet->data_size)
@@ -111,6 +117,7 @@ int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
         irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + 2 > packet->data_size) {
@@ -127,6 +134,7 @@ int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
         irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + 4 > packet->data_size) {
@@ -145,6 +153,7 @@ int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 
 int irmo_packet_writestring(IrmoPacket *packet, char *s)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
         irmo_return_val_if_fail(packet->data_owned, 0);
 
 	if (packet->pos + strlen(s) + 1 > packet->data_size) {
@@ -161,6 +170,8 @@ int irmo_packet_writestring(IrmoPacket *packet, char *s)
 
 int irmo_packet_readi8(IrmoPacket *packet, unsigned int *i)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
+
 	if (packet->pos + 1 > packet->len) {
 		return 0;
         }
@@ -178,6 +189,8 @@ int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 {
 	uint8_t *data;
 	
+        irmo_return_val_if_fail(packet != NULL, 0);
+
 	if (packet->pos + 2 > packet->len) {
 		return 0;
         }
@@ -196,6 +209,8 @@ int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i)
 {
 	uint8_t *data;
+
+        irmo_return_val_if_fail(packet != NULL, 0);
 
 	if (packet->pos + 4 > packet->len) {
 		return 0;
@@ -217,6 +232,8 @@ char *irmo_packet_readstring(IrmoPacket *packet)
 {
 	uint8_t *start = packet->data + packet->pos;
 
+        irmo_return_val_if_fail(packet != NULL, NULL);
+
 	for (; packet->pos < packet->len; ++packet->pos) {
 		if (packet->data[packet->pos] == '\0') {
 			// skip past the terminating 0
@@ -235,6 +252,8 @@ char *irmo_packet_readstring(IrmoPacket *packet)
 int irmo_packet_verify_value(IrmoPacket *packet,
                              IrmoValueType type)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
+
 	switch (type) {
 	case IRMO_TYPE_INT8:
 		return irmo_packet_readi8(packet, NULL);
@@ -254,6 +273,8 @@ int irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value,
                            IrmoValueType type)
 {
         char *strvalue;
+
+        irmo_return_val_if_fail(packet != NULL, 0);
 
 	switch (type) {
 	case IRMO_TYPE_INT8:
@@ -280,6 +301,8 @@ int irmo_packet_read_value(IrmoPacket *packet, IrmoValue *value,
 void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 			     IrmoValueType type)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
+
 	switch (type) {
 	case IRMO_TYPE_INT8:
 		irmo_packet_writei8(packet, value->i);
@@ -300,21 +323,28 @@ void irmo_packet_write_value(IrmoPacket *packet, IrmoValue *value,
 
 unsigned char *irmo_packet_get_buffer(IrmoPacket *packet)
 {
+        irmo_return_val_if_fail(packet != NULL, NULL);
+
         return packet->data;
 }
 
 unsigned int irmo_packet_get_length(IrmoPacket *packet)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
+
         return packet->len;
 }
 
 unsigned int irmo_packet_get_position(IrmoPacket *packet)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
+
         return packet->pos;
 }
 
 int irmo_packet_set_position(IrmoPacket *packet, unsigned int pos)
 {
+        irmo_return_val_if_fail(packet != NULL, 0);
         irmo_return_val_if_fail(pos <= packet->len, 0);
 
         packet->pos = pos;
