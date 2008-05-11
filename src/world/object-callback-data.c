@@ -34,21 +34,19 @@
 void irmo_obj_callbacks_invoke(IrmoCallbackList *list,
                                IrmoObject *object)
 {
-        IrmoSListIterator *iter;
+        IrmoSListIterator iter;
         IrmoCallback *callback;
 	IrmoObjCallback func;
 
-        iter = irmo_slist_iterate(list);
+        irmo_slist_iterate(list, &iter);
 
-        while (irmo_slist_iter_has_more(iter)) {
+        while (irmo_slist_iter_has_more(&iter)) {
 
-                callback = irmo_slist_iter_next(iter);
+                callback = irmo_slist_iter_next(&iter);
 
                 func = (IrmoObjCallback) callback->func;
                 func(object, callback->user_data);
         }
-
-        irmo_slist_iter_free(iter);
 }
 
 // Go through a list of IrmoVarCallback callback functions and invoke
@@ -58,20 +56,18 @@ static void irmo_var_callbacks_invoke(IrmoCallbackList *list,
                                       IrmoObject *obj,
                                       char *variable)
 {
-        IrmoSListIterator *iter;
+        IrmoSListIterator iter;
         IrmoCallback *callback;
 	IrmoVarCallback func;
 
-        iter = irmo_slist_iterate(list);
+        irmo_slist_iterate(list, &iter);
 
-        while (irmo_slist_iter_has_more(iter)) {
-                callback = irmo_slist_iter_next(iter);
+        while (irmo_slist_iter_has_more(&iter)) {
+                callback = irmo_slist_iter_next(&iter);
 
                 func = (IrmoVarCallback) callback->func;
                 func(obj, variable, callback->user_data);
         }
-
-        irmo_slist_iter_free(iter);
 }
 
 // Initialise an ObjectCallbackData structure.

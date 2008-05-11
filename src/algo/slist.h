@@ -97,6 +97,16 @@ typedef struct _IrmoSListIterator IrmoSListIterator;
 typedef void *IrmoSListValue;
 
 /**
+ * Definition of a @ref IrmoSListIterator.
+ */
+
+struct _IrmoSListIterator {
+	IrmoSListEntry **list;
+	IrmoSListEntry **prev_next;
+	IrmoSListEntry *current;
+};
+
+/**
  * A null @ref IrmoSListValue.
  */
 
@@ -260,15 +270,14 @@ IrmoSListEntry *irmo_slist_find_data(IrmoSListEntry *list,
                             IrmoSListValue data);
 
 /** 
- * Create a new @ref IrmoSListIterator structure to iterate over a list.
- * The iterator should be freed once iterating has completed, using
- * the function @ref list_iter_free.
+ * Initialise a @ref IrmoSListIterator structure to iterate over a list.
  *
  * @param list           Pointer to the list to iterate over.
- * @return               A new @ref IrmoSListIterator.
+ * @param iter           Pointer to a @ref IrmoSListIterator structure to
+ *                       initialise.
  */
 
-IrmoSListIterator *irmo_slist_iterate(IrmoSListEntry **list);
+void irmo_slist_iterate(IrmoSListEntry **list, IrmoSListIterator *iter);
 
 /**
  * Determine if there are more values in the list to iterate over.  When
@@ -301,14 +310,6 @@ IrmoSListValue irmo_slist_iter_next(IrmoSListIterator *iterator);
  */
 
 void irmo_slist_iter_remove(IrmoSListIterator *iterator);
-
-/**
- * Free back a list iterator.
- *
- * @param iterator       The list iterator.
- */
-
-void irmo_slist_iter_free(IrmoSListIterator *iterator);
 
 #endif /* #ifndef IRMO_ALGO_SLIST_H */
 

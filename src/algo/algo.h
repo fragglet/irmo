@@ -25,7 +25,7 @@
 #include "compare-string.h"
 #include "hash-pointer.h"
 #include "hash-string.h"
-#include "hashtable.h"
+#include "hash-table.h"
 #include "queue.h"
 #include "slist.h"
 

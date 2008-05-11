@@ -370,16 +370,16 @@ static void server_run_packet(IrmoServer *server,
 
 static void server_run_clients(IrmoServer *server)
 {
-        IrmoHashTableIterator *iter;
+        IrmoHashTableIterator iter;
         IrmoClient *client;
 
         // Iterate over all clients
 
-        iter = irmo_hash_table_iterate(server->clients);
+        irmo_hash_table_iterate(server->clients, &iter);
 
-        while (irmo_hash_table_iter_has_more(iter)) {
+        while (irmo_hash_table_iter_has_more(&iter)) {
 
-                client = irmo_hash_table_iter_next(iter);
+                client = irmo_hash_table_iter_next(&iter);
 
                 // Run the client
 
@@ -406,8 +406,6 @@ static void server_run_clients(IrmoServer *server)
 
                 irmo_client_internal_unref(client);
         }
-
-        irmo_hash_table_iter_free(iter);
 }
 
 void irmo_server_run(IrmoServer *server)

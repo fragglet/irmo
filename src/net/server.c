@@ -89,13 +89,13 @@ void irmo_server_ref(IrmoServer *server)
 
 static void irmo_server_remove_all_clients(IrmoServer *server)
 {
-        IrmoHashTableIterator *iter;
+        IrmoHashTableIterator iter;
         IrmoClient *client;
 
-        iter = irmo_hash_table_iterate(server->clients);
+        irmo_hash_table_iterate(server->clients, &iter);
 
-        while (irmo_hash_table_iter_has_more(iter)) {
-                client = irmo_hash_table_iter_next(iter);
+        while (irmo_hash_table_iter_has_more(&iter)) {
+                client = irmo_hash_table_iter_next(&iter);
 
                 // Remove this client from the hash table and destroy it.
 
@@ -103,8 +103,6 @@ static void irmo_server_remove_all_clients(IrmoServer *server)
 
                 irmo_client_internal_unref(client);
         }
-
-        irmo_hash_table_iter_free(iter);
 }
 
 static void irmo_server_internal_shutdown(IrmoServer *server)
@@ -177,22 +175,20 @@ IrmoCallback *irmo_server_watch_connect(IrmoServer *server,
 
 void irmo_client_callback_raise(IrmoCallbackList *list, IrmoClient *client)
 {
-        IrmoSListIterator *iter;
+        IrmoSListIterator iter;
         IrmoClientCallback func;
         IrmoCallback *callback;
 
         // Invoke all callbacks
 
-        iter = irmo_slist_iterate(list);
+        irmo_slist_iterate(list, &iter);
 
-        while (irmo_slist_iter_has_more(iter)) {
-                callback = irmo_slist_iter_next(iter);
+        while (irmo_slist_iter_has_more(&iter)) {
+                callback = irmo_slist_iter_next(&iter);
 
                 func = (IrmoClientCallback) callback->func;
                 func(client, callback->user_data);
         }
-
-        irmo_slist_iter_free(iter);
 }
 
 void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client)
@@ -209,19 +205,17 @@ IrmoIterator *irmo_server_iterate_clients(IrmoServer *server)
 
 static void server_disconnect_all_clients(IrmoServer *server)
 {
-        IrmoHashTableIterator *iter;
+        IrmoHashTableIterator iter;
         IrmoClient *client;
 
-        iter = irmo_hash_table_iterate(server->clients);
+        irmo_hash_table_iterate(server->clients, &iter);
 
-        while (irmo_hash_table_iter_has_more(iter)) {
+        while (irmo_hash_table_iter_has_more(&iter)) {
 
-                client = irmo_hash_table_iter_next(iter);
+                client = irmo_hash_table_iter_next(&iter);
 
                 irmo_client_disconnect(client);
         }
-
-        irmo_hash_table_iter_free(iter);
 }
 
 void irmo_server_shutdown(IrmoServer *server)

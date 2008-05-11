@@ -38,9 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#include "hashtable.h"
-
-typedef struct _IrmoHashTableEntry IrmoHashTableEntry;
+#include "hash-table.h"
 
 struct _IrmoHashTableEntry {
 	IrmoHashTableKey key;
@@ -59,13 +57,6 @@ struct _IrmoHashTable {
 	int prime_index;
 };
 
-struct _IrmoHashTableIterator {
-	IrmoHashTable *hashtable;
-	IrmoHashTableEntry *current_entry;
-	IrmoHashTableEntry *next_entry;
-	int next_chain;
-};
-
 /* This is a set of good hash table prime numbers, from:
  *   http://planetmath.org/encyclopedia/GoodIrmoHashTablePrimes.html
  * Each prime is roughly double the previous value, and as far as
@@ -81,45 +72,49 @@ static const unsigned int irmo_hash_table_primes[] = {
 static const int irmo_hash_table_num_primes 
 	= sizeof(irmo_hash_table_primes) / sizeof(int);
 
-/* Internal function used to allocate the table on hashtable creation
+/* Internal function used to allocate the table on hash table creation
  * and when enlarging the table */
 
-static int irmo_hash_table_allocate_table(IrmoHashTable *hashtable)
+static int irmo_hash_table_allocate_table(IrmoHashTable *hash_table)
 {
+	int new_table_size;
+
 	/* Determine the table size based on the current prime index.  
 	 * An attempt is made here to ensure sensible behavior if the
 	 * maximum prime is exceeded, but in practice other things are
 	 * likely to break long before that happens. */
 
-	if (hashtable->prime_index < irmo_hash_table_num_primes) {
-		hashtable->table_size = irmo_hash_table_primes[hashtable->prime_index];
+	if (hash_table->prime_index < irmo_hash_table_num_primes) {
+		new_table_size = irmo_hash_table_primes[hash_table->prime_index];
 	} else {
-		hashtable->table_size = hashtable->entries * 10;
+		new_table_size = hash_table->entries * 10;
 	}
+
+	hash_table->table_size = new_table_size;
 
 	/* Allocate the table and initialise to NULL for all entries */
 
-	hashtable->table = calloc(hashtable->table_size, 
-	                          sizeof(IrmoHashTableEntry *));
+	hash_table->table = calloc(hash_table->table_size, 
+	                           sizeof(IrmoHashTableEntry *));
 
-	return hashtable->table != NULL;
+	return hash_table->table != NULL;
 }
 
 /* Free an entry, calling the free functions if there are any registered */
 
-static void irmo_hash_table_free_entry(IrmoHashTable *hashtable, IrmoHashTableEntry *entry)
+static void irmo_hash_table_free_entry(IrmoHashTable *hash_table, IrmoHashTableEntry *entry)
 {
 	/* If there is a function registered for freeing keys, use it to free
 	 * the key */
 	
-	if (hashtable->key_free_func != NULL) {
-		hashtable->key_free_func(entry->key);
+	if (hash_table->key_free_func != NULL) {
+		hash_table->key_free_func(entry->key);
 	}
 
 	/* Likewise with the value */
 
-	if (hashtable->value_free_func != NULL) {
-		hashtable->value_free_func(entry->value);
+	if (hash_table->value_free_func != NULL) {
+		hash_table->value_free_func(entry->value);
 	}
 
 	/* Free the data structure */
@@ -130,35 +125,35 @@ static void irmo_hash_table_free_entry(IrmoHashTable *hashtable, IrmoHashTableEn
 IrmoHashTable *irmo_hash_table_new(IrmoHashTableHashFunc hash_func, 
                           IrmoHashTableEqualFunc equal_func)
 {
-	IrmoHashTable *hashtable;
+	IrmoHashTable *hash_table;
 
 	/* Allocate a new hash table structure */
 	
-	hashtable = (IrmoHashTable *) malloc(sizeof(IrmoHashTable));
+	hash_table = (IrmoHashTable *) malloc(sizeof(IrmoHashTable));
 
-	if (hashtable == NULL) {
+	if (hash_table == NULL) {
 		return NULL;
 	}
 	
-	hashtable->hash_func = hash_func;
-	hashtable->equal_func = equal_func;
-	hashtable->key_free_func = NULL;
-	hashtable->value_free_func = NULL;
-	hashtable->entries = 0;
-	hashtable->prime_index = 0;
+	hash_table->hash_func = hash_func;
+	hash_table->equal_func = equal_func;
+	hash_table->key_free_func = NULL;
+	hash_table->value_free_func = NULL;
+	hash_table->entries = 0;
+	hash_table->prime_index = 0;
 
 	/* Allocate the table */
 
-	if (!irmo_hash_table_allocate_table(hashtable)) {
-		free(hashtable);
+	if (!irmo_hash_table_allocate_table(hash_table)) {
+		free(hash_table);
 
 		return NULL;
 	}
 
-	return hashtable;
+	return hash_table;
 }
 
-void irmo_hash_table_free(IrmoHashTable *hashtable)
+void irmo_hash_table_free(IrmoHashTable *hash_table)
 {
 	IrmoHashTableEntry *rover;
 	IrmoHashTableEntry *next;
@@ -166,34 +161,34 @@ void irmo_hash_table_free(IrmoHashTable *hashtable)
 	
 	/* Free all entries in all chains */
 
-	for (i=0; i<hashtable->table_size; ++i) {
-		rover = hashtable->table[i];
+	for (i=0; i<hash_table->table_size; ++i) {
+		rover = hash_table->table[i];
 		while (rover != NULL) {
 			next = rover->next;
-			irmo_hash_table_free_entry(hashtable, rover);
+			irmo_hash_table_free_entry(hash_table, rover);
 			rover = next;
 		}
 	}
 	
 	/* Free the table */
 
-	free(hashtable->table);
+	free(hash_table->table);
 	
 	/* Free the hash table structure */
 
-	free(hashtable);
+	free(hash_table);
 }
 
-void irmo_hash_table_register_free_functions(IrmoHashTable *hashtable,
+void irmo_hash_table_register_free_functions(IrmoHashTable *hash_table,
                                         IrmoHashTableKeyFreeFunc key_free_func,
                                         IrmoHashTableValueFreeFunc value_free_func)
 {
-	hashtable->key_free_func = key_free_func;
-	hashtable->value_free_func = value_free_func;
+	hash_table->key_free_func = key_free_func;
+	hash_table->value_free_func = value_free_func;
 }
 
 
-static int irmo_hash_table_enlarge(IrmoHashTable *hashtable)
+static int irmo_hash_table_enlarge(IrmoHashTable *hash_table)
 {
 	IrmoHashTableEntry **old_table;
 	int old_table_size;
@@ -205,21 +200,21 @@ static int irmo_hash_table_enlarge(IrmoHashTable *hashtable)
 	
 	/* Store a copy of the old table */
 	
-	old_table = hashtable->table;
-	old_table_size = hashtable->table_size;
-	old_prime_index = hashtable->prime_index;
+	old_table = hash_table->table;
+	old_table_size = hash_table->table_size;
+	old_prime_index = hash_table->prime_index;
 
 	/* Allocate a new, larger table */
 
-	++hashtable->prime_index;
+	++hash_table->prime_index;
 	
-	if (!irmo_hash_table_allocate_table(hashtable)) {
+	if (!irmo_hash_table_allocate_table(hash_table)) {
 
 		/* Failed to allocate the new table */
 
-		hashtable->table = old_table;
-		hashtable->table_size = old_table_size;
-		hashtable->prime_index = old_prime_index;
+		hash_table->table = old_table;
+		hash_table->table_size = old_table_size;
+		hash_table->prime_index = old_prime_index;
 
 		return 0;
 	}
@@ -234,12 +229,12 @@ static int irmo_hash_table_enlarge(IrmoHashTable *hashtable)
 
 			/* Find the index into the new table */
 			
-			index = hashtable->hash_func(rover->key) % hashtable->table_size;
+			index = hash_table->hash_func(rover->key) % hash_table->table_size;
 			
 			/* Link this entry into the chain */
 
-			rover->next = hashtable->table[index];
-			hashtable->table[index] = rover;
+			rover->next = hash_table->table[index];
+			hash_table->table[index] = rover;
 			
 			/* Advance to next in the chain */
 
@@ -250,7 +245,7 @@ static int irmo_hash_table_enlarge(IrmoHashTable *hashtable)
 	return 1;
 }
 
-int irmo_hash_table_insert(IrmoHashTable *hashtable, IrmoHashTableKey key, IrmoHashTableValue value) 
+int irmo_hash_table_insert(IrmoHashTable *hash_table, IrmoHashTableKey key, IrmoHashTableValue value) 
 {
 	IrmoHashTableEntry *rover;
 	IrmoHashTableEntry *newentry;
@@ -260,11 +255,11 @@ int irmo_hash_table_insert(IrmoHashTable *hashtable, IrmoHashTableKey key, IrmoH
 	 * size, the number of hash collisions increases and performance
 	 * decreases. Enlarge the table size to prevent this happening */
 
-	if ((hashtable->entries * 3) / hashtable->table_size > 0) {
+	if ((hash_table->entries * 3) / hash_table->table_size > 0) {
 		
 		/* Table is more than 1/3 full */
 
-		if (!irmo_hash_table_enlarge(hashtable)) {
+		if (!irmo_hash_table_enlarge(hash_table)) {
 
 			/* Failed to enlarge the table */
 
@@ -274,30 +269,30 @@ int irmo_hash_table_insert(IrmoHashTable *hashtable, IrmoHashTableKey key, IrmoH
 
 	/* Generate the hash of the key and hence the index into the table */
 
-	index = hashtable->hash_func(key) % hashtable->table_size;
+	index = hash_table->hash_func(key) % hash_table->table_size;
 
 	/* Traverse the chain at this location and look for an existing
 	 * entry with the same key */
 
-	rover = hashtable->table[index];
+	rover = hash_table->table[index];
 
 	while (rover != NULL) {
-		if (hashtable->equal_func(rover->key, key) != 0) {
+		if (hash_table->equal_func(rover->key, key) != 0) {
 
 			/* Same key: overwrite this entry with new data */
 
 			/* If there is a value free function, free the old data
 			 * before adding in the new data */
 
-			if (hashtable->value_free_func != NULL) {
-				hashtable->value_free_func(rover->value);
+			if (hash_table->value_free_func != NULL) {
+				hash_table->value_free_func(rover->value);
 			}
 
 			/* Same with the key: use the new key value and free 
 			 * the old one */
 
-			if (hashtable->key_free_func != NULL) {
-				hashtable->key_free_func(rover->key);
+			if (hash_table->key_free_func != NULL) {
+				hash_table->key_free_func(rover->key);
 			}
 
 			rover->key = key;
@@ -310,7 +305,7 @@ int irmo_hash_table_insert(IrmoHashTable *hashtable, IrmoHashTableKey key, IrmoH
 		rover = rover->next;
 	}
 	
-	/* Not in the hashtable yet.  Create a new entry */
+	/* Not in the hash table yet.  Create a new entry */
 
 	newentry = (IrmoHashTableEntry *) malloc(sizeof(IrmoHashTableEntry));
 
@@ -323,34 +318,34 @@ int irmo_hash_table_insert(IrmoHashTable *hashtable, IrmoHashTableKey key, IrmoH
 
 	/* Link into the list */
 
-	newentry->next = hashtable->table[index];
-	hashtable->table[index] = newentry;
+	newentry->next = hash_table->table[index];
+	hash_table->table[index] = newentry;
 
 	/* Maintain the count of the number of entries */
 
-	++hashtable->entries;
+	++hash_table->entries;
 
 	/* Added successfully */
 
 	return 1;
 }
 
-IrmoHashTableValue irmo_hash_table_lookup(IrmoHashTable *hashtable, IrmoHashTableKey key)
+IrmoHashTableValue irmo_hash_table_lookup(IrmoHashTable *hash_table, IrmoHashTableKey key)
 {
 	IrmoHashTableEntry *rover;
 	int index;
 
 	/* Generate the hash of the key and hence the index into the table */
 	
-	index = hashtable->hash_func(key) % hashtable->table_size;
+	index = hash_table->hash_func(key) % hash_table->table_size;
 
 	/* Walk the chain at this index until the corresponding entry is
 	 * found */
 
-	rover = hashtable->table[index];
+	rover = hash_table->table[index];
 
 	while (rover != NULL) {
-		if (hashtable->equal_func(key, rover->key) != 0) {
+		if (hash_table->equal_func(key, rover->key) != 0) {
 
 			/* Found the entry.  Return the data. */
 
@@ -364,7 +359,7 @@ IrmoHashTableValue irmo_hash_table_lookup(IrmoHashTable *hashtable, IrmoHashTabl
 	return HASH_TABLE_NULL;
 }
 
-int irmo_hash_table_remove(IrmoHashTable *hashtable, IrmoHashTableKey key)
+int irmo_hash_table_remove(IrmoHashTable *hash_table, IrmoHashTableKey key)
 {
 	IrmoHashTableEntry **rover;
 	IrmoHashTableEntry *entry;
@@ -373,7 +368,7 @@ int irmo_hash_table_remove(IrmoHashTable *hashtable, IrmoHashTableKey key)
 
 	/* Generate the hash of the key and hence the index into the table */
 	
-	index = hashtable->hash_func(key) % hashtable->table_size;
+	index = hash_table->hash_func(key) % hash_table->table_size;
 
 	/* Rover points at the pointer which points at the current entry
 	 * in the chain being inspected.  ie. the entry in the table, or
@@ -381,11 +376,11 @@ int irmo_hash_table_remove(IrmoHashTable *hashtable, IrmoHashTableKey key)
 	 * allows us to unlink the entry when we find it. */
 
 	result = 0;
-	rover = &hashtable->table[index];
+	rover = &hash_table->table[index];
 
 	while (*rover != NULL) {
 
-		if (hashtable->equal_func(key, (*rover)->key) != 0) {
+		if (hash_table->equal_func(key, (*rover)->key) != 0) {
 
 			/* This is the entry to remove */
 
@@ -397,11 +392,11 @@ int irmo_hash_table_remove(IrmoHashTable *hashtable, IrmoHashTableKey key)
 
 			/* Destroy the entry structure */
 
-			irmo_hash_table_free_entry(hashtable, entry);
+			irmo_hash_table_free_entry(hash_table, entry);
 
 			/* Track count of entries */
 
-			--hashtable->entries;
+			--hash_table->entries;
 
 			result = 1;
 
@@ -416,24 +411,16 @@ int irmo_hash_table_remove(IrmoHashTable *hashtable, IrmoHashTableKey key)
 	return result;
 }
 
-int irmo_hash_table_num_entries(IrmoHashTable *hashtable)
+int irmo_hash_table_num_entries(IrmoHashTable *hash_table)
 {
-	return hashtable->entries;
+	return hash_table->entries;
 }
 
-IrmoHashTableIterator *irmo_hash_table_iterate(IrmoHashTable *hashtable)
+void irmo_hash_table_iterate(IrmoHashTable *hash_table, IrmoHashTableIterator *iterator)
 {
-	IrmoHashTableIterator *iterator;
 	int chain;
 	
-	iterator = (IrmoHashTableIterator *) malloc(sizeof(IrmoHashTableIterator));
-
-	if (iterator == NULL) {
-		return NULL;
-	}
-	
-	iterator->hashtable = hashtable;
-	iterator->current_entry = NULL;
+	iterator->hash_table = hash_table;
 
 	/* Default value of next if no entries are found. */
 	
@@ -441,16 +428,14 @@ IrmoHashTableIterator *irmo_hash_table_iterate(IrmoHashTable *hashtable)
 	
 	/* Find the first entry */
 	
-	for (chain=0; chain<hashtable->table_size; ++chain) {
+	for (chain=0; chain<hash_table->table_size; ++chain) {
 		
-		if (hashtable->table[chain] != NULL) {
-			iterator->next_entry = hashtable->table[chain];
+		if (hash_table->table[chain] != NULL) {
+			iterator->next_entry = hash_table->table[chain];
 			iterator->next_chain = chain;
 			break;
 		}
 	}
-
-	return iterator;
 }
 
 int irmo_hash_table_iter_has_more(IrmoHashTableIterator *iterator)
@@ -460,11 +445,12 @@ int irmo_hash_table_iter_has_more(IrmoHashTableIterator *iterator)
 
 IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 {
-	IrmoHashTable *hashtable;
+        IrmoHashTableEntry *current_entry;
+	IrmoHashTable *hash_table;
 	IrmoHashTableValue result;
 	int chain;
 
-	hashtable = iterator->hashtable;
+	hash_table = iterator->hash_table;
 
 	/* No more entries? */
 	
@@ -474,16 +460,16 @@ IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 	
 	/* Result is immediately available */
 
-	iterator->current_entry = iterator->next_entry;
-	result = iterator->current_entry->value;
+	current_entry = iterator->next_entry;
+	result = current_entry->value;
 
 	/* Find the next entry */
 
-	if (iterator->current_entry->next != NULL) {
+	if (current_entry->next != NULL) {
 		
 		/* Next entry in current chain */
 
-		iterator->next_entry = iterator->current_entry->next;
+		iterator->next_entry = current_entry->next;
 		
 	} else {
 	
@@ -495,12 +481,12 @@ IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 		
 		iterator->next_entry = NULL;
 
-		while (chain < hashtable->table_size) {
+		while (chain < hash_table->table_size) {
 
 			/* Is there anything in this chain? */
 
-			if (hashtable->table[chain] != NULL) {
-				iterator->next_entry = hashtable->table[chain];
+			if (hash_table->table[chain] != NULL) {
+				iterator->next_entry = hash_table->table[chain];
 				break;
 			}
 
@@ -513,10 +499,5 @@ IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 	}
 
 	return result;
-}
-
-void irmo_hash_table_iter_free(IrmoHashTableIterator *iterator)
-{
-	free(iterator);
 }
 

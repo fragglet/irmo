@@ -44,20 +44,18 @@ IrmoCallback *irmo_callback_list_add(IrmoCallbackList *list,
 static void irmo_invoke_destroy_callbacks(IrmoCallback *parent,
                                           IrmoCallbackList *list)
 {
-        IrmoSListIterator *iter;
+        IrmoSListIterator iter;
         IrmoCallback *callback;
 	IrmoCallbackCallback func;
 
-        iter = irmo_slist_iterate(list);
+        irmo_slist_iterate(list, &iter);
 
-        while (irmo_slist_iter_has_more(iter)) {
-                callback = irmo_slist_iter_next(iter);
+        while (irmo_slist_iter_has_more(&iter)) {
+                callback = irmo_slist_iter_next(&iter);
 
                 func = callback->func;
                 func(parent, callback->user_data);
         }
-
-        irmo_slist_iter_free(iter);
 }
 
 static void irmo_callback_destroy(IrmoCallback *callback)
@@ -86,18 +84,16 @@ void irmo_callback_unset(IrmoCallback *callback)
 
 void irmo_callback_list_free(IrmoCallbackList *list)
 {
-        IrmoSListIterator *iter;
+        IrmoSListIterator iter;
         IrmoCallback *callback;
 
-        iter = irmo_slist_iterate(list);
+        irmo_slist_iterate(list, &iter);
 
-        while (irmo_slist_iter_has_more(iter)) {
-                callback = irmo_slist_iter_next(iter);
+        while (irmo_slist_iter_has_more(&iter)) {
+                callback = irmo_slist_iter_next(&iter);
 
                 irmo_callback_destroy(callback);
         }
-
-        irmo_slist_iter_free(iter);
 
 	irmo_slist_free(*list);
 }

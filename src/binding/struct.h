@@ -26,7 +26,7 @@
 
 typedef struct _IrmoStruct IrmoStruct;
 
-#include <algo/hashtable.h>
+#include "algo/hash-table.h"
 #include "struct-member.h"
 
 /*!

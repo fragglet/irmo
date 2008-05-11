@@ -7,7 +7,7 @@
 FILES="\
   arraylist.c arraylist.h             \
   slist.c slist.h                     \
-  hashtable.c hashtable.h             \
+  hash-table.c hash-table.h             \
   queue.c queue.h                     \
   hash-string.c hash-string.h         \
   compare-string.c compare-string.h   \

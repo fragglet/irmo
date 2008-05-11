@@ -55,21 +55,19 @@ IrmoCallback *irmo_world_method_watch(IrmoWorld *world,
 static void invoke_method_callbacks(IrmoCallbackList *list,
                                     IrmoMethodData *method_data)
 {
-        IrmoSListIterator *iter;
+        IrmoSListIterator iter;
         IrmoCallback *callback;
         IrmoInvokeCallback func;
 
-        iter = irmo_slist_iterate(list);
+        irmo_slist_iterate(list, &iter);
 
-        while (irmo_slist_iter_has_more(iter)) {
+        while (irmo_slist_iter_has_more(&iter)) {
 
-                callback = irmo_slist_iter_next(iter);
+                callback = irmo_slist_iter_next(&iter);
 
                 func = (IrmoInvokeCallback) callback->func;
                 func(method_data, callback->user_data);
         }
-
-        irmo_slist_iter_free(iter);
 }
 
 // Sanity check a collection of method data.

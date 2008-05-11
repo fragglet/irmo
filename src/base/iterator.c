@@ -79,25 +79,31 @@ struct _IrmoIterator {
 // Hash table iterator
 //
 
+typedef struct _IrmoIterator_HashTable IrmoIterator_HashTable;
+
+struct _IrmoIterator_HashTable {
+        IrmoIterator base;
+        IrmoHashTableIterator iter;
+};
+
 static const IrmoIteratorType hash_table_iterator = {
         (IrmoIteratorNextCallback) irmo_hash_table_iter_next,
         (IrmoIteratorHasMoreCallback) irmo_hash_table_iter_has_more,
-        (IrmoIteratorFreeCallback) irmo_hash_table_iter_free,
+        NULL,
 };
 
 IrmoIterator *irmo_iterate_hash_table(IrmoHashTable *hashtable)
 {
-        IrmoIterator *result;
-        IrmoHashTableIterator *iter;
+        IrmoIterator_HashTable *result;
 
-        iter = irmo_hash_table_iterate(hashtable);
+        result = irmo_new0(IrmoIterator_HashTable, 1);
 
-        result = irmo_new0(IrmoIterator, 1);
+        irmo_hash_table_iterate(hashtable, &result->iter);
 
-        result->type = &hash_table_iterator;
-        result->data = iter;
+        result->base.type = &hash_table_iterator;
+        result->base.data = &result->iter;
 
-        return result;
+        return &result->base;
 }
 
 //

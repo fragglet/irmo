@@ -90,18 +90,16 @@ void irmo_world_ref(IrmoWorld *world)
 
 static void irmo_world_destroy_all_objects(IrmoWorld *world)
 {
-        IrmoHashTableIterator *iter;
+        IrmoHashTableIterator iter;
         IrmoObject *obj;
 
-        iter = irmo_hash_table_iterate(world->objects);
+        irmo_hash_table_iterate(world->objects, &iter);
 
-        while (irmo_hash_table_iter_has_more(iter)) {
-                obj = irmo_hash_table_iter_next(iter);
+        while (irmo_hash_table_iter_has_more(&iter)) {
+                obj = irmo_hash_table_iter_next(&iter);
         
                 irmo_object_internal_destroy(obj, 0, 0);
         }
-
-        irmo_hash_table_iter_free(iter);
 }
 
 void irmo_world_unref(IrmoWorld *world)

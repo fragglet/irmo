@@ -27,40 +27,36 @@
 
 void irmo_server_object_new(IrmoServer *server, IrmoObject *obj)
 {
-        IrmoHashTableIterator *iter;
+        IrmoHashTableIterator iter;
         IrmoClient *client;
 
-        iter = irmo_hash_table_iterate(server->clients);
+        irmo_hash_table_iterate(server->clients, &iter);
 
-        while (irmo_hash_table_iter_has_more(iter)) {
-                client = irmo_hash_table_iter_next(iter);
+        while (irmo_hash_table_iter_has_more(&iter)) {
+                client = irmo_hash_table_iter_next(&iter);
 
                 // Add a new send atom for this object creation.
  
                 irmo_client_sendq_add_new(client, obj);
         }
-
-        irmo_hash_table_iter_free(iter);
 }
 
 // Called when the world being served destroys an object.
 
 void irmo_server_object_destroyed(IrmoServer *server, IrmoObject *obj)
 {
-        IrmoHashTableIterator *iter;
+        IrmoHashTableIterator iter;
         IrmoClient *client;
 
-        iter = irmo_hash_table_iterate(server->clients);
+        irmo_hash_table_iterate(server->clients, &iter);
 
-        while (irmo_hash_table_iter_has_more(iter)) {
-                client = irmo_hash_table_iter_next(iter);
+        while (irmo_hash_table_iter_has_more(&iter)) {
+                client = irmo_hash_table_iter_next(&iter);
 
                 // Add a new send atom for this object destroy.
   
                 irmo_client_sendq_add_destroy(client, obj);
         }
-
-        irmo_hash_table_iter_free(iter);
 }
 
 // Called when the world being served changes an object.
@@ -68,20 +64,18 @@ void irmo_server_object_destroyed(IrmoServer *server, IrmoObject *obj)
 void irmo_server_object_changed(IrmoServer *server, IrmoObject *obj,
                                 IrmoClassVar *var)
 {
-        IrmoHashTableIterator *iter;
+        IrmoHashTableIterator iter;
         IrmoClient *client;
 
-        iter = irmo_hash_table_iterate(server->clients);
+        irmo_hash_table_iterate(server->clients, &iter);
 
-        while (irmo_hash_table_iter_has_more(iter)) {
-                client = irmo_hash_table_iter_next(iter);
+        while (irmo_hash_table_iter_has_more(&iter)) {
+                client = irmo_hash_table_iter_next(&iter);
 
                 // Add a new sendatom for this change.
 
                 irmo_client_sendq_add_change(client, obj, var);
         }
-
-        irmo_hash_table_iter_free(iter);
 }
 
 void irmo_connection_method_call(IrmoConnection *conn, 

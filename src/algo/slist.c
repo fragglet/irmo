@@ -44,14 +44,6 @@ struct _IrmoSListEntry {
 	IrmoSListEntry *next;
 };
 
-/* Iterator for iterating over a singly-linked list. */
-
-struct _IrmoSListIterator {
-	IrmoSListEntry **list;
-	IrmoSListEntry **prev_next;
-	IrmoSListEntry *current;
-};
-
 void irmo_slist_free(IrmoSListEntry *list)
 {
 	IrmoSListEntry *entry;
@@ -442,18 +434,8 @@ IrmoSListEntry *irmo_slist_find_data(IrmoSListEntry *list,
 	return NULL;
 }
 
-IrmoSListIterator *irmo_slist_iterate(IrmoSListEntry **list)
+void irmo_slist_iterate(IrmoSListEntry **list, IrmoSListIterator *iter)
 {
-	IrmoSListIterator *iter;
-
-	/* Allocate the new structure */
-
-	iter = malloc(sizeof(IrmoSListIterator));
-
-	if (iter == NULL) {
-		return NULL;
-	}
-
 	/* Save the list location */
 
 	iter->list = list;
@@ -462,8 +444,6 @@ IrmoSListIterator *irmo_slist_iterate(IrmoSListEntry **list)
 
 	iter->prev_next = NULL;
 	iter->current = NULL;
-
-	return iter;
 }
 
 int irmo_slist_iter_has_more(IrmoSListIterator *iter)
@@ -553,10 +533,5 @@ void irmo_slist_iter_remove(IrmoSListIterator *iter)
 			free(iter->current);
 		}
 	}
-}
-
-void irmo_slist_iter_free(IrmoSListIterator *iter)
-{
-	free(iter);
 }
 
