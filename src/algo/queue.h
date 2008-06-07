@@ -39,17 +39,17 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * @brief Double-ended queue.
  *
- * A double ended queue stores a list of pointers in order.  New data
+ * A double ended queue stores a list of values in order.  New values
  * can be added and removed from either end of the queue.
  *
  * To create a new queue, use @ref irmo_queue_new.  To destroy a queue, use
  * @ref irmo_queue_free.
  *
- * To add data to a queue, use @ref irmo_queue_push_head and
+ * To add values to a queue, use @ref irmo_queue_push_head and
  * @ref irmo_queue_push_tail.
  *
- * To read data from the ends of a queue, use @ref irmo_queue_pop_head
- * and @ref irmo_queue_pop_tail.  To examine the ends without removing data
+ * To read values from the ends of a queue, use @ref irmo_queue_pop_head
+ * and @ref irmo_queue_pop_tail.  To examine the ends without removing values
  * from the queue, use @ref irmo_queue_peek_head and @ref irmo_queue_peek_tail.
  *
  */
@@ -77,7 +77,7 @@ typedef void *IrmoQueueValue;
  * A null @ref IrmoQueueValue.
  */
 
-#define QUEUE_NULL ((void *) 0)
+#define IRMO_QUEUE_NULL ((void *) 0)
 
 /**
  * Create a new double-ended queue.
@@ -97,10 +97,10 @@ IrmoQueue *irmo_queue_new(void);
 void irmo_queue_free(IrmoQueue *queue);
 
 /**
- * Add data to the head of a queue.
+ * Add a value to the head of a queue.
  *
  * @param queue      The queue.
- * @param data       The data to add.
+ * @param data       The value to add.
  * @return           Non-zero if the value was added successfully, or zero
  *                   if it was not possible to allocate the memory for the
  *                   new entry. 
@@ -109,31 +109,31 @@ void irmo_queue_free(IrmoQueue *queue);
 int irmo_queue_push_head(IrmoQueue *queue, IrmoQueueValue data);
 
 /**
- * Remove data from the head of a queue.
+ * Remove a value from the head of a queue.
  *
  * @param queue      The queue.
- * @return           Data at the head of the queue, or QUEUE_NULL if the 
- *                   queue is empty.
+ * @return           Value that was at the head of the queue, or
+ *                   @ref IRMO_QUEUE_NULL if the queue is empty.
  */
 
 IrmoQueueValue irmo_queue_pop_head(IrmoQueue *queue);
 
 /**
- * Read data from the head of queue, without removing it from
+ * Read value from the head of a queue, without removing it from
  * the queue.
  *
  * @param queue      The queue.
- * @return           Data at the head of the queue, or QUEUE_NULL if the 
+ * @return           Value at the head of the queue, or @ref IRMO_QUEUE_NULL if the 
  *                   queue is empty.
  */
 
 IrmoQueueValue irmo_queue_peek_head(IrmoQueue *queue);
 
 /**
- * Add data to the tail of a queue.
+ * Add a value to the tail of a queue.
  *
  * @param queue      The queue.
- * @param data       The data to add.
+ * @param data       The value to add.
  * @return           Non-zero if the value was added successfully, or zero
  *                   if it was not possible to allocate the memory for the
  *                   new entry. 
@@ -142,28 +142,28 @@ IrmoQueueValue irmo_queue_peek_head(IrmoQueue *queue);
 int irmo_queue_push_tail(IrmoQueue *queue, IrmoQueueValue data);
 
 /**
- * Remove data from the tail of a queue.
+ * Remove a value from the tail of a queue.
  *
  * @param queue      The queue.
- * @return           Data at the head of the queue, or QUEUE_NULL if the 
- *                   queue is empty.
+ * @return           Value that was at the head of the queue, or
+ *                   @ref IRMO_QUEUE_NULL if the queue is empty.
  */
 
 IrmoQueueValue irmo_queue_pop_tail(IrmoQueue *queue);
 
 /**
- * Read data from the tail of queue, without removing it from
+ * Read a value from the tail of a queue, without removing it from
  * the queue.
  *
  * @param queue      The queue.
- * @return           Data at the tail of the queue, or QUEUE_NULL if the 
+ * @return           Value at the tail of the queue, or IRMO_QUEUE_NULL if the 
  *                   queue is empty.
  */
 
 IrmoQueueValue irmo_queue_peek_tail(IrmoQueue *queue);
 
 /**
- * Query if any data is currently in a queue.
+ * Query if any values are currently in a queue.
  *
  * @param queue      The queue.
  * @return           Zero if the queue is not empty, non-zero if the queue

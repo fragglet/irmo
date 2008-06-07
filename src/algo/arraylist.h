@@ -44,10 +44,10 @@ POSSIBILITY OF SUCH DAMAGE.
  * To create an IrmoArrayList, use @ref irmo_arraylist_new.
  * To destroy an IrmoArrayList, use @ref irmo_arraylist_free.
  *
- * To add data an IrmoArrayList, use @ref irmo_arraylist_prepend, 
+ * To add a value to an IrmoArrayList, use @ref irmo_arraylist_prepend, 
  * @ref irmo_arraylist_append, or @ref irmo_arraylist_insert.
  *
- * To remove data from an IrmoArrayList, use @ref irmo_arraylist_remove
+ * To remove a value from an IrmoArrayList, use @ref irmo_arraylist_remove
  * or @ref irmo_arraylist_remove_range.
  */
 
@@ -92,21 +92,22 @@ typedef struct _IrmoArrayList {
  * @return Non-zero if the values are not equal, zero if they are equal.
  */
 
-typedef int (*IrmoArrayListEqualFunc)(IrmoArrayListValue data1, IrmoArrayListValue data2);
+typedef int (*IrmoArrayListEqualFunc)(IrmoArrayListValue value1, IrmoArrayListValue value2);
 
 /**
  * Compare two values in an arraylist.  Used by @ref irmo_arraylist_sort
  * when sorting values.
  *
- * @param data1               The first value.
- * @param data2               The second value.
- * @return                    A negative number if data1 should be sorted
- *                            before data2, a positive number if data2 should
- *                            be sorted before data1, zero if the two values
+ * @param value1              The first value.
+ * @param value2              The second value.
+ * @return                    A negative number if value1 should be sorted
+ *                            before value2, a positive number if value2 should
+ *                            be sorted before value1, zero if the two values
  *                            are equal.
  */
 
-typedef int (*IrmoArrayListCompareFunc)(IrmoArrayListValue data1, IrmoArrayListValue data2);
+typedef int (*IrmoArrayListCompareFunc)(IrmoArrayListValue value1,
+                                    IrmoArrayListValue value2);
 
 /**
  * Allocate a new IrmoArrayList for use.
@@ -129,10 +130,10 @@ IrmoArrayList *irmo_arraylist_new(int length);
 void irmo_arraylist_free(IrmoArrayList *arraylist);
 
 /**
- * Append data to the end of an IrmoArrayList.
+ * Append a value to the end of an IrmoArrayList.
  *
  * @param arraylist      The IrmoArrayList.
- * @param data           The data to append.
+ * @param data           The value to append.
  * @return               Non-zero if the request was successful, zero
  *                       if it was not possible to allocate more memory
  *                       for the new entry.
@@ -141,10 +142,10 @@ void irmo_arraylist_free(IrmoArrayList *arraylist);
 int irmo_arraylist_append(IrmoArrayList *arraylist, IrmoArrayListValue data);
 
 /** 
- * Prepend data to the beginning of an IrmoArrayList.
+ * Prepend a value to the beginning of an IrmoArrayList.
  *
  * @param arraylist      The IrmoArrayList.
- * @param data           The data to prepend.
+ * @param data           The value to prepend.
  * @return               Non-zero if the request was successful, zero
  *                       if it was not possible to allocate more memory
  *                       for the new entry.
@@ -172,13 +173,13 @@ void irmo_arraylist_remove(IrmoArrayList *arraylist, int index);
 void irmo_arraylist_remove_range(IrmoArrayList *arraylist, int index, int length);
 
 /**
- * Insert new data at the specified index in an IrmoArrayList.
- * The index where new data can be inserted is limited by the 
+ * Insert a value at the specified index in an IrmoArrayList.
+ * The index where the new value can be inserted is limited by the 
  * size of the IrmoArrayList.
  *
  * @param arraylist      The IrmoArrayList.
- * @param index          The index at which to insert the data.
- * @param data           The data.
+ * @param index          The index at which to insert the value.
+ * @param data           The value.
  * @return               Returns zero if unsuccessful, else non-zero 
  *                       if successful (due to an invalid index or 
  *                       if it was impossible to allocate more memory).
@@ -187,13 +188,14 @@ void irmo_arraylist_remove_range(IrmoArrayList *arraylist, int index, int length
 int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, IrmoArrayListValue data);
 
 /**
- * Find the index of a particular pointer in an IrmoArrayList.
+ * Find the index of a particular value in an IrmoArrayList.
  *
  * @param arraylist      The IrmoArrayList to search.
- * @param callback       Callback function to be invoked to determine if 
- *                       values are equal to the data to search for.
- * @param data           The data to search for.
- * @return               The index of the data if found, or -1 if not found.
+ * @param callback       Callback function to be invoked to compare
+ *                       values in the list with the value to be
+ *                       searched for.
+ * @param data           The value to search for.
+ * @return               The index of the value if found, or -1 if not found.
  */
 
 int irmo_arraylist_index_of(IrmoArrayList *arraylist, 

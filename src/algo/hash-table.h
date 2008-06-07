@@ -50,6 +50,11 @@ POSSIBILITY OF SUCH DAMAGE.
  * To remove a value from a hash table, use @ref irmo_hash_table_remove.
  *
  * To look up a value by its key, use @ref irmo_hash_table_lookup.
+ *
+ * To iterate over all values in a hash table, use 
+ * @ref irmo_hash_table_iterate to initialise a @ref IrmoHashTableIterator
+ * structure.  Each value can then be read in turn using 
+ * @ref irmo_hash_table_iter_next and @ref irmo_hash_table_iter_has_more.
  */
 
 #ifndef IRMO_ALGO_HASH_TABLE_H
@@ -103,17 +108,17 @@ struct _IrmoHashTableIterator {
  * A null @ref IrmoHashTableValue. 
  */
 
-#define HASH_TABLE_NULL ((void *) 0)
+#define IRMO_HASH_TABLE_NULL ((void *) 0)
 
 /**
  * Hash function used to generate hash values for keys used in a hash
  * table.
  *
- * @param data   The value to generate a hash value for.
+ * @param value  The value to generate a hash value for.
  * @return       The hash value.
  */
 
-typedef unsigned long (*IrmoHashTableHashFunc)(IrmoHashTableKey data);
+typedef unsigned long (*IrmoHashTableHashFunc)(IrmoHashTableKey value);
 
 /**
  * Function used to compare two keys for equality.
@@ -122,21 +127,21 @@ typedef unsigned long (*IrmoHashTableHashFunc)(IrmoHashTableKey data);
  *           not equal.
  */
 
-typedef int (*IrmoHashTableEqualFunc)(IrmoHashTableKey data1, IrmoHashTableKey data2);
+typedef int (*IrmoHashTableEqualFunc)(IrmoHashTableKey value1, IrmoHashTableKey value2);
 
 /**
  * Type of function used to free keys when entries are removed from a 
  * hash table.
  */
 
-typedef void (*IrmoHashTableKeyFreeFunc)(IrmoHashTableKey data);
+typedef void (*IrmoHashTableKeyFreeFunc)(IrmoHashTableKey value);
 
 /**
  * Type of function used to free values when entries are removed from a 
  * hash table.
  */
 
-typedef void (*IrmoHashTableValueFreeFunc)(IrmoHashTableValue data);
+typedef void (*IrmoHashTableValueFreeFunc)(IrmoHashTableValue value);
 
 /**
  * Create a new hash table.
@@ -195,7 +200,7 @@ int irmo_hash_table_insert(IrmoHashTable *hash_table,
  *
  * @param hash_table          The hash table.
  * @param key                 The key of the value to look up.
- * @return                    The value, or @ref HASH_TABLE_NULL if there 
+ * @return                    The value, or @ref IRMO_HASH_TABLE_NULL if there 
  *                            is no value with that key in the hash table.
  */
 
@@ -250,7 +255,7 @@ int irmo_hash_table_iter_has_more(IrmoHashTableIterator *iterator);
  *
  * @param iterator            The hash table iterator.
  * @return                    The next key from the hash table, or 
- *                            @ref HASH_TABLE_NULL if there are no more 
+ *                            @ref IRMO_HASH_TABLE_NULL if there are no more 
  *                            keys to iterate over.
  */
 

@@ -130,7 +130,7 @@ IrmoQueueValue irmo_queue_pop_head(IrmoQueue *queue)
 	/* Check the queue is not empty */
 
 	if (irmo_queue_is_empty(queue)) {
-		return QUEUE_NULL;
+		return IRMO_QUEUE_NULL;
 	}
 
 	/* Unlink the first entry from the head of the queue */
@@ -162,7 +162,7 @@ IrmoQueueValue irmo_queue_pop_head(IrmoQueue *queue)
 IrmoQueueValue irmo_queue_peek_head(IrmoQueue *queue)
 {
 	if (irmo_queue_is_empty(queue)) {
-		return QUEUE_NULL;
+		return IRMO_QUEUE_NULL;
 	} else {
 		return queue->head->data;
 	}
@@ -217,7 +217,7 @@ IrmoQueueValue irmo_queue_pop_tail(IrmoQueue *queue)
 	/* Check the queue is not empty */
 
 	if (irmo_queue_is_empty(queue)) {
-		return QUEUE_NULL;
+		return IRMO_QUEUE_NULL;
 	}
 
 	/* Unlink the first entry from the tail of the queue */
@@ -250,7 +250,7 @@ IrmoQueueValue irmo_queue_pop_tail(IrmoQueue *queue)
 IrmoQueueValue irmo_queue_peek_tail(IrmoQueue *queue)
 {
 	if (irmo_queue_is_empty(queue)) {
-		return QUEUE_NULL;
+		return IRMO_QUEUE_NULL;
 	} else {
 		return queue->tail->data;
 	}

@@ -172,7 +172,7 @@ IrmoSListValue irmo_slist_nth_data(IrmoSListEntry *list, int n)
 	/* If out of range, return NULL, otherwise return the data */
 
 	if (entry == NULL) {
-		return SLIST_NULL;
+		return IRMO_SLIST_NULL;
 	} else {
 		return entry->data;
 	}
@@ -436,30 +436,23 @@ IrmoSListEntry *irmo_slist_find_data(IrmoSListEntry *list,
 
 void irmo_slist_iterate(IrmoSListEntry **list, IrmoSListIterator *iter)
 {
-	/* Save the list location */
+	/* Start iterating from the beginning of the list. */
 
-	iter->list = list;
+	iter->prev_next = list;
 
-	/* These are NULL as we have not read the first item yet */
+	/* We have not yet read the first item. */
 
-	iter->prev_next = NULL;
 	iter->current = NULL;
 }
 
 int irmo_slist_iter_has_more(IrmoSListIterator *iter)
 {
-	if (iter->prev_next == NULL) {
-		
-		/* The iterator has just been created.  irmo_slist_iter_next
-		 * has not been called yet.  There are more entries if 
-		 * the list itself is not empty. */
+	if (iter->current == NULL || iter->current != *iter->prev_next) {
 
-		return *iter->list != NULL;
-		
-	} else if (*iter->prev_next != iter->current) {
-
-		/* The entry last returned from irmo_slist_iter_next has been
-		 * deleted.  The next entry is indicated by prev_next. */
+		/* Either we have not read the first entry, the current
+		 * item was removed or we have reached the end of the
+		 * list.  Use prev_next to determine if we have a next
+		 * value to iterate over. */
 
 		return *iter->prev_next != NULL;
 
@@ -469,29 +462,16 @@ int irmo_slist_iter_has_more(IrmoSListIterator *iter)
 		 * is a next entry if current->next is not NULL. */
 
 		return iter->current->next != NULL;
-
 	}
 }
 
 IrmoSListValue irmo_slist_iter_next(IrmoSListIterator *iter)
 {
-	if (iter->prev_next == NULL) {
+	if (iter->current == NULL || iter->current != *iter->prev_next) {
 
-		/* This is the first call to irmo_slist_iter_next. */
-
-		/* Initial prev_next is the list start variable */
-
-		iter->prev_next = iter->list;
-
-		/* Start at the first element */
-
-		iter->current = *iter->list;
-
-	} else if (*iter->prev_next != iter->current) {
-
-		/* The value last returned by irmo_slist_iter_next was
-		 * deleted.  Use prev_next to find the next
-		 * entry. */
+		/* Either we are reading the first entry, we have reached
+		 * the end of the list, or the previous entry was removed.
+		 * Get the next entry with iter->prev_next. */
 
 		iter->current = *iter->prev_next;
 
@@ -500,38 +480,34 @@ IrmoSListValue irmo_slist_iter_next(IrmoSListIterator *iter)
 		/* Last value returned from irmo_slist_iter_next was not
 		 * deleted. Advance to the next entry. */
 
-		if (iter->current != NULL) {
-			iter->prev_next = &iter->current->next;
-			iter->current = iter->current->next;
-		}
+		iter->prev_next = &iter->current->next;
+		iter->current = iter->current->next;
 	}
 
+	/* Have we reached the end of the list? */
+
 	if (iter->current == NULL) {
-		return SLIST_NULL;
+		return IRMO_SLIST_NULL;
 	} else {
 		return iter->current->data;
 	}
-
 }
 
 void irmo_slist_iter_remove(IrmoSListIterator *iter)
 {
-	if (iter->prev_next == NULL) {
-
-		/* irmo_slist_iter_next has not been called yet. */
-
-	} else if (*iter->prev_next != iter->current) {
+	if (iter->current == NULL || iter->current != *iter->prev_next) {
 		
-		/* Current entry was already deleted */
-
+		/* Either we have not yet read the first item, we have 
+		 * reached the end of the list, or we have already removed
+		 * the current value.  Either way, do nothing. */
+	
 	} else {
 		
 		/* Remove the current entry */
 
-		if (iter->current != NULL) {
-			*iter->prev_next = iter->current->next;
-			free(iter->current);
-		}
+		*iter->prev_next = iter->current->next;
+		free(iter->current);
+		iter->current = NULL;
 	}
 }
 

@@ -17,6 +17,7 @@ FILES="\
 
 FUNC_PREFIX="slist_ hash_table_ arraylist_ queue_ pointer_ string_"
 TYPE_PREFIX="SList HashTable ArrayList Queue"
+DEFINES="SLIST_NULL HASH_TABLE_NULL QUEUE_NULL"
 
 if [ "$1" = "" ]; then
         echo "Usage: $0 <c-algorithms source dir>"
@@ -32,6 +33,10 @@ for f in $FILES; do
         done
         for p in $TYPE_PREFIX; do
                 sed "s/$p/Irmo$p/g" < tmp.c > tmp2.c
+                mv tmp2.c tmp.c
+        done
+        for p in $DEFINES; do
+                sed "s/$p/IRMO_$p/g" < tmp.c > tmp2.c
                 mv tmp2.c tmp.c
         done
 

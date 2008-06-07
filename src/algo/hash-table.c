@@ -241,6 +241,10 @@ static int irmo_hash_table_enlarge(IrmoHashTable *hash_table)
 			rover = next;
 		}
 	}
+
+	/* Free the old table */
+
+	free(old_table);
        
 	return 1;
 }
@@ -356,7 +360,7 @@ IrmoHashTableValue irmo_hash_table_lookup(IrmoHashTable *hash_table, IrmoHashTab
 
 	/* Not found */
 
-	return HASH_TABLE_NULL;
+	return IRMO_HASH_TABLE_NULL;
 }
 
 int irmo_hash_table_remove(IrmoHashTable *hash_table, IrmoHashTableKey key)
@@ -445,7 +449,7 @@ int irmo_hash_table_iter_has_more(IrmoHashTableIterator *iterator)
 
 IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 {
-        IrmoHashTableEntry *current_entry;
+	IrmoHashTableEntry *current_entry;
 	IrmoHashTable *hash_table;
 	IrmoHashTableValue result;
 	int chain;
@@ -455,7 +459,7 @@ IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 	/* No more entries? */
 	
 	if (iterator->next_entry == NULL) {
-		return HASH_TABLE_NULL;
+		return IRMO_HASH_TABLE_NULL;
 	}
 	
 	/* Result is immediately available */
