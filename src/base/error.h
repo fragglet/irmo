@@ -22,6 +22,14 @@
 
 #include <irmo/error.h>
 
+/*!
+ * Save the reason for an error occurring; the error message can be retrieved
+ * using @param irmo_error_get.
+ *
+ * @param function_name    The function in which the error occurred.
+ * @param format           printf format string for the error message.
+ */
+
 void irmo_error_report(char *function_name, char *format, ...);
 
 #endif /* #ifndef IRMO_BASE_ERROR_H */

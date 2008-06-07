@@ -285,8 +285,6 @@ static void client_run_disconnecting(IrmoClient *client)
 	}
 }
 
-// called by irmo_socket_run for each client connected
-
 void irmo_client_run(IrmoClient *client)
 {
 	switch (client->state) {

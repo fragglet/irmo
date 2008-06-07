@@ -27,6 +27,14 @@
 
 #include "server.h"
 
+/*!
+ * Set an error message for the specified connection, describing why the
+ * attempt to connect failed.
+ *
+ * @param conn          The connection.
+ * @param s             Printf format string containing the error message.
+ */
+
 void irmo_connection_error(IrmoConnection *conn, char *s, ...);
 
 #endif /* #ifndef IRMO_NET_CONNECTION_H */

@@ -26,17 +26,36 @@
 // Memory allocation macros
 //
 
-// allocate memory, zeroing out the contents first
+/*!
+ * Allocate memory, zeroing out the contents first.
+ *
+ * @param bytes          Number of bytes to allocate.
+ * @return               Pointer to a new memory buffer.
+ */
 
-void *irmo_malloc0(int bytes);
+void *irmo_malloc0(size_t bytes);
 
-// allocate enough memory for an array of structures, giving the structure
-// name and array size, and zeroing the contents of the array
+/*!
+ * Allocate enough memory for an array of structures, giving the structure
+ * name and array size, and zeroing the contents of the array.
+ *
+ * @param typename   The type of structure.
+ * @param count      Number of structures to allocate.
+ * @return           Pointer to a new memory buffer for the array.
+ */
 
 #define irmo_new0(typename, count)                             \
         ((typename *) irmo_malloc0(sizeof(typename) * count))
 
-// resize an array of structures
+/*!
+ * Resize an array of structures.
+ *
+ * @param typename   The type of structure.
+ * @param oldmem     The old memory buffer.
+ * @param count      New number of structures.
+ * @return           Pointer to a new memory buffer for the array, containing
+ *                   the contents of the previous buffer.
+ */
 
 #define irmo_renew(typename, oldmem, count)                  \
         ((typename *) realloc((oldmem), sizeof(typename) * (count)))

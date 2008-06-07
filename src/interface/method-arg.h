@@ -48,7 +48,21 @@ struct _IrmoMethodArg {
 	IrmoValueType type;
 };
 
+/*!
+ * Generate a hash of a @ref IrmoMethodArg.
+ *
+ * @param method_arg       The method argument.
+ * @return                 The hash.
+ */
+
 uint32_t irmo_method_arg_hash(IrmoMethodArg *method_arg);
+
+/*!
+ * Free a @ref IrmoMethodArg.
+ *
+ * @param method_arg       The method argument to free.
+ */
+
 void _irmo_method_arg_free(IrmoMethodArg *arg);
 
 #endif /* #ifndef IRMO_INTERFACE_METHOD_ARG_H */

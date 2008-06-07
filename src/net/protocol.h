@@ -35,25 +35,39 @@
 #define PACKET_FLAG_FIN 0x04
 #define PACKET_FLAG_DTA 0x08
 
-// verifying integrity of received packets before parsing
+/*!
+ * Verify that the specified packet is valid and can be parsed.
+ *
+ * @param packet        The packet to verify.
+ * @param client        The client that the packet was received from.
+ * @param flags         Header flags read from the packet.
+ * @return              Non-zero if the packet was verified as valid.
+ */
 
 int irmo_proto_verify_packet(IrmoPacket *packet,
                              IrmoClient *client,
                              unsigned int flags);
 
-// parsing received packets
+/*!
+ * Parse a packet received from a client.
+ *
+ * @param packet        The packet.
+ * @param client        The client that the packet was receieved from.
+ * @param flags         Header flags read from the packet.
+ */
 
 void irmo_proto_parse_packet(IrmoPacket *packet,
                              IrmoClient *client,
                              unsigned int flags);
 
-// running client to build and send packets
+/*!
+ * Send new data to the specified client.  This is called periodically
+ * for all clients to send updates.
+ *
+ * @param client        The client.
+ */
 
 void irmo_proto_run_client(IrmoClient *client);
-
-// timeout time for a particular client
-
-int irmo_proto_client_timeout_time(IrmoClient *client);
 
 #endif /* #ifndef IRMO_NET_PROTO_H */
 

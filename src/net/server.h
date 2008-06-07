@@ -65,16 +65,33 @@ struct _IrmoServer {
 	IrmoCallbackList connect_callbacks;
 };
 
-// make a new server using an existing socket object
+/*!
+ * Internal function to create a new @ref IrmoServer.
+ *
+ * @param sock              The socket to use for the server.
+ * @param world             The world that the server will serve.
+ * @param client_interface  The interface for the client world.
+ * @return                  The new server.
+ */
 
 IrmoServer *irmo_server_new_from(IrmoNetSocket *sock, IrmoWorld *world,
 				 IrmoInterface *client_interface);
 
-// invoke IrmoClientCallback callback functions in a list
+/*!
+ * Invoke a list of @ref IrmoClientCallback callback functions.
+ *
+ * @param list             The list of callbacks to invoke.
+ * @param client           The client to pass to the callback functions.
+ */
 
 void irmo_client_callback_raise(IrmoCallbackList *list, IrmoClient *client);
 
-// raise callback functions on new client connect
+/*!
+ * Invoke a list of callback functions when a client connects to a server.
+ *
+ * @param server           The server.
+ * @param client           The client that connected to the server.
+ */
 
 void irmo_server_raise_connect(IrmoServer *server, IrmoClient *client);
 

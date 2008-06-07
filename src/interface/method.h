@@ -55,7 +55,21 @@ struct _IrmoMethod {
 	IrmoHashTable *argument_hash;
 };
 
+/*!
+ * Generate a hash of a @ref IrmoMethod.
+ *
+ * @param method        The method.
+ * @return              Hash of the method.
+ */
+
 uint32_t irmo_method_hash(IrmoMethod *method);
+
+/*!
+ * Free a @ref IrmoMethod.
+ *
+ * @param method        The method to free.
+ */
+
 void _irmo_method_free(IrmoMethod *method);
 
 #endif /* #ifndef IRMO_INTERFACE_METHOD_H */

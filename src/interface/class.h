@@ -63,12 +63,26 @@ struct _IrmoClass {
         IrmoStruct *structure;
 };
 
+/*!
+ * Generate a hash for a @ref IrmoClass.
+ *
+ * @param klass           The class.
+ * @return                Hash of the class.
+ */
+
 uint32_t irmo_class_hash(IrmoClass *klass);
+
+/*!
+ * Free a @ref IrmoClass.
+ *
+ * @param klass           The class.
+ */
+
 void _irmo_class_free(IrmoClass *klass);
 
 /*!
  * Set default bindings for the specified class (bind to a structure
- * with the same name as the class, if one exists)
+ * with the same name as the class, if one exists).
  *
  * @param klass           The class.
  * @return                Non-zero if the class was successfully 

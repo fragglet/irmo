@@ -48,30 +48,106 @@ struct _ClassCallbackData {
         ObjectCallbackData object_callbacks;
 };
 
+/*!
+ * Initialise a @ref ClassCallbackData structure.
+ *
+ * @param data           The structure to initialise.
+ * @param parent_data    Structure for the parent class of this class.
+ * @param klass          The class for this structure.
+ */
+
 void irmo_class_callback_init(ClassCallbackData *data,
                               ClassCallbackData *parent_data,
                               IrmoClass *klass);
+
+/*! 
+ * Free data used for the specified @ref ClassCallbackData.
+ *
+ * @param data           The structure.
+ */
+
 void irmo_class_callback_free(ClassCallbackData *data);
+
+/*!
+ * Invoke callback functions in response to a variable of an object belonging
+ * to a particular class being changed.
+ *
+ * @param data           The @ref ClassCallbackData for the class.
+ * @param object         The object that was changed.
+ * @param variable_index The index of the variable that was changed.
+ */
 
 void irmo_class_callback_raise(ClassCallbackData *data,
                                IrmoObject *object,
                                unsigned int variable_index);
+
+/*!
+ * Invoke callback functions in response to an object of a particular class
+ * being destroyed.
+ *
+ * @param data           The @ref ClassCallbackData for the class.
+ * @param object         The object being destroyed.
+ */
+
 void irmo_class_callback_raise_destroy(ClassCallbackData *data, 
                                        IrmoObject *object);
+/*!
+ * Invoke callback functions in response to an object of a particular class
+ * being created.
+ *
+ * @param data           The @ref ClassCallbackData for the class.
+ * @param object         The new object.
+ */
+
 void irmo_class_callback_raise_new(ClassCallbackData *data, 
                                    IrmoObject *object);
+
+/*!
+ * Watch for changes to variables of objects of a particular class.
+ *
+ * @param data           The @ref ClassCallbackData for the class.
+ * @param klass          The class of object to watch.
+ * @param variable_name  Name of the variable to watch, or NULL
+ *                       to watch for changes to all variables.
+ * @param func           The callback function to invoke.
+ * @param user_data      Extra data to pass to the callback function.
+ * @return               @ref IrmoCallback object to return representing
+ *                       the callback.
+ */
 
 IrmoCallback *irmo_class_callback_watch(ClassCallbackData *data,
                                         IrmoClass *klass,
                                         char *variable_name,
                                         IrmoVarCallback func,
                                         void *user_data);
-IrmoCallback *irmo_class_callback_watch_destroy(ClassCallbackData *data,
-                                                IrmoObjCallback func,
-                                                void *user_data);
+/*!
+ * Watch for when objects of a particular class are instantiated.
+ *
+ * @param data           The @ref ClassCallbackData for the class.
+ * @param func           The callback function to invoke.
+ * @param user_data      Extra data to pass to the callback function.
+ * @return               @ref IrmoCallback object to return representing
+ *                       the callback.
+ */
+
+
 IrmoCallback *irmo_class_callback_watch_new(ClassCallbackData *data,
                                             IrmoObjCallback func,
                                             void *user_data);
+
+/*!
+ * Watch for when objects of a particular class are destroyed.
+ *
+ * @param data           The @ref ClassCallbackData for the class.
+ * @param func           The callback function to invoke.
+ * @param user_data      Extra data to pass to the callback function.
+ * @return               @ref IrmoCallback object to return representing
+ *                       the callback.
+ */
+
+IrmoCallback *irmo_class_callback_watch_destroy(ClassCallbackData *data,
+                                                IrmoObjCallback func,
+                                                void *user_data);
 
 #endif /* #ifndef IRMO_WORLD_CLASS_CALLBACK_DATA_H */
 

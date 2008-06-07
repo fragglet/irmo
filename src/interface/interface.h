@@ -55,7 +55,21 @@ struct _IrmoInterface {
 	IrmoHashTable *method_hash;
 };
 
+/*!
+ * Generate a hash of a @ref IrmoInterface.
+ *
+ * @param iface            The interface.
+ * @return                 The hash of the interface.
+ */
+
 uint32_t irmo_interface_hash(IrmoInterface *iface);
+
+/*!
+ * Free a @ref IrmoInterface.
+ *
+ * @param iface            The interface to free.
+ */
+
 void _irmo_interface_free(IrmoInterface *iface);
 
 #endif /* #ifndef IRMO_INTERFACE_INTERFACE_H */

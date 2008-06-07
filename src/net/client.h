@@ -142,27 +142,59 @@ struct _IrmoClient {
 	char *connection_error;
 };
 
-// create a new client, attached to a particular server
+/*!
+ * Allocate a new @ref IrmoClient, attached to a particular @ref IrmoServer.
+ *
+ * @param server         The server that the client is attached to.
+ * @param address        Network address of the server.
+ * @return               A new @ref IrmoClient.
+ */
 
 IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *address);
 
-// 'run' a client, called by irmo_socket_run
-
-void irmo_client_run(IrmoClient *client);
-
-// destroy client data structure
+/*!
+ * Remove an internal reference to a @ref IrmoClient.
+ *
+ * @param client         The client.
+ */
 
 void irmo_client_internal_unref(IrmoClient *client);
 
-// run through sendatoms waiting in the receive window
+/*!
+ * Run through actions that a client needs to do.  This is called periodically
+ * to update clients.
+ *
+ * @param client         The client.
+ */
 
-void irmo_client_run_recvwindow(IrmoClient *client);
+void irmo_client_run(IrmoClient *client);
 
-// timeout time for a client
+/*!
+ * Calculate the timeout time for the specified client, ie. the number of
+ * milliseconds after which a sent atom is judged to have timed out.
+ *
+ * @param client         The client.
+ * @return               Timeout time, in ms.
+ */
 
 int irmo_client_timeout_time(IrmoClient *client);
 
-// preexec starting from a position in the recvwindow
+/*!
+ * Run through send atoms waiting in a client's receive window.
+ *
+ * @param client         The client.
+ */
+
+void irmo_client_run_recvwindow(IrmoClient *client);
+
+/*!
+ * Run through send atoms waiting in a client's receive window, executing
+ * them before they can be "officially" run, if possible.
+ *
+ * @param client         The client.
+ * @param start          Start of the range of atoms to execute.
+ * @param end            End of the range of atoms to execute.
+ */
 
 void irmo_client_run_preexec(IrmoClient *client, int start, int end);
 

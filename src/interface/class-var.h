@@ -53,7 +53,21 @@ struct _IrmoClassVar {
         IrmoStructMember *member;
 };
 
+/*!
+ * Generate a hash of a @ref IrmoClassVar.
+ *
+ * @param class_var         The class variable.
+ * @return                  The hash of the variable.
+ */
+
 uint32_t irmo_class_var_hash(IrmoClassVar *class_var);
+
+/*!
+ * Free a @ref IrmoClassVar.
+ *
+ * @param class_var         The class variable to free.
+ */
+
 void _irmo_class_var_free(IrmoClassVar *var);
 
 #endif /* #ifndef IRMO_INTERFACE_CLASS_VAR_H */

@@ -23,7 +23,7 @@
 
 #include "alloc.h"
 
-void *irmo_malloc0(int bytes)
+void *irmo_malloc0(size_t bytes)
 {
         void *p;
 
