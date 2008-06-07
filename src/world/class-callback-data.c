@@ -102,13 +102,12 @@ void irmo_class_callback_raise_destroy(ClassCallbackData *data,
 }
 
 IrmoCallback *irmo_class_callback_watch(ClassCallbackData *data,
-                                        IrmoClass *klass,
                                         char *variable_name,
                                         IrmoVarCallback func,
                                         void *user_data)
 {
         return irmo_object_callback_watch(&data->object_callbacks,
-                                          klass,
+                                          data->klass,
                                           variable_name,
                                           func,
                                           user_data);

@@ -281,7 +281,7 @@ IrmoCallback *irmo_world_watch_class(IrmoWorld *world,
 
         // Set the callback.
 
-        callback = irmo_class_callback_watch(data, klass, variable,
+        callback = irmo_class_callback_watch(data, variable,
                                              func, user_data);
 
         // If setting the callback failed, it was because the variable

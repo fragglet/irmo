@@ -106,7 +106,6 @@ void irmo_class_callback_raise_new(ClassCallbackData *data,
  * Watch for changes to variables of objects of a particular class.
  *
  * @param data           The @ref ClassCallbackData for the class.
- * @param klass          The class of object to watch.
  * @param variable_name  Name of the variable to watch, or NULL
  *                       to watch for changes to all variables.
  * @param func           The callback function to invoke.
@@ -116,7 +115,6 @@ void irmo_class_callback_raise_new(ClassCallbackData *data,
  */
 
 IrmoCallback *irmo_class_callback_watch(ClassCallbackData *data,
-                                        IrmoClass *klass,
                                         char *variable_name,
                                         IrmoVarCallback func,
                                         void *user_data);
