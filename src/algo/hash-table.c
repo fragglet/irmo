@@ -1,37 +1,22 @@
-
 /*
- 
-Copyright (c) 2005, Simon Howard
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
-modification, are permitted provided that the following conditions 
-are met:
+Copyright (c) 2005-2008, Simon Howard
 
- * Redistributions of source code must retain the above copyright 
-   notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright 
-   notice, this list of conditions and the following disclaimer in 
-   the documentation and/or other materials provided with the 
-   distribution.
- * Neither the name of the C Algorithms project nor the names of its 
-   contributors may be used to endorse or promote products derived 
-   from this software without specific prior written permission.
+Permission to use, copy, modify, and/or distribute this software 
+for any purpose with or without fee is hereby granted, provided 
+that the above copyright notice and this permission notice appear 
+in all copies. 
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
-ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-POSSIBILITY OF SUCH DAMAGE.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL 
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE 
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR 
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM 
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, 
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN      
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
 
-*/
+ */
 
 /* Hash table implementation */
 
@@ -39,6 +24,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "hash-table.h"
+
+/* malloc() / free() testing */
+
+#ifdef ALLOC_TESTING
+#include "alloc-testing.h"
+#endif
 
 struct _IrmoHashTableEntry {
 	IrmoHashTableKey key;
@@ -48,13 +39,13 @@ struct _IrmoHashTableEntry {
 
 struct _IrmoHashTable {
 	IrmoHashTableEntry **table;
-	int table_size;
+	unsigned int table_size;
 	IrmoHashTableHashFunc hash_func;
 	IrmoHashTableEqualFunc equal_func;
 	IrmoHashTableKeyFreeFunc key_free_func;
 	IrmoHashTableValueFreeFunc value_free_func;
-	int entries;
-	int prime_index;
+	unsigned int entries;
+	unsigned int prime_index;
 };
 
 /* This is a set of good hash table prime numbers, from:
@@ -69,7 +60,7 @@ static const unsigned int irmo_hash_table_primes[] = {
 	402653189, 805306457, 1610612741,
 };
 
-static const int irmo_hash_table_num_primes 
+static const unsigned int irmo_hash_table_num_primes 
 	= sizeof(irmo_hash_table_primes) / sizeof(int);
 
 /* Internal function used to allocate the table on hash table creation
@@ -77,7 +68,7 @@ static const int irmo_hash_table_num_primes
 
 static int irmo_hash_table_allocate_table(IrmoHashTable *hash_table)
 {
-	int new_table_size;
+	unsigned int new_table_size;
 
 	/* Determine the table size based on the current prime index.  
 	 * An attempt is made here to ensure sensible behavior if the
@@ -157,7 +148,7 @@ void irmo_hash_table_free(IrmoHashTable *hash_table)
 {
 	IrmoHashTableEntry *rover;
 	IrmoHashTableEntry *next;
-	int i;
+	unsigned int i;
 	
 	/* Free all entries in all chains */
 
@@ -191,12 +182,12 @@ void irmo_hash_table_register_free_functions(IrmoHashTable *hash_table,
 static int irmo_hash_table_enlarge(IrmoHashTable *hash_table)
 {
 	IrmoHashTableEntry **old_table;
-	int old_table_size;
-	int old_prime_index;
+	unsigned int old_table_size;
+	unsigned int old_prime_index;
 	IrmoHashTableEntry *rover;
 	IrmoHashTableEntry *next;
-	int index;
-	int i;
+	unsigned int index;
+	unsigned int i;
 	
 	/* Store a copy of the old table */
 	
@@ -253,7 +244,7 @@ int irmo_hash_table_insert(IrmoHashTable *hash_table, IrmoHashTableKey key, Irmo
 {
 	IrmoHashTableEntry *rover;
 	IrmoHashTableEntry *newentry;
-	int index;
+	unsigned int index;
 	
 	/* If there are too many items in the table with respect to the table
 	 * size, the number of hash collisions increases and performance
@@ -337,7 +328,7 @@ int irmo_hash_table_insert(IrmoHashTable *hash_table, IrmoHashTableKey key, Irmo
 IrmoHashTableValue irmo_hash_table_lookup(IrmoHashTable *hash_table, IrmoHashTableKey key)
 {
 	IrmoHashTableEntry *rover;
-	int index;
+	unsigned int index;
 
 	/* Generate the hash of the key and hence the index into the table */
 	
@@ -367,7 +358,7 @@ int irmo_hash_table_remove(IrmoHashTable *hash_table, IrmoHashTableKey key)
 {
 	IrmoHashTableEntry **rover;
 	IrmoHashTableEntry *entry;
-	int index;
+	unsigned int index;
 	int result;
 
 	/* Generate the hash of the key and hence the index into the table */
@@ -415,25 +406,25 @@ int irmo_hash_table_remove(IrmoHashTable *hash_table, IrmoHashTableKey key)
 	return result;
 }
 
-int irmo_hash_table_num_entries(IrmoHashTable *hash_table)
+unsigned int irmo_hash_table_num_entries(IrmoHashTable *hash_table)
 {
 	return hash_table->entries;
 }
 
 void irmo_hash_table_iterate(IrmoHashTable *hash_table, IrmoHashTableIterator *iterator)
 {
-	int chain;
-	
+	unsigned int chain;
+
 	iterator->hash_table = hash_table;
 
 	/* Default value of next if no entries are found. */
-	
+
 	iterator->next_entry = NULL;
-	
+
 	/* Find the first entry */
-	
+
 	for (chain=0; chain<hash_table->table_size; ++chain) {
-		
+
 		if (hash_table->table[chain] != NULL) {
 			iterator->next_entry = hash_table->table[chain];
 			iterator->next_chain = chain;
@@ -452,16 +443,16 @@ IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 	IrmoHashTableEntry *current_entry;
 	IrmoHashTable *hash_table;
 	IrmoHashTableValue result;
-	int chain;
+	unsigned int chain;
 
 	hash_table = iterator->hash_table;
 
 	/* No more entries? */
-	
+
 	if (iterator->next_entry == NULL) {
 		return IRMO_HASH_TABLE_NULL;
 	}
-	
+
 	/* Result is immediately available */
 
 	current_entry = iterator->next_entry;
@@ -470,19 +461,19 @@ IrmoHashTableValue irmo_hash_table_iter_next(IrmoHashTableIterator *iterator)
 	/* Find the next entry */
 
 	if (current_entry->next != NULL) {
-		
+
 		/* Next entry in current chain */
 
 		iterator->next_entry = current_entry->next;
-		
+
 	} else {
-	
+
 		/* None left in this chain, so advance to the next chain */
 
 		chain = iterator->next_chain + 1;
 
 		/* Default value if no next chain found */
-		
+
 		iterator->next_entry = NULL;
 
 		while (chain < hash_table->table_size) {

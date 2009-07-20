@@ -1,41 +1,32 @@
-
 /*
- 
-Copyright (c) 2005, Simon Howard
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
-modification, are permitted provided that the following conditions 
-are met:
+Copyright (c) 2005-2008, Simon Howard
 
- * Redistributions of source code must retain the above copyright 
-   notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright 
-   notice, this list of conditions and the following disclaimer in 
-   the documentation and/or other materials provided with the 
-   distribution.
- * Neither the name of the C Algorithms project nor the names of its 
-   contributors may be used to endorse or promote products derived 
-   from this software without specific prior written permission.
+Permission to use, copy, modify, and/or distribute this software 
+for any purpose with or without fee is hereby granted, provided 
+that the above copyright notice and this permission notice appear 
+in all copies. 
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
-ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-POSSIBILITY OF SUCH DAMAGE.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL 
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE 
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR 
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM 
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, 
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN      
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
 
-*/
+ */
 
 #include <stdlib.h>
 
 #include "slist.h"
+
+/* malloc() / free() testing */
+
+#ifdef ALLOC_TESTING
+#include "alloc-testing.h"
+#endif
 
 /* A singly-linked list */
 
@@ -134,10 +125,10 @@ IrmoSListEntry *irmo_slist_next(IrmoSListEntry *listentry)
 	return listentry->next;
 }
 
-IrmoSListEntry *irmo_slist_nth_entry(IrmoSListEntry *list, int n)
+IrmoSListEntry *irmo_slist_nth_entry(IrmoSListEntry *list, unsigned int n)
 {
 	IrmoSListEntry *entry;
-	int i;
+	unsigned int i;
 
 	/* Negative values are always out of range */
 
@@ -161,7 +152,7 @@ IrmoSListEntry *irmo_slist_nth_entry(IrmoSListEntry *list, int n)
 	return entry;
 }
 
-IrmoSListValue irmo_slist_nth_data(IrmoSListEntry *list, int n)
+IrmoSListValue irmo_slist_nth_data(IrmoSListEntry *list, unsigned int n)
 {
 	IrmoSListEntry *entry;
 
@@ -178,18 +169,18 @@ IrmoSListValue irmo_slist_nth_data(IrmoSListEntry *list, int n)
 	}
 }
 
-int irmo_slist_length(IrmoSListEntry *list)
+unsigned int irmo_slist_length(IrmoSListEntry *list)
 {
 	IrmoSListEntry *entry;
-	int length;
+	unsigned int length;
 
 	length = 0;
 	entry = list;
 
 	while (entry != NULL) {
-		
+
 		/* Count the number of entries */
-		
+
 		++length;
 
 		entry = entry->next;
@@ -201,30 +192,30 @@ int irmo_slist_length(IrmoSListEntry *list)
 IrmoSListValue *irmo_slist_to_array(IrmoSListEntry *list)
 {
 	IrmoSListEntry *rover;
-	int listlen;
 	IrmoSListValue *array;
-	int i;
+	unsigned int length;
+	unsigned int i;
 
 	/* Allocate an array equal in size to the list length */
-	
-	listlen = irmo_slist_length(list);
 
-	array = malloc(sizeof(IrmoSListValue) * listlen);
+	length = irmo_slist_length(list);
+
+	array = malloc(sizeof(IrmoSListValue) * length);
 
 	if (array == NULL) {
 		return NULL;
 	}
-	
+
 	/* Add all entries to the array */
-	
+
 	rover = list;
-	
-	for (i=0; i<listlen; ++i) {
+
+	for (i=0; i<length; ++i) {
 
 		/* Add this node's data */
 
 		array[i] = rover->data;
-		
+
 		/* Jump to the next list node */
 
 		rover = rover->next;
@@ -242,7 +233,7 @@ int irmo_slist_remove_entry(IrmoSListEntry **list, IrmoSListEntry *entry)
 	if (*list == NULL || entry == NULL) {
 		return 0;
 	}
-	
+
 	/* Action to take is different if the entry is the first in the list */
 
 	if (*list == entry) {
@@ -285,37 +276,38 @@ int irmo_slist_remove_entry(IrmoSListEntry **list, IrmoSListEntry *entry)
 	return 1;
 }
 
-int irmo_slist_remove_data(IrmoSListEntry **list, IrmoSListEqualFunc callback, IrmoSListValue data)
+unsigned int irmo_slist_remove_data(IrmoSListEntry **list, IrmoSListEqualFunc callback,
+                               IrmoSListValue data)
 {
 	IrmoSListEntry **rover;
 	IrmoSListEntry *next;
-	int entries_removed;
+	unsigned int entries_removed;
 
 	entries_removed = 0;
 
 	/* Iterate over the list.  'rover' points at the entrypoint into the
-	 * current entry, ie. the list variable for the first entry in the 
+	 * current entry, ie. the list variable for the first entry in the
 	 * list, or the "next" field of the preceding entry. */
-	
+
 	rover = list;
 
 	while (*rover != NULL) {
-		
+
 		/* Should this entry be removed? */
-		
+
 		if (callback((*rover)->data, data) != 0) {
-			
+
 			/* Data found, so remove this entry and free */
 
 			next = (*rover)->next;
 			free(*rover);
 			*rover = next;
-			
+
 			/* Count the number of entries removed */
 
 			++entries_removed;
 		} else {
-			
+
 			/* Advance to the next entry */
 
 			rover = &((*rover)->next);

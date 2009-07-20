@@ -1,37 +1,22 @@
-
 /*
- 
-Copyright (c) 2005, Simon Howard
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
-modification, are permitted provided that the following conditions 
-are met:
+Copyright (c) 2005-2008, Simon Howard
 
- * Redistributions of source code must retain the above copyright 
-   notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright 
-   notice, this list of conditions and the following disclaimer in 
-   the documentation and/or other materials provided with the 
-   distribution.
- * Neither the name of the C Algorithms project nor the names of its 
-   contributors may be used to endorse or promote products derived 
-   from this software without specific prior written permission.
+Permission to use, copy, modify, and/or distribute this software 
+for any purpose with or without fee is hereby granted, provided 
+that the above copyright notice and this permission notice appear 
+in all copies. 
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
-ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-POSSIBILITY OF SUCH DAMAGE.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL 
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE 
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR 
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM 
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, 
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN      
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
 
-*/
+ */
 
 /** 
  * @file arraylist.h
@@ -71,7 +56,13 @@ typedef void *IrmoArrayListValue;
  * @see irmo_arraylist_new 
  */
 
-typedef struct _IrmoArrayList {
+typedef struct _IrmoArrayList IrmoArrayList;
+
+/**
+ * Definition of an @ref IrmoArrayList.
+ */ 
+
+struct _IrmoArrayList {
 
 	/** Entries in the array */
 	
@@ -79,12 +70,12 @@ typedef struct _IrmoArrayList {
 
 	/** Length of the array */
 	
-	int length;
+	unsigned int length;
 
 	/** Private data and should not be accessed */
 
-	int _alloced;
-} IrmoArrayList;
+	unsigned int _alloced;
+};
 
 /**
  * Compare two values in an arraylist to determine if they are equal.
@@ -114,12 +105,14 @@ typedef int (*IrmoArrayListCompareFunc)(IrmoArrayListValue value1,
  *
  * @param length         Hint to the initialise function as to the amount
  *                       of memory to allocate initially to the IrmoArrayList.
+ *                       If a value of zero is given, a sensible default
+ *                       size is used.
  * @return               A new arraylist, or NULL if it was not possible
  *                       to allocate the memory.
  * @see irmo_arraylist_free
  */
 
-IrmoArrayList *irmo_arraylist_new(int length);
+IrmoArrayList *irmo_arraylist_new(unsigned int length);
 
 /**
  * Destroy an IrmoArrayList and free back the memory it uses.
@@ -160,7 +153,7 @@ int irmo_arraylist_prepend(IrmoArrayList *arraylist, IrmoArrayListValue data);
  * @param index          The index of the entry to remove.
  */
 
-void irmo_arraylist_remove(IrmoArrayList *arraylist, int index);
+void irmo_arraylist_remove(IrmoArrayList *arraylist, unsigned int index);
 
 /**
  * Remove a range of entries at the specified location in an IrmoArrayList.
@@ -170,7 +163,8 @@ void irmo_arraylist_remove(IrmoArrayList *arraylist, int index);
  * @param length         The length of the range to remove.
  */
 
-void irmo_arraylist_remove_range(IrmoArrayList *arraylist, int index, int length);
+void irmo_arraylist_remove_range(IrmoArrayList *arraylist, unsigned int index,
+                            unsigned int length);
 
 /**
  * Insert a value at the specified index in an IrmoArrayList.
@@ -185,7 +179,8 @@ void irmo_arraylist_remove_range(IrmoArrayList *arraylist, int index, int length
  *                       if it was impossible to allocate more memory).
  */
 
-int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, IrmoArrayListValue data);
+int irmo_arraylist_insert(IrmoArrayList *arraylist, unsigned int index,
+                     IrmoArrayListValue data);
 
 /**
  * Find the index of a particular value in an IrmoArrayList.
@@ -198,8 +193,8 @@ int irmo_arraylist_insert(IrmoArrayList *arraylist, int index, IrmoArrayListValu
  * @return               The index of the value if found, or -1 if not found.
  */
 
-int irmo_arraylist_index_of(IrmoArrayList *arraylist, 
-                       IrmoArrayListEqualFunc callback, 
+int irmo_arraylist_index_of(IrmoArrayList *arraylist,
+                       IrmoArrayListEqualFunc callback,
                        IrmoArrayListValue data);
 
 /** 
