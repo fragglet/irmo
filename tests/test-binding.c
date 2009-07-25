@@ -27,9 +27,9 @@
 #include "binding/binding.h"
 
 struct mystruct {
-        int8_t myint8;
-        int16_t myint16;
-        int32_t myint32;
+        uint8_t myint8;
+        uint16_t myint16;
+        uint32_t myint32;
         char *mystring;
 };
 

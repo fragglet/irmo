@@ -117,7 +117,6 @@ static void test_set_position(void)
 
         // Check invalid positions
 
-        assert(irmo_packet_set_position(packet, -1) == 0);
         assert(irmo_packet_get_position(packet) <= 19);
 
         assert(irmo_packet_set_position(packet, 20) == 0);

@@ -19,8 +19,10 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <inttypes.h>
 
 #include <irmo.h>
+#include "interface/interface.h"
 
 // Build up a basic interface
 
