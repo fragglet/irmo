@@ -115,9 +115,9 @@ char *irmo_class_get_name(IrmoClass *klass)
 	return klass->name;
 }
 
-int irmo_class_num_variables(IrmoClass *klass)
+unsigned int irmo_class_num_variables(IrmoClass *klass)
 {
-	irmo_return_val_if_fail(klass != NULL, -1);
+	irmo_return_val_if_fail(klass != NULL, 0);
 
         return klass->nvariables;
 }

@@ -119,7 +119,7 @@ struct _IrmoClient {
 
 	// backoff multiply
 
-	int backoff;
+	unsigned int backoff;
 
 	// maximum send window size in bytes. once the amount of data
 	// in the send window exceeds this amount, no more is added.
@@ -129,13 +129,13 @@ struct _IrmoClient {
 	// slow start threshold. when cwnd is above this threshold we
 	// do congestion avoidance.
 
-	int ssthresh;
+	unsigned int ssthresh;
 
 	// user specified sendwindow limits
 	// if these are 0, they are unset
 	
-	int local_sendwindow_max;
-	int remote_sendwindow_max;
+	unsigned int local_sendwindow_max;
+	unsigned int remote_sendwindow_max;
 
 	// connection error
 
@@ -177,7 +177,7 @@ void irmo_client_run(IrmoClient *client);
  * @return               Timeout time, in ms.
  */
 
-int irmo_client_timeout_time(IrmoClient *client);
+unsigned int irmo_client_timeout_time(IrmoClient *client);
 
 /*!
  * Run through send atoms waiting in a client's receive window.
@@ -196,7 +196,8 @@ void irmo_client_run_recvwindow(IrmoClient *client);
  * @param end            End of the range of atoms to execute.
  */
 
-void irmo_client_run_preexec(IrmoClient *client, int start, int end);
+void irmo_client_run_preexec(IrmoClient *client, unsigned int start,
+                             unsigned int end);
 
 #endif /* #ifndef IRMO_NET_CLIENT_H */
 

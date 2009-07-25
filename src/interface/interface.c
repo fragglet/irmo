@@ -152,16 +152,16 @@ uint32_t irmo_interface_hash(IrmoInterface *iface)
 	return hash;
 }
 
-int irmo_interface_num_classes(IrmoInterface *iface)
+unsigned int irmo_interface_num_classes(IrmoInterface *iface)
 {
-        irmo_return_val_if_fail(iface != NULL, -1);
+        irmo_return_val_if_fail(iface != NULL, 0);
 
         return iface->nclasses;
 }
 
-int irmo_interface_num_methods(IrmoInterface *iface)
+unsigned int irmo_interface_num_methods(IrmoInterface *iface)
 {
-        irmo_return_val_if_fail(iface != NULL, -1);
+        irmo_return_val_if_fail(iface != NULL, 0);
 
         return iface->nmethods;
 }

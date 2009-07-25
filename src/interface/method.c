@@ -86,9 +86,9 @@ char *irmo_method_get_name(IrmoMethod *method)
 	return method->name;
 }
 
-int irmo_method_num_arguments(IrmoMethod *method)
+unsigned int irmo_method_num_arguments(IrmoMethod *method)
 {
-	irmo_return_val_if_fail(method != NULL, -1);
+	irmo_return_val_if_fail(method != NULL, 0);
 
 	return method->narguments;
 }

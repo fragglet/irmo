@@ -26,9 +26,10 @@
 #include "connection.h"
 
 IrmoConnection *irmo_connect(IrmoNetModule *net_module,
-			     char *location, int port,
-			     IrmoInterface *iface, 
-			     IrmoWorld *local_world)
+                             char *location,
+                             unsigned int port,
+                             IrmoInterface *iface, 
+                             IrmoWorld *local_world)
 {
 	IrmoNetSocket *sock;
         IrmoNetAddress *addr;

@@ -120,7 +120,7 @@ IrmoMethod *irmo_interface_get_method(IrmoInterface *iface,
  * @return              The number of classes in the interface.
  */
 
-int irmo_interface_num_classes(IrmoInterface *iface);
+unsigned int irmo_interface_num_classes(IrmoInterface *iface);
 
 /*!
  * Return the number of methods in an interface.
@@ -129,7 +129,7 @@ int irmo_interface_num_classes(IrmoInterface *iface);
  * @return              The number of methods in the interface.
  */
 
-int irmo_interface_num_methods(IrmoInterface *iface);
+unsigned int irmo_interface_num_methods(IrmoInterface *iface);
 
 /*!
  * Iterate over all methods in an interface.
@@ -237,7 +237,7 @@ char *irmo_class_get_name(IrmoClass *klass);
  * inherited from parent classes are not included.
  */
 
-int irmo_class_num_variables(IrmoClass *klass);
+unsigned int irmo_class_num_variables(IrmoClass *klass);
 
 /*!
  * Get the parent class of a class.
@@ -355,7 +355,7 @@ char *irmo_method_get_name(IrmoMethod *method);
  * Get the number of arguments to the method.
  */
 
-int irmo_method_num_arguments(IrmoMethod *method);
+unsigned int irmo_method_num_arguments(IrmoMethod *method);
 
 /*!
  * Get the @ref IrmoMethodArg object representing a particular 

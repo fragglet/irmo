@@ -230,7 +230,8 @@ static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
 
                 // Create a packet from the received data.
 
-                return irmo_packet_new_from(sock->recvbuf, status);
+                return irmo_packet_new_from(sock->recvbuf,
+                                            (unsigned int) status);
         }
 }
 
@@ -366,7 +367,8 @@ static IrmoNetSocket *ipv4_open_client_sock(IrmoNetModule *module)
         return &result->irmo_socket;
 }
 
-static IrmoNetSocket *ipv4_open_server_sock(IrmoNetModule *module, int port)
+static IrmoNetSocket *ipv4_open_server_sock(IrmoNetModule *module,
+                                            unsigned int port)
 {
         IPv4Socket *result;
         struct sockaddr_in addr;
@@ -384,7 +386,7 @@ static IrmoNetSocket *ipv4_open_server_sock(IrmoNetModule *module, int port)
         addr_len = sizeof(struct sockaddr_in);
         addr.sin_family = AF_INET;
         addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        addr.sin_port = htons(port);
+        addr.sin_port = htons((uint16_t) port);
 
         status = bind(result->sock, (struct sockaddr *) &addr, addr_len);
 
@@ -402,7 +404,7 @@ static IrmoNetSocket *ipv4_open_server_sock(IrmoNetModule *module, int port)
 
 static IrmoNetAddress *ipv4_resolve_address(IrmoNetModule *module,
                                             char *address,
-                                            int port)
+                                            unsigned int port)
 {
 	struct hostent *hp;
         struct sockaddr_in addr;
@@ -416,7 +418,7 @@ static IrmoNetAddress *ipv4_resolve_address(IrmoNetModule *module,
 
         addr.sin_family = AF_INET;
         memcpy(&addr.sin_addr, hp->h_addr, sizeof(struct in_addr));
-        addr.sin_port = htons(port);
+        addr.sin_port = htons((uint16_t) port);
 
         result = ipv4_get_address(&addr);
 

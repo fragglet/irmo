@@ -62,7 +62,8 @@ IrmoServer *irmo_server_new_from(IrmoNetSocket *sock,
 	return server;
 }
 
-IrmoServer *irmo_server_new(IrmoNetModule *net_module, int port,
+IrmoServer *irmo_server_new(IrmoNetModule *net_module,
+                            unsigned int port,
                             IrmoWorld *world, 
 			    IrmoInterface *client_interface)
 {
@@ -107,7 +108,7 @@ static void irmo_server_remove_all_clients(IrmoServer *server)
 
 static void irmo_server_internal_shutdown(IrmoServer *server)
 {
-        int i;
+        unsigned int i;
 
 	//printf("shutdown server\n");
 	if (!server->running) {

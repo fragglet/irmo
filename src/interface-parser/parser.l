@@ -74,7 +74,7 @@ typedef enum {
 #define YY_INPUT(buf, result, max_size)            \
         read_data(buf, &(result), max_size) 
 
-static void read_data(char *buf, int *result, int max_size);
+static void read_data(char *buf, int *result, unsigned int max_size);
 static void parse_assert(int expr, char *msg, ...);
 static jmp_buf parse_error_env;
 
@@ -144,7 +144,7 @@ static void parse_assert(int expr, char *msg, ...)
 
 // Read data from the input file.
 
-static void read_data(char *buf, int *result, int max_size)
+static void read_data(char *buf, int *result, unsigned int max_size)
 {
 	int i;
 	int status;

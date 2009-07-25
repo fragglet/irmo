@@ -47,7 +47,8 @@ IrmoNetSocket *irmo_net_socket_open_unbound(IrmoNetModule *module);
  *                 to open a socket.
  */
 
-IrmoNetSocket *irmo_net_socket_open_bound(IrmoNetModule *module, int port);
+IrmoNetSocket *irmo_net_socket_open_bound(IrmoNetModule *module,
+                                          unsigned int port);
 
 /*!
  * Close a socket.

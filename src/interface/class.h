@@ -47,7 +47,7 @@ struct _IrmoClass {
 
         // Index in the parent interface's list of classes.
 
-	int index;
+	unsigned int index;
 	
         // Array of member variables stored by each instance of this class.
 

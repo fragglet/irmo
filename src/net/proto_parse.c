@@ -34,7 +34,7 @@
 
 // alpha value used for estimating round trip time
 
-#define RTT_ALPHA 0.9
+#define RTT_ALPHA 0.9f
 
 int irmo_proto_use_preexec = 1;
 
@@ -97,15 +97,15 @@ static void proto_parse_packet_data(IrmoClient *client, IrmoPacket *packet)
 	unsigned int i;
 	unsigned int seq;
 	unsigned int start;
-	
+
 	// get the start position
-	
+
 	irmo_packet_readi16(packet, &i);
 
 	start = get_stream_position(client->recvwindow_start, i);
 
 	//printf("stream position: %i->%i\n", i, start);
-	
+
         seq = start;
 
 	for (;;) {
@@ -113,7 +113,7 @@ static void proto_parse_packet_data(IrmoClient *client, IrmoPacket *packet)
 		IrmoSendAtomType atomtype;
 		unsigned int natoms;
 		unsigned int byte;
-		
+
 		// read type/count byte
 		// if none, end of packet
 		
@@ -169,25 +169,38 @@ static void proto_parse_packet_data(IrmoClient *client, IrmoPacket *packet)
         }
 }
 
+// Perform a low pass filter of RTT values
+
+static float rtt_low_pass_filter(float last_value,
+                                 unsigned int new_value)
+{
+        float result;
+
+        result = ( last_value * RTT_ALPHA )
+               + ( (float) new_value * (1 - RTT_ALPHA) );
+
+        return result;
+}
+
 // Update the congestion control values for the given client, after 
 // receiving a successful acknowledgement.
 
 static void proto_update_cc_values(IrmoClient *client)
 {
         unsigned int nowtime, rtt;
-        int deviation;
-		
+        unsigned int deviation;
+
 	// We got a valid ack. open up the send window a bit more.
 	// If we are above the slow start congestion threshold, open
 	// slower.
-	
+
 	if (client->cwnd < client->ssthresh) {
 		client->cwnd += PACKET_THRESHOLD;
 	} else {
 		client->cwnd +=
 			(PACKET_THRESHOLD * PACKET_THRESHOLD) / client->cwnd;
         }
-	
+
         //
 	// We are acking something valid and advancing the window
 	// Assume this is because the first atom in the window has
@@ -205,41 +218,39 @@ static void proto_update_cc_values(IrmoClient *client)
 
                 rtt = nowtime - client->sendwindow[0]->sendtime;
 
-		deviation = abs(rtt - client->rtt);
-		
-		client->rtt = RTT_ALPHA * client->rtt
-			+ (1-RTT_ALPHA) * rtt;
+		deviation = (unsigned int) abs((int) rtt - (int) client->rtt);
 
-		client->rtt_deviation = RTT_ALPHA * client->rtt_deviation
-			+ (1-RTT_ALPHA) * deviation;
+                client->rtt
+                        = rtt_low_pass_filter(client->rtt, rtt);
+                client->rtt_deviation
+                        = rtt_low_pass_filter(client->rtt_deviation,
+                                              deviation);
 
 		// Reset exponential backoff now that we have a valid packet
 
 		client->backoff = 1;
-	}	
+	}
 }
 
-static void proto_parse_ack(IrmoClient *client, int ack)
+static void proto_parse_ack(IrmoClient *client, unsigned int ack)
 {
-	int seq;
-	int relative;
-	int i;
-	
+	unsigned int seq;
+	unsigned int relative;
+	unsigned int i;
+
 	//printf("got an ack: %i\n", ack);
-	
+
 	// extrapolate the high bits from the low 16 bits
 
 	seq = get_stream_position(client->sendwindow_start, ack);
 
 	// get position in sendwindow array, relative to the start
 
+        if (seq <= client->sendwindow_start) {
+                return;
+        }
+
 	relative = seq - client->sendwindow_start;
-
-	if (relative <= 0) {
-		// already acked this far
-
-		return;
-	}
 
         // Check that the acknowledgement is within the range of the 
         // send window.
@@ -259,7 +270,7 @@ static void proto_parse_ack(IrmoClient *client, int ack)
         proto_update_cc_values(client);
 
 	// Advance the send window and destroy atoms in the area acked
-	
+
 	for (i=0; i<relative; ++i) {
 		irmo_sendatom_free(client->sendwindow[i]);
         }

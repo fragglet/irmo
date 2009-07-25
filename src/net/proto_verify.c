@@ -40,7 +40,7 @@ static int proto_verify_packet_cluster(IrmoPacket *packet, IrmoClient *client)
 	
 	for (;;) {
 		IrmoSendAtomClass *klass;
-		int atomtype;
+		unsigned int atomtype;
 		unsigned int natoms;
 		
 		if (!irmo_packet_readi8(packet, &i)) {

@@ -148,7 +148,7 @@ void irmo_world_method_call(IrmoWorld *world, char *method_name, ...)
 		case IRMO_TYPE_INT8:
 		case IRMO_TYPE_INT16:
 		case IRMO_TYPE_INT32:
-			args[i].i = va_arg(arglist, int);
+			args[i].i = va_arg(arglist, unsigned int);
 			break;
 		case IRMO_TYPE_STRING:
 			args[i].s = va_arg(arglist, char *);
@@ -231,8 +231,8 @@ unsigned int irmo_method_arg_int(IrmoMethodData *data, char *argname)
 {
 	IrmoMethodArg *arg;
 
-	irmo_return_val_if_fail(data != NULL, -1);
-	irmo_return_val_if_fail(argname != NULL, -1);
+	irmo_return_val_if_fail(data != NULL, 0);
+	irmo_return_val_if_fail(argname != NULL, 0);
 	
 	arg = irmo_method_get_argument(data->method, argname);
 

@@ -63,8 +63,8 @@ unsigned int irmo_get_time(void)
 
         irmo_timeval_sub(&now_time, &irmo_start_time, &relative_time);
 
-        return (relative_time.tv_sec * 1000) 
-             + (relative_time.tv_usec / 1000);
+        return (unsigned int) ((relative_time.tv_sec * 1000)
+                             + (relative_time.tv_usec / 1000));
 }
 
 

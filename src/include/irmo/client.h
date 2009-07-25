@@ -135,7 +135,7 @@ int irmo_client_ping_time(IrmoClient *client);
  * @param max      The maximum send window size (in bytes).
  */
 
-void irmo_client_set_max_sendwindow(IrmoClient *client, int max);
+void irmo_client_set_max_sendwindow(IrmoClient *client, unsigned int max);
 
 /*!
  * Get the address of the client.

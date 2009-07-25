@@ -30,7 +30,7 @@
 
 static unsigned int client_sendwindow_max(IrmoClient *client)
 {
-        int limit;
+        unsigned int limit;
 
 	// The limit is the minimum of the local and remote limits,
         // if either of them are set.
@@ -49,7 +49,7 @@ static unsigned int client_sendwindow_max(IrmoClient *client)
         if (limit != 0) {
                 return limit;
         } else {
-                return client->cwnd;
+                return (unsigned int) client->cwnd;
         }
 }
 
@@ -59,9 +59,9 @@ static unsigned int client_sendwindow_max(IrmoClient *client)
 static void client_pump(IrmoClient *client)
 {
         IrmoSendAtom *atom;
-	int current_size = 0;
+	unsigned int current_size = 0;
 	unsigned int i;
-	int sendwindow_max;
+	unsigned int sendwindow_max;
 	
 	// if queue is already empty, this is a nonissue
 	
@@ -128,7 +128,7 @@ static void client_flag_resends(IrmoClient *client,
 		// slow-start threshold.
 		
 		if (client->backoff == 1) {
-			client->ssthresh = client->cwnd / 2;
+			client->ssthresh = (unsigned int) (client->cwnd / 2);
 			client->cwnd = PACKET_THRESHOLD;
 		}
 		
@@ -282,7 +282,7 @@ static void client_send_data(IrmoClient *client,
                              unsigned int timeout_length)
 {
         IrmoPacket *packet;
-        int len;
+        unsigned int len;
         unsigned int start, end;
         unsigned int i;
         unsigned int nowtime;

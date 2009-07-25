@@ -32,9 +32,10 @@
 // preexec receive window, run change atoms where possible,
 // asyncronously
 
-void irmo_client_run_preexec(IrmoClient *client, int start, int end)
+void irmo_client_run_preexec(IrmoClient *client, unsigned int start,
+                             unsigned int end)
 {
-	int i;
+	unsigned int i;
 
 	if (start < 0) {
 		start = 0;

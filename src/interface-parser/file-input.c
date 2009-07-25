@@ -28,7 +28,7 @@
 static int from_file_input(void *buf, unsigned int buf_len, void *handle)
 {
 	FILE *fstream = handle;
-	int result;
+	size_t result;
 
 	result = fread(buf, 1, buf_len, fstream);
 
@@ -39,7 +39,7 @@ static int from_file_input(void *buf, unsigned int buf_len, void *handle)
 			return -1;
 		}
 	} else {
-		return result;
+		return (int) result;
 	}
 }
 

@@ -56,7 +56,7 @@ extern "C" {
  */
 
 IrmoServer *irmo_server_new(IrmoNetModule *net_module,
-                            int port,
+                            unsigned int port,
 			    IrmoWorld *world,
                             IrmoInterface *client_interface);
 

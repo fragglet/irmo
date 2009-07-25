@@ -115,8 +115,8 @@ typedef struct _IrmoArrayIterator IrmoArrayIterator;
 struct _IrmoArrayIterator {
         IrmoIterator iterator;
         void **array;
-        int array_len;
-        int position;
+        unsigned int array_len;
+        unsigned int position;
 };
 
 static void *irmo_array_iterator_next(void *data)
@@ -147,7 +147,7 @@ static const IrmoIteratorType array_iterator = {
         NULL,
 };
 
-IrmoIterator *irmo_iterate_array(void **array, int length)
+IrmoIterator *irmo_iterate_array(void **array, unsigned int length)
 {
         IrmoArrayIterator *result;
 

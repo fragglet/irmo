@@ -44,7 +44,7 @@
 
 IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
                                          char *address,
-                                         int port);
+                                         unsigned int port);
 
 /*!
  * Format an address in a user-presentable format.

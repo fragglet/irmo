@@ -73,9 +73,10 @@ extern "C" {
  */
 
 IrmoConnection *irmo_connect(IrmoNetModule *net_module,
-                             char *location, int port,
+                             char *location,
+                             unsigned int port,
                              IrmoInterface *iface,
-			     IrmoWorld *local_world);
+                             IrmoWorld *local_world);
 
 /*!
  * Close a connection to a remote server.

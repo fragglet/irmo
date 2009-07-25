@@ -205,7 +205,8 @@ struct _IrmoNetModule {
          *                 not possible to open the socket.
          */
 
-        IrmoNetSocket *(*open_server_sock)(IrmoNetModule *module, int port);
+        IrmoNetSocket *(*open_server_sock)(IrmoNetModule *module,
+                                           unsigned int port);
 
         /*!
          * Resolve a string description of an address.
@@ -223,7 +224,7 @@ struct _IrmoNetModule {
 
         IrmoNetAddress *(*resolve_address)(IrmoNetModule *module,
                                            char *address,
-                                           int port);
+                                           unsigned int port);
 };
 
 //! \}

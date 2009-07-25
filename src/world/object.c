@@ -32,8 +32,10 @@
 #include "world.h"
 
 // Get the next free object ID for the specified world.
+//
+// Returns true if an ID was found.
 
-static int get_free_id(IrmoWorld *world)
+static int get_free_id(IrmoWorld *world, IrmoObjectID *id)
 {
 	IrmoObjectID start = world->lastid;
 
@@ -47,13 +49,15 @@ static int get_free_id(IrmoWorld *world)
 		// no free spaces
 		
 		if (world->lastid == start) {
-			return -1;
+			return 0;
                 }
 
 	} while (irmo_hash_table_lookup(world->objects,
 				        IRMO_POINTER_KEY(world->lastid)));
 
-	return world->lastid;
+        *id = world->lastid;
+
+        return 1;
 }
 
 IrmoObject *irmo_object_internal_new(IrmoWorld *world,
@@ -103,9 +107,10 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 	// if a remote world, create variable_time array
 
-	if (world->remote) {
-		object->variable_time = irmo_new0(int, objclass->nvariables);
-	}
+        if (world->remote) {
+                object->variable_time = irmo_new0(unsigned int,
+                                                  objclass->nvariables);
+        }
 
 	return object;
 }
@@ -114,7 +119,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 {
 	IrmoClass *klass;
-	int id;
+	IrmoObjectID id;
 
 	irmo_return_val_if_fail(world != NULL, NULL);
 	irmo_return_val_if_fail(type_name != NULL, NULL);
@@ -128,9 +133,9 @@ IrmoObject *irmo_object_new(IrmoWorld *world, char *type_name)
 		return NULL;
 	}
 
-	id = get_free_id(world);
+        // Try to find a new object ID.
 
-	if (id < 0) {
+        if (!get_free_id(world, &id)) {
 		irmo_error_report("irmo_object_new",
                         "maximum of %i objects per world (no more objects!)",
                         MAX_OBJECTS);
@@ -209,7 +214,7 @@ void irmo_object_destroy(IrmoObject *object)
 
 IrmoObjectID irmo_object_get_id(IrmoObject *object)
 {
-	irmo_return_val_if_fail(object != NULL, -1);
+	irmo_return_val_if_fail(object != NULL, 0);
 	
 	return object->id;
 }
@@ -394,8 +399,8 @@ unsigned int irmo_object_get_int(IrmoObject *object, char *variable)
 {
 	IrmoClassVar *var;
 
-	irmo_return_val_if_fail(object != NULL, -1);
-	irmo_return_val_if_fail(variable != NULL, -1);
+	irmo_return_val_if_fail(object != NULL, 0);
+	irmo_return_val_if_fail(variable != NULL, 0);
 	
 	var = irmo_class_get_variable(object->objclass, variable);
 
@@ -459,7 +464,7 @@ IrmoWorld *irmo_object_get_world(IrmoObject *obj)
 	return obj->world;
 }
 
-unsigned int irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
+int irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
 {
 	IrmoClass *c;
 	
@@ -477,7 +482,7 @@ unsigned int irmo_object_is_a2(IrmoObject *obj, IrmoClass *klass)
 	return 0;
 }
 
-unsigned int irmo_object_is_a(IrmoObject *obj, char *classname)
+int irmo_object_is_a(IrmoObject *obj, char *classname)
 {
 	IrmoClass *klass;
 

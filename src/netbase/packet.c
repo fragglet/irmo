@@ -58,7 +58,7 @@ IrmoPacket *irmo_packet_new(void)
 	return packet;
 }
 
-IrmoPacket *irmo_packet_new_from(uint8_t *data, int data_len)
+IrmoPacket *irmo_packet_new_from(uint8_t *data, unsigned int data_len)
 {
         IrmoPacket *packet;
 
@@ -108,7 +108,7 @@ int irmo_packet_writei8(IrmoPacket *packet, unsigned int i)
 	if (packet->pos + 1 > packet->data_size)
 		irmo_packet_resize(packet);
 	
-	packet->data[packet->pos++] = i;
+	packet->data[packet->pos++] = (uint8_t) i;
 
 	irmo_packet_update_len(packet);
 
@@ -124,8 +124,8 @@ int irmo_packet_writei16(IrmoPacket *packet, unsigned int i)
 		irmo_packet_resize(packet);
         }
 
-	packet->data[packet->pos++] = (i >> 8) & 0xff;
-	packet->data[packet->pos++] = (i) & 0xff;
+	packet->data[packet->pos++] = (uint8_t) ((i >> 8) & 0xff);
+	packet->data[packet->pos++] = (uint8_t) ((i) & 0xff);
 
 	irmo_packet_update_len(packet);
 
@@ -141,10 +141,10 @@ int irmo_packet_writei32(IrmoPacket *packet, unsigned int i)
 		irmo_packet_resize(packet);
         }
 
-	packet->data[packet->pos++] = (i >> 24) & 0xff;
-	packet->data[packet->pos++] = (i >> 16) & 0xff;
-	packet->data[packet->pos++] = (i >> 8) & 0xff;
-	packet->data[packet->pos++] = (i) & 0xff;
+	packet->data[packet->pos++] = (uint8_t) ((i >> 24) & 0xff);
+	packet->data[packet->pos++] = (uint8_t) ((i >> 16) & 0xff);
+	packet->data[packet->pos++] = (uint8_t) ((i >> 8) & 0xff);
+	packet->data[packet->pos++] = (uint8_t) ((i) & 0xff);
 
 	irmo_packet_update_len(packet);
 
@@ -198,7 +198,8 @@ int irmo_packet_readi16(IrmoPacket *packet, unsigned int *i)
 	data = packet->data + packet->pos;
 	
 	if (i != NULL) {
-		*i = (data[0] << 8) + data[1];
+                *i = ((unsigned int) data[0]) << 8;
+		*i |= (unsigned int) data[1];
 	}
 
 	packet->pos += 2;
@@ -219,8 +220,10 @@ int irmo_packet_readi32(IrmoPacket *packet, unsigned int *i)
 	data = packet->data + packet->pos;
 
 	if (i != NULL) {
-		*i = (data[0] << 24) + (data[1] << 16) 
-		   + (data[2] << 8) + data[3];
+		*i = ((unsigned int) data[0]) << 24;
+                *i |= ((unsigned int) data[1]) << 16;
+                *i |= ((unsigned int) data[2]) << 8;
+                *i |= ((unsigned int) data[3]);
 	}
 
 	packet->pos += 4;

@@ -60,7 +60,7 @@ struct _IrmoObject {
 	// position in stream from remote server where variable
 	// was last changed
 
-	int *variable_time;
+	unsigned int *variable_time;
 
         // user-specified data set using _set_data and _get_data.
 

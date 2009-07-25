@@ -44,12 +44,12 @@ static int from_buffer_input(void *buf, unsigned int buf_len, void *handle)
         // Copy as many as we can
 
         if (remaining_bytes < buf_len) {
-                result = remaining_bytes;
+                result = (int) remaining_bytes;
         } else {
-                result = buf_len;
+                result = (int) buf_len;
         }
-        
-        memcpy(buf, buffer->data + buffer->offset, result);
+
+        memcpy(buf, buffer->data + buffer->offset, (size_t) result);
 
         return result;
 }

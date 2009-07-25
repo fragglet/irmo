@@ -101,15 +101,15 @@ void irmo_struct_member_set_int(IrmoStructMember *member, void *structure,
 
         switch (member->size) {
                 case sizeof(uint8_t):
-                        *((uint8_t *) member_value) = value;
+                        *((uint8_t *) member_value) = (uint8_t) value;
                         break;
 
                 case sizeof(uint16_t):
-                        *((uint16_t *) member_value) = value;
+                        *((uint16_t *) member_value) = (uint16_t) value;
                         break;
 
                 case sizeof(uint32_t):
-                        *((uint32_t *) member_value) = value;
+                        *((uint32_t *) member_value) = (uint32_t) value;
                         break;
 
                 default:

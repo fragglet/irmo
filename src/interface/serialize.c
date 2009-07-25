@@ -136,7 +136,7 @@ static void write_class(IrmoClass *klass, IrmoPacket *packet)
         IrmoIterator *iter;
         IrmoClass *parent_class;
         IrmoClassVar *var;
-        int unique_vars;
+        unsigned int unique_vars;
 
         DEBUGMSG(("\tWrite class: '%s'\n", irmo_class_get_name(klass)));
 
@@ -148,7 +148,7 @@ static void write_class(IrmoClass *klass, IrmoPacket *packet)
 
         // parent class
   
-        irmo_packet_writei8(packet, parent_class != NULL);
+        irmo_packet_writei8(packet, (unsigned int) (parent_class != NULL));
 
         if (parent_class != NULL) {
 

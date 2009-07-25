@@ -123,11 +123,11 @@ struct _IrmoSendAtom {
 
 	// length of atom in bytes
 
-	int len;
+	unsigned int len;
 
 	// number of this atom in the sequence
 	
-	int seqnum;
+	unsigned int seqnum;
 };
 
 //

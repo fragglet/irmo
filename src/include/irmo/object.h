@@ -209,7 +209,7 @@ IrmoWorld *irmo_object_get_world(IrmoObject *object);
  *                      specified class or any of its subclasses.
  */
 
-unsigned int irmo_object_is_a(IrmoObject *object, char *classname);
+int irmo_object_is_a(IrmoObject *object, char *classname);
 
 /*!
  * Determine if an object is an instance of a particular class.
@@ -223,7 +223,7 @@ unsigned int irmo_object_is_a(IrmoObject *object, char *classname);
  *                      specified class or any of its subclasses.
  */
 
-unsigned int irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
+int irmo_object_is_a2(IrmoObject *object, IrmoClass *klass);
 
 /*!
  * Watch for modification of an object.

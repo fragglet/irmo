@@ -244,7 +244,7 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 
 // send a send window upper limit
 
-void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max)
+void irmo_client_sendq_add_sendwindow(IrmoClient *client, unsigned int max)
 {
 	IrmoSendWindowAtom *atom;
 

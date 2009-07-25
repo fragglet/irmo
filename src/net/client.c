@@ -335,9 +335,9 @@ IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
                                       func, user_data);
 }
 
-int irmo_client_timeout_time(IrmoClient *client)
+unsigned int irmo_client_timeout_time(IrmoClient *client)
 {
-	return (int) (client->rtt + client->rtt_deviation * 2 + 1);
+	return (unsigned int) (client->rtt + client->rtt_deviation * 2 + 1);
 }
 
 int irmo_client_ping_time(IrmoClient *client)
@@ -347,7 +347,7 @@ int irmo_client_ping_time(IrmoClient *client)
 	return (int) client->rtt;
 }
 
-void irmo_client_set_max_sendwindow(IrmoClient *client, int max)
+void irmo_client_set_max_sendwindow(IrmoClient *client, unsigned int max)
 {
 	irmo_return_if_fail(client != NULL);
 

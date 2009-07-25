@@ -58,7 +58,7 @@ IrmoIterator *irmo_iterate_hash_table(IrmoHashTable *hashtable);
  *                         values in the array.
  */
 
-IrmoIterator *irmo_iterate_array(void **array, int length);
+IrmoIterator *irmo_iterate_array(void **array, unsigned int length);
 
 /*!
  * Set a filter function to filter values being iterated over.

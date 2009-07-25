@@ -32,7 +32,8 @@ IrmoNetSocket *irmo_net_socket_open_unbound(IrmoNetModule *module)
         return module->open_client_sock(module);
 }
 
-IrmoNetSocket *irmo_net_socket_open_bound(IrmoNetModule *module, int port)
+IrmoNetSocket *irmo_net_socket_open_bound(IrmoNetModule *module,
+                                          unsigned int port)
 {
         return module->open_server_sock(module, port);
 }

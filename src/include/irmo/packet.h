@@ -59,7 +59,7 @@ IrmoPacket *irmo_packet_new(void);
  * @return           Pointer to a new IrmoPacket structure.
  */
 
-IrmoPacket *irmo_packet_new_from(unsigned char *data, int data_len);
+IrmoPacket *irmo_packet_new_from(unsigned char *data, unsigned int data_len);
 
 /*!
  * Free a packet.

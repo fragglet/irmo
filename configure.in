@@ -16,7 +16,7 @@ OPT_LEVEL=2
 
 if test "$GCC" = "yes"
 then
-        CFLAGS="-O$OPT_LEVEL -g -Wsign-compare -Wall $orig_CFLAGS"
+        CFLAGS="-O$OPT_LEVEL -g -Wconversion -Wsign-compare -Wall $orig_CFLAGS"
 fi
 
 dnl ipv6 check

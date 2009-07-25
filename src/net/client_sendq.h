@@ -70,7 +70,7 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data);
  * @param max                 The new maximum send queue size.
  */
 
-void irmo_client_sendq_add_sendwindow(IrmoClient *client, int max);
+void irmo_client_sendq_add_sendwindow(IrmoClient *client, unsigned int max);
 
 /*!
  * Remove an atom from the send queue.

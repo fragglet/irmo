@@ -204,10 +204,10 @@ static void irmo_change_atom_write(IrmoChangeAtom *atom, IrmoPacket *packet)
 		// build a byte at a time
 
 		b = 0;
-		
+
 		for (j=0; j<8 && i*8+j<obj->objclass->nvariables; ++j) {
 			if (atom->changed[i*8 + j]) {
-				b |= 1 << j;
+				b |= (uint8_t) (1 << j);
 			}
 		}
 
@@ -262,7 +262,7 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
 	IrmoClass *objclass;
 	IrmoValue *newvalues;
 	unsigned int i;
-	int seq;
+	unsigned int seq;
 
 	if (atom->executed) {
 		return;

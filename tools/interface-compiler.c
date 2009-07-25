@@ -59,8 +59,8 @@ void usage(char *program)
 
 int ends_with(char *str, char *stem)
 {
-        int stem_length = strlen(stem);
-        int str_length = strlen(str);
+        size_t stem_length = strlen(stem);
+        size_t str_length = strlen(str);
 
         return str_length >= stem_length
             && !strcmp(str + str_length - stem_length, stem);
