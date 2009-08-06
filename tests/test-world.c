@@ -20,9 +20,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include <assert.h>
 
 #include <irmo.h>
+
+struct test_struct {
+        uint32_t myint;
+        uint32_t myint2;
+        uint8_t myint8;
+        uint16_t myint16;
+        char *mystring;
+};
+
+struct test_struct_derived {
+        struct test_struct parent;
+        uint32_t myint3;
+};
+
+static void map_test_structs(void)
+{
+        irmo_map_struct(struct test_struct, myint);
+        irmo_map_struct(struct test_struct, myint2);
+        irmo_map_struct(struct test_struct, myint8);
+        irmo_map_struct(struct test_struct, myint16);
+        irmo_map_struct(struct test_struct, mystring);
+
+        irmo_map_struct(struct test_struct_derived, myint3);
+}
 
 static IrmoInterface *gen_interface(void)
 {
@@ -41,9 +66,14 @@ static IrmoInterface *gen_interface(void)
         irmo_class_new_variable(klass, "myint32", IRMO_TYPE_INT32);
         irmo_class_new_variable(klass, "mystring", IRMO_TYPE_STRING);
 
+        irmo_interface_bind_class(iface, "myclass", "struct test_struct");
+
         subclass = irmo_interface_new_class(iface, "mysubclass", klass);
 
         irmo_class_new_variable(subclass, "myint3", IRMO_TYPE_INT32);
+
+        irmo_interface_bind_class(iface, "mysubclass",
+                                         "struct test_struct_derived");
 
         return iface;
 }
@@ -100,7 +130,7 @@ void test_object_new(void)
 
         superclass = irmo_interface_get_class(iface, "myclass");
         subclass = irmo_interface_get_class(iface, "mysubclass");
-       
+
         // Create an object
 
         obj = irmo_object_new(world, "mysubclass");
@@ -260,7 +290,7 @@ void test_object_get_set_generic(void)
                 irmo_object_set(obj, myint32, &value);
 
                 // Read back
-    
+
                 irmo_object_get(obj, myint8, &value2);
                 assert(value2.i == test_numbers_8[i]);
                 irmo_object_get(obj, myint16, &value2);
@@ -284,6 +314,103 @@ void test_object_get_set_generic(void)
         irmo_world_unref(world);
 }
 
+void test_object_set_bindings(void)
+{
+        IrmoInterface *iface;
+        IrmoWorld *world;
+        struct test_struct mystruct;
+        struct test_struct_derived mystruct2;
+        IrmoObject *obj1;
+        IrmoObject *obj2;
+
+        iface = gen_interface();
+        world = irmo_world_new(iface);
+        irmo_interface_unref(iface);
+
+        obj1 = irmo_object_new(world, "myclass");
+        memset(&mystruct, 0, sizeof(mystruct));
+        irmo_object_bind(obj1, &mystruct);
+
+        obj2 = irmo_object_new(world, "mysubclass");
+        memset(&mystruct2, 0, sizeof(mystruct2));
+        irmo_object_bind(obj2, &mystruct2);
+
+        // Superclass test:
+
+        irmo_object_set_int(obj1, "myint", 1234);
+        irmo_object_set_int(obj1, "myint2", 4321);
+        irmo_object_set_int(obj1, "myint8", 42);
+        irmo_object_set_int(obj1, "myint16", 5678);
+        irmo_object_set_string(obj1, "mystring", "hello world");
+
+        assert(mystruct.myint == 1234);
+        assert(mystruct.myint2 == 4321);
+        assert(mystruct.myint8 == 42);
+        assert(mystruct.myint16 == 5678);
+        assert(!strcmp(mystruct.mystring, "hello world"));
+
+        // Subclassing test:
+
+        irmo_object_set_int(obj2, "myint", 6789);
+        irmo_object_set_int(obj2, "myint16", 2266);
+        irmo_object_set_int(obj2, "myint3", 9999);
+
+        assert(mystruct2.parent.myint == 6789);
+        assert(mystruct2.parent.myint16 == 2266);
+        assert(mystruct2.myint3 == 9999);
+}
+
+void test_object_get_bindings(void)
+{
+        IrmoInterface *iface;
+        IrmoWorld *world;
+        struct test_struct mystruct;
+        struct test_struct_derived mystruct2;
+        IrmoObject *obj1;
+        IrmoObject *obj2;
+
+        iface = gen_interface();
+        world = irmo_world_new(iface);
+        irmo_interface_unref(iface);
+
+        obj1 = irmo_object_new(world, "myclass");
+        memset(&mystruct, 0, sizeof(mystruct));
+        irmo_object_bind(obj1, &mystruct);
+
+        obj2 = irmo_object_new(world, "mysubclass");
+        memset(&mystruct2, 0, sizeof(mystruct2));
+        irmo_object_bind(obj2, &mystruct2);
+
+        // Test superclass:
+
+        mystruct.myint = 1234;
+        mystruct.myint2 = 4321;
+        mystruct.myint8 = 42;
+        mystruct.myint16 = 5678;
+        mystruct.mystring = "hello world";
+
+        irmo_object_update(obj1);
+
+        assert(irmo_object_get_int(obj1, "myint") == 1234);
+        assert(irmo_object_get_int(obj1, "myint2") == 4321);
+        assert(irmo_object_get_int(obj1, "myint8") == 42);
+        assert(irmo_object_get_int(obj1, "myint16") == 5678);
+        assert(!strcmp(irmo_object_get_string(obj1, "mystring"),
+                       "hello world"));
+
+        // Test subclass:
+
+        mystruct2.parent.myint = 9876;
+        mystruct2.parent.myint2 = 5555;
+        mystruct2.myint3 = 3456;
+
+        irmo_world_update(world);
+
+        assert(irmo_object_get_int(obj2, "myint") == 9876);
+        assert(irmo_object_get_int(obj2, "myint2") == 5555);
+        assert(irmo_object_get_int(obj2, "myint3") == 3456);
+}
+
 void test_world_callbacks(void)
 {
         // ... todo
@@ -296,6 +423,8 @@ void test_object_callbacks(void)
 
 int main(int argc, char *argv[])
 {
+        map_test_structs();
+
         test_world_new();
         test_object_new();
         test_object_destroy();
@@ -304,6 +433,8 @@ int main(int argc, char *argv[])
         test_object_get_set_generic();
         test_world_callbacks();
         test_object_callbacks();
+        test_object_set_bindings();
+        test_object_get_bindings();
 
         return 0;
 }
