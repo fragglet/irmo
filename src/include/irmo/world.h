@@ -191,6 +191,22 @@ IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world,
 				       IrmoObjCallback func, 
 				       void *user_data);
 
+/*!
+ * Update all objects that are bound to C structures.
+ *
+ * All the objects in the specified world are checked that are bound
+ * to C structures; the structures are checked for changes and the
+ * objects updated to match their bindings.
+ * This function is equivalent to calling @ref irmo_object_update
+ * for every object in the world that has a binding.
+ *
+ * This will not work with worlds updated by a remote server.
+ *
+ * @param world          The world to update.
+ */
+
+void irmo_world_update(IrmoWorld *world);
+
 //! \}
 
 #ifdef __cplusplus

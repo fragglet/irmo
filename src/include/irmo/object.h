@@ -282,6 +282,36 @@ void irmo_object_set_data(IrmoObject *object, void *value);
 
 void *irmo_object_get_data(IrmoObject *object);
 
+/*!
+ * Bind the specified object to the specified C structure, so that
+ * changes made to the member variables of the structure automatically
+ * update the variables of the object.
+ *
+ * If the object belongs to a world updated by a remote server, the
+ * reverse will also happen; the variables in the C structure will
+ * be updated as changes are received from the server.
+ *
+ * @param obj           The object to bind.
+ * @param cstruct       Pointer to the C structure to which the object
+ *                      should be bound.  If this is NULL, the binding
+ *                      is removed.
+ */
+
+void irmo_object_bind(IrmoObject *obj, void *cstruct);
+
+/*!
+ * Update the specified object automatically based on the variables
+ * in the C structure that the object is bound to.  The binding
+ * must have already been set using @ref irmo_object_bind.
+ *
+ * This cannot be done if the object belongs to a world updated by a
+ * remote server.
+ *
+ * @param obj           The object to update.
+ */
+
+void irmo_object_update(IrmoObject *obj);
+
 //! \}
 
 #ifdef __cplusplus

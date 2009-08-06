@@ -6,5 +6,6 @@ libirmoworld_la_SOURCES=                                    \
        class-callback-data.c  class-callback-data.h         \
        method.c               method.h                      \
        world.c                world.h                       \
-       object.c               object.h                      
+       object.c               object.h                      \
+       binding.c              binding.h
 

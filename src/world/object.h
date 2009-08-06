@@ -65,6 +65,10 @@ struct _IrmoObject {
         // user-specified data set using _set_data and _get_data.
 
         void *user_data;
+
+        // Pointer to a C structure that this object is bound to.
+
+        void *binding;
 };
 
 /*!
