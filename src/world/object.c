@@ -28,6 +28,7 @@
 
 #include "net/server-world.h"
 
+#include "binding.h"
 #include "object.h"
 #include "world.h"
 
@@ -42,12 +43,12 @@ static int get_free_id(IrmoWorld *world, IrmoObjectID *id)
 	// keep incrementing until we find one free
 	// we increment once to start off with, since the current lastid
 	// was assigned to the previous object
-	
+
 	do {
 		world->lastid = (world->lastid + 1) % MAX_OBJECTS;
 
 		// no free spaces
-		
+
 		if (world->lastid == start) {
 			return 0;
                 }
@@ -101,7 +102,7 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 
 	// Notify servers attached to this world of the new object.
 
-        for (i=0; i<(unsigned)world->servers->length; ++i) {
+        for (i=0; i<world->servers->length; ++i) {
                 irmo_server_object_new(world->servers->data[i], object);
         }
 
@@ -168,7 +169,7 @@ void irmo_object_internal_destroy(IrmoObject *object,
 		
                 world = object->world;
 
-                for (i=0; i<(unsigned)world->servers->length; ++i) {
+                for (i=0; i<world->servers->length; ++i) {
                         irmo_server_object_destroyed(world->servers->data[i],
                                                      object);
                 }
@@ -253,7 +254,7 @@ static void irmo_object_set_raise(IrmoObject *object, IrmoClassVar *var)
 
         world = object->world;
 
-        for (i=0; i<(unsigned)world->servers->length; ++i) {
+        for (i=0; i<world->servers->length; ++i) {
                 irmo_server_object_changed(world->servers->data[i],
                                            object, var);
         }
@@ -288,7 +289,16 @@ void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *variable,
                 irmo_bug();
         }
 
+        // Invoked callback functions:
+
 	irmo_object_set_raise(object, variable);
+
+        // If the object has a binding, update the structure member
+        // for this variable.
+
+        if (object->binding != NULL) {
+                irmo_object_update_binding(object, variable);
+        }
 }
 
 void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
