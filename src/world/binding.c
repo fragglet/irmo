@@ -71,9 +71,10 @@ static void update_var_from_member(IrmoObject *obj,
                 irmo_bug();
         }
 
-        // Set the new value:
+        // Set the new value, but don't do a binding update (this update
+        // came *from* the binding!)
 
-        irmo_object_internal_set(obj, class_var, &new_value);
+        irmo_object_internal_set(obj, class_var, &new_value, 0);
 }
 
 static void irmo_object_internal_update(IrmoObject *obj)

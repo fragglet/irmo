@@ -38,6 +38,20 @@ struct test_struct_derived {
         uint32_t myint3;
 };
 
+static int check_var_set_invoked;
+
+static void test_callback_check_var_set(IrmoObject *obj, char *var, void *user_data)
+{
+        struct test_struct *mystruct = user_data;
+
+        check_var_set_invoked = 1;
+
+        // The value in the struct should be set *before* the callback
+        // is invoked:
+
+        assert(mystruct->myint == 1234);
+}
+
 static void map_test_structs(void)
 {
         irmo_map_struct(struct test_struct, myint);
@@ -335,6 +349,9 @@ void test_object_set_bindings(void)
         memset(&mystruct2, 0, sizeof(mystruct2));
         irmo_object_bind(obj2, &mystruct2);
 
+        irmo_object_watch(obj1, "myint", test_callback_check_var_set, &mystruct);
+        check_var_set_invoked = 0;
+
         // Superclass test:
 
         irmo_object_set_int(obj1, "myint", 1234);
@@ -358,6 +375,12 @@ void test_object_set_bindings(void)
         assert(mystruct2.parent.myint == 6789);
         assert(mystruct2.parent.myint16 == 2266);
         assert(mystruct2.myint3 == 9999);
+
+        // Check that the callback was invoked:
+
+        assert(check_var_set_invoked);
+
+        irmo_world_unref(world);
 }
 
 void test_object_get_bindings(void)
@@ -380,6 +403,9 @@ void test_object_get_bindings(void)
         obj2 = irmo_object_new(world, "mysubclass");
         memset(&mystruct2, 0, sizeof(mystruct2));
         irmo_object_bind(obj2, &mystruct2);
+
+        irmo_object_watch(obj1, "myint", test_callback_check_var_set, &mystruct);
+        check_var_set_invoked = 0;
 
         // Test superclass:
 
@@ -409,6 +435,12 @@ void test_object_get_bindings(void)
         assert(irmo_object_get_int(obj2, "myint") == 9876);
         assert(irmo_object_get_int(obj2, "myint2") == 5555);
         assert(irmo_object_get_int(obj2, "myint3") == 3456);
+
+        // Check that the callback was invoked:
+
+        assert(check_var_set_invoked);
+
+        irmo_world_unref(world);
 }
 
 void test_world_callbacks(void)

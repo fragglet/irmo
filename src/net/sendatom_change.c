@@ -313,7 +313,7 @@ static void irmo_change_atom_run(IrmoChangeAtom *atom)
                 // Set the new value
 
                 irmo_object_internal_set(obj, objclass->variables[i],
-                                         &newvalues[i]);
+                                         &newvalues[i], 1);
 
 		obj->variable_time[i] = seq;
 	}

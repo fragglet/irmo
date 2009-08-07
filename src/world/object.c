@@ -260,8 +260,10 @@ static void irmo_object_set_raise(IrmoObject *object, IrmoClassVar *var)
         }
 }
 
-void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *variable,
-                              IrmoValue *value)
+void irmo_object_internal_set(IrmoObject *object,
+                              IrmoClassVar *variable,
+                              IrmoValue *value,
+                              int update_binding)
 {
         IrmoValue *obj_value;
 
@@ -289,16 +291,16 @@ void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *variable,
                 irmo_bug();
         }
 
-        // Invoked callback functions:
-
-	irmo_object_set_raise(object, variable);
-
         // If the object has a binding, update the structure member
         // for this variable.
 
-        if (object->binding != NULL) {
+        if (update_binding && object->binding != NULL) {
                 irmo_object_update_binding(object, variable);
         }
+
+        // Invoked callback functions:
+
+	irmo_object_set_raise(object, variable);
 }
 
 void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
@@ -315,7 +317,7 @@ void irmo_object_set(IrmoObject *object, IrmoClassVar *variable,
 
         // Set the value
 
-        irmo_object_internal_set(object, variable, value);
+        irmo_object_internal_set(object, variable, value, 1);
 }
 
 

@@ -105,10 +105,14 @@ void irmo_object_internal_destroy(IrmoObject *object, int notify,
  * @param object          The object to set.
  * @param var             The variable to set.
  * @param value           The new value for the variable.
+ * @param update_binding  If true, the C structure that the object is bound
+ *                        to is also updated.
  */
 
-void irmo_object_internal_set(IrmoObject *object, IrmoClassVar *var,
-                              IrmoValue *value);
+void irmo_object_internal_set(IrmoObject *object,
+                              IrmoClassVar *var,
+                              IrmoValue *value,
+                              int update_binding);
 
 #endif /* #ifndef IRMO_WORLD_OBJECT_H */
 
