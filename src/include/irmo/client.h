@@ -80,8 +80,11 @@ void irmo_client_disconnect(IrmoClient *client);
  *
  * While a server can serve a @ref IrmoWorld object to connecting 
  * clients, a client can also serve a world object back to the
- * server. This function returns a reference to the local copy of 
- * that remote world object if it exists, or NULL if it does not.
+ * server. 
+ *
+ * @param client   The client.
+ * @return         A reference to the local copy of the remote world
+ *                 object if it exists, or NULL if it does not.
  *
  * @sa irmo_connect
  * @sa irmo_connection_get_world
@@ -89,6 +92,18 @@ void irmo_client_disconnect(IrmoClient *client);
  */
 
 IrmoWorld *irmo_client_get_world(IrmoClient *client);
+
+/*!
+ * Get a client's ID number.
+ *
+ * On connection, each client is assigned a unique ID number.
+ * This returns the ID assigned to the specified client.
+ *
+ * @param client   The client.
+ * @return         The client's unique ID.
+ */
+
+IrmoClientID irmo_client_get_id(IrmoClient *client);
 
 /*!
  * Watch for client disconnection.

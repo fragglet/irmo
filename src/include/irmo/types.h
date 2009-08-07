@@ -270,6 +270,15 @@ typedef struct _IrmoServer IrmoServer;
 
 typedef struct _IrmoClient IrmoClient;
 
+/*!
+ * A numerical client identifier.
+ *
+ * Each client that connects to a server is assigned a unique number
+ * by the server.
+ */
+
+typedef unsigned int IrmoClientID;
+
 /*! 
  * Callback function for client actions.
  *

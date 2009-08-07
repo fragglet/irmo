@@ -82,6 +82,8 @@ static void server_run_syn(IrmoServer *server,
 
 		irmo_hash_table_remove(client->server->clients,
                                        client->address);
+		irmo_hash_table_remove(client->server->clients_by_id,
+                                       IRMO_POINTER_KEY(client->id));
 
 		irmo_client_internal_unref(client);
 

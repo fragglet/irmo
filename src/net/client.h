@@ -49,15 +49,20 @@ typedef enum {
 struct _IrmoClient {
 
 	int refcount;
-	
+
 	IrmoClientState state;
-	
+
 	// server client is connected to
 
 	IrmoServer *server;
-	
-	// clients remote world
-	
+
+        // The ID of this client.  Each client of a server is assigned
+        // a unique ID.
+
+        unsigned int id;
+
+	// client's remote world
+
 	IrmoWorld *world;
 
 	// address:

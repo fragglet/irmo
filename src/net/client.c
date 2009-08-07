@@ -56,9 +56,9 @@ IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
 	// send queue
 
 	client->sendq = irmo_queue_new();
-	client->sendq_hashtable = irmo_hash_table_new(irmo_pointer_hash,
-						   irmo_pointer_equal);
-	
+        client->sendq_hashtable = irmo_hash_table_new(irmo_pointer_hash,
+                                                      irmo_pointer_equal);
+
 	// receive window
 
 	client->recvwindow_start = 0;
@@ -85,24 +85,31 @@ IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
 	client->cwnd = PACKET_THRESHOLD;
 	client->ssthresh = 65535;
 
+        // assign a new ID for this client:
+
+        client->id = irmo_server_assign_id(server);
+
 	// insert into server hashtable
-	
+
 	irmo_hash_table_insert(server->clients,
                                client->address,
                                client);
-	
+        irmo_hash_table_insert(server->clients_by_id,
+                               IRMO_POINTER_KEY(client->id),
+                               client);
+
 	return client;
 }
 
 void irmo_client_ref(IrmoClient *client)
 {
 	irmo_return_if_fail(client != NULL);
-	
+
 	// when you reference a client, you're effectively referencing
 	// the server its part of
 
 	irmo_server_ref(client->server);
-	
+
 	++client->refcount;
 }
 
@@ -360,6 +367,15 @@ void irmo_client_set_max_sendwindow(IrmoClient *client, unsigned int max)
 
 const char *irmo_client_get_addr(IrmoClient *client)
 {
+        irmo_return_val_if_fail(client != NULL, NULL);
+
         return irmo_net_address_to_string(client->address);
+}
+
+IrmoClientID irmo_client_get_id(IrmoClient *client)
+{
+        irmo_return_val_if_fail(client != NULL, 0);
+
+        return client->id;
 }
 

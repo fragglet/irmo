@@ -32,37 +32,45 @@
 struct _IrmoServer {
 
 	// reference count
-	
+
 	int refcount;
 
 	// server running?
-	
+
 	int running;
 
         // Internal servers used as part of an IrmoConnection have this
         // set to true.
 
         int internal_server;
-	
+
 	// socket this server is using
 
 	IrmoNetSocket *socket;
-	
+
 	// world being served by this server
-	
+
 	IrmoWorld *world;
 
 	// interface for client worlds
 
 	IrmoInterface *client_interface;
-	
+
 	// connected IrmoClients hashed by IP
-	
+
 	IrmoHashTable *clients;
+
+        // connected IrmoClients hashed by ID:
+
+        IrmoHashTable *clients_by_id;
 
 	// callback functions for new connections
 
 	IrmoCallbackList connect_callbacks;
+
+        // The next value to try when assigning a new client ID.
+
+        IrmoClientID next_id;
 };
 
 /*!
@@ -76,6 +84,15 @@ struct _IrmoServer {
 
 IrmoServer *irmo_server_new_from(IrmoNetSocket *sock, IrmoWorld *world,
 				 IrmoInterface *client_interface);
+
+/*!
+ * Get a new client ID that is not already in use.
+ *
+ * @param server           The server.
+ * @return                 An unused identifier, for the new client.
+ */
+
+IrmoClientID irmo_server_assign_id(IrmoServer *server);
 
 /*!
  * Invoke a list of @ref IrmoClientCallback callback functions.

@@ -58,6 +58,8 @@ IrmoServer *irmo_server_new_from(IrmoNetSocket *sock,
 	
 	server->clients = irmo_hash_table_new(irmo_pointer_hash,
                                               irmo_pointer_equal);
+	server->clients_by_id = irmo_hash_table_new(irmo_pointer_hash,
+                                                    irmo_pointer_equal);
 
 	return server;
 }
@@ -88,6 +90,25 @@ void irmo_server_ref(IrmoServer *server)
 	++server->refcount;
 }
 
+// Find an unused client ID for a new client.
+
+IrmoClientID irmo_server_assign_id(IrmoServer *server)
+{
+        IrmoClientID result;
+
+        // Loop until next_id reaches an unused ID.
+
+        do {
+                result = server->next_id;
+
+                server->next_id = (server->next_id + 1) & 0xffff;
+
+        } while (irmo_hash_table_lookup(server->clients_by_id,
+                                        IRMO_POINTER_KEY(result)) != NULL);
+
+        return result;
+}
+
 static void irmo_server_remove_all_clients(IrmoServer *server)
 {
         IrmoHashTableIterator iter;
@@ -101,6 +122,8 @@ static void irmo_server_remove_all_clients(IrmoServer *server)
                 // Remove this client from the hash table and destroy it.
 
                 irmo_hash_table_remove(server->clients, client->address);
+                irmo_hash_table_remove(server->clients_by_id,
+                                       IRMO_POINTER_KEY(client->id));
 
                 irmo_client_internal_unref(client);
         }
@@ -146,6 +169,7 @@ void irmo_server_unref(IrmoServer *server)
 		
 		irmo_server_internal_shutdown(server);
 		irmo_hash_table_free(server->clients);
+		irmo_hash_table_free(server->clients_by_id);
 
 		// destroy callbacks
 
