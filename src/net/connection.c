@@ -36,6 +36,7 @@ IrmoConnection *irmo_connect(IrmoNetModule *net_module,
 	IrmoServer *server;
 	IrmoClient *client;
 
+	irmo_return_val_if_fail(net_module != NULL, NULL);
 	irmo_return_val_if_fail(location != NULL, NULL);
 
 	// try to resolve the name
@@ -126,21 +127,21 @@ void irmo_disconnect(IrmoConnection *conn)
 void irmo_connection_run(IrmoConnection *conn)
 {
 	irmo_return_if_fail(conn != NULL);
-	
+
 	irmo_server_run(conn->server);
 }
 
 IrmoWorld *irmo_connection_get_world(IrmoConnection *conn)
 {
 	irmo_return_val_if_fail(conn != NULL, NULL);
-	
+
 	return conn->world;
 }
 
 void irmo_connection_ref(IrmoConnection *conn)
 {
 	irmo_return_if_fail(conn != NULL);
-	
+
 	irmo_client_ref(conn);
 }
 
@@ -168,6 +169,16 @@ void irmo_connection_error(IrmoConnection *conn, char *s, ...)
 
 void irmo_connection_block(IrmoConnection *conn, int ms)
 {
+        irmo_return_if_fail(conn != NULL);
+
         irmo_server_block(conn->server, ms);
+}
+
+IrmoClientID irmo_connection_get_id(IrmoConnection *conn)
+{
+        irmo_return_val_if_fail(conn != NULL, 0);
+        irmo_return_val_if_fail(conn->state != CLIENT_CONNECTING, 0);
+
+        return conn->server->remote_client_id;
 }
 

@@ -32,11 +32,6 @@
 #include "connection.h"
 #include "protocol.h"
 
-// size of packet buffer (maximum packet size
-// 64KiB default
-
-#define PACKET_BUFFER_LEN 0x10000
-
 // send a connection refused SYN-FIN packet
 
 static void server_send_refuse(IrmoServer *server,
@@ -59,17 +54,36 @@ static void server_send_refuse(IrmoServer *server,
 	irmo_packet_writestring(packet, message);
 
 	irmo_net_socket_send_packet(server->socket, address, packet);
-		
+
 	irmo_packet_free(packet);
 
 	free(message);
 }
 
+// Send a SYN-ACK packet to the remote client, to acknowledge receipt
+// of a SYN (server) or of a SYN-ACK (client)
+
+static void server_send_synack(IrmoServer *server, IrmoClient *client)
+{
+        IrmoPacket *sendpacket = irmo_packet_new();
+
+        // Header:
+
+        irmo_packet_writei16(sendpacket, PACKET_FLAG_SYN|PACKET_FLAG_ACK);
+
+        // Send the client ID:
+
+        irmo_packet_writei16(sendpacket, client->id);
+
+        irmo_net_socket_send_packet(server->socket, client->address,
+                                    sendpacket);
+
+        irmo_packet_free(sendpacket);
+}
+
 static void server_run_syn(IrmoServer *server,
                            IrmoClient *client)
 {
-	IrmoPacket *sendpacket;
-
 	if (client->state == CLIENT_DISCONNECTED) {
 
 		// There was previously a client connected from the
@@ -91,16 +105,7 @@ static void server_run_syn(IrmoServer *server,
 
                 // Send a SYN/ACK reply
 
-                sendpacket = irmo_packet_new();
-
-                irmo_packet_writei16(sendpacket, 
-                                     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
-
-                irmo_net_socket_send_packet(server->socket,
-                                            client->address,
-                                            sendpacket);
-                        
-                irmo_packet_free(sendpacket);
+                server_send_synack(server, client);
         }
 }
 
@@ -166,7 +171,7 @@ static void server_run_initial_syn(IrmoServer *server,
 	}
 
 	// Valid SYN!
-		
+
         // This is the first SYN that we have received. 
 	// Create a new client object.
 
@@ -179,13 +184,27 @@ static void server_run_initial_syn(IrmoServer *server,
 
 // handle syn-ack connection acknowledgements
 
-static void server_run_synack(IrmoServer *server,
+static void server_run_synack(IrmoServer *server, IrmoPacket *packet,
                               IrmoClient *client)
 {
+        IrmoClientID remote_id;
+
+        // Read the remote-ID value, so we know our client ID at the
+        // remote server.
+
+	if (!irmo_packet_readi16(packet, &remote_id)) {
+		return;
+	}
+
 	if (client->state == CLIENT_CONNECTING) {
-		// this is the first synack we have received
-		
+
+		// this is the first SYN-ACK we have received
+
 		client->state = CLIENT_CONNECTED;
+
+                // Save the remote client ID.
+
+                client->server->remote_client_id = remote_id;
 
 		// create the remote world object
 
@@ -194,7 +213,7 @@ static void server_run_synack(IrmoServer *server,
 			  = irmo_world_new(client->server->client_interface);
 
 			// mark this as a remote world
-			
+
 			client->world->remote = 1;
 			client->world->source_connection = client;
 		}
@@ -219,16 +238,7 @@ static void server_run_synack(IrmoServer *server,
 	// its connection.
 
 	if (server->internal_server) {
-		IrmoPacket *sendpacket = irmo_packet_new();
-
-		irmo_packet_writei16(sendpacket, 
-				     PACKET_FLAG_SYN|PACKET_FLAG_ACK);
-
-		irmo_net_socket_send_packet(server->socket,
-                                            client->address,
-                                            sendpacket);
-
-		irmo_packet_free(sendpacket);
+                server_send_synack(server, client);
 	}
 
 	// dont do this if we're the server, or we'll get stuck in
@@ -242,9 +252,9 @@ static void server_run_synfin(IrmoServer *server,
                               IrmoClient *client)
 {
 	IrmoPacket *sendpacket;
-	
+
 	// connection refused?
-	
+
 	if (client->state == CLIENT_CONNECTING) {
 		char *message;
 
@@ -273,7 +283,7 @@ static void server_run_synfin(IrmoServer *server,
 	}
 
 	if (client->state == CLIENT_DISCONNECTED) {
-		
+
 		// send a syn/fin/ack to reply
 
 		sendpacket = irmo_packet_new();
@@ -310,11 +320,11 @@ static void server_run_packet(IrmoServer *server,
 	client = irmo_hash_table_lookup(server->clients, addr);
 
 	// read packet header
-	
+
 	if (!irmo_packet_readi16(packet, &flags)) {
 		// cant read header
 		// drop packet
-		
+
 		return;
 	}
 
@@ -345,9 +355,9 @@ static void server_run_packet(IrmoServer *server,
 	}
 
 	// check for syn ack connection acknowledgements
-	
+
 	if (flags == (PACKET_FLAG_SYN|PACKET_FLAG_ACK)) {
-		server_run_synack(server, client);
+		server_run_synack(server, packet, client);
 		return;
 	}
 
@@ -364,9 +374,9 @@ static void server_run_packet(IrmoServer *server,
 	if (client->state != CLIENT_CONNECTED) {
 		return;
         }
-	
+
 	// pass it to the protocol parsing code
-	
+
 	irmo_proto_parse_packet(packet, client, flags);
 }
 
@@ -402,7 +412,7 @@ static void server_run_clients(IrmoServer *server)
                 }
                 
                 // remove from socket list: return 1
-                
+               
                 irmo_hash_table_remove(server->clients,
                                        client->address);
 
@@ -428,9 +438,9 @@ void irmo_server_run(IrmoServer *server)
                 // Successfully received a packet!  Parse the contents.
 
                 server_run_packet(server, packet, src_addr);
-                
+
                 // Finished now; free the packet and possibly the address.
-      
+
                 irmo_packet_free(packet);
                 irmo_net_address_unref(src_addr);
         }

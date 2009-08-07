@@ -71,6 +71,12 @@ struct _IrmoServer {
         // The next value to try when assigning a new client ID.
 
         IrmoClientID next_id;
+
+        // The remote client ID.  This is only used if this is an internal
+        // server used as part of an IrmoConnection.  This holds the
+        // unique client ID assigned to us by the remote server.
+
+        IrmoClientID remote_client_id;
 };
 
 /*!

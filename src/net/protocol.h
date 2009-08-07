@@ -26,7 +26,7 @@
 
 // protocol version number, bumped every time the protocol changes
 
-#define IRMO_PROTOCOL_VERSION 4
+#define IRMO_PROTOCOL_VERSION 5
 
 // Packet header flags
 
