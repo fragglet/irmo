@@ -67,13 +67,13 @@ void irmo_class_callback_raise(ClassCallbackData *data,
 
         data_iter = data;
 
-        while (data_iter != NULL) {
+        while (data_iter != NULL && data_iter->klass != NULL) {
 
                 // If this is outside the range of variables for this 
                 // class, it is a change to a variable from a subclass. 
                 // Stop.
 
-                if (variable_index >= data->klass->nvariables) {
+                if (variable_index >= data_iter->klass->nvariables) {
                         break;
                 }
 
