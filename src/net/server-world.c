@@ -35,8 +35,15 @@ void irmo_server_object_new(IrmoServer *server, IrmoObject *obj)
         while (irmo_hash_table_iter_has_more(&iter)) {
                 client = irmo_hash_table_iter_next(&iter);
 
+                // Don't queue up changes for clients that are not
+                // connected yet.
+
+                if (client->state != CLIENT_CONNECTED) {
+                        continue;
+                }
+
                 // Add a new send atom for this object creation.
- 
+
                 irmo_client_sendq_add_new(client, obj);
         }
 }
@@ -53,8 +60,15 @@ void irmo_server_object_destroyed(IrmoServer *server, IrmoObject *obj)
         while (irmo_hash_table_iter_has_more(&iter)) {
                 client = irmo_hash_table_iter_next(&iter);
 
+                // Don't queue up changes for clients that are not
+                // connected yet.
+
+                if (client->state != CLIENT_CONNECTED) {
+                        continue;
+                }
+
                 // Add a new send atom for this object destroy.
-  
+
                 irmo_client_sendq_add_destroy(client, obj);
         }
 }
@@ -72,6 +86,13 @@ void irmo_server_object_changed(IrmoServer *server, IrmoObject *obj,
         while (irmo_hash_table_iter_has_more(&iter)) {
                 client = irmo_hash_table_iter_next(&iter);
 
+                // Don't queue up changes for clients that are not
+                // connected yet.
+
+                if (client->state != CLIENT_CONNECTED) {
+                        continue;
+                }
+
                 // Add a new sendatom for this change.
 
                 irmo_client_sendq_add_change(client, obj, var);
@@ -81,6 +102,10 @@ void irmo_server_object_changed(IrmoServer *server, IrmoObject *obj,
 void irmo_connection_method_call(IrmoConnection *conn, 
                                  IrmoMethodData *data)
 {
+        if (conn->state != CLIENT_CONNECTED) {
+                return;
+        }
+
         // Add a new sendatom for this method call.
 
         irmo_client_sendq_add_method(conn, data);
