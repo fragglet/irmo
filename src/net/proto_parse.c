@@ -163,9 +163,7 @@ static void proto_parse_packet_data(IrmoClient *client, IrmoPacket *packet)
 	// try to preexec the new data
 
 	if (irmo_proto_use_preexec) {
-		irmo_client_run_preexec(client,
-					start - client->recvwindow_start,
-					seq - client->recvwindow_start);
+		irmo_client_run_preexec(client, start, seq);
         }
 }
 

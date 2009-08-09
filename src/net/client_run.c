@@ -37,17 +37,19 @@ void irmo_client_run_preexec(IrmoClient *client, unsigned int start,
 {
 	unsigned int i;
 
-	if (start < 0) {
-		start = 0;
+	if (start < client->recvwindow_start) {
+		start = client->recvwindow_start;
         }
-	
+
 	//printf("preexec %i->%i\n", start, end);
-	
+
 	for (i=start; i<end; ++i) {
-		IrmoSendAtom *atom = client->recvwindow[i];
+		IrmoSendAtom *atom;
+
+                atom = client->recvwindow[i - client->recvwindow_start];
 
 		// only run change atoms
-		
+
 		if (atom != NULL && atom->klass == &irmo_change_atom) {
 			irmo_change_atom.run(atom);
                 }
