@@ -46,11 +46,11 @@ IrmoConnection *irmo_connect(IrmoNetModule *net_module,
 	if (addr == NULL) {
 		return NULL;
         }
-	
+
 	// create a socket
-	
+
 	sock = irmo_net_socket_open_unbound(net_module);
-	
+
 	if (sock == NULL) {
 		return NULL;
         }
@@ -58,7 +58,7 @@ IrmoConnection *irmo_connect(IrmoNetModule *net_module,
 	// create a server for our local world. for accessing the
 	// local world the server is seen as a client connecting
 	// to our own local server (symmetrical)
-	
+
 	server = irmo_server_new_from(sock, local_world, iface);
         server->internal_server = 1;
 
@@ -69,34 +69,9 @@ IrmoConnection *irmo_connect(IrmoNetModule *net_module,
         irmo_net_address_unref(addr);
 
 	// reference is on the client, which implies the server
-	
+
 	irmo_client_ref(client);
 	irmo_server_unref(server);
-	
-	// now initiate the connection
-	// send SYN packets to the server once every second and
-	// wait for replies.
-	// if client->state is set to CLIENT_CONNECTED
-	// the server responded with a SYN ACK
-	// if client->state is set to CLIENT_DISCONNECTED,
-	// the server responded with a SYN FIN and something went wrong
-
-	while (client->state == CLIENT_CONNECTING) {
-		irmo_server_run(server);
-	}
-
-	if (client->state == CLIENT_DISCONNECTED) {
-
-		irmo_error_report("irmo_connect", "%s", 
-				  client->connection_error);
-		
-		// connection failed
-		// delete client object, shutdown socket, etc.
-		
-		irmo_client_unref(client);
-
-		return NULL;
-	}
 
 	return client;
 } 
@@ -104,24 +79,14 @@ IrmoConnection *irmo_connect(IrmoNetModule *net_module,
 void irmo_disconnect(IrmoConnection *conn)
 {
 	irmo_return_if_fail(conn != NULL);
-	
+
 	// keep a watch on the client and stop it being destroyed
-	
+
 	irmo_client_ref(conn);
 
 	// set disconnect
-	
+
 	irmo_client_disconnect(conn);
-	
-	// loop until we disconnect from the server (either from
-	// getting a positive disconnect reply or from timeout)
-
-	while (conn->state != CLIENT_DISCONNECTED) {
-		irmo_server_run(conn->server);
-		irmo_net_socket_block(conn->server->socket, 100);
-	}
-
-	irmo_client_unref(conn);
 }
 
 void irmo_connection_run(IrmoConnection *conn)
@@ -177,8 +142,13 @@ void irmo_connection_block(IrmoConnection *conn, int ms)
 IrmoClientID irmo_connection_get_id(IrmoConnection *conn)
 {
         irmo_return_val_if_fail(conn != NULL, 0);
-        irmo_return_val_if_fail(conn->state != CLIENT_CONNECTING, 0);
+        irmo_return_val_if_fail(conn->state != IRMO_CLIENT_CONNECTING, 0);
 
         return conn->server->remote_client_id;
+}
+
+IrmoClientState irmo_connection_get_state(IrmoConnection *conn)
+{
+        return irmo_client_get_state(conn);
 }
 

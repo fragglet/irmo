@@ -38,7 +38,7 @@ void irmo_server_object_new(IrmoServer *server, IrmoObject *obj)
                 // Don't queue up changes for clients that are not
                 // connected yet.
 
-                if (client->state != CLIENT_CONNECTED) {
+                if (client->state != IRMO_CLIENT_CONNECTED) {
                         continue;
                 }
 
@@ -63,7 +63,7 @@ void irmo_server_object_destroyed(IrmoServer *server, IrmoObject *obj)
                 // Don't queue up changes for clients that are not
                 // connected yet.
 
-                if (client->state != CLIENT_CONNECTED) {
+                if (client->state != IRMO_CLIENT_CONNECTED) {
                         continue;
                 }
 
@@ -89,7 +89,7 @@ void irmo_server_object_changed(IrmoServer *server, IrmoObject *obj,
                 // Don't queue up changes for clients that are not
                 // connected yet.
 
-                if (client->state != CLIENT_CONNECTED) {
+                if (client->state != IRMO_CLIENT_CONNECTED) {
                         continue;
                 }
 
@@ -102,7 +102,7 @@ void irmo_server_object_changed(IrmoServer *server, IrmoObject *obj,
 void irmo_connection_method_call(IrmoConnection *conn, 
                                  IrmoMethodData *data)
 {
-        if (conn->state != CLIENT_CONNECTED) {
+        if (conn->state != IRMO_CLIENT_CONNECTED) {
                 return;
         }
 

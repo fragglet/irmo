@@ -37,13 +37,6 @@
 
 #define PACKET_THRESHOLD 128
 
-typedef enum {
-	CLIENT_CONNECTING,          // received first syn, sent syn ack
-	CLIENT_CONNECTED,           // received syn ack reply, normal op
-	CLIENT_DISCONNECTED,        // killed with syn fin
-	CLIENT_DISCONNECTING,       // waiting for ack of disconnect request 
-} IrmoClientState;
-
 // client
 
 struct _IrmoClient {

@@ -271,6 +271,17 @@ typedef struct _IrmoServer IrmoServer;
 typedef struct _IrmoClient IrmoClient;
 
 /*!
+ * Connection state of a client.
+ */
+
+typedef enum {
+        IRMO_CLIENT_CONNECTING,
+        IRMO_CLIENT_CONNECTED,
+        IRMO_CLIENT_DISCONNECTING,
+        IRMO_CLIENT_DISCONNECTED
+} IrmoClientState;
+
+/*!
  * A numerical client identifier.
  *
  * Each client that connects to a server is assigned a unique number

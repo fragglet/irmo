@@ -131,6 +131,15 @@ void irmo_connection_block(IrmoConnection *conn, int timeout);
 IrmoWorld *irmo_connection_get_world(IrmoConnection *conn);
 
 /*!
+ * Get the state of a connection.
+ *
+ * @param conn              The connection.
+ * @return                  Current state of the connection.
+ */
+
+IrmoClientState irmo_connection_get_state(IrmoConnection *conn);
+
+/*!
  * Add a reference to an @ref IrmoConnection object.
  */
 

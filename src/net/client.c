@@ -43,7 +43,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
 
 	client = irmo_new0(IrmoClient, 1);
 
-	client->state = CLIENT_CONNECTING;
+	client->state = IRMO_CLIENT_CONNECTING;
 	client->server = server;
 	client->connect_time = 0;
 	client->connect_attempts = CLIENT_CONNECT_ATTEMPTS;
@@ -197,7 +197,7 @@ static void client_run_connecting(IrmoClient *client)
 		// run out of connection attempts?
 
 		if (client->connect_attempts <= 0) {
-			client->state = CLIENT_DISCONNECTED;
+			client->state = IRMO_CLIENT_DISCONNECTED;
 			irmo_connection_error(client, "attempt to connect timed out");
 			return;
 		}
@@ -269,7 +269,7 @@ static void client_run_disconnecting(IrmoClient *client)
 		// as disconnected
 		
 		if (client->connect_attempts <= 0) {
-			client->state = CLIENT_DISCONNECTED;
+			client->state = IRMO_CLIENT_DISCONNECTED;
 			return;
 		}
 
@@ -295,15 +295,15 @@ static void client_run_disconnecting(IrmoClient *client)
 void irmo_client_run(IrmoClient *client)
 {
 	switch (client->state) {
-	case CLIENT_DISCONNECTED:
+	case IRMO_CLIENT_DISCONNECTED:
 		return;
-	case CLIENT_CONNECTING:
+	case IRMO_CLIENT_CONNECTING:
 		client_run_connecting(client);
 		break;
-	case CLIENT_CONNECTED:
+	case IRMO_CLIENT_CONNECTED:
 		irmo_proto_run_client(client);
 		break;
-	case CLIENT_DISCONNECTING:
+	case IRMO_CLIENT_DISCONNECTING:
 		client_run_disconnecting(client);
 		break;
         default:
@@ -322,7 +322,7 @@ void irmo_client_disconnect(IrmoClient *client)
 {
 	// set into the disconnecting state
 	
-	client->state = CLIENT_DISCONNECTING;
+	client->state = IRMO_CLIENT_DISCONNECTING;
 
 	// try to send 6 disconnect attempts before
 	// giving up
@@ -377,5 +377,12 @@ IrmoClientID irmo_client_get_id(IrmoClient *client)
         irmo_return_val_if_fail(client != NULL, 0);
 
         return client->id;
+}
+
+IrmoClientState irmo_client_get_state(IrmoClient *client)
+{
+        irmo_return_val_if_fail(client != NULL, IRMO_CLIENT_DISCONNECTED);
+
+        return client->state;
 }
 

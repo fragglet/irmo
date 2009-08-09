@@ -106,6 +106,15 @@ IrmoWorld *irmo_client_get_world(IrmoClient *client);
 IrmoClientID irmo_client_get_id(IrmoClient *client);
 
 /*!
+ * Get the connection status of a client.
+ *
+ * @param client   The client.
+ * @return         The connection state of the client.
+ */
+
+IrmoClientState irmo_client_get_state(IrmoClient *client);
+
+/*!
  * Watch for client disconnection.
  *
  * Set a watch on a client. When that client disconnects, a

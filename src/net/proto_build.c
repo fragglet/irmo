@@ -423,7 +423,7 @@ void irmo_proto_run_client(IrmoClient *client)
 
                 // Disconnect the dead client.
 
-		client->state = CLIENT_DISCONNECTED;
+		client->state = IRMO_CLIENT_DISCONNECTED;
 		irmo_client_callback_raise(&client->disconnect_callbacks,
 					   client);
 	}
