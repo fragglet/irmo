@@ -245,7 +245,8 @@ static void irmo_object_set_raise(IrmoObject *object, IrmoClassVar *var)
 
 	// call callback functions for change
 
-        irmo_object_callback_raise(&object->callbacks, object, var->index);
+        irmo_object_callback_raise(&object->callbacks, object,
+                                   object->objclass, var->index);
 
         class_data = &object->world->callbacks[objclass->index];
         irmo_class_callback_raise(class_data, object, var->index);

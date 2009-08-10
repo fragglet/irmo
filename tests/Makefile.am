@@ -4,7 +4,8 @@ TESTS =                        \
         test-iterator          \
         test-binding           \
         test-packet            \
-        test-world
+        test-world             \
+        test-callbacks
 
 check_PROGRAMS = $(TESTS)
 

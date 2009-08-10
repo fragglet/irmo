@@ -103,21 +103,36 @@ void irmo_object_callback_free(ObjectCallbackData *data,
 
 void irmo_object_callback_raise(ObjectCallbackData *data,
                                 IrmoObject *object,
+                                IrmoClass *klass,
                                 unsigned int variable_index)
 {
         IrmoCallbackList *callback_list;
         IrmoClassVar *variable;
 
-        // If there are no variable callbacks, ignore this.
+        // Get the variable that changed:
 
-        if (data->variable_callbacks == NULL) {
-                return;
-        }
-
-        callback_list = &data->variable_callbacks[variable_index];
         variable = object->objclass->variables[variable_index];
 
-        irmo_var_callbacks_invoke(callback_list, object, variable);
+        // Invoke any "all variable" callbacks:
+
+        irmo_var_callbacks_invoke(&data->all_variable_callbacks,
+                                  object, variable);
+
+        // Invoke variable callbacks for the variable that was changed.
+        // If there are no variable callbacks, ignore this.
+
+        // If this ObjectCallbackData is part of a ClassCallbackData,
+        // 'data' may be the top level watch structure (ie. no variable
+        // callbacks possible); the changed variable may also be in
+        // a subclass of 'klass' that does not exist here.
+
+        if (data->variable_callbacks != NULL
+         && klass != NULL
+         && variable_index < klass->nvariables) {
+                callback_list = &data->variable_callbacks[variable_index];
+
+                irmo_var_callbacks_invoke(callback_list, object, variable);
+        }
 }
 
 void irmo_object_callback_raise_destroy(ObjectCallbackData *data,

@@ -81,11 +81,13 @@ void irmo_object_callback_free(ObjectCallbackData *callback_data,
  *
  * @param data            The callback data structure.
  * @param object          The object that changed.
+ * @param klass           The class that this callback structure is used for.
  * @param variable_index  Index of the variable that changed.
  */
 
 void irmo_object_callback_raise(ObjectCallbackData *data,
                                 IrmoObject *object,
+                                IrmoClass *klass,
                                 unsigned int variable_index);
 
 /*!

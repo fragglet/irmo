@@ -40,7 +40,9 @@ struct test_struct_derived {
 
 static int check_var_set_invoked;
 
-static void test_callback_check_var_set(IrmoObject *obj, char *var, void *user_data)
+static void test_callback_check_var_set(IrmoObject *obj,
+                                        IrmoClassVar *var,
+                                        void *user_data)
 {
         struct test_struct *mystruct = user_data;
 
