@@ -24,6 +24,20 @@
 #ifndef IRMO_WORLD_CLASS_CALLBACK_DATA_H
 #define IRMO_WORLD_CLASS_CALLBACK_DATA_H
 
+/*!
+ * Class callback data.
+ *
+ * This structure encapsulates the different callback lists used to
+ * watch events related to all objects of a particular class.  This
+ * is an extension of the @ref ObjectCallbackData structure (it also
+ * monitors creation of new objects).
+ *
+ * Each @ref IrmoWorld has a class callback structure for each class
+ * in the interface used by the world, plus a "top-level" class
+ * callback structure for monitoring events related to objects of
+ * all classes.
+ */
+
 typedef struct _ClassCallbackData ClassCallbackData;
 
 #include "interface/class.h"
@@ -35,15 +49,17 @@ struct _ClassCallbackData {
 
         IrmoClass *klass;
 
-	// Callback data object for the parent class
-	
-	ClassCallbackData *parent_data;
+        // Parent class callback data structure.
+        // For the top-level callbacks structure, this is NULL.
 
-	// Callbacks for watching for creation of new objects.
+        ClassCallbackData *parent_data;
 
-	IrmoCallbackList new_callbacks;
-	
-        // Other callback data
+        // List of callbacks for watching creation of new objects.
+
+        IrmoCallbackList new_callbacks;
+
+        // Other callback lists in common with those used for
+        // object callbacks.
 
         ObjectCallbackData object_callbacks;
 };

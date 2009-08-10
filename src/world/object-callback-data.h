@@ -24,22 +24,34 @@
 #ifndef IRMO_WORLD_OBJECT_CALLBACK_DATA_H
 #define IRMO_WORLD_OBJECT_CALLBACK_DATA_H
 
+/*!
+ * Object callback structure.
+ *
+ * This structure encapsulates the different callback lists used
+ * to watch events related to an @ref IrmoObject (changes in variables
+ * and object destruction).  Each IrmoObject has an object callback
+ * structure; there is also an extended version (@ref ClassCallbackData)
+ * used to monitor all objects of a particular class within a world.
+ */
+
 typedef struct _ObjectCallbackData ObjectCallbackData;
 
 #include "base/callback.h"
 
 struct _ObjectCallbackData {
 
-	// Callbacks for if any variable is changed
+	// List of callbacks to be invoked if any variable is changed.
 
 	IrmoCallbackList all_variable_callbacks;
 
-	// Callbacks for if a particular variable is changed.
-	
+	// Array of callback lists, one for each variable.  This array
+        // is only allocated as needed - ie. the first time a variable
+        // watch is set.
+
 	IrmoCallbackList *variable_callbacks;
 
-	// Callbacks called when object is destroyed
-	
+	// List of callbacks to be invoked when the object is destroyed.
+
 	IrmoCallbackList destroy_callbacks;
 };
 
