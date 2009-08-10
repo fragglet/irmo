@@ -44,10 +44,13 @@ void irmo_class_callback_free(ClassCallbackData *data)
         irmo_object_callback_free(&data->object_callbacks, data->klass);
 }
 
-void irmo_class_callback_raise_new(ClassCallbackData *data, 
+void irmo_class_callback_raise_new(ClassCallbackData *data,
                                    IrmoObject *object)
 {
         ClassCallbackData *data_iter;
+
+        // Iterate up through all parent classes, invoking callbacks
+        // for each class:
 
         data_iter = data;
 
@@ -65,12 +68,18 @@ void irmo_class_callback_raise(ClassCallbackData *data,
 {
         ClassCallbackData *data_iter;
 
+        // Iterate up through all parent classes, invoking callbacks
+        // for each class.  When we reach the "top level" class
+        // structure (callbacks_all, data_iter->klass == NULL),
+        // there are no more variable callbacks to invoke, because
+        // the top level structure has no variables.
+
         data_iter = data;
 
         while (data_iter != NULL && data_iter->klass != NULL) {
 
-                // If this is outside the range of variables for this 
-                // class, it is a change to a variable from a subclass. 
+                // If this is outside the range of variables for this
+                // class, it is a change to a variable from a subclass.
                 // Stop.
 
                 if (variable_index >= data_iter->klass->nvariables) {
@@ -89,6 +98,9 @@ void irmo_class_callback_raise_destroy(ClassCallbackData *data,
                                        IrmoObject *object)
 {
         ClassCallbackData *data_iter;
+
+        // Iterate up through all parent classes, invoking callbacks
+        // for each class:
 
         data_iter = data;
 
