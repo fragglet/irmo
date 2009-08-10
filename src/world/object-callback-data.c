@@ -77,13 +77,7 @@ void irmo_object_callback_init(ObjectCallbackData *data,
 {
         data->all_variable_callbacks = NULL;
         data->destroy_callbacks = NULL;
-
-        if (klass != NULL) {
-                data->variable_callbacks = irmo_new0(IrmoCallbackList,
-                                                     klass->nvariables);
-        } else {
-                data->variable_callbacks = NULL;
-        }
+        data->variable_callbacks = NULL;
 }
 
 // Free the contents of an ObjectCallbackData structure.
@@ -94,7 +88,6 @@ void irmo_object_callback_free(ObjectCallbackData *data,
         unsigned int i;
 
         irmo_callback_list_free(&data->all_variable_callbacks);
-
         irmo_callback_list_free(&data->destroy_callbacks);
 
         if (data->variable_callbacks != NULL) {
@@ -114,9 +107,8 @@ void irmo_object_callback_raise(ObjectCallbackData *data,
 {
         IrmoCallbackList *callback_list;
         char *variable_name;
-      
-        // Top-level class callback data with no proper class associated?
-        // This has no variable callbacks, so just return.
+
+        // If there are no variable callbacks, ignore this.
 
         if (data->variable_callbacks == NULL) {
                 return;
@@ -125,16 +117,13 @@ void irmo_object_callback_raise(ObjectCallbackData *data,
         callback_list = &data->variable_callbacks[variable_index];
         variable_name = object->objclass->variables[variable_index]->name;
 
-        irmo_var_callbacks_invoke(callback_list,
-                                  object,
-                                  variable_name);
+        irmo_var_callbacks_invoke(callback_list, object, variable_name);
 }
 
-void irmo_object_callback_raise_destroy(ObjectCallbackData *data, 
+void irmo_object_callback_raise_destroy(ObjectCallbackData *data,
                                         IrmoObject *object)
 {
-        irmo_obj_callbacks_invoke(&data->destroy_callbacks,
-                                  object);
+        irmo_obj_callbacks_invoke(&data->destroy_callbacks, object);
 }
 
 IrmoCallback *irmo_object_callback_watch(ObjectCallbackData *data,
@@ -158,6 +147,15 @@ IrmoCallback *irmo_object_callback_watch(ObjectCallbackData *data,
                         return NULL;
                 }
 
+                // We may not have created a variable callbacks array
+                // yet; if not, create it now.
+
+                if (data->variable_callbacks == NULL) {
+                        data->variable_callbacks
+                                = irmo_new0(IrmoCallbackList,
+                                            klass->nvariables);
+                }
+
                 callback_list = &data->variable_callbacks[class_var->index];
         }
 
@@ -169,7 +167,6 @@ IrmoCallback *irmo_object_callback_watch_destroy(ObjectCallbackData *data,
                                                  void *user_data)
 {
         return irmo_callback_list_add(&data->destroy_callbacks,
-                                      func,
-                                      user_data);
+                                      func, user_data);
 }
 
