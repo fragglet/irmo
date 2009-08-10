@@ -225,7 +225,7 @@ typedef struct _IrmoObject IrmoObject;
 
 //! Callback functions for operations on variables
 
-typedef void (*IrmoVarCallback) (IrmoObject *object, char *variable,
+typedef void (*IrmoVarCallback) (IrmoObject *object, IrmoClassVar *var,
 				 void *user_data);
 
 //! Callback functions for operations on objects

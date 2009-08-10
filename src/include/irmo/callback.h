@@ -69,7 +69,7 @@ void irmo_callback_unset(IrmoCallback *callback);
 IrmoCallback *irmo_callback_watch_destroy(IrmoCallback *callback,
 					  IrmoCallbackCallback func,
 					  void *user_data);
-					  
+
 //! \}
 
 #ifdef __cplusplus

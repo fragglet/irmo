@@ -54,7 +54,7 @@ void irmo_obj_callbacks_invoke(IrmoCallbackList *list,
 
 static void irmo_var_callbacks_invoke(IrmoCallbackList *list,
                                       IrmoObject *obj,
-                                      char *variable)
+                                      IrmoClassVar *variable)
 {
         IrmoSListIterator iter;
         IrmoCallback *callback;
@@ -106,7 +106,7 @@ void irmo_object_callback_raise(ObjectCallbackData *data,
                                 unsigned int variable_index)
 {
         IrmoCallbackList *callback_list;
-        char *variable_name;
+        IrmoClassVar *variable;
 
         // If there are no variable callbacks, ignore this.
 
@@ -115,9 +115,9 @@ void irmo_object_callback_raise(ObjectCallbackData *data,
         }
 
         callback_list = &data->variable_callbacks[variable_index];
-        variable_name = object->objclass->variables[variable_index]->name;
+        variable = object->objclass->variables[variable_index];
 
-        irmo_var_callbacks_invoke(callback_list, object, variable_name);
+        irmo_var_callbacks_invoke(callback_list, object, variable);
 }
 
 void irmo_object_callback_raise_destroy(ObjectCallbackData *data,
