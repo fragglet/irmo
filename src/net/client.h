@@ -105,9 +105,10 @@ struct _IrmoClient {
 	
 	int need_ack;
 
-	// disconnect callbacks
+	// Callbacks invoked when the client state changes,
+        // a separate list for each state.
 
-	IrmoCallbackList disconnect_callbacks;
+	IrmoCallbackList state_change_callbacks[IRMO_CLIENT_NUM_STATES];
 
 	// estimations of round trip time mean and standard deviation
 	// (in milliseconds)
@@ -129,9 +130,21 @@ struct _IrmoClient {
 
 	unsigned int ssthresh;
 
+        // if true, the remote world (that the client is sharing to us)
+        // has been synced to us. (ie. we have received the sync point
+        // atom)
+
+        int local_synced;
+
+        // if true, the local world (that we are sharing to the client)
+        // is synced to the client.  (ie. the client has received the
+        // sync point atom)
+
+        int remote_synced;
+
 	// user specified sendwindow limits
 	// if these are 0, they are unset
-	
+
 	unsigned int local_sendwindow_max;
 	unsigned int remote_sendwindow_max;
 
@@ -196,6 +209,15 @@ void irmo_client_run_recvwindow(IrmoClient *client);
 
 void irmo_client_run_preexec(IrmoClient *client, unsigned int start,
                              unsigned int end);
+
+/*!
+ * Set the connection state of a client.
+ *
+ * @param client         The client.
+ * @param state          The state to set.
+ */
+
+void irmo_client_set_state(IrmoClient *client, IrmoClientState state);
 
 #endif /* #ifndef IRMO_NET_CLIENT_H */
 

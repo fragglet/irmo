@@ -28,6 +28,7 @@ IrmoSendAtomClass *irmo_sendatom_types[NUM_SENDATOM_TYPES] = {
 	&irmo_destroy_atom,
 	&irmo_method_atom,
 	&irmo_sendwindow_atom,
+        &irmo_sync_point_atom,
 };
 
 void irmo_sendatom_free(IrmoSendAtom *atom)

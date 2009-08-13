@@ -90,54 +90,75 @@ void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)
 	irmo_client_sendq_push(client, IRMO_SENDATOM(atom));
 }
 
-void irmo_client_sendq_add_change(IrmoClient *client,
-				  IrmoObject *object,
+static void clear_existing_change(IrmoClient *client,
+                                  IrmoObject *obj,
                                   IrmoClassVar *var)
 {
 	IrmoChangeAtom *atom;
-        unsigned int var_index;
 	unsigned int i;
 
-        var_index = var->index;
-	
-	// search the send window and nullify this variable if there
-	// is an existing change for it waiting to be acked
+	// Search the send window for a change atom affecting this
+        // object.  If the atom changes this variable, that change
+        // is out of date and should be removed - it does not need
+        // to be retransmitted.
+
+        // Once a change atom has no variables left to change, it
+        // is nullified (converted to a null atom).
 
 	for (i=0; i<client->sendwindow_size; ++i) {
-		// check this is a change atom for this variable in
-		// this object
-		
+
+		// is this a change atom for this variable in
+		// this object?
+
 		if (client->sendwindow[i]->klass != &irmo_change_atom) {
 			continue;
                 }
 
 		atom = (IrmoChangeAtom *) client->sendwindow[i];
 
-		if (atom->object == object && atom->changed[var_index]) {
+		if (atom->object == obj && atom->changed[var->index]) {
 
-			// unset the change in the atom. update
+			// Unset the change in the atom and update
 			// change count
-			
-			atom->changed[var_index] = 0;
+
+			atom->changed[var->index] = 0;
 			--atom->nchanged;
 
-			// if there are no more changes, replace the atom
+			// If there are no more changes, replace the atom
 			// with a NULL
 
 			if (atom->nchanged <= 0) {
 				irmo_sendatom_nullify(IRMO_SENDATOM(atom));
 			}
-			
-			// there can only be one change atom for a
-			// variable in the send window. stop searching
-			
+
+			// There can only be one change atom for a
+			// variable in the send window, so stop.
+
 			break;
 		}
 	}
-	
-	// check if there is an existing atom for this object in
-	// the send queue
-	
+}
+
+void irmo_client_sendq_add_change(IrmoClient *client,
+				  IrmoObject *object,
+                                  IrmoClassVar *var)
+{
+	IrmoChangeAtom *atom;
+
+        // Clear out an existing change for this variable, if one
+        // is already in the send window - that change is now out
+        // of date.
+        // Don't nullify atoms until the world state has been
+        // synchronized, as the client needs to have the complete
+        // world state when it reaches the synchronization point.
+
+        if (client->remote_synced) {
+                clear_existing_change(client, object, var);
+        }
+
+	// Check if there is an existing atom for this object in
+	// the send queue, and reuse it if possible.
+
 	atom = irmo_hash_table_lookup(client->sendq_hashtable,
 				      IRMO_POINTER_KEY(object->id));
 
@@ -149,18 +170,18 @@ void irmo_client_sendq_add_change(IrmoClient *client,
 		atom->object = object;
 		atom->changed = irmo_new0(int, object->objclass->nvariables);
 		atom->nchanged = 0;
-		
+
 		irmo_client_sendq_push(client, IRMO_SENDATOM(atom));
 	}
 
-	// set the change in the atom and update the change count
+	// Set the change in the atom and update the change count
 
-	if (!atom->changed[var_index]) {
-		atom->changed[var_index] = 1;
+	if (!atom->changed[var->index]) {
+		atom->changed[var->index] = 1;
 		++atom->nchanged;
 	}
-	
-	// need to recalculate atom size
+
+	// Recalculate atom size
 
 	atom->sendatom.len = irmo_change_atom.length(IRMO_SENDATOM(atom));
 }
@@ -170,35 +191,35 @@ void irmo_client_sendq_add_destroy(IrmoClient *client, IrmoObject *object)
 	IrmoDestroyAtom *atom;
 	unsigned int i;
 	
-	// check for any changeatoms referring to this object
+	// Check for any change atoms referring to this object
 
 	atom = irmo_hash_table_lookup(client->sendq_hashtable,
 				      IRMO_POINTER_KEY(object->id));
 
-	// convert to a ATOM_NULL atom
-	
+	// Convert to a ATOM_NULL atom
+
 	if (atom != NULL) {
 		irmo_sendatom_nullify(IRMO_SENDATOM(atom));
 		irmo_hash_table_remove(client->sendq_hashtable,
 				       IRMO_POINTER_KEY(object->id));
 	}
 
-	// nullify atoms in send window too
-	
+	// Nullify atoms in send window too
+
 	for (i=0; i<client->sendwindow_size; ++i) {
 		IrmoChangeAtom *catom;
 
 		if (client->sendwindow[i]->klass != &irmo_change_atom) {
 			continue;
                 }
-		
+
 		catom = (IrmoChangeAtom *) client->sendwindow[i];
 
 		if (object == catom->object) {
 			irmo_sendatom_nullify(client->sendwindow[i]);
 		}
 	}
-	
+
 	// create a destroy atom
 
 	atom = irmo_new0(IrmoDestroyAtom, 1);
@@ -214,9 +235,9 @@ void irmo_client_sendq_add_method(IrmoClient *client, IrmoMethodData *data)
 	IrmoMethod *method = data->method;
 	IrmoMethodAtom *atom;
 	unsigned int i;
-	
+
 	// create a new method atom
-	
+
 	atom = irmo_new0(IrmoMethodAtom, 1);
 	atom->sendatom.klass = &irmo_method_atom;
 	atom->method_data.method = method;
@@ -256,6 +277,25 @@ void irmo_client_sendq_add_sendwindow(IrmoClient *client, unsigned int max)
 	irmo_client_sendq_push(client, IRMO_SENDATOM(atom));
 }
 
+// Add a synchronization point atom.
+
+void irmo_client_sendq_add_sync_point(IrmoClient *client)
+{
+        IrmoSendAtom *atom;
+
+	atom = irmo_new0(IrmoSendAtom, 1);
+	atom->klass = &irmo_sync_point_atom;
+
+	irmo_client_sendq_push(client, atom);
+
+        // The client is no longer synced.  This will be reset
+        // once the synchronization point atom has been acknowledged
+        // received by the client.
+
+        client->remote_synced = 0;
+
+}
+
 // queue up the entire current world state in the client send queue
 // this is used for when new clients connect to retrieve the entire
 // current world state
@@ -283,7 +323,7 @@ void irmo_client_sendq_add_state(IrmoClient *client)
         irmo_iterator_free(iter);
 
         // Now set the variable states
-        
+
         iter = irmo_world_iterate_objects(client->server->world, NULL);
 
         while (irmo_iterator_has_more(iter)) {
@@ -298,5 +338,9 @@ void irmo_client_sendq_add_state(IrmoClient *client)
         }
 
         irmo_iterator_free(iter);
+
+        // Send sync point to terminate initial state
+
+        irmo_client_sendq_add_sync_point(client);
 }
 

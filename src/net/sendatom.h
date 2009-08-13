@@ -31,15 +31,17 @@ typedef struct _IrmoChangeAtom IrmoChangeAtom;
 typedef struct _IrmoDestroyAtom IrmoDestroyAtom;
 typedef struct _IrmoMethodAtom IrmoMethodAtom;
 typedef struct _IrmoSendWindowAtom IrmoSendWindowAtom;
+typedef struct _IrmoSyncPointAtom IrmoSyncPointAtom;
 
 typedef enum {
-	ATOM_NULL,               // null atom for nullified changes
-	ATOM_NEW,                // new object 
-	ATOM_CHANGE,             // modified object 
-	ATOM_DESTROY,            // object destroyed 
-	ATOM_METHOD,             // method call
-	ATOM_SENDWINDOW,         // set maximum sendwindow size
-	NUM_SENDATOM_TYPES,
+        ATOM_NULL,               // null atom for nullified changes
+        ATOM_NEW,                // new object
+        ATOM_CHANGE,             // modified object
+        ATOM_DESTROY,            // object destroyed
+        ATOM_METHOD,             // method call
+        ATOM_SENDWINDOW,         // set maximum sendwindow size
+        ATOM_SYNCPOINT,          // synchronization point
+        NUM_SENDATOM_TYPES,
 } IrmoSendAtomType;
 
 // time value which indicates an atom has not yet been sent
@@ -61,6 +63,7 @@ typedef void (*IrmoSendAtomWriteFunc)(IrmoSendAtom *atom, IrmoPacket *packet);
 typedef void (*IrmoSendAtomRunFunc)(IrmoSendAtom *atom);
 typedef size_t (*IrmoSendAtomLengthFunc)(IrmoSendAtom *atom);
 typedef void (*IrmoSendAtomDestroyFunc)(IrmoSendAtom *atom);
+typedef void (*IrmoSendAtomAckedFunc)(IrmoSendAtom *atom);
 
 //
 // All send atoms have a class, which defines the type of the atom and
@@ -71,7 +74,7 @@ struct _IrmoSendAtomClass {
 	IrmoSendAtomType type;
 
 	// verify an atom of this type can be read from a packet
-	
+
 	IrmoSendAtomVerifyFunc verify;
 
 	// read a new atom of this type from a packet
@@ -83,13 +86,18 @@ struct _IrmoSendAtomClass {
 	IrmoSendAtomWriteFunc write;
 
 	// run an atom to apply its effects
-	
+
 	IrmoSendAtomRunFunc run;
 
 	// calculate the length of an atom
-	
+
 	IrmoSendAtomLengthFunc length;
-	
+
+        // invoked when the atom is acknowledged received by the
+        // remote client that it was sent to.
+
+        IrmoSendAtomAckedFunc acked;
+
 	// destroy an atom of this type
 
 	IrmoSendAtomDestroyFunc destructor;
@@ -268,6 +276,7 @@ extern IrmoSendAtomClass irmo_change_atom;
 extern IrmoSendAtomClass irmo_destroy_atom;
 extern IrmoSendAtomClass irmo_method_atom;
 extern IrmoSendAtomClass irmo_sendwindow_atom;
+extern IrmoSendAtomClass irmo_sync_point_atom;
 
 extern IrmoSendAtomClass *irmo_sendatom_types[];
 

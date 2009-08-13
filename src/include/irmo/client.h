@@ -115,21 +115,24 @@ IrmoClientID irmo_client_get_id(IrmoClient *client);
 IrmoClientState irmo_client_get_state(IrmoClient *client);
 
 /*!
- * Watch for client disconnection.
+ * Watch for a client state change.
  *
- * Set a watch on a client. When that client disconnects, a
- * @ref IrmoClientCallback callback function is invoked.
+ * Set a watch on a client. When the connection state of the client
+ * changes to the specified state, a @ref IrmoClientCallback callback
+ * function is invoked.
  *
- * @param client    The client to watch.
- * @param func      The callback function to invoke.
- * @param user_data Extra data to pass to the callback function.
+ * @param client     The client to watch.
+ * @param state      The state to watch for.
+ * @param func       The callback function to invoke.
+ * @param user_data  Extra data to pass to the callback function.
  *
- * @return          A @ref IrmoCallback object representing the watch.
+ * @return           A @ref IrmoCallback object representing the watch.
  */
 
-IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
-					   IrmoClientCallback func, 
-					   void *user_data);
+IrmoCallback *irmo_client_watch_state(IrmoClient *client,
+                                      IrmoClientState state,
+                                      IrmoClientCallback func,
+                                      void *user_data);
 
 /*!
  * Get the ping time for a client.

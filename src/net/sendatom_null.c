@@ -73,6 +73,7 @@ IrmoSendAtomClass irmo_null_atom = {
 	irmo_null_atom_write,
 	irmo_null_atom_run,
 	irmo_null_atom_length,
+        NULL,
 	NULL,
 };
 

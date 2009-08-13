@@ -9,6 +9,8 @@ libirmonet_la_SOURCES=                                      \
                               protocol.h                    \
        sendatom_null.c                                      \
        sendatom_newobject.c                                 \
+       sendatom_sendwindow.c                                \
+       sendatom_syncpoint.c                                 \
        client_sendq.c                                       \
        client.c               client.h                      \
        client_run.c                                         \
@@ -18,6 +20,5 @@ libirmonet_la_SOURCES=                                      \
        server-world.c         server-world.h                \
        server-lowlevel.c                                    \
        sendatom.c             sendatom.h                    \
-       sendatom_sendwindow.c                                \
        proto_parse.c                                        
 

@@ -110,6 +110,7 @@ IrmoSendAtomClass irmo_destroy_atom = {
 	(IrmoSendAtomWriteFunc) irmo_destroy_atom_write,
 	(IrmoSendAtomRunFunc) irmo_destroy_atom_run,
 	(IrmoSendAtomLengthFunc) irmo_destroy_atom_length,
+        NULL,
 	NULL,
 };
 

@@ -277,8 +277,10 @@ typedef struct _IrmoClient IrmoClient;
 typedef enum {
         IRMO_CLIENT_CONNECTING,
         IRMO_CLIENT_CONNECTED,
+        IRMO_CLIENT_SYNCHRONIZED,
         IRMO_CLIENT_DISCONNECTING,
-        IRMO_CLIENT_DISCONNECTED
+        IRMO_CLIENT_DISCONNECTED,
+        IRMO_CLIENT_NUM_STATES
 } IrmoClientState;
 
 /*!

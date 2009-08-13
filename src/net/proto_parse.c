@@ -230,11 +230,43 @@ static void proto_update_cc_values(IrmoClient *client)
 	}
 }
 
+static void advance_send_window(IrmoClient *client, unsigned int length)
+{
+        IrmoSendAtom *atom;
+        unsigned int i;
+
+	// destroy all atoms in the area acked
+
+	for (i=0; i<length; ++i) {
+
+                atom = client->sendwindow[i];
+
+                // Signal the atom that it has been acknowledged.
+
+                if (atom->klass->acked != NULL) {
+                        atom->klass->acked(atom);
+                }
+
+		irmo_sendatom_free(atom);
+        }
+
+        // advance the send window forward
+
+	memcpy(client->sendwindow,
+	       client->sendwindow + length,
+	       sizeof(*client->sendwindow)
+	         * (client->sendwindow_size - length));
+
+        // update counters
+
+	client->sendwindow_start += length;
+	client->sendwindow_size -= length;
+}
+
 static void proto_parse_ack(IrmoClient *client, unsigned int ack)
 {
 	unsigned int seq;
 	unsigned int relative;
-	unsigned int i;
 
 	//printf("got an ack: %i\n", ack);
 
@@ -266,20 +298,7 @@ static void proto_parse_ack(IrmoClient *client, unsigned int ack)
         // Update congestion control values
 
         proto_update_cc_values(client);
-
-	// Advance the send window and destroy atoms in the area acked
-
-	for (i=0; i<relative; ++i) {
-		irmo_sendatom_free(client->sendwindow[i]);
-        }
-
-	memcpy(client->sendwindow,
-	       client->sendwindow + relative,
-	       sizeof(*client->sendwindow)
-	         * (client->sendwindow_size - relative));
-
-	client->sendwindow_start += relative;
-	client->sendwindow_size -= relative;
+        advance_send_window(client, relative);
 }
 
 void irmo_proto_parse_packet(IrmoPacket *packet,

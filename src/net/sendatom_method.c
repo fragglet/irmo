@@ -191,6 +191,7 @@ IrmoSendAtomClass irmo_method_atom = {
 	(IrmoSendAtomWriteFunc) irmo_method_atom_write,
 	(IrmoSendAtomRunFunc) irmo_method_atom_run,
 	(IrmoSendAtomLengthFunc) irmo_method_atom_length,
+        NULL,
 	(IrmoSendAtomDestroyFunc) irmo_method_atom_destroy,
 };
 

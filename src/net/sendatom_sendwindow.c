@@ -86,6 +86,7 @@ IrmoSendAtomClass irmo_sendwindow_atom = {
 	(IrmoSendAtomWriteFunc) irmo_sendwindow_atom_write,
 	(IrmoSendAtomRunFunc) irmo_sendwindow_atom_run,
 	(IrmoSendAtomLengthFunc) irmo_sendwindow_atom_length,
+        NULL,
 	NULL,
 };
 

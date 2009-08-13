@@ -98,6 +98,17 @@ IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
                                IRMO_POINTER_KEY(client->id),
                                client);
 
+        // We have not yet synced the server's world to the client,
+        // unless we are not sharing a world to the client, in which
+        // case we are already "synced".
+
+        client->remote_synced = client->server->world == NULL;
+
+        // Same, but the other way round.  The client has not yet
+        // synced its world to us, unless it is not sharing a world.
+
+        client->local_synced = client->world == NULL;
+
 	return client;
 }
 
@@ -118,8 +129,10 @@ static void irmo_client_destroy(IrmoClient *client)
 	unsigned int i;
 
 	// destroy callbacks
-	
-	irmo_callback_list_free(&client->disconnect_callbacks);
+
+        for (i=0; i<IRMO_CLIENT_NUM_STATES; ++i) {
+                irmo_callback_list_free(&client->state_change_callbacks[i]);
+        }
 
 	// clear send queue
 
@@ -197,8 +210,8 @@ static void client_run_connecting(IrmoClient *client)
 		// run out of connection attempts?
 
 		if (client->connect_attempts <= 0) {
-			client->state = IRMO_CLIENT_DISCONNECTED;
 			irmo_connection_error(client, "attempt to connect timed out");
+                        irmo_client_set_state(client, IRMO_CLIENT_DISCONNECTED);
 			return;
 		}
 		
@@ -269,7 +282,7 @@ static void client_run_disconnecting(IrmoClient *client)
 		// as disconnected
 		
 		if (client->connect_attempts <= 0) {
-			client->state = IRMO_CLIENT_DISCONNECTED;
+                        irmo_client_set_state(client, IRMO_CLIENT_DISCONNECTED);
 			return;
 		}
 
@@ -301,6 +314,7 @@ void irmo_client_run(IrmoClient *client)
 		client_run_connecting(client);
 		break;
 	case IRMO_CLIENT_CONNECTED:
+        case IRMO_CLIENT_SYNCHRONIZED:
 		irmo_proto_run_client(client);
 		break;
 	case IRMO_CLIENT_DISCONNECTING:
@@ -322,7 +336,7 @@ void irmo_client_disconnect(IrmoClient *client)
 {
 	// set into the disconnecting state
 	
-	client->state = IRMO_CLIENT_DISCONNECTING;
+        irmo_client_set_state(client, IRMO_CLIENT_DISCONNECTING);
 
 	// try to send 6 disconnect attempts before
 	// giving up
@@ -331,15 +345,21 @@ void irmo_client_disconnect(IrmoClient *client)
 	client->connect_attempts = CLIENT_CONNECT_ATTEMPTS;
 }
 
-IrmoCallback *irmo_client_watch_disconnect(IrmoClient *client,
-					   IrmoClientCallback func,
-					   void *user_data)
+IrmoCallback *irmo_client_watch_state(IrmoClient *client,
+                                      IrmoClientState state,
+                                      IrmoClientCallback func,
+                                      void *user_data)
 {
+        IrmoCallbackList *list;
+
 	irmo_return_val_if_fail(client != NULL, NULL);
+        irmo_return_val_if_fail(state >= 0, NULL);
+        irmo_return_val_if_fail(state < IRMO_CLIENT_NUM_STATES, NULL);
 	irmo_return_val_if_fail(func != NULL, NULL);
-	
-	return irmo_callback_list_add(&client->disconnect_callbacks,
-                                      func, user_data);
+
+        list = &client->state_change_callbacks[state];
+
+	return irmo_callback_list_add(list, func, user_data);
 }
 
 unsigned int irmo_client_timeout_time(IrmoClient *client)
@@ -384,5 +404,18 @@ IrmoClientState irmo_client_get_state(IrmoClient *client)
         irmo_return_val_if_fail(client != NULL, IRMO_CLIENT_DISCONNECTED);
 
         return client->state;
+}
+
+void irmo_client_set_state(IrmoClient *client, IrmoClientState state)
+{
+        IrmoCallbackList *callback_list;
+
+        if (client->state != state) {
+                client->state = state;
+
+                callback_list = &client->state_change_callbacks[state];
+
+                irmo_client_callback_raise(callback_list, client);
+        }
 }
 

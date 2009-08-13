@@ -200,8 +200,6 @@ static void server_run_synack(IrmoServer *server, IrmoPacket *packet,
 
 		// this is the first SYN-ACK we have received
 
-		client->state = IRMO_CLIENT_CONNECTED;
-
                 // Save the remote client ID.
 
                 client->server->remote_client_id = remote_id;
@@ -218,19 +216,23 @@ static void server_run_synack(IrmoServer *server, IrmoPacket *packet,
 			client->world->source_connection = client;
 		}
 
-		// if we are serving a world to the client,
-		// send the entire current world state
+                // The client is now connected.
 
-		if (client->server->world != NULL) {
-			irmo_client_sendq_add_state(client);
-                }
+                irmo_client_set_state(client, IRMO_CLIENT_CONNECTED);
 
-		// raise callback functions for new client
+		// Raise callback functions for new client
 		// do this after sending the state: it may create
 		// new objects in the callback, in which case the
 		// 'new' can be created twice
 
 		irmo_server_raise_connect(client->server, client);
+
+		// If we are serving a world to the client,
+		// send the entire current world state
+
+		if (client->server->world != NULL) {
+			irmo_client_sendq_add_state(client);
+                }
 	}
 
 	// if we are the client receiving this from the server,
@@ -268,18 +270,17 @@ static void server_run_synfin(IrmoServer *server,
 			irmo_connection_error(client, "connection refused");
                 }
 
-		client->state = IRMO_CLIENT_DISCONNECTED;
+                irmo_client_set_state(client, IRMO_CLIENT_DISCONNECTED);
 	}
 
 	// disconnect
 
-	if (client->state == IRMO_CLIENT_CONNECTED) {
-		client->state = IRMO_CLIENT_DISCONNECTED;
+	if (client->state == IRMO_CLIENT_CONNECTED
+         || client->state == IRMO_CLIENT_SYNCHRONIZED) {
 		client->connect_time = irmo_get_time();
 		client->disconnect_wait = 1;
 
-		irmo_client_callback_raise(&client->disconnect_callbacks,
-					   client);
+                irmo_client_set_state(client, IRMO_CLIENT_DISCONNECTED);
 	}
 
 	if (client->state == IRMO_CLIENT_DISCONNECTED) {
@@ -302,9 +303,7 @@ static void server_run_synfin(IrmoServer *server,
 static void server_run_synfinack(IrmoClient *client)
 {
 	if (client->state == IRMO_CLIENT_DISCONNECTING) {
-		client->state = IRMO_CLIENT_DISCONNECTED;
-		irmo_client_callback_raise(&client->disconnect_callbacks,
-					   client);
+                irmo_client_set_state(client, IRMO_CLIENT_DISCONNECTED);
 	}
 }
 
@@ -371,7 +370,8 @@ static void server_run_packet(IrmoServer *server,
 		return;
 	}
 
-	if (client->state != IRMO_CLIENT_CONNECTED) {
+	if (client->state != IRMO_CLIENT_CONNECTED
+         && client->state != IRMO_CLIENT_SYNCHRONIZED) {
 		return;
         }
 

@@ -382,6 +382,7 @@ IrmoSendAtomClass irmo_change_atom = {
 	(IrmoSendAtomWriteFunc) irmo_change_atom_write,
 	(IrmoSendAtomRunFunc) irmo_change_atom_run,
 	(IrmoSendAtomLengthFunc) irmo_change_atom_length,
+        NULL,
 	(IrmoSendAtomDestroyFunc) irmo_change_atom_destroy,
 };
 
