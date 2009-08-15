@@ -34,7 +34,7 @@ typedef struct {
 static int from_buffer_input(void *buf, unsigned int buf_len, void *handle)
 {
         InputBuffer *buffer = handle;
-        unsigned int remaining_bytes;
+        size_t remaining_bytes;
         int result;
 
         // How many bytes are there left to read?

@@ -59,7 +59,7 @@ static unsigned int client_sendwindow_max(IrmoClient *client)
 static void client_pump(IrmoClient *client)
 {
         IrmoSendAtom *atom;
-	unsigned int current_size = 0;
+	size_t current_size = 0;
 	unsigned int i;
 	unsigned int sendwindow_max;
 	
@@ -282,7 +282,7 @@ static void client_send_data(IrmoClient *client,
                              unsigned int timeout_length)
 {
         IrmoPacket *packet;
-        unsigned int len;
+        size_t len;
         unsigned int start, end;
         unsigned int i;
         unsigned int nowtime;

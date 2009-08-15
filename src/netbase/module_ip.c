@@ -179,7 +179,7 @@ static int ipv4_send_packet(IrmoNetSocket *_sock,
 {
         IPv4Socket *sock;
         IPv4Address *addr;
-        int status;
+        ssize_t status;
        
         sock = (IPv4Socket *) _sock;
         addr = (IPv4Address *) _addr;
@@ -201,7 +201,7 @@ static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
         struct sockaddr_in source;
         IPv4Address *result_address;
         socklen_t source_len;
-        int status;
+        ssize_t status;
 
         sock = (IPv4Socket *) _sock;
 
@@ -386,7 +386,8 @@ static IrmoNetSocket *ipv4_open_server_sock(IrmoNetModule *module,
         addr_len = sizeof(struct sockaddr_in);
         addr.sin_family = AF_INET;
         addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        addr.sin_port = htons((uint16_t) port);
+
+        addr.sin_port = htons(((uint16_t) port));
 
         status = bind(result->sock, (struct sockaddr *) &addr, addr_len);
 

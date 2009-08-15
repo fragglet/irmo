@@ -42,7 +42,7 @@ struct _IrmoPacket {
 	size_t len;
 
         // Current position in packet
-	unsigned int pos;
+	size_t pos;
 };
 
 IrmoPacket *irmo_packet_new(void)
@@ -335,14 +335,14 @@ unsigned int irmo_packet_get_length(IrmoPacket *packet)
 {
         irmo_return_val_if_fail(packet != NULL, 0);
 
-        return packet->len;
+        return (unsigned int) packet->len;
 }
 
 unsigned int irmo_packet_get_position(IrmoPacket *packet)
 {
         irmo_return_val_if_fail(packet != NULL, 0);
 
-        return packet->pos;
+        return (unsigned int) packet->pos;
 }
 
 int irmo_packet_set_position(IrmoPacket *packet, unsigned int pos)

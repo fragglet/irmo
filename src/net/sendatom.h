@@ -131,7 +131,7 @@ struct _IrmoSendAtom {
 
 	// length of atom in bytes
 
-	unsigned int len;
+	size_t len;
 
 	// number of this atom in the sequence
 	
