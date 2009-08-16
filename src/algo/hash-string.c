@@ -24,38 +24,38 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 /* String hash function */
 
-unsigned long irmo_string_hash(void *string)
+unsigned int irmo_string_hash(void *string)
 {
 	/* This is the djb2 string hash function */
 
-	unsigned long result = 5381;
+	unsigned int result = 5381;
 	unsigned char *p;
 
 	p = (unsigned char *) string;
 
 	while (*p != '\0') {
-		result = ((result << 5) ^ result ) ^ (*p);
+		result = (result << 5) + result + *p;
 		++p;
 	}
 
 	return result;
 }
 
-/* The same function, with a tolower on every character so that 
+/* The same function, with a tolower on every character so that
  * case is ignored.  This code is duplicated for performance. */
 
-unsigned long irmo_string_nocase_hash(void *string)
+unsigned int irmo_string_nocase_hash(void *string)
 {
-	unsigned long result = 5381;
+	unsigned int result = 5381;
 	unsigned char *p;
 
 	p = (unsigned char *) string;
 
 	while (*p != '\0') {
-		result = ((result << 5) ^ result ) ^ tolower(*p);
+		result = (result << 5) + result + (unsigned int) tolower(*p);
 		++p;
 	}
-	
+
 	return result;
 }
 

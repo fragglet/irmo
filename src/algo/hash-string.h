@@ -39,7 +39,7 @@ extern "C" {
  * @return                 A hash key for the string.
  */
 
-unsigned long irmo_string_hash(void *string);
+unsigned int irmo_string_hash(void *string);
 
 /**
  * Generate a hash key from a string, ignoring the case of letters.
@@ -48,7 +48,7 @@ unsigned long irmo_string_hash(void *string);
  * @return                 A hash key for the string.
  */
 
-unsigned long irmo_string_nocase_hash(void *string);
+unsigned int irmo_string_nocase_hash(void *string);
 
 #ifdef __cplusplus
 }

@@ -39,7 +39,7 @@ extern "C" {
  * @return                A hash key for the pointer.
  */
 
-unsigned long irmo_pointer_hash(void *location);
+unsigned int irmo_pointer_hash(void *location);
 
 /** Macro to cast integer values for use as pointers. */
 

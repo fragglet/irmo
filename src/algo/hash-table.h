@@ -103,7 +103,7 @@ struct _IrmoHashTableIterator {
  * @return       The hash value.
  */
 
-typedef unsigned long (*IrmoHashTableHashFunc)(IrmoHashTableKey value);
+typedef unsigned int (*IrmoHashTableHashFunc)(IrmoHashTableKey value);
 
 /**
  * Function used to compare two keys for equality.
