@@ -97,7 +97,7 @@ static IrmoNetAddressClass ipv4_address_class = {
         ipv4_address_free,
 };
 
-static unsigned long sockaddr_in_hash(void *data)
+static unsigned int sockaddr_in_hash(void *data)
 {
         struct sockaddr_in *addr = data;
 
