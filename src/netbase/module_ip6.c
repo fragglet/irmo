@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002-2008 Simon Howard
+// Copyright (C) 2002-2009 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-// 
-// UDP/IP IrmoNetModule implementation.
+//
+// UDP/IPv6 IrmoNetModule implementation.
 //
 
 #include "arch/sysheaders.h"
@@ -274,35 +274,35 @@ static IrmoNetAddress *ipv6_resolve_address(IrmoNetModule *module,
 {
         IPv6Address *result;
         struct addrinfo *addresses;
-        struct addrinfo *rover;
+        struct addrinfo hints;
 
         // Get a list of addresses to which this name resolves.
 
-        if (getaddrinfo(address, NULL, NULL, &addresses) != 0) {
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_INET6;
+        hints.ai_socktype = SOCK_DGRAM;
+        hints.ai_protocol = 0;
+        hints.ai_flags = 0;
+
+        if (getaddrinfo(address, NULL, &hints, &addresses) != 0) {
+                printf("getaddrinfo != 0\n");
                 return NULL;
         }
 
-        // Find the first IPv6 address.
+        // Use the first address in the list.
 
-        result = NULL;
+        if (addresses != NULL) {
+                struct sockaddr_in6 sockaddr;
 
-        for (rover=addresses; rover != NULL; rover = rover->ai_next) {
-                if (rover->ai_protocol == AF_INET6
-                 && rover->ai_addrlen == sizeof(struct sockaddr_in6)) {
-                        struct sockaddr_in6 sockaddr;
+                printf("Resolved %s\n", address);
+                memcpy(&sockaddr, addresses->ai_addr, addresses->ai_addrlen);
 
-                        // Initialise a sockaddr structure, based on
-                        // the address in the list.
+                sockaddr.sin6_port = htons((uint16_t) port);
 
-                        memcpy(&sockaddr, rover->ai_addr, rover->ai_addrlen);
-                        sockaddr.sin6_port = htons((uint16_t) port);
-
-                        // Get an Irmo address structure for this sockaddr,
-                        // and stop searching.
-
-                        result = ipv6_get_address(&sockaddr);
-                        break;
-                }
+                result = ipv6_get_address(&sockaddr);
+        } else {
+                printf("Cant resolve %s\n", address);
+                result = NULL;
         }
 
         // Free the linked list of addresses.
