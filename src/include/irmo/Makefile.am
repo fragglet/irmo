@@ -12,6 +12,7 @@ libirmoinclude2_HEADERS=                                   \
         iterator.h                                         \
         method.h                                           \
         module_ip.h                                        \
+        module_ip6.h                                       \
         net-module.h                                       \
         object.h                                           \
         packet.h                                           \
