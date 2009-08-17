@@ -21,6 +21,8 @@
 // UDP/IPv6 IrmoNetModule implementation.
 //
 
+#include "config.h"
+
 #include "arch/sysheaders.h"
 #include "base/error.h"
 #include "base/alloc.h"
@@ -30,6 +32,8 @@
 #include <irmo/module_ip6.h>
 
 #include "socket-base.h"
+
+#ifdef USE_IPV6
 
 //---------------------------------------------------------------------------
 //
@@ -285,7 +289,6 @@ static IrmoNetAddress *ipv6_resolve_address(IrmoNetModule *module,
         hints.ai_flags = 0;
 
         if (getaddrinfo(address, NULL, &hints, &addresses) != 0) {
-                printf("getaddrinfo != 0\n");
                 return NULL;
         }
 
@@ -294,14 +297,12 @@ static IrmoNetAddress *ipv6_resolve_address(IrmoNetModule *module,
         if (addresses != NULL) {
                 struct sockaddr_in6 sockaddr;
 
-                printf("Resolved %s\n", address);
                 memcpy(&sockaddr, addresses->ai_addr, addresses->ai_addrlen);
 
                 sockaddr.sin6_port = htons((uint16_t) port);
 
                 result = ipv6_get_address(&sockaddr);
         } else {
-                printf("Cant resolve %s\n", address);
                 result = NULL;
         }
 
@@ -317,4 +318,6 @@ IrmoNetModule irmo_module_ipv6 = {
         ipv6_open_server_sock,
         ipv6_resolve_address,
 };
+
+#endif
 
