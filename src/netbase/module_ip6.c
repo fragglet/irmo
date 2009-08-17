@@ -28,29 +28,8 @@
 #include "algo/algo.h"
 
 #include <irmo/module_ip6.h>
-#include <irmo/net-module.h>
-#include "net-address.h"
 
-// Sockets API headers:
-
-#ifdef _WIN32
-
-#include <WinSock.h>
-
-#else
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <fcntl.h>
-
-#define closesocket close
-
-#endif
-
-#define RECV_BUFFER_SIZE 2048
+#include "socket_base.h"
 
 //---------------------------------------------------------------------------
 //
@@ -162,36 +141,19 @@ static IPv6Address *ipv6_get_address(struct sockaddr_in6 *addr)
 
 //---------------------------------------------------------------------------
 //
-// IPv6Socket class.
+// SockBaseSocket class.
 //
 //---------------------------------------------------------------------------
-
-typedef struct {
-        IrmoNetSocket irmo_socket;
-        int sock;
-        uint8_t *recvbuf;
-} IPv6Socket;
-
-static void ipv6_close_sock(IrmoNetSocket *_sock)
-{
-        IPv6Socket *sock;
-
-        sock = (IPv6Socket *) _sock;
-
-        closesocket(sock->sock);
-        free(sock->recvbuf);
-        free(sock);
-}
 
 static int ipv6_send_packet(IrmoNetSocket *_sock,
                             IrmoNetAddress *_addr,
                             IrmoPacket *packet)
 {
-        IPv6Socket *sock;
+        SockBaseSocket *sock;
         IPv6Address *addr;
         int status;
-       
-        sock = (IPv6Socket *) _sock;
+
+        sock = (SockBaseSocket *) _sock;
         addr = (IPv6Address *) _addr;
 
         status = sendto(sock->sock,
@@ -207,13 +169,13 @@ static int ipv6_send_packet(IrmoNetSocket *_sock,
 static IrmoPacket *ipv6_recv_packet(IrmoNetSocket *_sock,
                                     IrmoNetAddress **address)
 {
-        IPv6Socket *sock;
+        SockBaseSocket *sock;
         struct sockaddr_in6 source;
         IPv6Address *result_address;
         socklen_t source_len;
         int status;
 
-        sock = (IPv6Socket *) _sock;
+        sock = (SockBaseSocket *) _sock;
 
         source_len = sizeof(source);
 
@@ -245,59 +207,11 @@ static IrmoPacket *ipv6_recv_packet(IrmoNetSocket *_sock,
         }
 }
 
-static int ipv6_block_set(IrmoNetSocket **handles,
-                          int num_handles,
-                          int timeout)
-{
-        fd_set socket_set;
-        IPv6Socket *sock;
-        struct timeval timeout_tv;
-        struct timeval *timeout_param;
-        int i;
-        int max_sock;
-        int result;
-
-        // Build socket set and calculate the maximum socket value
- 
-        FD_ZERO(&socket_set);
-
-        max_sock = 0;
-
-        for (i=0; i<num_handles; ++i) {
-                sock = (IPv6Socket *) handles[i];
-
-                FD_SET(sock->sock, &socket_set);
-
-                if (sock->sock > max_sock) {
-                        max_sock = sock->sock;
-                }
-        }
-
-        // Calculate timeout_param
-
-        if (timeout == 0) {
-                timeout_param = NULL;
-        } else {
-                timeout_param = &timeout_tv;
-                timeout_tv.tv_sec = timeout / 1000;
-                timeout_tv.tv_usec = timeout % 1000;
-        }
-
-        result = select(max_sock + 1, &socket_set, NULL, NULL, timeout_param);
-
-        if (result < 0) {
-                perror("ipv6_block_set");
-                return 0;
-        } else {
-                return 1;
-        }
-}
-
 static IrmoNetSocketClass ipv6_socket_class = {
-        ipv6_close_sock,
+        irmo_sockbase_close,
         ipv6_send_packet,
         ipv6_recv_packet,
-        ipv6_block_set,
+        irmo_sockbase_block
 };
 
 //---------------------------------------------------------------------------
@@ -306,69 +220,11 @@ static IrmoNetSocketClass ipv6_socket_class = {
 //
 //---------------------------------------------------------------------------
 
-// Open a non-blocking UDP socket.
-
-static IPv6Socket *ipv6_open_sock_base(void)
-{
-        IPv6Socket *result;
-        int sock;
-        int opts;
-
-        // Open the socket
-
-        sock = socket(AF_INET6, SOCK_DGRAM, 0);
-
-        if (sock < 0) {
-                return NULL;
-        }
-
-        // Set non-blocking mode:
-
-#ifdef _WIN32
-        // this is how we set nonblocking under windows
-        {
-                int trueval=1;
-                ioctlsocket(sock, FIONBIO, &trueval);
-        }
-#else
-        // this is how we set nonblocking under unix
-
-        opts = fcntl(sock, F_GETFL);
-
-        if (opts < 0) {
-                irmo_error_report("ipv6_open_sock"
-                                  "cannot make socket nonblocking (%s)",
-                                  strerror(errno));
-                closesocket(sock);
-                return NULL;
-        }
-
-        opts |= O_NONBLOCK;
-
-        if (fcntl(sock, F_SETFL, opts) < 0) {
-                irmo_error_report("ipv6_open_sock"
-                                  "cannot make socket nonblocking (%s)",
-                                  strerror(errno));
-                closesocket(sock);
-                return NULL;
-        }
-#endif
-
-        // Create a socket structure
-
-        result = irmo_new0(IPv6Socket, 1);
-        result->irmo_socket.socket_class = &ipv6_socket_class;
-        result->sock = sock;
-        result->recvbuf = malloc(RECV_BUFFER_SIZE);
-
-        return result;
-}
-
 static IrmoNetSocket *ipv6_open_client_sock(IrmoNetModule *module)
 {
-        IPv6Socket *result;
+        SockBaseSocket *result;
 
-        result = ipv6_open_sock_base();
+        result = irmo_sockbase_open(&ipv6_socket_class, AF_INET6);
 
         if (result == NULL) {
                 return NULL;
@@ -380,12 +236,12 @@ static IrmoNetSocket *ipv6_open_client_sock(IrmoNetModule *module)
 static IrmoNetSocket *ipv6_open_server_sock(IrmoNetModule *module,
                                             unsigned int port)
 {
-        IPv6Socket *result;
+        SockBaseSocket *result;
         struct sockaddr_in6 addr;
         socklen_t addr_len;
         int status;
 
-        result = ipv6_open_sock_base();
+        result = irmo_sockbase_open(&ipv6_socket_class, AF_INET6);
 
         if (result == NULL) {
                 return NULL;

@@ -28,29 +28,8 @@
 #include "algo/algo.h"
 
 #include <irmo/module_ip.h>
-#include <irmo/net-module.h>
-#include "net-address.h"
 
-// Sockets API headers:
-
-#ifdef _WIN32
-
-#include <WinSock.h>
-
-#else
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <fcntl.h>
-
-#define closesocket close
-
-#endif
-
-#define RECV_BUFFER_SIZE 2048
+#include "socket_base.h"
 
 //---------------------------------------------------------------------------
 //
@@ -152,36 +131,19 @@ static IPv4Address *ipv4_get_address(struct sockaddr_in *addr)
 
 //---------------------------------------------------------------------------
 //
-// IPv4Socket class.
+// SockBaseSocket class.
 //
 //---------------------------------------------------------------------------
-
-typedef struct {
-        IrmoNetSocket irmo_socket;
-        int sock;
-        uint8_t *recvbuf;
-} IPv4Socket;
-
-static void ipv4_close_sock(IrmoNetSocket *_sock)
-{
-        IPv4Socket *sock;
-
-        sock = (IPv4Socket *) _sock;
-
-        closesocket(sock->sock);
-        free(sock->recvbuf);
-        free(sock);
-}
 
 static int ipv4_send_packet(IrmoNetSocket *_sock,
                             IrmoNetAddress *_addr,
                             IrmoPacket *packet)
 {
-        IPv4Socket *sock;
+        SockBaseSocket *sock;
         IPv4Address *addr;
         ssize_t status;
-       
-        sock = (IPv4Socket *) _sock;
+
+        sock = (SockBaseSocket *) _sock;
         addr = (IPv4Address *) _addr;
 
         status = sendto(sock->sock,
@@ -197,13 +159,13 @@ static int ipv4_send_packet(IrmoNetSocket *_sock,
 static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
                                     IrmoNetAddress **address)
 {
-        IPv4Socket *sock;
+        SockBaseSocket *sock;
         struct sockaddr_in source;
         IPv4Address *result_address;
         socklen_t source_len;
         ssize_t status;
 
-        sock = (IPv4Socket *) _sock;
+        sock = (SockBaseSocket *) _sock;
 
         source_len = sizeof(source);
 
@@ -224,7 +186,7 @@ static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
                 return NULL;
         } else {
                 // Look up the address and save it
-     
+
                 result_address = ipv4_get_address(&source);
                 *address = &result_address->irmo_address;
 
@@ -235,59 +197,11 @@ static IrmoPacket *ipv4_recv_packet(IrmoNetSocket *_sock,
         }
 }
 
-static int ipv4_block_set(IrmoNetSocket **handles,
-                          int num_handles,
-                          int timeout)
-{
-        fd_set socket_set;
-        IPv4Socket *sock;
-        struct timeval timeout_tv;
-        struct timeval *timeout_param;
-        int i;
-        int max_sock;
-        int result;
-
-        // Build socket set and calculate the maximum socket value
- 
-        FD_ZERO(&socket_set);
-
-        max_sock = 0;
-
-        for (i=0; i<num_handles; ++i) {
-                sock = (IPv4Socket *) handles[i];
-
-                FD_SET(sock->sock, &socket_set);
-
-                if (sock->sock > max_sock) {
-                        max_sock = sock->sock;
-                }
-        }
-
-        // Calculate timeout_param
-
-        if (timeout == 0) {
-                timeout_param = NULL;
-        } else {
-                timeout_param = &timeout_tv;
-                timeout_tv.tv_sec = timeout / 1000;
-                timeout_tv.tv_usec = timeout % 1000;
-        }
-
-        result = select(max_sock + 1, &socket_set, NULL, NULL, timeout_param);
-
-        if (result < 0) {
-                perror("ipv4_block_set");
-                return 0;
-        } else {
-                return 1;
-        }
-}
-
 static IrmoNetSocketClass ipv4_socket_class = {
-        ipv4_close_sock,
+        irmo_sockbase_close,
         ipv4_send_packet,
         ipv4_recv_packet,
-        ipv4_block_set,
+        irmo_sockbase_block
 };
 
 //---------------------------------------------------------------------------
@@ -296,69 +210,11 @@ static IrmoNetSocketClass ipv4_socket_class = {
 //
 //---------------------------------------------------------------------------
 
-// Open a non-blocking UDP socket.
-
-static IPv4Socket *ipv4_open_sock_base(void)
-{
-        IPv4Socket *result;
-        int sock;
-        int opts;
-
-        // Open the socket
-
-        sock = socket(AF_INET, SOCK_DGRAM, 0);
-
-        if (sock < 0) {
-                return NULL;
-        }
-
-        // Set non-blocking mode:
-
-#ifdef _WIN32
-        // this is how we set nonblocking under windows
-        {
-                int trueval=1;
-                ioctlsocket(sock, FIONBIO, &trueval);
-        }
-#else
-        // this is how we set nonblocking under unix
-
-        opts = fcntl(sock, F_GETFL);
-
-        if (opts < 0) {
-                irmo_error_report("ipv4_open_sock"
-                                  "cannot make socket nonblocking (%s)",
-                                  strerror(errno));
-                closesocket(sock);
-                return NULL;
-        }
-
-        opts |= O_NONBLOCK;
-
-        if (fcntl(sock, F_SETFL, opts) < 0) {
-                irmo_error_report("ipv4_open_sock"
-                                  "cannot make socket nonblocking (%s)",
-                                  strerror(errno));
-                closesocket(sock);
-                return NULL;
-        }
-#endif
-
-        // Create a socket structure
-
-        result = irmo_new0(IPv4Socket, 1);
-        result->irmo_socket.socket_class = &ipv4_socket_class;
-        result->sock = sock;
-        result->recvbuf = malloc(RECV_BUFFER_SIZE);
-
-        return result;
-}
-
 static IrmoNetSocket *ipv4_open_client_sock(IrmoNetModule *module)
 {
-        IPv4Socket *result;
+        SockBaseSocket *result;
 
-        result = ipv4_open_sock_base();
+        result = irmo_sockbase_open(&ipv4_socket_class, AF_INET);
 
         if (result == NULL) {
                 return NULL;
@@ -370,17 +226,17 @@ static IrmoNetSocket *ipv4_open_client_sock(IrmoNetModule *module)
 static IrmoNetSocket *ipv4_open_server_sock(IrmoNetModule *module,
                                             unsigned int port)
 {
-        IPv4Socket *result;
+        SockBaseSocket *result;
         struct sockaddr_in addr;
         socklen_t addr_len;
         int status;
 
-        result = ipv4_open_sock_base();
+        result = irmo_sockbase_open(&ipv4_socket_class, AF_INET);
 
         if (result == NULL) {
                 return NULL;
         }
-        
+
         // Bind to the port
 
         addr_len = sizeof(struct sockaddr_in);
@@ -410,7 +266,7 @@ static IrmoNetAddress *ipv4_resolve_address(IrmoNetModule *module,
 	struct hostent *hp;
         struct sockaddr_in addr;
         IPv4Address *result;
-	
+
 	hp = gethostbyname(address);
 
 	if (hp == NULL) {
