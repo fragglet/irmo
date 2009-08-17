@@ -21,6 +21,8 @@
 // Network address abstraction layer.
 //
 
+#include <stdlib.h>
+
 #include "net-address.h"
 
 IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
@@ -33,7 +35,10 @@ IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
 
         // Add a reference for this address.
 
-        irmo_net_address_ref(result);
+        if (result != NULL) {
+
+                irmo_net_address_ref(result);
+        }
 
         return result;
 }
