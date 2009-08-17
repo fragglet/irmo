@@ -29,7 +29,7 @@
 
 #include <irmo/module_ip.h>
 
-#include "socket_base.h"
+#include "socket-base.h"
 
 //---------------------------------------------------------------------------
 //

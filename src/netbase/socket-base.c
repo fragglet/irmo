@@ -31,7 +31,7 @@
 #include <irmo/net-module.h>
 #include "net-address.h"
 
-#include "socket_base.h"
+#include "socket-base.h"
 
 // Open a non-blocking socket.
 
