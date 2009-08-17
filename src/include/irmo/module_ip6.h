@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002-2008 Simon Howard
+// Copyright (C) 2009 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,23 +17,40 @@
 // 02111-1307, USA.
 //
 
+#ifndef IRMO_MODULE_IP_H
+#define IRMO_MODULE_IP_H
 
-#ifndef IRMO_H
-#define IRMO_H
+#include "types.h"
 
-#include <irmo/binding.h>
-#include <irmo/callback.h>
-#include <irmo/client.h>
-#include <irmo/connection.h>
-#include <irmo/error.h>
-#include <irmo/interface.h>
-#include <irmo/iterator.h>
-#include <irmo/method.h>
-#include <irmo/module_ip.h>
-#include <irmo/module_ip6.h>
-#include <irmo/object.h>
-#include <irmo/server.h>
-#include <irmo/world.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif /* #ifndef IRMO_H */
+/*!
+ * @ref IrmoNetModule implementation that communicates using UDP on IPv6.
+ *
+ * @addtogroup module_ipv6
+ * \{
+ */
+
+/*!
+ * Convenience constant for @ref irmo_module_ipv6.
+ */
+
+#define IRMO_NET_IPV6 (&irmo_module_ipv6)
+
+/*!
+ * Network module for communication using UDP over IPv6.
+ */
+
+extern IrmoNetModule irmo_module_ipv6;
+
+//! \}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* #ifndef IRMO_MODULE_IP_H */
+
 
