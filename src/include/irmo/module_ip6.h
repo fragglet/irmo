@@ -17,8 +17,8 @@
 // 02111-1307, USA.
 //
 
-#ifndef IRMO_MODULE_IP_H
-#define IRMO_MODULE_IP_H
+#ifndef IRMO_MODULE_IP6_H
+#define IRMO_MODULE_IP6_H
 
 #include "types.h"
 
@@ -51,6 +51,6 @@ extern IrmoNetModule irmo_module_ipv6;
 }
 #endif
 
-#endif /* #ifndef IRMO_MODULE_IP_H */
+#endif /* #ifndef IRMO_MODULE_IP6_H */
 
 
