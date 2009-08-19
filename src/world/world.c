@@ -321,3 +321,8 @@ IrmoCallback *irmo_world_watch_destroy(IrmoWorld *world,
 	}
 }
 
+unsigned int irmo_world_num_objects(IrmoWorld *world)
+{
+        return irmo_hash_table_num_entries(world->objects);
+}
+

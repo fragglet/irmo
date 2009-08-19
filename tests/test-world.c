@@ -123,6 +123,7 @@ void test_world_new(void)
 
         assert(world != NULL);
         assert(irmo_world_get_interface(world) == iface);
+        assert(irmo_world_num_objects(world) == 0);
 
         irmo_interface_unref(iface);
 
@@ -151,6 +152,7 @@ void test_object_new(void)
 
         obj = irmo_object_new(world, "mysubclass");
         assert(obj != NULL);
+        assert(irmo_world_num_objects(world) == 1);
 
         // Test object class structure
 
@@ -183,6 +185,7 @@ void test_object_destroy(void)
 
         world = gen_world(NULL);
         obj = irmo_object_new(world, "mysubclass");
+        assert(irmo_world_num_objects(world) == 1);
 
         assert(obj != NULL);
 
@@ -191,6 +194,8 @@ void test_object_destroy(void)
         assert(irmo_world_get_object_for_id(world, obj_id) == obj);
 
         irmo_object_destroy(obj);
+
+        assert(irmo_world_num_objects(world) == 0);
 
         assert(irmo_world_get_object_for_id(world, obj_id) == NULL);
 
@@ -445,14 +450,9 @@ void test_object_get_bindings(void)
         irmo_world_unref(world);
 }
 
-void test_world_callbacks(void)
+void test_world_iterate(void)
 {
-        // ... todo
-}
-
-void test_object_callbacks(void)
-{
-        // ... todo
+        // TODO
 }
 
 int main(int argc, char *argv[])
@@ -465,10 +465,9 @@ int main(int argc, char *argv[])
         test_object_data();
         test_object_get_set();
         test_object_get_set_generic();
-        test_world_callbacks();
-        test_object_callbacks();
         test_object_set_bindings();
         test_object_get_bindings();
+        test_world_iterate();
 
         return 0;
 }

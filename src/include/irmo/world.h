@@ -55,6 +55,15 @@ extern "C" {
 IrmoWorld *irmo_world_new(IrmoInterface *iface);
 
 /*!
+ * Get the number of objects in a world.
+ *
+ * @param world         The world.
+ * @return              Number of objects within the world.
+ */
+
+unsigned int irmo_world_num_objects(IrmoWorld *world);
+
+/*!
  * Find an object by its numerical ID.
  *
  * All objects within an @ref IrmoWorld have a unique number assigned to
