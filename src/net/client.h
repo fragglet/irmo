@@ -32,10 +32,10 @@
 
 #define MAX_SENDWINDOW 1024
 
-// size of each packet; when size of atoms passes this threshold
+// maximum packet size: when a packet exceeds this,
 // no more atoms are added to it
 
-#define PACKET_THRESHOLD 128
+#define IRMO_PROTOCOL_MTU 1024
 
 // client
 

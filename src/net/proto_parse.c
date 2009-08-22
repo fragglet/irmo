@@ -193,10 +193,10 @@ static void proto_update_cc_values(IrmoClient *client)
 	// slower.
 
 	if (client->cwnd < client->ssthresh) {
-		client->cwnd += PACKET_THRESHOLD;
+		client->cwnd += IRMO_PROTOCOL_MTU;
 	} else {
 		client->cwnd +=
-			(PACKET_THRESHOLD * PACKET_THRESHOLD) / client->cwnd;
+			(IRMO_PROTOCOL_MTU * IRMO_PROTOCOL_MTU) / client->cwnd;
         }
 
         //

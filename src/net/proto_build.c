@@ -129,7 +129,7 @@ static void client_flag_resends(IrmoClient *client,
 		
 		if (client->backoff == 1) {
 			client->ssthresh = (unsigned int) (client->cwnd / 2);
-			client->cwnd = PACKET_THRESHOLD;
+			client->cwnd = IRMO_PROTOCOL_MTU;
 		}
 		
 		client->backoff *= 2;
@@ -338,7 +338,7 @@ static void client_send_data(IrmoClient *client,
                                 break;
                         }
 
-                        if (len >= PACKET_THRESHOLD) {
+                        if (len >= IRMO_PROTOCOL_MTU) {
 
                                 // We have exceeded the maximum size of 
                                 // a packet.  No more atoms can be added

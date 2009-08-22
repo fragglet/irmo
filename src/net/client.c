@@ -82,7 +82,7 @@ IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
 
 	// start cwnd with one packet, ssthresh as large
 
-	client->cwnd = PACKET_THRESHOLD;
+	client->cwnd = IRMO_PROTOCOL_MTU;
 	client->ssthresh = 65535;
 
         // assign a new ID for this client:
