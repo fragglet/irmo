@@ -1,4 +1,4 @@
-EXTRA_DIST=api man protocol_draft.txt sections.h
+EXTRA_DIST=Doxygen api man protocol_draft.txt sections.h
 
 info_TEXINFOS = irmo.texi
 CLEANFILES= irmo.info
