@@ -11,7 +11,7 @@ libirmonet_la_SOURCES=                                      \
        sendatom_newobject.c                                 \
        sendatom_sendwindow.c                                \
        sendatom_syncpoint.c                                 \
-       client_sendq.c                                       \
+       client_sendq.c         client_sendq.h                \
        client.c               client.h                      \
        client_run.c                                         \
        proto_build.c                                        \
