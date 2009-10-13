@@ -43,9 +43,15 @@ IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
         return result;
 }
 
-char *irmo_net_address_to_string(IrmoNetAddress *address)
+void irmo_net_address_to_string(IrmoNetAddress *address,
+                                char *buffer, unsigned int buffer_len)
 {
-        return address->address_class->to_string(address);
+        address->address_class->to_string(address, buffer, buffer_len);
+}
+
+unsigned int irmo_net_address_get_port(IrmoNetAddress *address)
+{
+        return address->address_class->get_port(address);
 }
 
 void irmo_net_address_ref(IrmoNetAddress *address)

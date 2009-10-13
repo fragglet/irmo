@@ -165,16 +165,37 @@ int irmo_client_ping_time(IrmoClient *client);
 void irmo_client_set_max_sendwindow(IrmoClient *client, unsigned int max);
 
 /*!
- * Get the address of the client.
+ * Get the remote address of a client.
  *
- * This returns the IP of the client in the form of a presentable 
- * text string.
- * 
- * @param client  The client to query.
+ * This returns the remote address of a client in the form of
+ * a presentable text string.  The form that this takes will differ,
+ * depending on the type of connection (ie. the @ref IrmoNetModule
+ * used to communicate with the client).  For IPv4 or IPv6, this
+ * is the IP address of the client.
  *
+ * @param client      The client to query.
+ * @param buffer      Pointer to a buffer in which to store the
+ *                    resulting string.
+ * @param buffer_len  Size of the buffer, in bytes.  If the buffer is
+ *                    too small to hold the whole address, it will
+ *                    be truncated, but a valid C string will always
+ *                    be created.
  */
 
-const char *irmo_client_get_addr(IrmoClient *client);
+void irmo_client_get_address(IrmoClient *client,
+                             char *buffer, unsigned int buffer_len);
+
+/*!
+ * Get the port number of a client.
+ *
+ * This returns the port number used to communicate with a
+ * remote client.  For IPv4 or IPv6, this is the UDP port number.
+ *
+ * @param client      The client.
+ * @return            The client's remote port number.
+ */
+
+unsigned int irmo_client_get_port(IrmoClient *client);
 
 //! \}
 

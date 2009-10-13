@@ -149,7 +149,7 @@ static void irmo_client_destroy(IrmoClient *client)
 	irmo_hash_table_free(client->sendq_hashtable);
 
 	// destroy sendwindow and all data in it
-	
+
 	for (i=0; i<client->sendwindow_size; ++i) {
 		irmo_sendatom_free(client->sendwindow[i]);
         }
@@ -385,11 +385,20 @@ void irmo_client_set_max_sendwindow(IrmoClient *client, unsigned int max)
 	irmo_client_sendq_add_sendwindow(client, max);
 }
 
-const char *irmo_client_get_addr(IrmoClient *client)
+void irmo_client_get_address(IrmoClient *client, char *buffer,
+                             unsigned int buffer_len)
 {
-        irmo_return_val_if_fail(client != NULL, NULL);
+        irmo_return_if_fail(client != NULL);
+        irmo_return_if_fail(buffer != NULL);
 
-        return irmo_net_address_to_string(client->address);
+        irmo_net_address_to_string(client->address, buffer, buffer_len);
+}
+
+unsigned int irmo_client_get_port(IrmoClient *client)
+{
+        irmo_return_val_if_fail(client != NULL, 0);
+
+        return irmo_net_address_get_port(client->address);
 }
 
 IrmoClientID irmo_client_get_id(IrmoClient *client)

@@ -62,22 +62,35 @@ static void ipv6_address_free(IrmoNetAddress *_addr)
 
 // Convert an address to a string.
 
-static char *ipv6_address_to_string(IrmoNetAddress *_addr)
+static void ipv6_address_to_string(IrmoNetAddress *_addr,
+                                   char *buffer, unsigned int buffer_len)
 {
         IPv6Address *addr = (IPv6Address *) _addr;
-        static char buf[INET6_ADDRSTRLEN + 10];
+        char tmpbuf[INET6_ADDRSTRLEN + 10];
 
-        buf[0] = '[';
-        inet_ntop(AF_INET6, &addr->sockaddr.sin6_addr, buf + 1, sizeof(buf));
-        sprintf(buf + strlen(buf), "]:%i", ntohs(addr->sockaddr.sin6_port));
+        inet_ntop(AF_INET6, &addr->sockaddr.sin6_addr, tmpbuf, sizeof(tmpbuf));
 
-        return buf;
+        // Copy into destination buffer.  The buffer may be too small;
+        // if truncated, make sure the buffer is always NUL-terminated.
+
+        strncpy(buffer, tmpbuf, buffer_len);
+        buffer[buffer_len - 1] = '\0';
+}
+
+// Get the port number for an address structure.
+
+static unsigned int ipv6_address_get_port(IrmoNetAddress *_addr)
+{
+        IPv6Address *addr = (IPv6Address *) _addr;
+
+        return ntohs(addr->sockaddr.sin6_port);
 }
 
 // Address class.
 
 static IrmoNetAddressClass ipv6_address_class = {
         ipv6_address_to_string,
+        ipv6_address_get_port,
         ipv6_address_free,
 };
 

@@ -49,12 +49,27 @@ IrmoNetAddress *irmo_net_address_resolve(IrmoNetModule *module,
 /*!
  * Format an address in a user-presentable format.
  *
- * @param address  The address.
- * @return         Pointer to a static buffer containing a text
- *                 description of the address.
+ * @param address     The address.
+ * @param buffer      Pointer to a buffer in which to store the string
+ *                    version of the address.
+ * @param buffer_len  Length of the buffer.  If the buffer is too short,
+ *                    the string is truncated, but a valid C string is
+ *                    always created.
+ * @return            Pointer to a static buffer containing a text
+ *                    description of the address.
  */
 
-char *irmo_net_address_to_string(IrmoNetAddress *address);
+void irmo_net_address_to_string(IrmoNetAddress *address,
+                                char *buffer, unsigned int buffer_len);
+
+/*!
+ * Get the port number used for an address.
+ *
+ * @param address     The address.
+ * @return            The port number used for this address.
+ */
+
+unsigned int irmo_net_address_get_port(IrmoNetAddress *address);
 
 /*!
  * Add a reference to an address.

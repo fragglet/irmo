@@ -77,7 +77,17 @@ struct _IrmoNetAddressClass {
          *                      a text description of the address.
          */
 
-        char *(*to_string)(IrmoNetAddress *address);
+        void (*to_string)(IrmoNetAddress *address, char *buffer,
+                          unsigned int length);
+
+        /*!
+         * Get the port in use by this address.
+         *
+         * @param address.      The address.
+         * @return              The port number used for this address.
+         */
+
+        unsigned int (*get_port)(IrmoNetAddress *address);
 
         /*!
          * Free an address.

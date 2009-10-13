@@ -92,7 +92,7 @@ static void test_addr_to_string(IrmoNetModule *module,
                                 char *localhost_name)
 {
         IrmoNetAddress *addr;
-        char *str;
+        char buffer[64];
 
         addr = irmo_net_address_resolve(module, localhost_name, TEST_PORT_NUM);
 
@@ -100,10 +100,12 @@ static void test_addr_to_string(IrmoNetModule *module,
 
         // Check the resulting string
 
-        str = irmo_net_address_to_string(addr);
+        irmo_net_address_to_string(addr, buffer, sizeof(buffer));
 
-        assert(!strcmp(str, "127.0.0.1:9999")
-            || !strcmp(str, "[::1]:9999"));
+        assert(!strcmp(buffer, "127.0.0.1")
+            || !strcmp(buffer, "::1"));
+
+        assert(irmo_net_address_get_port(addr) == TEST_PORT_NUM);
 
         irmo_net_address_unref(addr);
 }

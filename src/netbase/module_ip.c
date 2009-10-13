@@ -58,21 +58,28 @@ static void ipv4_address_free(IrmoNetAddress *_addr)
 
 // Convert an address to a string.
 
-static char *ipv4_address_to_string(IrmoNetAddress *_addr)
+static void ipv4_address_to_string(IrmoNetAddress *_addr,
+                                   char *buffer, unsigned int buffer_len)
 {
         IPv4Address *addr = (IPv4Address *) _addr;
-        static char buf[128];
 
-        sprintf(buf, "%s:%i", inet_ntoa(addr->sockaddr.sin_addr),
-                              ntohs(addr->sockaddr.sin_port));
+        strncpy(buffer, inet_ntoa(addr->sockaddr.sin_addr), buffer_len);
 
-        return buf;
+        buffer[buffer_len - 1] = '\0';
+}
+
+static unsigned int ipv4_address_get_port(IrmoNetAddress *_addr)
+{
+        IPv4Address *addr = (IPv4Address *) _addr;
+
+        return ntohs(addr->sockaddr.sin_port);
 }
 
 // Address class.
 
 static IrmoNetAddressClass ipv4_address_class = {
         ipv4_address_to_string,
+        ipv4_address_get_port,
         ipv4_address_free,
 };
 
