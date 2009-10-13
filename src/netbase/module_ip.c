@@ -64,7 +64,7 @@ static char *ipv4_address_to_string(IrmoNetAddress *_addr)
         static char buf[128];
 
         sprintf(buf, "%s:%i", inet_ntoa(addr->sockaddr.sin_addr),
-                              addr->sockaddr.sin_port);
+                              ntohs(addr->sockaddr.sin_port));
 
         return buf;
 }

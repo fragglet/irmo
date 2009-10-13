@@ -69,7 +69,7 @@ static char *ipv6_address_to_string(IrmoNetAddress *_addr)
 
         buf[0] = '[';
         inet_ntop(AF_INET6, &addr->sockaddr.sin6_addr, buf + 1, sizeof(buf));
-        sprintf(buf + strlen(buf), "]:%i", addr->sockaddr.sin6_port);
+        sprintf(buf + strlen(buf), "]:%i", ntohs(addr->sockaddr.sin6_port));
 
         return buf;
 }
