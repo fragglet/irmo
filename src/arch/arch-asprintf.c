@@ -59,7 +59,7 @@ char *irmo_vasprintf(char *format, va_list args)
 
         if (vasprintf_buffer_len <= 0) {
                 vasprintf_buffer_len = 1024;
-                vasprintf_buffer = malloc(vasprintf_buffer_len);
+                vasprintf_buffer = irmo_malloc0(vasprintf_buffer_len);
         }
 
         do {

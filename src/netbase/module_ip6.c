@@ -133,6 +133,8 @@ static IPv6Address *ipv6_get_address(struct sockaddr_in6 *addr)
 
                 address_hash_table = irmo_hash_table_new(sockaddr_in6_hash,
                                                          sockaddr_in6_equal);
+
+                irmo_alloc_assert(address_hash_table != NULL);
         } else {
                 // Search the hash table
 
@@ -150,8 +152,9 @@ static IPv6Address *ipv6_get_address(struct sockaddr_in6 *addr)
 
         memcpy(&result->sockaddr, addr, sizeof(struct sockaddr_in6));
 
-        irmo_hash_table_insert(address_hash_table, &result->sockaddr,
-                               result);
+        irmo_alloc_assert(irmo_hash_table_insert(address_hash_table,
+                                                 &result->sockaddr,
+                                                 result));
 
         return result;
 }

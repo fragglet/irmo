@@ -67,6 +67,8 @@ IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
         method->iface = iface;
         method->index = iface->nmethods;
 
+        irmo_alloc_assert(method->argument_hash != NULL);
+
         // Add to the array in the interface.
 
         iface->methods = irmo_renew(IrmoMethod *, iface->methods, 
@@ -74,7 +76,9 @@ IrmoMethod *irmo_interface_new_method(IrmoInterface *iface,
         iface->methods[iface->nmethods] = method;
         ++iface->nmethods;
 
-        irmo_hash_table_insert(iface->method_hash, method->name, method);
+        irmo_alloc_assert(irmo_hash_table_insert(iface->method_hash,
+                                                 method->name,
+                                                 method));
 
         return method;
 }

@@ -36,6 +36,8 @@ IrmoStruct *irmo_struct_new(char *name)
         structure->members = irmo_hash_table_new(irmo_string_hash,
                                                      irmo_string_equal);
 
+        irmo_alloc_assert(structure->members != NULL);
+
         return structure;
 }
 
@@ -61,7 +63,9 @@ IrmoStructMember *irmo_struct_add_member(IrmoStruct *structure,
         // Create the new member
 
         member = irmo_struct_member_new(member_name, offset, member_size);
-        irmo_hash_table_insert(structure->members, member_name, member);
+        irmo_alloc_assert(irmo_hash_table_insert(structure->members,
+                                                 member_name,
+                                                 member));
 
         return member;
 }

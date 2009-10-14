@@ -70,8 +70,9 @@ IrmoClassVar *irmo_class_new_variable(IrmoClass *klass,
         klass->variables[klass->nvariables] = class_var;
         ++klass->nvariables;
 
-        irmo_hash_table_insert(klass->variable_hash, 
-                               class_var->name, class_var);
+        irmo_alloc_assert(irmo_hash_table_insert(klass->variable_hash,
+                                                 class_var->name,
+                                                 class_var));
 
         return class_var;
 }

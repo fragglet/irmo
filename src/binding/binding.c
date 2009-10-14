@@ -22,6 +22,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/alloc.h"
 #include "base/assert.h"
 
 #include "binding.h"
@@ -45,6 +46,9 @@ void irmo_binding_add_member(char *struct_name, char *member_name,
 
                 mapped_structs = irmo_hash_table_new(irmo_string_hash,
                                                      irmo_string_equal);
+
+                irmo_alloc_assert(mapped_structs != NULL);
+
                 mapped_struct = NULL;
         } else {
 
@@ -60,8 +64,9 @@ void irmo_binding_add_member(char *struct_name, char *member_name,
         if (mapped_struct == NULL) {
 
                 mapped_struct = irmo_struct_new(struct_name);
-                irmo_hash_table_insert(mapped_structs, struct_name, 
-                                       mapped_struct);
+                irmo_alloc_assert(irmo_hash_table_insert(mapped_structs,
+                                                         struct_name,
+                                                         mapped_struct));
         }
 
         // Add the new member to the struct.

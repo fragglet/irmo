@@ -87,7 +87,7 @@ SockBaseSocket *irmo_sockbase_open(IrmoNetSocketClass *socket_class,
         result = irmo_new0(SockBaseSocket, 1);
         result->irmo_socket.socket_class = socket_class;
         result->sock = sock;
-        result->recvbuf = malloc(RECV_BUFFER_SIZE);
+        result->recvbuf = irmo_malloc0(RECV_BUFFER_SIZE);
 
         return result;
 }

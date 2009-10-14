@@ -50,7 +50,7 @@ IrmoPacket *irmo_packet_new(void)
 	IrmoPacket *packet = irmo_new0(IrmoPacket, 1);
 
 	packet->data_size = 256;
-	packet->data = malloc(packet->data_size);
+	packet->data = irmo_malloc0(packet->data_size);
         packet->data_owned = 1;
 	packet->len = 0;
 	packet->pos = 0;
@@ -91,7 +91,7 @@ static void irmo_packet_resize(IrmoPacket *packet)
 	// resize exponentially bigger
 
 	packet->data_size *= 2;
-	packet->data = realloc(packet->data, packet->data_size);
+	packet->data = irmo_realloc(packet->data, packet->data_size);
 }
 
 static void irmo_packet_update_len(IrmoPacket *packet)

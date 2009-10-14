@@ -111,6 +111,8 @@ static IPv4Address *ipv4_get_address(struct sockaddr_in *addr)
 
                 address_hash_table = irmo_hash_table_new(sockaddr_in_hash,
                                                          sockaddr_in_equal);
+
+                irmo_alloc_assert(address_hash_table != NULL);
         } else {
                 // Search the hash table
 
@@ -129,9 +131,9 @@ static IPv4Address *ipv4_get_address(struct sockaddr_in *addr)
         result->sockaddr.sin_addr.s_addr = addr->sin_addr.s_addr;
         result->sockaddr.sin_port = addr->sin_port;
 
-        irmo_hash_table_insert(address_hash_table,
-                               &result->sockaddr,
-                               result);
+        irmo_alloc_assert(irmo_hash_table_insert(address_hash_table,
+                                                 &result->sockaddr,
+                                                 result));
 
         return result;
 }

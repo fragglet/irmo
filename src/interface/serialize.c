@@ -21,6 +21,7 @@
 //
 
 #include "arch/sysheaders.h"
+#include "base/alloc.h"
 #include "base/assert.h"
 #include "base/error.h"
 
@@ -487,7 +488,7 @@ void irmo_interface_dump(IrmoInterface *iface,
         write_checksum(iface, packet);
 
         *data_len = irmo_packet_get_length(packet);
-        *data = malloc(*data_len);
+        *data = irmo_malloc0(*data_len);
         memcpy(*data, irmo_packet_get_buffer(packet), *data_len);
 
         irmo_packet_free(packet);

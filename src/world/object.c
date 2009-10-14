@@ -93,7 +93,9 @@ IrmoObject *irmo_object_internal_new(IrmoWorld *world,
 	
 	// add to world
 
-	irmo_hash_table_insert(world->objects, IRMO_POINTER_KEY(id), object);
+        irmo_alloc_assert(irmo_hash_table_insert(world->objects,
+                                                 IRMO_POINTER_KEY(id),
+                                                 object));
 
 	// raise callback functions for new object creation
 

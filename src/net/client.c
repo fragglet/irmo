@@ -56,8 +56,12 @@ IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
 	// send queue
 
 	client->sendq = irmo_queue_new();
+        irmo_alloc_assert(client->sendq != NULL);
+
         client->sendq_hashtable = irmo_hash_table_new(irmo_pointer_hash,
                                                       irmo_pointer_equal);
+
+        irmo_alloc_assert(client->sendq_hashtable != NULL);
 
 	// receive window
 
@@ -91,12 +95,12 @@ IrmoClient *irmo_client_new(IrmoServer *server, IrmoNetAddress *addr)
 
 	// insert into server hashtable
 
-	irmo_hash_table_insert(server->clients,
-                               client->address,
-                               client);
-        irmo_hash_table_insert(server->clients_by_id,
-                               IRMO_POINTER_KEY(client->id),
-                               client);
+	irmo_alloc_assert(irmo_hash_table_insert(server->clients,
+                                                 client->address,
+                                                 client));
+        irmo_alloc_assert(irmo_hash_table_insert(server->clients_by_id,
+                                                 IRMO_POINTER_KEY(client->id),
+                                                 client));
 
         // We have not yet synced the server's world to the client,
         // unless we are not sharing a world to the client, in which

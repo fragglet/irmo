@@ -47,6 +47,9 @@ IrmoWorld *irmo_world_new(IrmoInterface *iface)
 	world->servers = irmo_arraylist_new(1);
 	world->remote = 0;
 	
+        irmo_alloc_assert(world->objects != NULL);
+        irmo_alloc_assert(world->servers != NULL);
+
 	irmo_interface_ref(iface);
 
         // Top-level class callbacks.

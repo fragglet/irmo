@@ -27,6 +27,16 @@
 //
 
 /*!
+ * Generate an error message and abort due to a memory allocation
+ * failure.
+ *
+ * @param bytes          Number of bytes that failed to be allocated,
+ *                       or zero to generate a generic error message.
+ */
+
+void irmo_alloc_fail(size_t bytes);
+
+/*!
  * Allocate memory, zeroing out the contents first.
  *
  * @param bytes          Number of bytes to allocate.
@@ -34,6 +44,30 @@
  */
 
 void *irmo_malloc0(size_t bytes);
+
+/*!
+ * Reallocate a buffer to a different size.
+ *
+ * @param ptr            Pointer to the existing buffer.
+ * @param bytes          Size of the new buffer, in bytes.
+ * @return               Pointer to the new buffer.
+ */
+
+void *irmo_realloc(void *ptr, size_t bytes);
+
+/*!
+ * Check the provided condition, and abort with an out of memory error
+ * if it does not evaluate to true.
+ *
+ * @param condition  The condition to check.
+ */
+
+#define irmo_alloc_assert(condition)                           \
+        do {                                                   \
+                if (!(condition)) {                            \
+                        irmo_alloc_fail(0);                    \
+                }                                              \
+        } while (0)
 
 /*!
  * Allocate enough memory for an array of structures, giving the structure
@@ -58,7 +92,7 @@ void *irmo_malloc0(size_t bytes);
  */
 
 #define irmo_renew(typename, oldmem, count)                  \
-        ((typename *) realloc((oldmem), sizeof(typename) * (count)))
+        ((typename *) irmo_realloc((oldmem), sizeof(typename) * (count)))
 
 #endif /* #ifndef IRMO_BASE_ALLOC_H */
 

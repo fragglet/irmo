@@ -23,13 +23,48 @@
 
 #include "alloc.h"
 
+void irmo_alloc_fail(size_t bytes)
+{
+        if (bytes > 0)
+        {
+                fprintf(stderr, "irmo_alloc_fail: Failed on allocation of %u bytes\n",
+                                bytes);
+        }
+        else
+        {
+                fprintf(stderr, "irmo_alloc_fail: Out of memory error\n");
+        }
+
+        abort();
+}
+
 void *irmo_malloc0(size_t bytes)
 {
-        void *p;
+        void *result;
 
-        p = malloc(bytes);
-        memset(p, 0, bytes);
+        result = malloc(bytes);
 
-        return p;
+        if (result == NULL)
+        {
+                irmo_alloc_fail(bytes);
+        }
+
+        memset(result, 0, bytes);
+
+        return result;
+}
+
+void *irmo_realloc(void *ptr, size_t bytes)
+{
+        void *result;
+
+        result = realloc(ptr, bytes);
+
+        if (result == NULL)
+        {
+                irmo_alloc_fail(bytes);
+        }
+
+        return result;
 }
 

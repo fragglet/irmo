@@ -39,16 +39,17 @@ static void copy_parent_variables(IrmoClass *klass)
 
         // Copy all the parent's variables into the new class.
  
-        klass->variables = malloc(parent->nvariables * sizeof(IrmoClassVar *));
+        klass->variables = irmo_new0(IrmoClassVar *, parent->nvariables);
         klass->nvariables = parent->nvariables;
 
         memcpy(klass->variables, parent->variables,
                parent->nvariables * sizeof(IrmoClassVar *));
 
         for (i=0; i<klass->nvariables; ++i) {
-                irmo_hash_table_insert(klass->variable_hash,
-                                       klass->variables[i]->name,
-                                       klass->variables[i]);
+                irmo_alloc_assert(
+                        irmo_hash_table_insert(klass->variable_hash,
+                                               klass->variables[i]->name,
+                                               klass->variables[i]));
         }
 }
 
@@ -89,6 +90,8 @@ IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
         klass->parent_class = parent_class;
         klass->index = iface->nclasses;
 
+        irmo_alloc_assert(klass->variable_hash != NULL);
+
         // If this class has a parent class, copy all the variables 
         // of the parent class.
 
@@ -97,13 +100,15 @@ IrmoClass *irmo_interface_new_class(IrmoInterface *iface,
         }
 
         // Add to the IrmoInterface.
-      
-        iface->classes = irmo_renew(IrmoClass *, iface->classes, 
+
+        iface->classes = irmo_renew(IrmoClass *, iface->classes,
                                     iface->nclasses + 1);
         iface->classes[iface->nclasses] = klass;
         ++iface->nclasses;
 
-        irmo_hash_table_insert(iface->class_hash, klass->name, klass);
+        irmo_alloc_assert(irmo_hash_table_insert(iface->class_hash,
+                                                 klass->name,
+                                                 klass));
 
         return klass;
 }

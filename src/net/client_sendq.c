@@ -65,16 +65,17 @@ void irmo_client_sendq_push(IrmoClient *client, IrmoSendAtom *atom)
 {
 	if (atom->klass == &irmo_change_atom) {
 		IrmoChangeAtom *catom = (IrmoChangeAtom *) atom;
+                void *key = IRMO_POINTER_KEY(catom->object->id);
 
-		irmo_hash_table_insert(client->sendq_hashtable,
-				       IRMO_POINTER_KEY(catom->object->id),
-				       atom);
+                irmo_alloc_assert(irmo_hash_table_insert(client->sendq_hashtable,
+                                                         key,
+                                                         atom));
 	}
-	
+
 	atom->client = client;
 	atom->len = atom->klass->length(atom);
-	
-	irmo_queue_push_tail(client->sendq, atom);
+
+	irmo_alloc_assert(irmo_queue_push_tail(client->sendq, atom));
 }
 
 void irmo_client_sendq_add_new(IrmoClient *client, IrmoObject *object)

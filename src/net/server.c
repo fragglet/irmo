@@ -53,13 +53,17 @@ IrmoServer *irmo_server_new_from(IrmoNetSocket *sock,
 	
 	if (world != NULL) {
 		irmo_world_ref(world);
-		irmo_arraylist_append(world->servers, server);
+		irmo_alloc_assert(irmo_arraylist_append(world->servers,
+                                                        server));
 	}
 	
 	server->clients = irmo_hash_table_new(irmo_pointer_hash,
                                               irmo_pointer_equal);
 	server->clients_by_id = irmo_hash_table_new(irmo_pointer_hash,
                                                     irmo_pointer_equal);
+
+        irmo_alloc_assert(server->clients != NULL);
+        irmo_alloc_assert(server->clients_by_id != NULL);
 
 	return server;
 }

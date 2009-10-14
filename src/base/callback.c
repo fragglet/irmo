@@ -36,7 +36,7 @@ IrmoCallback *irmo_callback_list_add(IrmoCallbackList *list,
 	callback->user_data = user_data;
 	callback->list = list;
 
-        irmo_slist_prepend(list, callback);
+        irmo_alloc_assert(irmo_slist_prepend(list, callback));
 
 	return callback;
 }

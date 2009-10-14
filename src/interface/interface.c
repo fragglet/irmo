@@ -41,11 +41,14 @@ IrmoInterface *irmo_interface_new(void)
 	iface->methods = NULL;
 	iface->nclasses = iface->nmethods = 0;
 	iface->refcount = 1;
-	
-	iface->class_hash = irmo_hash_table_new(irmo_string_hash, 
+
+	iface->class_hash = irmo_hash_table_new(irmo_string_hash,
                                                 irmo_string_equal);
-	iface->method_hash = irmo_hash_table_new(irmo_string_hash, 
+        irmo_alloc_assert(iface->class_hash != NULL);
+
+	iface->method_hash = irmo_hash_table_new(irmo_string_hash,
                                                  irmo_string_equal);
+        irmo_alloc_assert(iface->method_hash != NULL);
 
         return iface;
 }

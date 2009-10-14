@@ -69,8 +69,9 @@ IrmoMethodArg *irmo_method_new_argument(IrmoMethod *method,
         method->arguments[method->narguments] = method_arg;
         ++method->narguments;
 
-        irmo_hash_table_insert(method->argument_hash, 
-                               method_arg->name, method_arg);
+        irmo_alloc_assert(irmo_hash_table_insert(method->argument_hash,
+                                                 method_arg->name,
+                                                 method_arg));
 
         return method_arg;
 }
