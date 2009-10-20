@@ -12,7 +12,9 @@ TESTS =                        \
 check_PROGRAMS = $(TESTS)
 check_LIBRARIES = libtestcommon.a
 
-libtestcommon_a_SOURCES = net-module-tests.c net-module-tests.h
+libtestcommon_a_SOURCES =                                  \
+        loopback-test-module.c                             \
+        net-module-tests.c       net-module-tests.h
 
 AM_CFLAGS=-I../src/include -I../src -Wall
 LDADD = $(top_builddir)/src/libirmo.la libtestcommon.a
