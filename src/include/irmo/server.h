@@ -112,7 +112,7 @@ void irmo_server_ref(IrmoServer *server);
 void irmo_server_unref(IrmoServer *server);
 
 /*!
- * Shutdown a server, blocking until all cliens are disconnected.
+ * Shutdown a server, blocking until all clients are disconnected.
  *
  * @param server	The server to shutdown.
  */
