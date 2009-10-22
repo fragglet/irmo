@@ -41,11 +41,15 @@
 
 struct _IrmoClient {
 
+        // Number of references to this client.
+
 	int refcount;
+
+        // Current connection state of the client.
 
 	IrmoClientState state;
 
-	// server client is connected to
+	// Server to which the client is connected.
 
 	IrmoServer *server;
 
@@ -54,55 +58,67 @@ struct _IrmoClient {
 
         unsigned int id;
 
-	// client's remote world
+	// Client's remote world.
 
 	IrmoWorld *world;
 
-	// address:
+	// The network address used to send data to the client.
 
         IrmoNetAddress *address;
 
-	// protocol stuff (internal)
+	// Time that the last syn/synack packet was sent.
 
-	// time last syn/synack was sent
 	unsigned int connect_time;
 	int connect_attempts;
 
-	// when a client remotely disconnects, keep the client object
-	// for several seconds before destroying it (if they do not
-	// receive the disconnect ack they may send another disconnect
-	// request, in which case another ack will need to be sent)
-	
+        // If true, the client is in the disconnect wait state.
+	// When a client remotely disconnects, the client object is
+        // kept for several seconds before the client structure
+        // is freed. This is because if the client does not receive
+        // the disconnect ack, they may send another disconnect
+        // request, in which case another ack will need to be sent.
+
 	int disconnect_wait;
 
-	// send queue 
-	
+	// Send queue.  This is a queue of atoms waiting to be
+        // added to the send window, for transmission to the
+        // client.
+
 	IrmoQueue *sendq;
 
-	// change entries in sendq are hashed by object id so
-	// new changes can be added to the existing sendatoms
-	
+        // Send queue lookup table.
+	// Change atoms in the send queue are stored in this
+        // table, hashed by object ID, so that new changes can be
+        // added to atoms if a change is made to an object for
+        // which an entry is already in the queue.
+
 	IrmoHashTable *sendq_hashtable;
 
-	// position of start of send window in stream
+	// Sequence number of the first atom in the send window.
 
 	unsigned int sendwindow_start;
-	
-	// send window
+
+	// Send window.  These are send atoms that have been sent
+        // to the client, and are awaiting acknowldegement from
+        // the client.
 
 	IrmoSendAtom *sendwindow[MAX_SENDWINDOW];
 	unsigned int sendwindow_size;
 
-	// receive window
+	// Sequence number of the first atom in the receive window.
 
 	unsigned int recvwindow_start;
+
+        // The receive window.  These are atoms that have been
+        // received from the remote client, but not yet executed
+        // (generally because of a lost packet earlier in sequence)
 
 	IrmoSendAtom **recvwindow;
 	unsigned int recvwindow_size;
 
-	// if true, we need to send an ack to the client to acknowledge
-	// something it has sent us
-	
+	// If true, we need to send an ack to the client to acknowledge
+	// something it has sent us.
+
 	int need_ack;
 
 	// Callbacks invoked when the client state changes,
@@ -110,45 +126,50 @@ struct _IrmoClient {
 
 	IrmoCallbackList state_change_callbacks[IRMO_CLIENT_NUM_STATES];
 
-	// estimations of round trip time mean and standard deviation
-	// (in milliseconds)
+	// Estimations of round trip time mean and standard deviation
+	// (in milliseconds), for calculation of the send window size.
 
 	float rtt;
 	float rtt_deviation;
 
-	// backoff multiply
+	// Resend backoff factor.  Each time a packet is resent, the
+        // time before the next resend is doubled.
+        // TODO: Don't do this?
 
 	unsigned int backoff;
 
-	// maximum send window size in bytes. once the amount of data
-	// in the send window exceeds this amount, no more is added.
+	// Maximum send window size in bytes. Once the amount of data
+	// in the send window exceeds this amount, no more atoms are
+        // added to the send window.
 
 	float cwnd;
 
-	// slow start threshold. when cwnd is above this threshold we
+	// Slow start threshold. When cwnd is above this threshold we
 	// do congestion avoidance.
 
 	unsigned int ssthresh;
 
-        // if true, the remote world (that the client is sharing to us)
+        // If true, the remote world (that the client is sharing to us)
         // has been synced to us. (ie. we have received the sync point
         // atom)
 
         int local_synced;
 
-        // if true, the local world (that we are sharing to the client)
-        // is synced to the client.  (ie. the client has received the
+        // If true, the local world (that we are sharing to the client)
+        // is synced to the client.  (ie. the client has acknowledged the
         // sync point atom)
 
         int remote_synced;
 
-	// user specified sendwindow limits
-	// if these are 0, they are unset
+	// User specified sendwindow limits
+	// If these are 0, they are unset, and automatic congestion
+        // avoidance is used.
 
 	unsigned int local_sendwindow_max;
 	unsigned int remote_sendwindow_max;
 
-	// connection error
+	// String describing the reason why connection to a remote
+        // server failed.
 
 	char *connection_error;
 };
