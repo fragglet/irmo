@@ -12,3 +12,5 @@ libirmoalgo_la_SOURCES=                                     \
        slist.c                slist.h                       \
        queue.c                queue.h                       
 
+EXTRA_DIST=import-calg
+
