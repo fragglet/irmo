@@ -1,0 +1,28 @@
+#!/bin/sh
+
+topdir=$(pwd)
+
+for source_file in src/*/*.c; do
+        dir=$(dirname "$source_file")
+        base=$(basename "$source_file")
+
+        # Copy .gcda and .gcno files into source directory:
+
+        gcda=$(echo "$base" | sed "s/.c$/.gcda/")
+        gcno=$(echo "$base" | sed "s/.c$/.gcno/")
+
+        cp $dir/.libs/*$gcda "$dir/$gcda"
+        cp $dir/.libs/*$gcno "$dir/$gcno"
+
+        # Run gcov to generate annotated source file.
+
+        cd "$dir"
+        gcov "$base"
+        cd "$topdir"
+
+        # Delete copied gcda/gcno files.
+
+        rm -f "$dir/$gcda" "$dir/$gcno"
+done
+
+

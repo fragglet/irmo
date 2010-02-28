@@ -1,4 +1,7 @@
 *.pc
+*.gcda
+*.gcno
+*.gcov
 *.o
 *.lo
 *.la
@@ -26,4 +29,5 @@ libtool
 ltmain.sh
 missing
 stamp-h1
+ylwrap
 
